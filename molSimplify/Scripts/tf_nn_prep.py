@@ -77,16 +77,11 @@ def invoke_ANNs_from_mol3d(mol: mol3D, oxidation_state: int,
         'split', descriptors, descriptor_names, debug)
 
     # call ANN for bond lengths
-    if oxidation_state == 2:
-        r_ls, latent_r_ls = ANN_supervisor(
-            'ls_ii', descriptors, descriptor_names, debug)
-        r_hs, latent_r_hs = ANN_supervisor(
-            'hs_ii', descriptors, descriptor_names, debug)
-    elif oxidation_state == 3:
-        r_ls, latent_r_ls = ANN_supervisor(
-            'ls_iii', descriptors, descriptor_names, debug)
-        r_hs, latent_r_hs = ANN_supervisor(
-            'hs_iii', descriptors, descriptor_names, debug)
+    to_roman = {2: 'ii', 3: 'iii'}
+    r_ls, latent_r_ls = ANN_supervisor(
+        f'ls_{to_roman[oxidation_state]}', descriptors, descriptor_names, debug)
+    r_hs, latent_r_hs = ANN_supervisor(
+        f'hs_{to_roman[oxidation_state]}', descriptors, descriptor_names, debug)
 
     # ANN distance for splitting
     split_dist = find_true_min_eu_dist("split", descriptors, descriptor_names)
