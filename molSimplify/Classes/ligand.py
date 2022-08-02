@@ -561,20 +561,18 @@ def ligand_assign(mol, liglist, ligdents, ligcons, loud=False, name=False, eq_sy
                 combo_list = []
                 for i, combo in enumerate(point_combos):
                     combo_list.append(list(combo))
-                    A = []
-                    b = []
-                    for point_num in combo:
+                    A = np.zeros((4, 3))
+                    b = np.zeros(4)
+                    for j, point_num in enumerate(combo):
                         coordlist = pentadentate_coord_list[point_num]
-                        A.append([coordlist[0], coordlist[1], 1])
-                        b.append(coordlist[2])
+                        A[j, :] = [coordlist[0], coordlist[1], 1]
+                        b[j] = coordlist[2]
                     # #### This code builds the best fit plane between 4 points,
                     # #### Then calculates the variance of the 4 points with respect to the plane
                     # #### The 4 that have the least variance are flagged as the eq plane.
-                    mat_b = np.matrix(b).T
-                    mat_A = np.matrix(A)
                     try:
-                        fit = (mat_A.T * mat_A).I * mat_A.T * mat_b
-                        errors = np.squeeze(np.array(mat_b - mat_A * fit))
+                        fit = np.linalg.pinv(A.T @ A) @ A.T @ b
+                        errors = b - A @ fit
                         error_var = np.var(errors)
                         error_list.append(error_var)
                     except np.linalg.LinAlgError:
@@ -647,20 +645,18 @@ def ligand_assign(mol, liglist, ligdents, ligcons, loud=False, name=False, eq_sy
             fitlist = []
             for i, combo in enumerate(point_combos):
                 combo_list.append(combo)
-                A = []
-                b = []
-                for point_num in combo:
+                A = np.zeros((4, 3))
+                b = np.zeros(4)
+                for j, point_num in enumerate(combo):
                     coordlist = hexadentate_coord_list[point_num]
-                    A.append([coordlist[0], coordlist[1], 1])
-                    b.append(coordlist[2])
+                    A[j, :] = [coordlist[0], coordlist[1], 1]
+                    b[j] = coordlist[2]
                 # #### This code builds the best fit plane between 4 points,
                 # #### Then calculates the variance of the 4 points with respect to the plane
                 # #### The 4 that have the least variance are flagged as the eq plane.
-                mat_b = np.matrix(b).T
-                mat_A = np.matrix(A)
-                fit = (mat_A.T * mat_A).I * mat_A.T * mat_b
+                fit = np.linalg.pinv(A.T @ A) @ A.T @ b
                 fitlist.append(fit)
-                errors = np.squeeze(np.array(mat_b - mat_A * fit))
+                errors = b - A @ fit
                 error_var = np.var(errors)
                 error_list.append(error_var)
             if loud:
@@ -954,24 +950,22 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
         combo_list.append(combo)
         if loud:
             print(('combo', combo))
-        A = []
-        b = []
+        A = np.zeros((4, 3))
+        b = np.zeros(4)
         mw_plane = 0
         mw_lig_cons = 0
-        for point_num in combo:
+        for j, point_num in enumerate(combo):
             coordlist = flat_coord_list[point_num]
             mw_plane += flat_lig_mol_weights[point_num]
             mw_lig_cons += lig_con_weights[point_num]
-            A.append([coordlist[0], coordlist[1], 1])
-            b.append(coordlist[2])
-        mat_b = np.matrix(b).T
-        mat_A = np.matrix(A)
+            A[j, :] = [coordlist[0], coordlist[1], 1]
+            b[j] = coordlist[2]
         mw_plane_list.append(mw_plane)
         mw_plane_lig_con_list.append(mw_lig_cons)
         try:
-            fit = (mat_A.T * mat_A).I * mat_A.T * mat_b
+            fit = np.linalg.pinv(A.T @ A) @ A.T @ b
             fitlist.append(fit)
-            errors = np.squeeze(np.array(mat_b - mat_A * fit))
+            errors = b - A @ fit
             error_var = np.var(errors)
             error_list.append(error_var)
         except np.linalg.LinAlgError:
