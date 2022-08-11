@@ -563,10 +563,10 @@ def ligand_assign(mol, liglist, ligdents, ligcons, loud=False, name=False, eq_sy
                     combo_list.append(list(combo))
                     A = np.zeros((4, 3))
                     b = np.zeros(4)
-                    for j, point_num in enumerate(combo):
+                    for point_i, point_num in enumerate(combo):
                         coordlist = pentadentate_coord_list[point_num]
-                        A[j, :] = [coordlist[0], coordlist[1], 1]
-                        b[j] = coordlist[2]
+                        A[point_i, :] = [coordlist[0], coordlist[1], 1]
+                        b[point_i] = coordlist[2]
                     # #### This code builds the best fit plane between 4 points,
                     # #### Then calculates the variance of the 4 points with respect to the plane
                     # #### The 4 that have the least variance are flagged as the eq plane.
@@ -647,10 +647,10 @@ def ligand_assign(mol, liglist, ligdents, ligcons, loud=False, name=False, eq_sy
                 combo_list.append(combo)
                 A = np.zeros((4, 3))
                 b = np.zeros(4)
-                for j, point_num in enumerate(combo):
+                for point_i, point_num in enumerate(combo):
                     coordlist = hexadentate_coord_list[point_num]
-                    A[j, :] = [coordlist[0], coordlist[1], 1]
-                    b[j] = coordlist[2]
+                    A[point_i, :] = [coordlist[0], coordlist[1], 1]
+                    b[point_i] = coordlist[2]
                 # #### This code builds the best fit plane between 4 points,
                 # #### Then calculates the variance of the 4 points with respect to the plane
                 # #### The 4 that have the least variance are flagged as the eq plane.
@@ -954,12 +954,12 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
         b = np.zeros(4)
         mw_plane = 0
         mw_lig_cons = 0
-        for j, point_num in enumerate(combo):
+        for point_i, point_num in enumerate(combo):
             coordlist = flat_coord_list[point_num]
             mw_plane += flat_lig_mol_weights[point_num]
             mw_lig_cons += lig_con_weights[point_num]
-            A[j, :] = [coordlist[0], coordlist[1], 1]
-            b[j] = coordlist[2]
+            A[point_i, :] = [coordlist[0], coordlist[1], 1]
+            b[point_i] = coordlist[2]
         mw_plane_list.append(mw_plane)
         mw_plane_lig_con_list.append(mw_lig_cons)
         try:
