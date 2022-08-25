@@ -228,7 +228,7 @@ def getPointu(Rr, dist, u):
 
 
 def rotation_params(r0, r1, r2):
-    """Gets angle between three points (r10 and r21) and and the normal vector to the plane containing three points.
+    """Gets angle between three points (r10 and r21) and the normal vector to the plane containing three points.
 
         Parameters
         ----------
@@ -1188,3 +1188,30 @@ def connectivity_match(inds1, inds2, mol1, mol2):
         _mol2.createMolecularGraph()
         match = np.array_equal(_mol1.graph, _mol2.graph)
     return match
+
+
+def best_fit_plane(coordinates):
+    """Finds the best fitting plane to a set of atoms at the specified coordinates.
+
+    Parameters
+    ----------
+        corerefcoords : np.array
+            Coordinates of atoms for which the best fitting plane is to be found. Shape is 3 x N.
+
+    Returns
+    -------
+        normal_vector_plane : np.array
+            The vector perpendicular to the best fitting plane.
+
+    """
+    # Solution from stack exchange    
+
+    # subtract out the centroid and take the SVD
+    svd = np.linalg.svd(coordinates - np.mean(coordinates, axis=1, keepdims=True))
+
+    # Extract the left singular vectors
+    left = svd[0]
+
+    # the corresponding left singular vector is the normal vector of the best-fitting plane
+    normal_vector_plane = left[:, -1]
+    return normal_vector_plane
