@@ -253,5 +253,5 @@ uthiol:uthiol.mol,uthil,0,build functionalize small,N,0
 uthiolme2:uthiolme2.mol,uthilme2,0,build functionalize small,N,0
 valine:valine.mol,Val,3,build functionalize aminoacid,BA,0
 valineB:valine.mol,Val,3 17,build functionalize aminoacid,BA,0
-water:water.mol,wat,0,build small,N,0
+water:water.mol,wat,0,build small,BA,0
 x:x.mol,x,0,all small,N,0

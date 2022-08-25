@@ -339,6 +339,10 @@ def kabsch(mol0, mol1):
                 Translation vector for mol1.
 
     """
+    if (mol0.getNumAtoms() != mol1.getNumAtoms()):
+        print(f'issue: {mol0.getNumAtoms()} != {mol1.getNumAtoms()}')
+        raise ValueError('The two molecules should have the same number of atoms.')
+
     # translate to align centroids with origin
     mol0, d0 = setPdistance(mol0, mol0.centersym(), [0, 0, 0], 0)
     mol1, d1 = setPdistance(mol1, mol1.centersym(), [0, 0, 0], 0)

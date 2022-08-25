@@ -1625,7 +1625,7 @@ class mol3D:
 
         """
 
-        if len(self.graph):
+        if len(self.graph): # The graph exists.
             nats = list(np.nonzero(np.ravel(self.graph[idx]))[0])
         else:
             ratom = self.getAtom(idx)
