@@ -276,8 +276,9 @@ def parse4testNoFF(infile, tmpdir):
         print("FF optimization used in original input file. "
               "Now test for no FF result.")
         for line in data:
+            # By getting rid of -ffoption, will use the force field option default, which is "N"
             if not (("-jobdir" in line) or ("-name" in line)
-                    or ("-ff " in line)):
+                    or ("-ff " in line) or ("-ffoption " in line)):
                 newdata += line
         newdata += "-jobdir " + newname + "\n"
         newdata += "-name " + newname + "\n"
@@ -602,8 +603,8 @@ def runtestNoFF(tmpdir, name, threshMLBL, threshLG, threshOG):
         print("Reference report status: ", pass_report)
         pass_qcin = compare_qc_input(output_qcin, ref_qcin)
         print("Reference qc input file: ", ref_qcin)
-        print("Test qc input file:", output_qcin)
-        print("Qc input status:", pass_qcin)
+        print("Test qc input file: ", output_qcin)
+        print("Qc input status: ", pass_qcin)
     return [passNumAtoms, passMLBL, passLG, passOG, pass_report, pass_qcin]
 
 

@@ -1,4 +1,4 @@
-# ligand name, ligand structure file, abbreviation (unique), connection atoms, groups, force field (BA:always,B:before only,A:after only,N:no), formal charge
+# ligand name, ligand structure file, abbreviation (unique), connection atoms, groups, force field (BA:before and after,B:before only,A:after only,N:no), formal charge
 # if connecting atoms
 12crown4:12crown4.mol,12crown4,6 9 0 3,build tetradentate,N,0
 Hpyrrole:Hpyrrole.mol,Hpyrl,0,build organic,BA,-1

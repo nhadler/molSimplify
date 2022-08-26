@@ -2317,29 +2317,31 @@ def mcomplex(args, ligs, ligoc, licores, globs):
             occs0[i] += 1
             toccs += dent_i
 
-        if ligname in list(licores.keys()): # ligand is in the ligands dictionary
-            forcefield_option_current_ligand = licores[ligname][4][0].lower()
-            ffoption_list.append(forcefield_option_current_ligand)
-        else: # default to before and after force field application
-            ffoption_list.append('ba')
+        if 'l' in args.ffoption: # ligands.dict control for force field option
+            if ligname in list(licores.keys()): # ligand is in the ligands dictionary
+                forcefield_option_current_ligand = licores[ligname][4][0].lower()
+                ffoption_list.append(forcefield_option_current_ligand)
+            else: # default to 'ba' for ligands not in ligands.dict
+                ffoption_list.append('ba')
 
-    # Setting args.ffoption to the least-action option among the ligands.
-    # So, if at least one of the ligands has 'n' as the forcefield option, no optimization.
-    # Otherwise, if there is any mixture of 'b' and 'a' among the ligands, go with 'n' for consistency.
-    # Otherwise, if there is a mixture of 'b' and 'ba', go with 'b'.
-    # Otherwise, if there is a mixture of 'a' and 'ba', go with 'a'.
-    # Only if all ligands have 'ba' as the forcefield option do we go with 'ba'.
-    ffoption_set = set(ffoption_list)
-    if 'n' in ffoption_set:
-        args.ffoption = 'n'
-    elif 'b' in ffoption_set and 'a' in ffoption_set:
-        args.ffoption = 'n'
-    elif 'b' in ffoption_set:
-        args.ffoption = 'b'
-    elif 'a' in ffoption_set:
-        args.ffoption = 'a'
-    else:
-        args.ffoption = 'ba'
+    if 'l' in args.ffoption: # ligands.dict control for force field option
+        # Setting args.ffoption to the least-action option among the ligands.
+        # So, if at least one of the ligands has 'n' as the forcefield option, no optimization.
+        # Otherwise, if there is any mixture of 'b' and 'a' among the ligands, go with 'n' for consistency.
+        # Otherwise, if there is a mixture of 'b' and 'ba', go with 'b'.
+        # Otherwise, if there is a mixture of 'a' and 'ba', go with 'a'.
+        # Only if all ligands have 'ba' as the forcefield option do we go with 'ba'.
+        ffoption_set = set(ffoption_list)
+        if 'n' in ffoption_set:
+            args.ffoption = 'n'
+        elif 'b' in ffoption_set and 'a' in ffoption_set:
+            args.ffoption = 'n'
+        elif 'b' in ffoption_set:
+            args.ffoption = 'b'
+        elif 'a' in ffoption_set:
+            args.ffoption = 'a'
+        else:
+            args.ffoption = 'ba'
 
     # sort by descending denticity (needed for adjacent connection atoms)
     ligandsU, occsU, dentsU = ligs, occs0, dentl  # save unordered lists
