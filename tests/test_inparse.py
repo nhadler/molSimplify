@@ -26,7 +26,7 @@ def test_parseinputs_basic(monkeypatch):
     parser = ArgumentParser()
     args = parseinputs_basic(parser)
     defaults = dict(coord=False, core=None, ff='uff', ff_final_opt=None,
-                    ffoption='BA', geo=False, geometry=False, keepHs=None,
+                    ffoption='N', geo=False, geometry=False, keepHs=None,
                     lig=None, ligloc=False, ligocc=False, multiplicity=None,
                     oxstate=None, rundir=False, skipANN=None, smicat=False,
                     spin=None, spinmultiplicity=None)
