@@ -944,6 +944,8 @@ def disorder_detector(name):
         The indices of atoms with fractional occupancies.
     disordered_atom_types : list of str
         The elemental symbols of atoms with fractional occupancies.
+    disordered_atom_occupancies : list of floats
+        The fractional occupancies of the atoms with fractional occupancies.
 
     """
     with open(name , 'r', errors='ignore') as fi: # ignore takes care of unicode errors in some cifs
@@ -960,7 +962,7 @@ def disorder_detector(name):
             
             if line_stripped.startswith("_atom") :
 
-                if line_stripped=="_atom_site_label" or line_stripped == '_atom_site_type_symbol':
+                if line_stripped == "_atom_site_label" or line_stripped == '_atom_site_type_symbol':
                     cond=True # We have entered the block with the desired atom information.
                     # The reason for the or is that the order fo these lines can vary depending on cif
                 if line_stripped == '_atom_site_type_symbol':
@@ -978,11 +980,12 @@ def disorder_detector(name):
                     break # Don't need to keep looking through the file, since we've seen all the desired information for all atoms. We left the block.
 
                 
-        disordered_atom_indices=[]
+        disordered_atom_indices = []
         disordered_atom_types = []
+        disordered_atom_occupancies = []
 
         if occupancy_index != False: # This means that occupancy information is available
-            for idx, at in enumerate(atomlines): # Go through the lines of the cif with atom specific information
+            for idx, at in enumerate(atomlines): # Go through the lines of the cif with atom specific information. Atom by atom.
                 ln=at.strip().split()
 
                 current_atom_occupancy = ln[occupancy_index].split('(')[0] # Excluding parentheses in order to convert to float.
@@ -996,7 +999,9 @@ def disorder_detector(name):
                     at_type = ln[type_index]
                     disordered_atom_types.append(at_type)
 
-        return disordered_atom_indices, disordered_atom_types
+                    disordered_atom_occupancies.append(current_atom_occupancy)
+
+        return disordered_atom_indices, disordered_atom_types, disordered_atom_occupancies
 
 def solvent_removal(cif_path, new_cif_path):
     """
@@ -1005,9 +1010,9 @@ def solvent_removal(cif_path, new_cif_path):
 
     Parameters
     ----------
-    cit_path : str
+    cif_path : str
         The path of the cif file to be read.
-    new_cit_path : str
+    new_cif_path : str
         The path to which the modified cif file will be written.
 
     Returns
