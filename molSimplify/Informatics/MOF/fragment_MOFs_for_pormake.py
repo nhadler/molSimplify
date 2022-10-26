@@ -20,26 +20,9 @@ from functools import reduce
 import time
 import json
 
-#### NOTE: In addition to molSimplify's dependencies, this portion requires 
-#### pymatgen to be installed. The RACs are intended to be computed
-#### on the primitive cell of the material. You can compute them
-#### using the commented out snippet of code if necessary.
-
-# Example usage is given at the bottom of the script.
-
-'''<<<< CODE TO COMPUTE PRIMITIVE UNIT CELLS >>>>'''
-#########################################################################################
-# This MOF RAC generator assumes that pymatgen is installed.                            #
-# Pymatgen is used to get the primitive cell.                                           #
-#########################################################################################
-from pymatgen.io.cif import CifParser
-def get_primitive(datapath, writepath):
-    s = CifParser(datapath, occupancy_tolerance=1).get_structures()[0]
-    sprim = s.get_primitive_structure()
-    sprim.to("cif",writepath)
-'''<<<< END OF CODE TO COMPUTE PRIMITIVE UNIT CELLS >>>>'''
 
 def periodic_checker(graph, coords, atoms):
+    # This function checks if a graph is periodic or not.
     from scipy.sparse import csgraph
     csg = csgraph.csgraph_from_dense(graph)
     x,y = csg.nonzero()
@@ -57,6 +40,8 @@ def periodic_checker(graph, coords, atoms):
 
 
 def branch(molcif, main_paths,atoms_in_sbu, new_atoms=[]):
+    # This function climbs out from a given atom and adds the atoms that are in the branch.
+    # This is important for getting all atoms in a branched functional group of a linker.
     original_atoms = atoms_in_sbu.copy()
     for atom in new_atoms:
         bonded_list = molcif.getBondedAtoms(atom)
@@ -73,13 +58,9 @@ def branch(molcif, main_paths,atoms_in_sbu, new_atoms=[]):
         atoms_in_sbu += branch_atoms_in_sbu
         return new_atoms, atoms_in_sbu
 
-#########################################################################################
-# The RAC functions here average over the different SBUs or linkers present. This is    #
-# because one MOF could have multiple different linkers or multiple SBUs, and we need   #
-# the vector to be of constant dimension so we can correlate the output property.       #
-#########################################################################################
-
 def identify_main_chain(temp_mol, link_list):
+    # This function identifies the atom that are directly present from one
+    # connecting point to another. Identifies cases that can be functional groups.
     G = nx.from_numpy_matrix(temp_mol.graph)
     pairs = []
     shortest = 0
@@ -98,8 +79,6 @@ def identify_main_chain(temp_mol, link_list):
             short = list(nx.shortest_path(G, source=i[0], target=i[1]))
             shorts.append(short)
         shortest, longest = min([len(short) for short in shorts]), max([len(short) for short in shorts])
-        # print('=== shortest',shortest)
-        # print('...',longest)
         paths = list(itertools.chain(*shorts))
         min_cycles = (nx.minimum_cycle_basis(G))
         min_cycles_copy = min_cycles.copy()
@@ -141,7 +120,6 @@ def breakdown_MOF(SBUlist, SBU_subgraph, molcif, depth, name,cell,anchoring_atom
     n_sbu = len(SBUlist)
     all_SBU_atoms = []
     all_SBU_X_atoms = []
-
 
     # make the graph and get all cycles in the graph
     # return the flattened list of the subcycle atoms
@@ -185,8 +163,8 @@ def breakdown_MOF(SBUlist, SBU_subgraph, molcif, depth, name,cell,anchoring_atom
             linker_length_j = max(min_length, max_length)
             # Make a dictionary that will identify the linker length and atoms in the linker by the linker number
             linker_length_dict[j] = {'length':linker_length_j, 'atoms':linker, 'longest':longest}
-        if current_longest <= 3:
-            return 10
+        if current_longest <= 2:
+            return 2
         # put all main path atoms into the main path list
         main_paths = list(set(main_paths))
         SBU_mol = mol3D()
@@ -305,7 +283,7 @@ def breakdown_MOF(SBUlist, SBU_subgraph, molcif, depth, name,cell,anchoring_atom
             SBU_mol.BCM(val[0],inv_SBU_dict[val[1]],0.75)
         new_coords = [[float(val2) for val2 in val.split()[1:]] for val in SBU_mol.coords().split('\n')[2:-1]]
         is_periodic = periodic_checker(tempgraph, new_coords, SBU_mol_atom_labels)
-        print('is_periodic',is_periodic)
+        # if is_periodic is true, the SBU is periodic in nature --> 1D rod.
 
         ###### WRITE THE SBU MOL TO THE PLACE
         if sbupath and not os.path.exists(sbupath+"/"+str(name)+str(i)+'.xyz'):
@@ -323,7 +301,7 @@ def breakdown_MOF(SBUlist, SBU_subgraph, molcif, depth, name,cell,anchoring_atom
         all_SBU_atoms.extend(SBU_added)
         if '1Drod' in xyzname:
             # if SBU is a 1D rod, end it here
-            return 5
+            return 4
     atoms_to_be_deleted_from_linker = list(set(all_SBU_atoms))
     for i, linker in enumerate(connections_list):
         linker_mol = mol3D()
@@ -388,7 +366,6 @@ def breakdown_MOF(SBUlist, SBU_subgraph, molcif, depth, name,cell,anchoring_atom
         heavy_atom_count = linker_mol.count_atoms()
         if (linker_mol.natoms == 0) or (n_components > 1) or (heavy_atom_count < 3):
             continue
-        print(len(linker_mol_cart_coords), linker_mol_adj_mat.shape)
         linker_mol_fcoords_connected = XYZ_connected(cell, linker_mol_cart_coords , linker_mol_adj_mat )
         coord_list, molgraph = returnXYZandGraph(None , linker_mol_atom_labels , cell , linker_mol_fcoords_connected,linker_mol_adj_mat)
         for r in range(linker_mol.natoms):
@@ -542,13 +519,11 @@ def identify_short_linkers(molcif, initial_SBU_list, initial_SBU_subgraphlist,re
 
 def make_MOF_fragments(data, depth, path=False, xyzpath = False):
     if not path:
-        print('Need a directory to place all of the linker, SBU, and ligand objects. Exiting now.')
+        print('Need a directory to place all of the linker and SBU objects. Exiting now.')
         raise ValueError('Base path must be specified in order to write descriptors.')
     else:
         if path.endswith('/'):
             path = path[:-1]
-        if not os.path.isdir(path+'/ligands'):
-            os.mkdir(path+'/ligands')
         if not os.path.isdir(path+'/linkers'):
             os.mkdir(path+'/linkers')
         if not os.path.isdir(path+'/sbus'):
@@ -557,7 +532,6 @@ def make_MOF_fragments(data, depth, path=False, xyzpath = False):
             os.mkdir(path+'/xyz')
         if not os.path.isdir(path+'/logs'):
             os.mkdir(path+'/logs')
-    ligandpath = path+'/ligands'
     linkerpath = path+'/linkers'
     sbupath = path+'/sbus'
     logpath = path+"/logs"
@@ -678,24 +652,9 @@ def make_MOF_fragments(data, depth, path=False, xyzpath = False):
         return 3
 
     return_code = breakdown_MOF(SBU_list, SBU_subgraphlist, molcif, depth, name , cell_v,anc_atoms, sbupath, connections_list, connections_subgraphlist,linkerpath)
-    if return_code == 500:
-        if os.path.exists(path+'/too_large.csv'):
-            with open(path+'/too_large.csv','a') as f:
-                f.writelines(name+'.cif'+'\n')
-        else:
-            with open(path+'/too_large.csv','w') as f:
-                f.writelines(name+'.cif'+'\n')
-        return return_code
-    elif return_code == 10:
-        if os.path.exists(path+'/short_paths.csv'):
-            with open(path+'/short_paths.csv','a') as f:
-                f.writelines(name+'.cif'+'\n')
-        else:
-            with open(path+'/short_paths.csv','w') as f:
-                f.writelines(name+'.cif'+'\n')
-        return return_code
-    else:
-        return return_code
+    return return_code
+
+
 
 
 
