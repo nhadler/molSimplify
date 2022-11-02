@@ -163,6 +163,11 @@ def get_con_at_type(mol, connection_atoms: List[Union[int, str]]) -> Tuple[bool,
             if not (this_symbol == this_type):
                 if not been_set:
                     this_type = this_symbol
+                    # RM 2022/08/10: added this because I assume this was the
+                    # original intention to avoid multidentate ligands with
+                    # connecting atoms of different types. Otherwise I have no
+                    # idea what 'been_set' was intended for (previously unused)
+                    been_set = True
                 else:
                     print('different connection atoms in one ligand')
                     valid = False

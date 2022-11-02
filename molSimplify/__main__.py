@@ -193,7 +193,7 @@ def main(args=None):
         print('molSimplify is starting!')
         # ## create main application
         app = QApplication(sys.argv)  # main application
-        gui = mGUI(app)  # main GUI class
+        _ = mGUI(app)  # main GUI class
         app.processEvents()
         app.exec_()
     # ## if input file is specified run without GUI ###
