@@ -43,7 +43,7 @@ jobs:
 
     # More info on the whole conda setup: https://github.com/conda-incubator/setup-miniconda
     - name: Setup Conda
-      uses: conda-incubator/setup-miniconda@v2
+      uses: conda-incubator/setup-miniconda@v2.0.2
       id: conda-setup
       with:
         activate-environment: mols_test
@@ -53,7 +53,7 @@ jobs:
       id: current-time
     # Actual caching
     - name: Cache conda env
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       id: cache
       env:
         # Increase this value to reset cache if mols.yml has not changed
