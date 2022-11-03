@@ -43,13 +43,13 @@ jobs:
 
     # More info on the whole conda setup: https://github.com/conda-incubator/setup-miniconda
     - name: Setup Conda
-      uses: conda-incubator/setup-miniconda@v2.0.2
+      uses: conda-incubator/setup-miniconda@v2
       id: conda-setup
       with:
         activate-environment: mols_test
     # Get date for the cache key
     - name: Get current time
-      uses: josStorer/get-current-time@v2
+      uses: josStorer/get-current-time@v2.0.2
       id: current-time
     # Actual caching
     - name: Cache conda env
