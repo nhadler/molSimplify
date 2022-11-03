@@ -404,7 +404,7 @@ def rungen(rundir, args, chspfname, globs, write_files=True):
     except ImportError:
         args.gui = False
     emsg = False
-    globs.nosmiles = 0  # reset smiles ligands for each run. This is an index
+    globs.nosmiles = 0  # reset smiles ligands for each run
     # check for specified ligands/functionalization
     ligocc = []
     # check for files specified for multiple ligands
@@ -419,8 +419,6 @@ def rungen(rundir, args, chspfname, globs, write_files=True):
                    str(multidx) + ' ligands'))
     # save initial
     smicat0 = [ss for ss in args.smicat] if args.smicat else False
-    # preparing to store user-provided SMILES ligand names
-    SMILES_lig_names = []
     # loop over ligands
     for mcount, mlig in enumerate(mligs):
         args.smicat = [ss for ss in smicat0] if smicat0 else False
@@ -460,17 +458,16 @@ def rungen(rundir, args, chspfname, globs, write_files=True):
                     ligentry.ident += str(globs.nosmiles)
                     globs.nosmiles += 1
                     if args.sminame:
-                        if len(args.sminame) > int(ligentry.ident[-1]):                            
-                            ligentry.ident = args.sminame[globs.nosmiles-1]
-                    # lig += ''.join("%s%s" % (ligentry.ident, ligocc[i])) # <User-provided name for SMILES ligand><number of occurrences ofligand>
-                    SMILES_lig_names.append(ligentry.ident) # Appending the user-provided name for the SMILES ligand to the list.
-                    # The user-provided name affects folder names and file names down the line.
+                        if len(args.sminame) > int(ligentry.ident[-1]):
+                            ligentry.ident = args.sminame[globs.nosmiles-1][0:3]
+                lig += ''.join("%s%s" % (ligentry.ident, ligocc[i]))
         else:
             ligands = []
+            lig = ''
             ligocc = ''
     # fetch smart name
         fname = name_complex(rundir, args.core, args.geometry, ligands, ligocc,
-                             mcount, args, nconf=False, sanity=False, bind=args.bind, bsmi=args.nambsmi, SMILES_lig_names=SMILES_lig_names)
+                             mcount, args, nconf=False, sanity=False, bind=args.bind, bsmi=args.nambsmi)
         if args.tsgen:
             substrate = args.substrate
             subcatoms = ['multiple']
