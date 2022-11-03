@@ -34,6 +34,7 @@ def read_atom(line):
             float(line[60:66]), line[70:78].strip(), line[78:80].strip()]
     atom_dict = dict(zip(labels, data))
     atom_dict['Element'] = atom_dict['Element'][0] + atom_dict['Element'][1:].lower()
+    atom_dict["Line"] = line
     return atom_dict
 
 
