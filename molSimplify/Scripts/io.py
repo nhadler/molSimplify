@@ -997,8 +997,8 @@ def name_complex(rootdir: str, core, geometry, ligs, ligoc, sernum,
                         # This will affect file and folder naming down the line.
                         prefix = f'_{SMILES_lig_names[sminum]}'
                     else:
-                        prefix = f'_smi{int(sernum)+int(sminum+1)}'
-                    name += f'{prefix}_{ligoc[i]}'
+                        prefix = '_smi'
+                    name += f'{prefix}{int(sernum)+int(sminum+1)}_{ligoc[i]}'
                     sminum += 1
             else:  # ligand is in ligands.dict
                 name += '_' + str(lig) + '_' + str(ligoc[i])
