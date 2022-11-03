@@ -125,7 +125,7 @@ def makeMol(a_dict, mols, conf, chains, prev_a_dict, bonds, aa=True):
     atom = atom3D(Sym=a_dict['Element'], xyz=[a_dict['X'], a_dict['Y'],
                                               a_dict['Z']],
                   Tfactor=a_dict['TempFactor'], occup=a_dict['Occupancy'],
-                  greek=a_dict['Name'])
+                  greek=a_dict['Name'], line=a_dict['Line'])
     if not hack2:
         for a in m.temp_list:
             if type(a) == tuple:
