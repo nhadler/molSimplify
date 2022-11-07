@@ -48,6 +48,9 @@ from molSimplify.Classes.globalvars import (elementsbynum,
 from molSimplify.Informatics.decoration_manager import (decorate_ligand)
 from molSimplify.Informatics.RACassemble import (assemble_connectivity_from_parts)
 from molSimplify.Classes.ligand import ligand as ligand_class
+import logging
+
+logger = logging.getLogger(__name__)
 np.seterr(all='raise')
 
 
@@ -880,12 +883,16 @@ def xtb_opt(ff, mol, connected, constopt, frozenats, frozenangles,
             Forcefield energy of optimized molecule.
 
     """
-    if debug:
-        print(f'xtbopt() called with {mol.natoms} atoms '
-              f'constopt: {constopt}, frozenats: {frozenats}, '
-              f'frozenangles: {frozenangles}, and nsteps: {nsteps}')
+    logger.debug(f'xtbopt() called with {mol.natoms} atoms '
+                 f'constopt: {constopt}, frozenats: {frozenats}, '
+                 f'frozenangles: {frozenangles}, nsteps: {nsteps}, '
+                 f'spin {spin}, inertial {inertial}')
     if nsteps == 'Adaptive':
-        nsteps = 0  # corresponds to "automatic" mode in xtb
+        # While a similar concept to adaptive would be to set nsteps = 0
+        # which corresponds to "automatic" mode in xtb, here the maximum
+        # number of steps is just restricted to the same maximum used in
+        # adaptive mode: 20*50 = 1000
+        nsteps = 1000
     # Initialize defailed input file with optimization parameters.
     input_lines = ['$opt\n', f'maxcycle={nsteps}\n']
     if inertial:
@@ -893,7 +900,7 @@ def xtb_opt(ff, mol, connected, constopt, frozenats, frozenangles,
         # Hessian coordinates (AHC) fails e.g.: for highly symmetric systems.
         input_lines.append('engine=inertial\n')
     # Arguments for the commandline call of the xtb program
-    cmdl_args = ['--opt', 'tight', '--input', 'xtb.inp']
+    cmdl_args = ['--opt', 'normal', '--input', 'xtb.inp']
     if ff.lower() == 'gfnff':
         cmdl_args.append('--gfnff')
 
