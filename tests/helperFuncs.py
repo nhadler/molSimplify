@@ -314,7 +314,7 @@ def compare_report_new(report1, report2):
     with open(report1, 'r') as f_in:
         data1 = f_in.readlines()
     with open(report2, 'r') as f_in:
-        data2 = f_in.readlines()
+        data2 = f_in.readlines()  
     if data1 and data2:
         Equal = True
         dict1 = report_to_dict(data1)
@@ -412,7 +412,7 @@ def compare_qc_input(inp, inp_ref):
     return passQcInputCheck
 
 
-def runtest(tmpdir, name, threshMLBL, threshLG, threshOG, seed=None):
+def runtest(tmpdir, name, threshMLBL, threshLG, threshOG, seed=31415):
     # Set seeds to eliminate randomness from test results
     random.seed(seed)
     np.random.seed(seed)

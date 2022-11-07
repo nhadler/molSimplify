@@ -125,7 +125,7 @@ def test_mutating_atoms():
 def test_get_geometry_type(name, coordination_number, geometry_str):
     xyz_file = resource_filename(
         Requirement.parse("molSimplify"),
-        f"tests/refs/geometry_type/{name}.xyz"
+        f"tests/inputs/geometry_type/{name}.xyz"
     )
     mol = mol3D()
     mol.readfromxyz(xyz_file)
@@ -140,7 +140,7 @@ def test_get_geometry_type(name, coordination_number, geometry_str):
 def test_get_geometry_type_catoms_arr():
     xyz_file = resource_filename(
         Requirement.parse("molSimplify"),
-        "tests/refs/geometry_type/octahedral.xyz"
+        "tests/inputs/geometry_type/octahedral.xyz"
     )
     mol = mol3D()
     mol.readfromxyz(xyz_file)
