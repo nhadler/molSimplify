@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 from math import sqrt
 import numpy as np
 import openbabel
-from typing import List
+from typing import List, Optional
 from scipy.spatial import ConvexHull
 from molSimplify.utils.decorators import deprecated
 
@@ -218,7 +218,7 @@ class mol3D:
             xyz = submol_to_move.getAtomCoords(i)
             self.atoms[atidx].__init__(Sym=asym, xyz=xyz)
 
-    def addAtom(self, atom: atom3D, index: int = None, auto_populate_BO_dict: bool = True):
+    def addAtom(self, atom: atom3D, index: Optional[int] = None, auto_populate_BO_dict: bool = True):
         """
         Adds an atom to the atoms attribute, which contains a list of
         atom3D class instances.

@@ -16,7 +16,7 @@ import os
 import numpy as np
 import pandas as pd
 import scipy
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Optional
 from tensorflow.keras import backend as K
 from tensorflow.keras.models import model_from_json, load_model
 from tensorflow.keras.optimizers import Adam
@@ -123,7 +123,7 @@ def matrix_loader(path: str, rownames: bool = False) -> Union[Tuple[List[List[st
         return mat
 
 
-def get_key(predictor: str, suffix: str = None) -> str:
+def get_key(predictor: str, suffix: Optional[str] = None) -> str:
     if suffix:
         if predictor in ['ls_ii', 'hs_ii', 'ls_iii', 'hs_iii']:
             key = 'geos/' + predictor + '_%s' % suffix
@@ -684,7 +684,7 @@ def find_clf_lse(predictor: str,
                  excitation,
                  loaded_model,
                  ensemble: bool = False,
-                 modelname: str = None,
+                 modelname: Optional[str] = None,
                  debug: bool = False) -> np.ndarray:
     if modelname is None:
         modelname = "spectro"
@@ -742,7 +742,8 @@ def find_clf_lse(predictor: str,
     return lse
 
 
-def save_model(model: tf.keras.Model, predictor: str, num: int = None, suffix: str = None):
+def save_model(model: tf.keras.Model, predictor: str,
+               num: Optional[int] = None, suffix: Optional[str] = None):
     key = get_key(predictor, suffix)
     base_path = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key)
     base_path = base_path + 'ensemble_models'
