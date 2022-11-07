@@ -412,7 +412,7 @@ def compare_qc_input(inp, inp_ref):
     return passQcInputCheck
 
 
-def runtest(tmpdir, name, threshMLBL, threshLG, threshOG, seed=None):
+def runtest(tmpdir, name, threshMLBL, threshLG, threshOG, seed=31415):
     # Set seeds to eliminate randomness from test results
     random.seed(seed)
     np.random.seed(seed)
