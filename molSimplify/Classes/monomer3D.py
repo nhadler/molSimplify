@@ -1,13 +1,13 @@
-# @file AA3D.py
-#  Defines AA3D class and contains useful manipulation/retrieval routines.
+# @file monomer3D.py
+#  Defines monomer3D class and contains useful manipulation/retrieval routines.
 #
 #  Written by HJK Group
 #
 #  Dpt of Chemical Engineering, MIT
 
 
-class AA3D:
-    """Holds information about an amino acid, used to do manipulations.  Reads information from structure file (pdb, cif) or is directly built from molsimplify.
+class monomer3D:
+    """Holds information about a monomer, used to do manipulations.  Reads information from structure file (pdb) or is directly built from molsimplify.
 
     """
 
@@ -16,26 +16,26 @@ class AA3D:
         self.atoms = []
         # Number of atoms
         self.natoms = 0
-        # 3-letter code of amino acid (in all caps)
+        # 3-letter code of amino acid (in all caps); alternatively, 1-letter code of nucleotide
         self.three_lc = three_lc  # if no name is specified, defaults to glycine
         # Mass of molecule
         self.mass = 0
         # Size of molecule
         self.size = 0
-        # Chain of amino acid
+        # Chain of monomer
         self.chain = chain
-        # ID of amino acid (position in chain)
+        # ID of monomer (position in chain)
         self.id = id
-        # Occupancy of amino acid in chain
+        # Occupancy of monomer in chain
         self.occup = occup
         # Peptide bond atoms
         self.c = []
         self.n = []
         # Bonds
         self.bonds = {}
-        # Next amino acid in the chain
+        # Next monomer in the chain
         self.next = None
-        # Previous amino acid in the chain
+        # Previous monomer in the chain
         self.prev = None
         # Location (if more than one conformation)
         self.loc = loc
@@ -81,7 +81,7 @@ class AA3D:
         return greek_atoms
 
     def coords(self):
-        """Method to obtain string of coordinates in amino acid.
+        """Method to obtain string of coordinates in monomer.
 
         Returns
         -------
@@ -96,7 +96,7 @@ class AA3D:
         return coord_string
 
     def centermass(self):
-        """Computes coordinates of center of mass of amino acid.
+        """Computes coordinates of center of mass of monomer.
         Returns
         -------
             center_of_mass : list
@@ -125,7 +125,7 @@ class AA3D:
         return center_of_mass
 
     def centroid(self):
-        """Computes coordinates of centroid of amino acid.
+        """Computes coordinates of centroid of monomer.
         Returns
         -------
             centroid : list
@@ -148,11 +148,11 @@ class AA3D:
         return centroid
 
     def setBonds(self):
-        """ Sets the bonds between atoms within the amino acid.
+        """ Sets the bonds between atoms within the monomer.
 
         """
         # bonds :  dictionary (represents an undirected graph)
-        #        Keyed by atom3D atoms in the amino acid
+        #        Keyed by atom3D atoms in the monomer
         #        Valued by a set consisting of bonded atoms
         for (ii, key) in self.atoms:
             if key not in self.bonds.keys():
@@ -197,22 +197,22 @@ class AA3D:
                 self.n = a
 
     def setNext(self, next_aa):
-        """ Sets the next amino acid in the chain of a protein (if applicable).
+        """ Sets the next monomer in the chain of a protein (if applicable).
 
         Parameters
         ----------
-            next_aa : AA3D
-                the amino acid that is next in the protein chain
+            next_aa : monomer3D
+                the monomer that is next in the protein chain
         """
         self.next = next_aa
 
     def setPrev(self, prev_aa):
-        """ Sets the previous amino acid in the chain of a protein (if applicable).
+        """ Sets the previous monomer in the chain of a protein (if applicable).
 
         Parameters
         ----------
-            prev_aa : AA3D
-                the amino acid that comes before self in the protein chain
+            prev_aa : monomer3D
+                the monomer that comes before self in the protein chain
         """
         self.prev = prev_aa
 
@@ -242,7 +242,7 @@ class AA3D:
         self.metal = False
 
     def setLoc(self, loc):
-        """ Sets the conformation of an amino acid in the chain of a protein.
+        """ Sets the conformation of a monomer in the chain of a protein.
 
         Parameters
         ----------
