@@ -8,11 +8,9 @@ from molSimplify.Informatics.MOF.PBC_functions import (
     XYZ_connected, 
     write_cif, 
     )
-from MOFScriptsUnpublished.MOF_functionalizer import get_linkers
+from molSimplify.Informatics.MOF.MOF_functionalizer import get_linkers
 import numpy as np
 import os
-
-# Need to change import path of get_linkers after MOF_functionalizer is added to molSimplify package.
 
 def rotate_around_axis(axis, r, p, t):
     """
