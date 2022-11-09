@@ -118,6 +118,7 @@ def readcif(name):
             #     if char.isdigit(): # This means one of the characters in the atom type is a number.
             #         at_type = ln[type_index][:idx] # Overwriting. Use the atom element symbol without numbers.
             #         break # Get the characters up to the number, then stop
+            at_type = at_type.capitalize()
             atomtypes.append(at_type)
 
         cpar=np.array([cell_a,cell_b,cell_c,cell_alpha,cell_beta,cell_gamma])
@@ -1078,9 +1079,9 @@ def remove_undesired_atoms(undesired_indices, allatomtypes, fcoords):
     return allatomtypes_trim, fcoords_trim
 
 
-def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
+def overlap_removal(cif_path, new_cif_path, wiggle_room=1):
     """
-    Reads a cif file, removes floating solvent, and writes the cif to the provided path.
+    Reads a cif file, removes overlapping atoms, and writes the cif to the provided path.
 
     Parameters
     ----------
@@ -1090,7 +1091,7 @@ def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
         The path to which the modified cif file will be written.
     wiggle_room : float
         A multiplier that allows for more or less strict bond distance cutoffs.
-        Useful for some trouble CIFs.
+        Useful for some trouble CIFs with long bonds.
 
     Returns
     -------
@@ -1105,23 +1106,57 @@ def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
     allatomtypes, fcoords = remove_duplicate_atoms(allatomtypes, fcoords)
     cell_v = mkcell(cpar)
     cart_coords = fractional2cart(fcoords, cell_v)
-    if len(cart_coords) > 2000: # Don't deal with large cifs because of computational resources required for their treatment.
-        raise Exception("Too large of a cif file") 
+    # if len(cart_coords) > 2000: # Don't deal with large cifs because of computational resources required for their treatment.
+    #     raise Exception("Too large of a cif file") 
+
+    # Assuming that the cif does not have graph information of the structure.
+    distance_mat = compute_distance_matrix3(cell_v,cart_coords)
+    adj_matrix, overlap_atoms = compute_adj_matrix(distance_mat, allatomtypes, wiggle_room=wiggle_room, handle_overlap=True)
+
+    # Dealing with the case of overlapping atoms.
+    if len(overlap_atoms) != 0:
+        print('Dealing with overlap')
+        allatomtypes, fcoords = remove_undesired_atoms(overlap_atoms, allatomtypes, fcoords)
+
+    # Writing the cif files
+    write_cif(new_cif_path,cpar,fcoords,allatomtypes)
+
+def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
+    """
+    Reads a cif file, removes floating solvent and overlapping atoms, and writes the cif to the provided path.
+    If MOF has a lot of solvent, you may need to apply this function multiple times.
+
+    Parameters
+    ----------
+    cif_path : str
+        The path of the cif file to be read.
+    new_cif_path : str
+        The path to which the modified cif file will be written.
+    wiggle_room : float
+        A multiplier that allows for more or less strict bond distance cutoffs.
+        Useful for some trouble CIFs with long bonds.
+
+    Returns
+    -------
+    None
+
+    """
+
+    # Much of this code parallels that in the beginning of the MOF_descriptors.get_MOF_descriptors function
+
+    # Loading the cif and getting information about the crystal cell.
+    cpar, allatomtypes, fcoords = readcif(cif_path)
+    cell_v = mkcell(cpar)
+    cart_coords = fractional2cart(fcoords, cell_v)
+    # if len(cart_coords) > 2000: # Don't deal with large cifs because of computational resources required for their treatment.
+    #     raise Exception("Too large of a cif file") 
 
     # Assuming that the cif does not have graph information of the structure.
     distance_mat = compute_distance_matrix3(cell_v,cart_coords)
     try:
-        adj_matrix, overlap_atoms = compute_adj_matrix(distance_mat, allatomtypes, wiggle_room=wiggle_room, handle_overlap=True)
+        adj_matrix, overlap_atoms = compute_adj_matrix(distance_mat, allatomtypes, wiggle_room=wiggle_room, handle_overlap=False)
     except NotImplementedError:
         raise Exception("Failed due to atomic overlap")
-
-    # Dealing with the case of overlapping atoms.
-    if len(overlap_atoms) != 0:
-        allatomtypes, fcoords = remove_undesired_atoms(overlap_atoms, allatomtypes, fcoords)
-        # Rerunning some prior steps with the correct atom list now.
-        cart_coords = fractional2cart(fcoords, cell_v)
-        distance_mat = compute_distance_matrix3(cell_v,cart_coords)
-        adj_matrix, overlap_atoms=compute_adj_matrix(distance_mat, allatomtypes, wiggle_room=wiggle_room, handle_overlap=False)
 
     # Getting the adjacency matrix (bond information).
     adj_matrix = sparse.csr_matrix(adj_matrix)
@@ -1132,6 +1167,7 @@ def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
     n_components, labels_components = sparse.csgraph.connected_components(csgraph=adj_matrix, directed=False, return_labels=True)
     print(f'n_components: {n_components}')
     print(f'labels_components: {labels_components}')
+    print(f'len is {len(labels_components)}')
     metal_list = set([at for at in molcif.findMetal(transition_metals_only=False)]) # the atom indices of the metals
     if not len(metal_list) > 0:
         raise Exception("No metal in the structure.")
@@ -1142,7 +1178,6 @@ def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
         inds_in_comp = [i for i in range(len(labels_components)) if labels_components[i]==comp]
         if not set(inds_in_comp) & metal_list: # In the context of sets, & is the intersection. If the intersection is null, the (&) expression is False; the `not` would then make it True.
             # If this if statement is entered, there is an entire connected component that has no metals in it. No connections to any metal. I.e. solvent.
-
             solvent_indices.extend(inds_in_comp)
 
     # Removing the atoms corresponding to the solvent.
