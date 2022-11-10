@@ -305,6 +305,7 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
     valid = True
     catalysis = False
     metal = args.core
+    spin = args.spin
     this_metal = metal.lower()
     if len(this_metal) > 2:
         this_metal = this_metal[0:2]
@@ -360,7 +361,6 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
                 catalysis = True
         # generate key in descriptor space
         ox = int(oxidation_state)
-        spin = args.spin
         if debug:
             print(('metal is ' + str(this_metal)))
             print(('metal validity', valid))
