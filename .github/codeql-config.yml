@@ -3,6 +3,6 @@ name: "My CodeQL config"
 queries:
   - uses: security-and-quality
 query-filters:
+  # Hope to remove this ASAP
   - exclude:
-    # Hope to remove this ASAP
-    id: py/uninitialized-local-variable
+      id: py/uninitialized-local-variable
