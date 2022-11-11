@@ -414,7 +414,7 @@ def additional_functionalization(i,
 
     if functionalization_counter == original_functionalization_counter: # Equivalently, if already_functionalized == False
         # This means there are no more locations on the linker that can be functionalized.
-        return 0, functionalized_atoms # No more functionalizations to be done.
+        functionalization_counter = 0 # No more functionalizations to be done.
 
     return molcif, functionalization_counter, delete_list, extra_atoms, extra_atom_types, functionalized_atoms
 
