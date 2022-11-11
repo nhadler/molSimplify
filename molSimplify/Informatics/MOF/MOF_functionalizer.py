@@ -1043,7 +1043,7 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
     functional_group : str
         The functional group to use for MOF functionalization.
     func_indices : list of int
-        The indices of the atom at which to functionalize.
+        The indices of the atom at which to functionalize. Zero-indexed.
 
     Returns
     -------
