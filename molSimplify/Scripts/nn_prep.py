@@ -72,7 +72,7 @@ def check_ligands(ligs, batlist, dents, tcats):
         print('triple bidentate case\n')
         unique_ligs = []
         ucats = []
-        if not(n_ligs) == 3:
+        if not (n_ligs) == 3:
             # something unexpected happened!
             valid = False
         for i in range(0, n_ligs):
@@ -191,6 +191,7 @@ def ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
     emsg = list()
     valid = True
     metal = args.core
+    spin = args.spin
     this_metal = metal.lower()
     if len(this_metal) > 2:
         this_metal = this_metal[0:2]
@@ -230,7 +231,6 @@ def ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
         valid, oxidation_state = check_metal(this_metal, oxidation_state)
         # generate key in descriptor space
         ox = int(oxidation_state)
-        spin = args.spin
         if args.debug:
             print(('metal is ' + str(this_metal)))
             print(('metal validity', valid))
