@@ -39,21 +39,22 @@ def periodic_checker(graph, coords, atoms):
     return periodic
 
 
-def branch(molcif, main_paths,atoms_in_sbu, new_atoms=[]):
+def branch(molcif, main_paths, atoms_in_sbu, new_atoms=None):
     # This function climbs out from a given atom and adds the atoms that are in the branch.
     # This is important for getting all atoms in a branched functional group of a linker.
+    if new_atoms is None:
+        new_atoms = []
     original_atoms = atoms_in_sbu.copy()
     for atom in new_atoms:
         bonded_list = molcif.getBondedAtoms(atom)
-        if (len(set(bonded_list)-set(main_paths)-set(atoms_in_sbu))>0):
-            temp_atoms = list(set(bonded_list)-set(main_paths))
+        if (len(set(bonded_list)-set(main_paths)-set(atoms_in_sbu)) > 0):
             new_atoms += list(set(bonded_list)-set(main_paths))
             new_atoms = list(set(new_atoms))
             atoms_in_sbu += new_atoms
     if len(original_atoms) == len(atoms_in_sbu):
         return new_atoms, atoms_in_sbu
     else:
-        branch_atoms, branch_atoms_in_sbu = branch(molcif, main_paths,atoms_in_sbu, new_atoms)
+        branch_atoms, branch_atoms_in_sbu = branch(molcif, main_paths, atoms_in_sbu, new_atoms)
         new_atoms += branch_atoms
         atoms_in_sbu += branch_atoms_in_sbu
         return new_atoms, atoms_in_sbu
