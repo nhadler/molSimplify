@@ -630,7 +630,7 @@ def runtestMulti(tmpdir, name, threshMLBL, threshLG, threshOG):
         for f in myfiles:
             if ".xyz" in f:
                 r = f.replace(".xyz", ".report")
-                output_xyz = output_xyz = myjobdir + f
+                output_xyz = myjobdir + f
                 ref_xyz = refdir + f
                 output_report = myjobdir + r
                 ref_report = refdir + r
