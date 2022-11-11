@@ -16,7 +16,7 @@ from molSimplify.Informatics.RACassemble import (assemble_connectivity_from_part
                                                  create_OHE)
 from molSimplify.Informatics.lacRACAssemble import get_descriptor_vector
 from molSimplify.Informatics.decoration_manager import (decorate_ligand)
-from molSimplify.__main__ import tensorflow_silence
+from molSimplify.utils.tensorflow import tensorflow_silence
 from molSimplify.python_nn.clf_analysis_tool import lse_trust
 from molSimplify.python_nn.tf_ANN import (ANN_supervisor,
                                           find_ANN_10_NN_normalized_latent_dist,
