@@ -414,7 +414,7 @@ def additional_functionalization(i,
 
     if functionalization_counter == original_functionalization_counter: # Equivalently, if already_functionalized == False
         # This means there are no more locations on the linker that can be functionalized.
-        return 0, functionalized_atoms # No more functionalizations to be done.
+        functionalization_counter = 0 # No more functionalizations to be done.
 
     return molcif, functionalization_counter, delete_list, extra_atoms, extra_atom_types, functionalized_atoms
 
@@ -1043,7 +1043,7 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
     functional_group : str
         The functional group to use for MOF functionalization.
     func_indices : list of int
-        The indices of the atom at which to functionalize.
+        The indices of the atoms at which to functionalize. Zero-indexed.
 
     Returns
     -------
