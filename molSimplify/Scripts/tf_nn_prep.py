@@ -16,7 +16,7 @@ from molSimplify.Informatics.RACassemble import (assemble_connectivity_from_part
                                                  create_OHE)
 from molSimplify.Informatics.lacRACAssemble import get_descriptor_vector
 from molSimplify.Informatics.decoration_manager import (decorate_ligand)
-from molSimplify.__main__ import tensorflow_silence
+from molSimplify.utils.tensorflow import tensorflow_silence
 from molSimplify.python_nn.clf_analysis_tool import lse_trust
 from molSimplify.python_nn.tf_ANN import (ANN_supervisor,
                                           find_ANN_10_NN_normalized_latent_dist,
@@ -305,6 +305,7 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
     valid = True
     catalysis = False
     metal = args.core
+    spin = args.spin
     this_metal = metal.lower()
     if len(this_metal) > 2:
         this_metal = this_metal[0:2]
@@ -360,7 +361,6 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
                 catalysis = True
         # generate key in descriptor space
         ox = int(oxidation_state)
-        spin = args.spin
         if debug:
             print(('metal is ' + str(this_metal)))
             print(('metal validity', valid))
