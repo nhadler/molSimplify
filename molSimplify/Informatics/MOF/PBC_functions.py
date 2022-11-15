@@ -804,6 +804,7 @@ def compute_adj_matrix(distance_mat,allatomtypes,wiggle_room=1,handle_overlap=Fa
                 if handle_overlap:
                     overlap_atoms.append(i+j+1) # The atom with index i+j+1 overlapped with another atom.
                 else:   
+                    print('Overlapping atoms! Error')
                     raise NotImplementedError # Exit the function.
             tempsf = 0.9 # This is modified below under certain conditions, to account for looser or tigher bonding.
             # There is probably a better way to fix these kinds of issues.

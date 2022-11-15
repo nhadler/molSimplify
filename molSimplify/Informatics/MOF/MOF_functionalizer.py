@@ -81,7 +81,7 @@ def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionaliz
     # Make a copy of the atom type list to loop over later.
     original_allatomtypes = allatomtypes.copy() # Storing all the chemical symbols that there were originally.
     delete_list = [] # Collect all of the H that need to be deleted later.
-    extra_atoms = []
+    extra_atom_coords = []
     extra_atom_types = []
     functionalized_atoms = []
 
@@ -135,7 +135,7 @@ def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionaliz
                         """""""""
                         The first linker functionalization.
                         """""""""
-                        molcif, functionalization_counter, functionalized, delete_list, extra_atoms, extra_atom_types, functionalized_atoms = first_functionalization(molcif,
+                        molcif, functionalization_counter, functionalized, delete_list, extra_atom_coords, extra_atom_types, functionalized_atoms = first_functionalization(molcif,
                             allatomtypes,
                             i,
                             connected_atom_list,
@@ -147,7 +147,7 @@ def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionaliz
                             linker_graph,
                             functionalization_counter,
                             delete_list,
-                            extra_atoms,
+                            extra_atom_coords,
                             extra_atom_types,
                             functionalized_atoms                            
                             )
@@ -160,7 +160,7 @@ def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionaliz
                 # If there is more than one functionalization, this is where that happens.
                 # Will check other atoms on the linker to potentially functionalize them. 
                 while functionalization_counter > 0: # Still have some more functionalizations to make.
-                    molcif, functionalization_counter, delete_list, extra_atoms, extra_atom_types, functionalized_atoms = additional_functionalization(i,
+                    molcif, functionalization_counter, delete_list, extra_atom_coords, extra_atom_types, functionalized_atoms = additional_functionalization(i,
                         linker_to_analyze, 
                         linker_subgraphlist, 
                         linker_to_analyze_index, 
@@ -175,7 +175,7 @@ def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionaliz
                         linker_graph,
                         functionalization_counter,
                         delete_list,
-                        extra_atoms,
+                        extra_atom_coords,
                         extra_atom_types,
                         functionalized_atoms
                         )
@@ -187,7 +187,7 @@ def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionaliz
     new_coord_list, final_atom_types = atom_deletion(cart_coords, allatomtypes, delete_list)
 
     # Adding atoms (the atoms in the functional groups)
-    allatomtypes, fcoords = atom_addition(extra_atom_types, final_atom_types, new_coord_list, extra_atoms, cell_v)
+    allatomtypes, fcoords = atom_addition(extra_atom_types, final_atom_types, new_coord_list, extra_atom_coords, cell_v)
 
     """""""""
     Write the cif.
@@ -219,9 +219,10 @@ def first_functionalization(molcif,
     linker_graph,
     functionalization_counter,
     delete_list,
-    extra_atoms,
+    extra_atom_coords,
     extra_atom_types,
-    functionalized_atoms
+    functionalized_atoms,
+    additional_atom_offset=0
     ):
     """
     Functionalizes a linker for the first time, at atom `i` with functional group `functional_group`.
@@ -253,7 +254,7 @@ def first_functionalization(molcif,
         The number of functionalizations left to be done on the linker. 
     delete_list : list of numpy.int32
         The indices of atoms that are deleted because they are replaced by functional groups.
-    extra_atoms : list of numpy.ndarray of numpy.float64
+    extra_atom_coords : list of numpy.ndarray of numpy.float64
         The Cartesian coordinates of the atoms added during functionalization. 
         Each item of the list is a new functional group.
         Shape of each numpy.ndarray is (number of atoms in functional group, 3).
@@ -261,6 +262,9 @@ def first_functionalization(molcif,
         The chemical symbols of the atoms added through functional groups. Each inner list is a functional group.
     functionalized_atoms : list of int
         The global indices of atoms that have been functionalized.
+    additional_atom_offset : float
+        Extent to which to rotate the placement of depth 2 functional group atoms. Give in degrees.
+        Useful for preventing atomic overlap / unintended bonds.  
 
     Returns
     -------
@@ -272,7 +276,7 @@ def first_functionalization(molcif,
         Indicates whether the number of linker functionalizations requested by the user have been made. True is so, False otherwise.
     delete_list : list of numpy.int32
         The updated indices of atoms that are deleted because they are replaced by functional groups.
-    extra_atoms : list of numpy.ndarray of numpy.float64
+    extra_atom_coords : list of numpy.ndarray of numpy.float64
         The updated Cartesian coordinates of the atoms added during functionalization.      
     extra_atom_types : list of list of str
         The updated chemical symbols of the atoms added through functional groups. Each inner list is a functional group.     
@@ -284,19 +288,19 @@ def first_functionalization(molcif,
     # Apply the functionalization to the MOF.
     molcif, atom_types_to_add, additions_to_cart, functionalization_counter, functionalized = apply_functionalization(molcif, 
                                         allatomtypes, i, connected_atom_list[k], connected_atom_list, functional_group, 
-                                        linker_cart_coords, linker_to_functionalize, linker_atom_types, linker_graph, functionalization_counter)
+                                        linker_cart_coords, linker_to_functionalize, linker_atom_types, linker_graph, functionalization_counter, additional_atom_offset=additional_atom_offset)
 
     # Add the atom that's been functionalized to the deleted atom list so that it isn't kept in the final structure.
     delete_list.append(connected_atom_list[k]) # E.g. if a hydrogen was replaced by a fluorine, delete the hydrogen.
 
     # There are atoms added to the structure now. Add those.
-    extra_atoms.append(additions_to_cart)
+    extra_atom_coords.append(additions_to_cart)
     extra_atom_types.append(atom_types_to_add)
 
     # Keep track of what atoms have been functionalized.
     functionalized_atoms.append(i)
 
-    return molcif, functionalization_counter, functionalized, delete_list, extra_atoms, extra_atom_types, functionalized_atoms
+    return molcif, functionalization_counter, functionalized, delete_list, extra_atom_coords, extra_atom_types, functionalized_atoms
 
 def additional_functionalization(i,
     linker_to_functionalize, 
@@ -313,7 +317,7 @@ def additional_functionalization(i,
     linker_graph,
     functionalization_counter,
     delete_list,
-    extra_atoms,
+    extra_atom_coords,
     extra_atom_types,
     functionalized_atoms):
     """
@@ -353,7 +357,7 @@ def additional_functionalization(i,
         The number of functionalizations left to be done on the linker. 
     delete_list : list of numpy.int32
         The indices of atoms that are deleted because they are replaced by functional groups.
-    extra_atoms : list of numpy.ndarray of numpy.float64
+    extra_atom_coords : list of numpy.ndarray of numpy.float64
         The Cartesian coordinates of the atoms added during functionalization. 
         Each item of the list is a new functional group.
         Shape of each numpy.ndarray is (number of atoms in functional group, 3).
@@ -370,7 +374,7 @@ def additional_functionalization(i,
         The number of functionalizations left to be done on the linker. This variable is decreased by one when this function is run successfully.       
     delete_list : list of numpy.int32
         The updated indices of atoms that are deleted because they are replaced by functional groups.  
-    extra_atoms : list of numpy.ndarray of numpy.float64
+    extra_atom_coords : list of numpy.ndarray of numpy.float64
         The updated Cartesian coordinates of the atoms added during functionalization.           
     extra_atom_types : list of list of str
         The chemical symbols of the atoms added through functional groups. Each inner list is a functional group.    
@@ -406,7 +410,7 @@ def additional_functionalization(i,
                                     allatomtypes, functionalization_index, secondary_connected_atom_list[l], secondary_connected_atom_list, 
                                     functional_group, linker_cart_coords, linker_to_functionalize, linker_atom_types, linker_graph, functionalization_counter)
                     delete_list.append(secondary_connected_atom_list[l])
-                    extra_atoms.append(additions_to_cart)
+                    extra_atom_coords.append(additions_to_cart)
                     extra_atom_types.append(atom_types_to_add)
                     functionalized_atoms.append(functionalization_index)
                     already_functionalized = True # Want to break out of all the for loops
@@ -416,10 +420,10 @@ def additional_functionalization(i,
         # This means there are no more locations on the linker that can be functionalized.
         functionalization_counter = 0 # No more functionalizations to be done.
 
-    return molcif, functionalization_counter, delete_list, extra_atoms, extra_atom_types, functionalized_atoms
+    return molcif, functionalization_counter, delete_list, extra_atom_coords, extra_atom_types, functionalized_atoms
 
 def apply_functionalization(molcif, allatomtypes, position_to_functionalize, atom_to_replace, position_to_functionalize_neighbors, 
-                                        functional_group, linker_cart_coords, linker_to_analyze, linker_atom_types, linker_graph, functionalization_counter):
+                                        functional_group, linker_cart_coords, linker_to_analyze, linker_atom_types, linker_graph, functionalization_counter, additional_atom_offset=0):
     #######################################################################################################
     # Note: position_to_functionalize is distinct from atom_to_replace. When functionalizing a C-H bond,  #
     # position_to_functionalize is the C, and atom_to_replace is the H. Currently, only select            #
@@ -457,7 +461,10 @@ def apply_functionalization(molcif, allatomtypes, position_to_functionalize, ato
     linker_graph : numpy.ndarray of numpy.float64
         The adjacency matrix of the linker. 1 indicates a bond. 0 indicates the absence of a bond.
     functionalization_counter : int
-        The number of functionalizations left to be done on the linker.                
+        The number of functionalizations left to be done on the linker.      
+    additional_atom_offset : float
+        Extent to which to rotate the placement of depth 2 functional group atoms. Give in degrees.
+        Useful for preventing atomic overlap / unintended bonds.                  
 
     Returns
     -------
@@ -521,7 +528,8 @@ def apply_functionalization(molcif, allatomtypes, position_to_functionalize, ato
             initial_placement,
             additions_to_cart,
             atom_types_to_add, 
-            molcif
+            molcif,
+            additional_atom_offset=additional_atom_offset
             )
 
     functionalization_counter -= 1
@@ -736,11 +744,11 @@ def vector_preparation(connected_atom_types, neighbors_not_to_replace, linker_to
         The Cartesian coordinates of the connecting atom of the functional group. 
         Pertinent to mono and multiatomic functionalization. Shape is (3,).
     directional_unit_vector : numpy.ndarray of numpy.float64
-        Vector resulting from the addition of the two vectors of the two not-to-be-replaced neighbor atoms to the atom to be functionalize. 
+        Vector resulting from the addition of the two vectors from the two not-to-be-replaced neighbor atoms to the atom to be functionalized. 
         Normalized. 
         Pertinent to multiatomic functionalization later. Shape is (3,).
     norm_cp : numpy.ndarray of numpy.float64
-        Cross product of the two vectors of the two not-to-be-replaced neighbor atoms to the atom to be functionalize. 
+        Cross product of the two vectors from the two not-to-be-replaced neighbor atoms to the atom to be functionalized. 
         Normalized. 
         Pertinent to multiatomic functionalization. Shape is (3,).
 
@@ -826,7 +834,8 @@ def multiatomic_functionalization(connection_atom_dict,
     initial_placement,
     additions_to_cart,
     atom_types_to_add, 
-    molcif):
+    molcif,
+    additional_atom_offset=0):
     """
     Adds functional group atoms that are not the connecting atom.
     Adds these atoms to the connecting atom.
@@ -846,11 +855,11 @@ def multiatomic_functionalization(connection_atom_dict,
     functional_group : str
         The functional group to use for MOF functionalization.
     directional_unit_vector : numpy.ndarray of numpy.float64
-        Vector resulting from the addition of the two vectors of the two not-to-be-replaced neighbor atoms to the atom to be functionalize. 
+        Vector resulting from the addition of the two vectors from the two not-to-be-replaced neighbor atoms to the atom to be functionalized. 
         Normalized. 
         Shape is (3,).
     norm_cp : numpy.ndarray of numpy.float64
-        Cross product of the two vectors of the two not-to-be-replaced neighbor atoms to the atom to be functionalize. 
+        Cross product of the two vectors from the two not-to-be-replaced neighbor atoms to the atom to be functionalized. 
         Normalized. 
         Shape is (3,).
     initial_placement : numpy.ndarray of numpy.float64
@@ -862,6 +871,9 @@ def multiatomic_functionalization(connection_atom_dict,
         The chemical symbols of the atoms added. When entering this function, length is 1.
     molcif : molSimplify.Classes.mol3D.mol3D
         The cell of the MOF to be functionalized.
+    additional_atom_offset : float
+        Extent to which to rotate the placement of depth 2 functional group atoms. Give in degrees.
+        Useful for preventing atomic overlap / unintended bonds.
 
     Returns
     -------
@@ -882,6 +894,7 @@ def multiatomic_functionalization(connection_atom_dict,
 
     ##### Find where the first functionalization should be placed.
     final_placement = initial_placement + bonded_placement
+    final_placement = np.array(PointRotateAxis(directional_unit_vector.tolist(),initial_placement.tolist(),final_placement.tolist(), additional_atom_offset*deg2rad)) # Apply rotation additional_atom_offset if requested.
     # This is where one of the hydrogens in CH3 is added, for example.
     bonded_atom = atom3D(connection_atom_dict[functional_group][1], final_placement)
     molcif.addAtom(bonded_atom)
@@ -1029,7 +1042,7 @@ def check_support(functional_group):
     if functional_group not in supported_functional_groups:
         raise ValueError('Unsupported functional group requested.')
 
-def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_indices):
+def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_indices, additional_atom_offset=0):
     """
     Functionalizes the provided MOF and writes the functionalized version to a cif file.
     Functionalizes at the specified indices func_indices, provided the atoms at those indices are sp2 carbons with a hydrogen atom.
@@ -1044,6 +1057,9 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
         The functional group to use for MOF functionalization.
     func_indices : list of int
         The indices of the atoms at which to functionalize. Zero-indexed.
+    additional_atom_offset : float
+        Extent to which to rotate the placement of depth 2 functional group atoms. Give in degrees.
+        Useful for preventing atomic overlap / unintended bonds.  
 
     Returns
     -------
@@ -1077,7 +1093,7 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
     ###### We need to then figure out which atoms to functionalize.
     checkedlist = set() # Keeps track of the atoms that have already been checked for functionalization.
     delete_list = [] # Collect all of the H that need to be deleted later.
-    extra_atoms = []
+    extra_atom_coords = []
     extra_atom_types = []
     functionalized_atoms = []
 
@@ -1117,7 +1133,7 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
                     The first linker functionalization.
                     """""""""
                     functionalization_counter = 1
-                    molcif, functionalization_counter, functionalized, delete_list, extra_atoms, extra_atom_types, functionalized_atoms = first_functionalization(molcif,
+                    molcif, functionalization_counter, functionalized, delete_list, extra_atom_coords, extra_atom_types, functionalized_atoms = first_functionalization(molcif,
                         allatomtypes,
                         func_index,
                         connected_atom_list,
@@ -1129,9 +1145,10 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
                         linker_graph,
                         functionalization_counter,
                         delete_list,
-                        extra_atoms,
+                        extra_atom_coords,
                         extra_atom_types,
-                        functionalized_atoms                            
+                        functionalized_atoms,
+                        additional_atom_offset=additional_atom_offset                            
                         ) # functionalized_atoms is not important here.
 
                     break # Don't search the rest of the connected atoms if replaced a hydrogen and functionalized already at the atom with index i.
@@ -1143,7 +1160,11 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
     new_coord_list, final_atom_types = atom_deletion(cart_coords, allatomtypes, delete_list)
 
     # Adding atoms (the atoms in the functional groups)
-    allatomtypes, fcoords = atom_addition(extra_atom_types, final_atom_types, new_coord_list, extra_atoms, cell_v)
+    allatomtypes, fcoords = atom_addition(extra_atom_types, final_atom_types, new_coord_list, extra_atom_coords, cell_v)
+
+    # Check to make sure none of the functional group atoms are too close to other atoms in the CIF
+    # If so, code will interpret atoms to be bonded that should not be.
+    post_functionalization_overlap_and_bonding_check(cell_v, allatomtypes, fcoords, extra_atom_types)
 
     """""""""
     Write the cif.
@@ -1151,6 +1172,42 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
     cif_folder = f'{path2write}cif/'
     mkdir_if_absent(cif_folder)
     write_cif(f'{path2write}cif/functionalized_{base_mof_name}_{functional_group}_index_{func_indices}.cif', cpar, fcoords, allatomtypes)
+
+def post_functionalization_overlap_and_bonding_check(cell_v, allatomtypes, fcoords, extra_atom_types):
+    """
+    Prints information on whether the introduced functional group atoms are overlapping with other atoms.
+    Also prints information on the interpreted bonds of the introduced functional group atoms. Useful to make sure the functional group atoms are not too close to other atoms.
+
+    Parameters
+    ----------
+    cell_v : numpy.ndarray of numpy.float64
+        Each row corresponds to one of the cell vectors. Shape is (3, 3).   
+    allatomtypes : list of str
+        The atom types of the MOF, indicated by chemical symbols like 'O' and 'Cu'. Length is the number of atoms.
+    fcoords : numpy.ndarray of numpy.float64
+        The fractional positions of the crystal atoms. Shape is (number of atoms, 3).
+    extra_atom_types : list of list of str
+        The chemical symbols of the atoms added through functional groups. Each inner list is a functional group.
+
+    Returns
+    -------
+    None
+
+    """
+
+    cart_coords = fractional2cart(fcoords, cell_v)
+    distance_mat = compute_distance_matrix3(cell_v, cart_coords)
+    adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes, handle_overlap=False) # Will throw an error if atoms are overlapping after functionalization.
+    adj_matrix = adj_matrix.todense()
+    adj_matrix = np.squeeze(np.asarray(adj_matrix)) # Converting from numpy.matrix to numpy.array
+
+    # Since functional group atoms are added to the end of the atom type list and fractional coordinate numpy array (see function atom_addition),
+    # we just check the last few rows of the adjacency matrix.
+    # These last few rows correspond to the functional group atoms that were added.
+    flattened_extra_atom_types = [item for sublist in extra_atom_types for item in sublist] # Flattening the list of lists of str. Results in a list of str.
+    flattened_extra_atom_types = flattened_extra_atom_types[::-1] # Reversing the order of elements.
+    for i in range(len(flattened_extra_atom_types)): # Check all the added atoms
+        print(f'Number of bonds to functional group atom {flattened_extra_atom_types[i]} is {np.sum(adj_matrix[-1-i])}')
 
 def atom_deletion(cart_coords, allatomtypes, delete_list):
     """
@@ -1192,7 +1249,7 @@ def atom_deletion(cart_coords, allatomtypes, delete_list):
 
     return new_coord_list, final_atom_types
 
-def atom_addition(extra_atom_types, final_atom_types, new_coord_list, extra_atoms, cell_v):
+def atom_addition(extra_atom_types, final_atom_types, new_coord_list, extra_atom_coords, cell_v):
     """
     Adds the functional group atoms to the lists of atom types and coordinates.
 
@@ -1204,7 +1261,7 @@ def atom_addition(extra_atom_types, final_atom_types, new_coord_list, extra_atom
         The atom types of the MOF, indicated by chemical symbols like 'O' and 'Cu'. Length is the number of atoms.
     new_coord_list : numpy.ndarray
         The Cartesian coordinates of the crystal atoms. Shape is (number of atoms, 3).
-    extra_atoms : list of numpy.ndarray of numpy.float64
+    extra_atom_coords : list of numpy.ndarray of numpy.float64
         The Cartesian coordinates of the atoms added during functionalization. 
         Each item of the list is a new functional group.
         Shape of each numpy.ndarray is (number of atoms in functional group, 3).
@@ -1219,10 +1276,11 @@ def atom_addition(extra_atom_types, final_atom_types, new_coord_list, extra_atom
         The fractional positions of the crystal atoms. Shape is (number of atoms, 3).
 
     """
-    for new_atom_num, new_atom in enumerate(extra_atom_types): # Atoms added upon functionalization
-        print('new_atom',new_atom)
-        [final_atom_types.append(val) for val in new_atom] # Adding to the chemical symbols list.
-        new_coord_list = np.concatenate((new_coord_list,np.array(extra_atoms[new_atom_num])),axis=0) # Adding to the coordinates array.
+    # fg: functional group
+    for fg_num, new_fg in enumerate(extra_atom_types): # Atoms added upon functionalization
+        print('new_fg',new_fg)
+        [final_atom_types.append(new_atom) for new_atom in new_fg] # Adding to the chemical symbols list.
+        new_coord_list = np.concatenate((new_coord_list,np.array(extra_atom_coords[fg_num])),axis=0) # Adding to the coordinates array.
     print('Shape after deletions and inclusion of functional group atoms', new_coord_list.shape, len(final_atom_types))
     allatomtypes = final_atom_types
     fcoords = frac_coord(new_coord_list, cell_v)
