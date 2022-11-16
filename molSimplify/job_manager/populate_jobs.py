@@ -80,7 +80,7 @@ def generate_fake_results_from_db(rundir, jobname, tmcdoc):
     scrdir = rundir + '/scr'
     if not os.path.isdir(scrdir):
         os.makedirs(scrdir)
-    _ = write_xyz_from_db(scrdir, 'optim', tmcdoc["opt_geo"])
+    write_xyz_from_db(scrdir, 'optim', tmcdoc["opt_geo"])
     if tmcdoc['wavefunction']:
         if int(tmcdoc['spin']) == 1:
             try:
