@@ -16,7 +16,7 @@ from molSimplify.Informatics.RACassemble import (assemble_connectivity_from_part
                                                  create_OHE)
 from molSimplify.Informatics.lacRACAssemble import get_descriptor_vector
 from molSimplify.Informatics.decoration_manager import (decorate_ligand)
-from molSimplify.utils.tensorflow import tensorflow_silence
+from molSimplify.utils.tensorflow  import tensorflow_silence
 from molSimplify.python_nn.clf_analysis_tool import lse_trust
 from molSimplify.python_nn.tf_ANN import (ANN_supervisor,
                                           find_ANN_10_NN_normalized_latent_dist,
@@ -306,6 +306,9 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
     catalysis = False
     metal = args.core
     spin = args.spin
+    # Set default oxidation state variables
+    oxidation_state = '0'
+    ox = 0
     this_metal = metal.lower()
     if len(this_metal) > 2:
         this_metal = this_metal[0:2]
@@ -866,7 +869,6 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
         # This is done to get rid of the attribute error that is a bug in tensorflow.
         K.clear_session()
 
-    if catalysis:
         total_ANN_time = time.perf_counter() - start_time
         print(f'Total Catalysis ML functions took {total_ANN_time:.2f} seconds')
 
