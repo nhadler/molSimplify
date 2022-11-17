@@ -435,7 +435,7 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
                     print(('decorating ' + str(axl) + ' with ' + str(newdecs[axial_ind_list[ii]]) + ' at sites ' + str(
                         newdec_inds[axial_ind_list[ii]])))
                     ax_lig3D = decorate_ligand(
-                        args, axl, newdecs[axial_ind_list[ii]], newdec_inds[axial_ind_list[ii]])
+                        axl, newdecs[axial_ind_list[ii]], newdec_inds[axial_ind_list[ii]], debug)
             ax_lig3D.convert2mol3D()  # mol3D representation of ligand
             for jj in range(0, ax_occs[ii]):
                 ax_ligands_list.append(this_lig)
@@ -468,8 +468,8 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
                     if debug:
                         print(('decorating ' + str(eql) + ' with ' + str(
                             newdecs[equatorial_ind_list[ii]]) + ' at sites ' + str(newdec_inds[equatorial_ind_list[ii]])))
-                    eq_lig3D = decorate_ligand(args, eql, newdecs[equatorial_ind_list[ii]],
-                                               newdec_inds[equatorial_ind_list[ii]])
+                    eq_lig3D = decorate_ligand(eql, newdecs[equatorial_ind_list[ii]],
+                                               newdec_inds[equatorial_ind_list[ii]], debug)
                     c += 1
 
             eq_lig3D.convert2mol3D()  # mol3D representation of ligand

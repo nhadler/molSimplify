@@ -2464,7 +2464,7 @@ def mcomplex(args, ligs, ligoc, licores, globs):
             print('************')
             print(('loading ligand '+str(ligand) + ', number  ' +
                    str(i) + ' of ' + str(len(ligands))))
-        if not(ligand == 'x' or ligand == 'X'):
+        if not (ligand == 'x' or ligand == 'X'):
 
             # load ligand
             lig, emsg = lig_load(ligand)
@@ -2476,7 +2476,7 @@ def mcomplex(args, ligs, ligoc, licores, globs):
                             print(('decorating ' + str(ligand) + ' with ' + str(
                                 args.decoration[i]) + ' at sites ' + str(args.decoration_index)))
                         lig = decorate_ligand(
-                            args, ligand, args.decoration[i], args.decoration_index[i])
+                            ligand, args.decoration[i], args.decoration_index[i], args.debug)
                     else:
                         # keeps ligands that are not being decorated
                         lig, emsg = lig_load(ligand)
