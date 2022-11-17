@@ -537,7 +537,7 @@ def find_true_min_eu_dist(predictor: str,
     mat = load_training_data(predictor)
     train_mat = np.array(mat, dtype='float64')
     ## loop over rows
-    min_dist = 100000000.
+    min_dist = np.inf
     min_ind = 0
     for i, rows in enumerate(train_mat):
         scaled_row = np.squeeze(
