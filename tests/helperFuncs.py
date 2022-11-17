@@ -133,7 +133,7 @@ def compareLG(xyz1, xyz2, thresh):
     if len(ligs1) != len(ligs2):
         passLG = False
         return passLG
-    for i in range(0, len(ligs1)): # Iterate over the ligands
+    for i in range(0, len(ligs1)):  # Iterate over the ligands
         print("Checking geometry for ligand # ", i)
         ligs1[i], U, d0, d1 = kabsch(ligs1[i], ligs2[i])
         rmsd12 = ligs1[i].rmsd(ligs2[i])
@@ -314,7 +314,7 @@ def compare_report_new(report1, report2):
     with open(report1, 'r') as f_in:
         data1 = f_in.readlines()
     with open(report2, 'r') as f_in:
-        data2 = f_in.readlines()  
+        data2 = f_in.readlines()
     if data1 and data2:
         Equal = True
         dict1 = report_to_dict(data1)
@@ -557,10 +557,12 @@ def runtestgeo_optonly(tmpdir, name, thresh, deleteH=True, geo_type="oct"):
     if geo_type == "oct":
         _, _, dict_struct_info = mymol.IsOct(debug=False,
                                              flag_deleteH=deleteH)
-    with open(refjson, "r") as fo:
-        dict_ref = json.load(fo)
-    passGeo = comparedict(dict_ref, dict_struct_info, thresh)
-    return passGeo
+        with open(refjson, "r") as fo:
+            dict_ref = json.load(fo)
+        passGeo = comparedict(dict_ref, dict_struct_info, thresh)
+        return passGeo
+    else:
+        raise NotImplementedError('Only octahedral geometries supported for now')
 
 
 def runtestNoFF(tmpdir, name, threshMLBL, threshLG, threshOG):
