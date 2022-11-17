@@ -595,8 +595,8 @@ def smartreorderligs(ligs: List[str], dentl: List[int],
     return indices
 
 
-def ffopt(ff, mol, connected, constopt, frozenats, frozenangles,
-          mlbonds, nsteps, spin=1, debug=False):
+def ffopt(ff: str, mol, connected, constopt, frozenats, frozenangles,
+          mlbonds, nsteps: int, spin: int = 1, debug: bool = False):
     """Main constrained FF opt routine.
 
     Parameters
@@ -650,8 +650,8 @@ def ffopt(ff, mol, connected, constopt, frozenats, frozenangles,
                            frozenangles, mlbonds, nsteps, debug=debug)
 
 
-def openbabel_ffopt(ff, mol, connected, constopt, frozenats, frozenangles,
-                    mlbonds, nsteps, debug=False):
+def openbabel_ffopt(ff: str, mol: mol3D, connected, constopt, frozenats, frozenangles,
+                    mlbonds, nsteps: int, debug: bool = False) -> Tuple[mol3D, float]:
     """ OpenBabel constraint optimization. To optimize metal-containing
     complexes with MMFF94, an intricate procedure of masking the metal
     atoms and manually editing their valences is applied. OpenBabel's
@@ -724,7 +724,7 @@ def openbabel_ffopt(ff, mol, connected, constopt, frozenats, frozenangles,
                           + str(catom))
             else:
                 constr.AddDistanceConstraint(
-                    midx+1, catom+1, mlbonds[ii])  # indexing babel
+                    midx[0]+1, catom+1, mlbonds[ii])  # indexing babel
         # print('ff is '+ str(ff))
         if not ff.lower() == "uff":
             bridgingatoms = []
@@ -840,8 +840,9 @@ def openbabel_ffopt(ff, mol, connected, constopt, frozenats, frozenangles,
     return mol, en
 
 
-def xtb_opt(ff, mol, connected, constopt, frozenats, frozenangles,
-            mlbonds, nsteps, spin=1, inertial=False, debug=False):
+def xtb_opt(ff: str, mol: mol3D, connected, constopt, frozenats, frozenangles,
+            mlbonds, nsteps: int, spin: int = 1, inertial: bool = False,
+            debug: bool = False) -> Tuple[mol3D, float]:
     """ XTB optimization. Writes an input file (xtb.in) containing
     all the constraints and parameters to a temporary folder,
     executes the XTB program using the subprocess module and parses

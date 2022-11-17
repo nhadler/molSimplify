@@ -18,7 +18,8 @@ from molSimplify.Scripts.io import getlicores, lig_load
 ##########################################
 
 
-def decorate_ligand(ligand_to_decorate, decoration, decoration_index, debug: bool = False):
+def decorate_ligand(ligand_to_decorate: mol3D, decoration, decoration_index,
+                    debug: bool = False) -> mol3D:
     # structgen depends on decoration_manager, and decoration_manager depends on structgen.ffopt
     # Thus, this import needs to be placed here to avoid a circular dependence
     from molSimplify.Scripts.structgen import ffopt
@@ -182,7 +183,7 @@ def decorate_ligand(ligand_to_decorate, decoration, decoration_index, debug: boo
             print('************')
 
     merged_ligand.convert2OBMol()
-    merged_ligand, emsg = ffopt('MMFF94', merged_ligand, [], 0, [], False, [], 100)
+    merged_ligand, _ = ffopt('MMFF94', merged_ligand, [], 0, [], False, [], 100)
     BO_mat = merged_ligand.populateBOMatrix()
     if debug:
         merged_ligand.writexyz('merged_relaxed.xyz')
