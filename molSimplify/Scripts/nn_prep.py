@@ -193,7 +193,6 @@ def ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
     metal = args.core
     spin = args.spin
     # Set default oxidation state variables
-    oxidation_state = '0'
     ox = 0
     this_metal = metal.lower()
     if len(this_metal) > 2:

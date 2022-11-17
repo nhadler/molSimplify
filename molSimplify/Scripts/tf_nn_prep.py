@@ -306,7 +306,6 @@ def tf_ANN_preproc(metal, oxstate, spin, ligs: List[str], occs: List[int], dents
     valid = True
     catalysis = False
     # Set default oxidation state variables
-    oxidation_state = '0'
     ox = 0
     this_metal = metal.lower()
     if len(this_metal) > 2:
@@ -534,7 +533,7 @@ def tf_ANN_preproc(metal, oxstate, spin, ligs: List[str], occs: List[int], dents
                 this_complex, custom_ligand_dict, ox_modifier)
 
             # get one-hot-encoding (OHE)
-            ohe_names, ohe_values = create_OHE(metal, oxidation_state)
+            ohe_names, ohe_values = create_OHE(metal, ox)
             descriptor_names += ohe_names
             descriptors += ohe_values
 
@@ -562,12 +561,12 @@ def tf_ANN_preproc(metal, oxstate, spin, ligs: List[str], occs: List[int], dents
 
         # get bond lengths:
         with DebugTimer('GEO ANN', debug):
-            if oxidation_state == '2':
+            if ox == 2:
                 r_ls, latent_r_ls = ANN_supervisor(
                     'ls_ii', descriptors, descriptor_names, debug)
                 r_hs, latent_r_hs = ANN_supervisor(
                     'hs_ii', descriptors, descriptor_names, debug)
-            elif oxidation_state == '3':
+            elif ox == 3:
                 r_ls, latent_r_ls = ANN_supervisor(
                     'ls_iii', descriptors, descriptor_names, debug)
                 r_hs, latent_r_hs = ANN_supervisor(
