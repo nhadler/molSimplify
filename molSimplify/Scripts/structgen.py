@@ -175,9 +175,12 @@ def init_ANN(args, ligands: List[str], occs: List[int], dents: List[int],
             from molSimplify.Scripts.tf_nn_prep import tf_ANN_preproc
             if args.debug:
                 print('Using tf_ANN_preproc')
+            # Set default value [] in case decoration is not used
+            decoration_index = [] if not args.decoration else args.decoration_index
+
             ANN_flag, ANN_reason, ANN_attributes, catalysis_flag = tf_ANN_preproc(
                 args.core, args.oxstate, args.spin, ligands, occs, dents, batslist,
-                tcats, licores, args.decoration, args.decoration_index, args.exchange,
+                tcats, licores, args.decoration, decoration_index, args.exchange,
                 args.geometry, args.debug)
         else:
             # old MCDL-25
