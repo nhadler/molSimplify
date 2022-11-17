@@ -275,9 +275,10 @@ def check_metal(metal: str, oxidation_state: str) -> Tuple[bool, str]:
     return outcome, oxidation_state
 
 
-def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
+def tf_ANN_preproc(metal, oxstate, spin, ligs: List[str], occs: List[int], dents: List[int],
                    batslist: List[List[int]], tcats: List[str],
-                   licores: dict, debug: bool = False) -> Tuple[bool, str, dict, bool]:
+                   licores: dict, decoration, decoration_index, exchange, geometry: str = "oct",
+                   debug: bool = False) -> Tuple[bool, str, dict, bool]:
     # prepares and runs ANN calculation
 
     class DebugTimer:
@@ -304,8 +305,6 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
     emsg = list()
     valid = True
     catalysis = False
-    metal = args.core
-    spin = args.spin
     # Set default oxidation state variables
     oxidation_state = '0'
     ox = 0
@@ -330,9 +329,9 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
             newdents.append(dents[i])
             newcats.append(tcats[i])
             newoccs.append(1)
-            if args.decoration:
-                newdecs[count] = (args.decoration[i])
-                newdec_inds[count] = (args.decoration_index[i])
+            if decoration:
+                newdecs[count] = (decoration[i])
+                newdec_inds[count] = (decoration_index[i])
 
     ligs = newligs
     dents = newdents
@@ -341,17 +340,17 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
     if debug:
         print('tf_nn has finished prepping ligands')
 
-    if not args.geometry == "oct":
+    if not geometry == "oct":
         emsg.append(
             "[ANN] Geometry is not supported at this time, MUST give -geometry = oct if you want an ANN prediction.")
         valid = False
         ANN_reason = 'geometry not oct'
-    if not args.oxstate:
+    if not oxstate:
         emsg.append("\n oxidation state must be given for an ANN prediction.")
         valid = False
         ANN_reason = 'oxstate not given'
     if valid:
-        oxidation_state = args.oxstate
+        oxidation_state = oxstate
         valid, oxidation_state = check_metal(this_metal, oxidation_state)
         if debug:
             print(f'valid after running check_metal? {valid}')
@@ -541,12 +540,12 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
 
             # get alpha
             alpha = 0.2  # default for B3LYP
-            if args.exchange:
+            if exchange:
                 try:
-                    if float(args.exchange) > 1:
-                        alpha = float(args.exchange) / 100  # if given as %
-                    elif float(args.exchange) <= 1:
-                        alpha = float(args.exchange)
+                    if float(exchange) > 1:
+                        alpha = float(exchange) / 100  # if given as %
+                    elif float(exchange) <= 1:
+                        alpha = float(exchange)
                 except ValueError:
                     print('cannot cast exchange argument as a float, using 20%')
             descriptor_names += ['alpha']
@@ -724,12 +723,12 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
                 this_complex, custom_ligand_dict, ox_modifier)
             # get alpha
             alpha = 20  # default for B3LYP
-            if args.exchange:
+            if exchange:
                 try:
-                    if float(args.exchange) < 1:
-                        alpha = float(args.exchange) * 100  # if given as %
-                    elif float(args.exchange) >= 1:
-                        alpha = float(args.exchange)
+                    if float(exchange) < 1:
+                        alpha = float(exchange) * 100  # if given as %
+                    elif float(exchange) >= 1:
+                        alpha = float(exchange)
                 except ValueError:
                     print('cannot cast exchange argument to float, using 20%')
             descriptor_names += ['alpha', 'ox', 'spin', 'charge_lig']

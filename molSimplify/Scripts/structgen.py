@@ -176,7 +176,9 @@ def init_ANN(args, ligands: List[str], occs: List[int], dents: List[int],
             if args.debug:
                 print('Using tf_ANN_preproc')
             ANN_flag, ANN_reason, ANN_attributes, catalysis_flag = tf_ANN_preproc(
-                args, ligands, occs, dents, batslist, tcats, licores, args.debug)
+                args.metal, args.oxstate, args.spin, ligands, occs, dents, batslist,
+                tcats, licores, args.decoration, args.decoration_index, args.exchange,
+                args.geometry, args.debug)
         else:
             # old MCDL-25
             print('using old ANN because tensorflow/keras import failed')
