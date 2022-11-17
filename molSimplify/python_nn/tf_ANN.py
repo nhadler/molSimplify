@@ -413,7 +413,7 @@ def load_keras_ann(predictor: str, suffix: str = 'model'):
         # load weights into  model
         path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.h5')
         loaded_model.load_weights(path_to_file)
-    if "clf" in predictor:
+    else:
         path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.h5')
         loaded_model = load_model(path_to_file)
     # compile model
