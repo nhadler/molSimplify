@@ -808,6 +808,8 @@ def setPdistance(mol, Rr, Rp, bond):
     -------
         mol : mol3D
             mol3D class instance of translated molecule.
+        dxyz : np.array
+            The translation vector.
 
     """
     # get float bond length
