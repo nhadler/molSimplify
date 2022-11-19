@@ -3,7 +3,7 @@ from molSimplify.Classes.atom3D import atom3D
 from molSimplify.Scripts.cellbuilder_tools import import_from_cif
 from molSimplify.Informatics.MOF.MOF_descriptors import get_primitive
 from molSimplify.Informatics.MOF.monofunctionalized_BDC.index_information import INDEX_INFO
-from molSimplify.Scripts.geometry import checkplanar, PointRotateAxis, setPdistance, kabsch, rotate_mat
+from molSimplify.Scripts.geometry import checkplanar, PointRotateAxis, setPdistance, kabsch, rotate_mat, distance, rotate_around_axis
 from molSimplify.Informatics.MOF.PBC_functions import (
 	compute_adj_matrix, 
 	compute_distance_matrix3, 
@@ -1138,15 +1138,12 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
 				)
 
 			"""""""""
-			Linker functionalization of the current linker.
+			Functionalization.
 			"""""""""
 
 			for k, connected_atom in enumerate(connected_atom_types): # Look through the atoms bonded to atom i.
 				if connected_atom == 'H':
 
-					"""""""""
-					The first linker functionalization.
-					"""""""""
 					functionalization_counter = 1
 					molcif, functionalization_counter, functionalized, delete_list, extra_atom_coords, extra_atom_types, functionalized_atoms = first_functionalization(molcif,
 						allatomtypes,
@@ -1231,7 +1228,6 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 
 	"""
 
-	print('check check 2')
 	### Start of repeat code (in common with functionalize_MOF) ###
 	base_mof_name = os.path.basename(cif_file)
 	if base_mof_name.endswith('.cif'):
@@ -1245,23 +1241,46 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 	distance_mat = compute_distance_matrix3(cell_v, cart_coords)
 	adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes)
 	molcif.graph = adj_matrix.todense()
-	print('check check 3')
 
 	### End of repeat code ### 
 
-	### Load in the mol3D from the folder molSimplify folder monofunctionalized_BDC. ###
+
+	### Section with the functional group template ###
+
+	# Load in the mol3D from the folder molSimplify folder monofunctionalized_BDC.
 	functional_group_template = mol3D()
 	func_group_xyz_path = resource_filename(Requirement.parse(
 				"molSimplify"), f"molSimplify/Informatics/MOF/monofunctionalized_BDC/{functional_group}.xyz")
 	functional_group_template.readfromxyz(func_group_xyz_path) # This is a whole BDC linker with the requested functional group on it.
-	# functional_group_template.writexyz('/Users/gianmarcoterrones/Downloads/temp.xyz') # TODO remove
 
-	# Read information about the important indices of that template.
-	fg_fg_indices, fg_carbon_index, fg_carbon_neighbor_indices = INDEX_INFO[functional_group] # fg stands for functional group.
+	# Read information about the important indices of the functional_group_template.
+	fg_fg_indices, fg_main_carbon_index, fg_carbon_neighbor_indices = INDEX_INFO[functional_group] # fg stands for functional group.
 
+	# Prepare a skeleton version of the functional group template, with just three carbon atoms.
+	# The carbon atom to be functionalized, and its two neighbors.
+	# This skeleton will be used to align the functional group in the functional group template to the desired carbon in the cif.
+	template_skeleton = mol3D()
+	template_skeleton.copymol3D(functional_group_template)	
+	# deleting atoms
+	all_atom_indices = range(template_skeleton.getNumAtoms())
+	three_carbons = [fg_main_carbon_index]+fg_carbon_neighbor_indices # The indices of the three carbon atoms of interest.
+	indices_to_remove = [idx for idx in all_atom_indices if idx not in three_carbons]
+	template_skeleton.deleteatoms(indices_to_remove)
+	# determining the index of the functionalized carbon in template skeleton
+	three_carbons.sort()
+	main_carbon_index_ts = three_carbons.index(fg_main_carbon_index) # ts: template skeleton
+	side_carbon_indices_ts = list(range(3))
+	side_carbon_indices_ts.remove(main_carbon_index_ts)
+
+	### Begin functionalization process ###
+
+	# To keep track of the hydrogen atoms replaced with functional groups.
 	H_indices_to_delete = []
 
-	for func_index in func_indices:
+	# To keep track of the functional groups to merge on the cif. These are mol3D objects.
+	func_groups = []
+
+	for func_index in func_indices: # Loop over all indices to be functionalized.
 		atom_to_functionalize = allatomtypes[func_index]
 
 		# Atoms that are connected to atom at index func_index.
@@ -1276,14 +1295,13 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 		else: # atom_to_functionalize is a suitable location for functionalization.
 
 			"""""""""
-			Linker functionalization of the current linker.
+			Functionalization.
 			"""""""""
 
 			carbon_neighbor_indices = []
 			for k, connected_atom in enumerate(connected_atom_types): # Look through the atoms bonded to atom i.
 				if connected_atom == 'H':
 					H_indices_to_delete.append(connected_atom_list[k])
-					break # Don't search the rest of the connected atoms if replaced a hydrogen and functionalized already at the atom with index i.
 				elif connected_atom == 'C':
 					carbon_neighbor_indices.append(connected_atom_list[k])
 			# Checking to make sure the results of the above for loop make sense.
@@ -1296,140 +1314,79 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 
 			functional_group_clone = mol3D()
 			functional_group_clone.copymol3D(functional_group_template)
-			fg_clone_cart_coords = functional_group_clone.coordsvect()
 
-			reference_carbon_coords = cart_coords[func_index] # Coordinates of carbon atom to be functionalized in the cif
-			equivalent_carbon_coords = fg_clone_cart_coords[fg_carbon_index] # The equivalent carbon on the functionalized BDC mol3D object.
+			### Doing some stuff with the MOF mol3D ###
 
-			# # Translating the functional group to the appropriate position.
-			# functional_group_clone, _ = setPdistance(functional_group_clone, equivalent_carbon_coords, reference_carbon_coords, 0)
-			# 	# TODO maybe will need to adjust this
-
-			# TODO use code similar to geometry.kabsch to rotate functional_group_clone
 			# How should we rotate functional_group_clone so it aligns with the carbon we want to functionalize?
-			# Answer: will strip both functional_group_clone and molcif of all atoms except the three carbon atoms near the functionalization point.
-			# Align these reduced mol3D files using the kabsch function, then get the rotation matrix from this.
-			# Apply the rotation matrix to functional_group_clone
-			functional_group_clone_reduced = mol3D()
-			functional_group_clone_reduced.copymol3D(functional_group_clone)
+			# Answer: align a copy of template_skeleton with the three carbons of interest in the cif.
 			molcif_clone_reduced = mol3D()
 			molcif_clone_reduced.copymol3D(molcif)
 
-			# TODO shift the two neighbor carbons by cell vectors until they are closest to the carbon to be functionalized
-			# compute_image_flag from PBC functions
+			# Shift the two neighbor carbons by cell vectors until they are closest to the carbon to be functionalized.
 			shift_carbon_1 = compute_image_flag(cell_v, fcoords[func_index], fcoords[carbon_neighbor_indices[0]])
 			shift_carbon_2 = compute_image_flag(cell_v, fcoords[func_index], fcoords[carbon_neighbor_indices[1]])
-			print(f'the shifts')
-			print(shift_carbon_1)
-			print(shift_carbon_2)
-			# Changing the cartesian coordinates of the two carbon neighbors by the required cell vector shifts
+			# Changing the cartesian coordinates of the two carbon neighbors by the required cell vector shifts.
 			carbon_1_cart = fractional2cart(fcoords[carbon_neighbor_indices[0]]+shift_carbon_1, cell_v)
 			carbon_2_cart = fractional2cart(fcoords[carbon_neighbor_indices[1]]+shift_carbon_2, cell_v)
-			print('checking coordinates')
-			print(carbon_1_cart)
-			print(carbon_2_cart)
-			# Shifting the two carbon neighbors and the carbon to be functionalized
+			# Setting new positions.
 			molcif_clone_reduced.getAtoms()[carbon_neighbor_indices[0]].setcoords(carbon_1_cart)
 			molcif_clone_reduced.getAtoms()[carbon_neighbor_indices[1]].setcoords(carbon_2_cart)
 			molcif_clone_reduced.getAtoms()[func_index].setcoords(cart_coords[func_index])
-
-			# TODO remove later
-			print('sanity check for cartesian coordinates of molcif_clone_reduced')
-			my_cart_coords = molcif_clone_reduced.coordsvect()
-			print(my_cart_coords[func_index])
-			print(my_cart_coords[carbon_neighbor_indices[0]])
-			print(my_cart_coords[carbon_neighbor_indices[1]])			
-
-			# deleting atoms
-			num_atoms = functional_group_clone_reduced.getNumAtoms()
-			clone_reduced_indices = range(num_atoms)
-			clone_reduced_indices_to_remove = [idx for idx in clone_reduced_indices if idx not in [fg_carbon_index]+fg_carbon_neighbor_indices]
-			functional_group_clone_reduced.deleteatoms(clone_reduced_indices_to_remove)
-			functional_group_clone_reduced.writexyz('/Users/gianmarcoterrones/Downloads/functional_group_clone_reduced.xyz')
-
-
-			# functional_group_clone_reduced = reflect_through_plane(functional_group_clone_reduced, [1,1,1], [100,100,100]) # TODO perhaps is needed if a rotation doesn't get the three carbons to overlap
-			# functional_group_clone_reduced.writexyz('/Users/gianmarcoterrones/Downloads/functional_group_clone_reduced2.xyz')
-			# deleting atoms
+			# Deleting everything but three carbon atoms.
 			num_atoms = molcif_clone_reduced.getNumAtoms()
 			clone_reduced_indices = range(num_atoms)
-			clone_reduced_indices_to_remove = [idx for idx in clone_reduced_indices if idx not in [func_index]+carbon_neighbor_indices]
+			three_carbons = [func_index]+carbon_neighbor_indices
+			clone_reduced_indices_to_remove = [idx for idx in clone_reduced_indices if idx not in three_carbons]
 			molcif_clone_reduced.deleteatoms(clone_reduced_indices_to_remove)
-			print(f'molcif_clone_reduced coordinates:')
-			for _i in molcif_clone_reduced.getAtoms():
-				print(_i.coords())
-			molcif_clone_reduced.writexyz('/Users/gianmarcoterrones/Downloads/molcif_clone_reduced.xyz')
+			# Identifying the index of the main carbon and the side carbons.
+			three_carbons.sort()
+			main_carbon_index_MOF_red = three_carbons.index(func_index) # red: reduced (since delete all but three atoms)
+			side_carbon_indices_MOF_red = list(range(3))
+			side_carbon_indices_MOF_red.remove(main_carbon_index_MOF_red)
 
-			# TODO debug, checking the fractional coordinates of the three carbon atoms of interest
-			print(f'indices')
-			print(func_index)
-			print(carbon_neighbor_indices)
-			print('fractional coordinates check')
-			print(fcoords[func_index])
-			print(fcoords[carbon_neighbor_indices[0]])
-			print(fcoords[carbon_neighbor_indices[1]])
-			print('cartesian coordinates check')
-			print(cart_coords[func_index])
-			print(cart_coords[carbon_neighbor_indices[0]])
-			print(cart_coords[carbon_neighbor_indices[1]])
-			print('cell parameters')
-			print(cpar)
+			# Translate first. Just the difference between the two main carbon atoms.
+			# So, will make the two main carbons overlap.
+			translation_vector = np.array(molcif_clone_reduced.getAtom(main_carbon_index_MOF_red).coords()) - np.array(template_skeleton.getAtom(main_carbon_index_ts).coords())
 
+			### Now, answer the question of how much to rotate the functional group to align it to the carbon in the CIF. ###
+			initial_guess = np.zeros(3)
+			rotation_vector = scipy.optimize.fmin(alignment_objective, initial_guess, args=(molcif_clone_reduced, main_carbon_index_MOF_red, 
+				side_carbon_indices_MOF_red, template_skeleton, main_carbon_index_ts, side_carbon_indices_ts, translation_vector))
 
-			# TODO ok, it seems kabsch isn't working
-			aligned_fg_clone_red, rotation_matrix, _, _ = kabsch(functional_group_clone_reduced, molcif_clone_reduced)
-			molcif_clone_reduced.writexyz('/Users/gianmarcoterrones/Downloads/molcif_clone_reduced.xyz')
-			aligned_fg_clone_red.writexyz('/Users/gianmarcoterrones/Downloads/aligned_fg_clone_red.xyz')
-			# TODO testing something out
-			combo_reduced = aligned_fg_clone_red.combine(molcif_clone_reduced)
-			combo_reduced.writexyz('/Users/gianmarcoterrones/Downloads/temp.xyz')
-			# TODO issue seems to be that the cif's atoms are split apart, probably due to the repeating unit cell
+			# Unpacking
+			x_rotation = rotation_vector[0]
+			y_rotation = rotation_vector[1]
+			z_rotation = rotation_vector[2]
 
-			# TODO apply the rotation matrix to functional_group_clone
-			functional_group_clone = rotate_mat(functional_group_clone, rotation_matrix) # TODO fix this
-			
-			# ## TODO didn't work. remove
-			# P = []
-			# for atom in functional_group_clone.getAtoms():
-			# 	P.append(atom.coords())
-			# P = np.dot(P, rotation_matrix)
-			# # write back coordinates
-			# for i, atom in enumerate(functional_group_clone.getAtoms()):
-			# 	atom.setcoords(P[i])
-			# ##
+			# Applying the translation and rotation to the functional_group_clone.
+			functional_group_clone.translate(translation_vector)
+			main_carbon_coordinate = functional_group_clone.getAtom(fg_main_carbon_index).coords()
+			functional_group_clone = rotate_around_axis(functional_group_clone, main_carbon_coordinate, [1,0,0], x_rotation)
+			functional_group_clone = rotate_around_axis(functional_group_clone, main_carbon_coordinate, [0,1,0], y_rotation)
+			functional_group_clone = rotate_around_axis(functional_group_clone, main_carbon_coordinate, [0,0,1], z_rotation)
 
-
-			# TODO delete unwanted functional_group_template atoms from cartesian_coordinates and allatomtypes (probably by modifying the mol3D class)
+			# Delete unwanted functional_group_template atoms.
 			num_atoms = functional_group_clone.getNumAtoms()
 			clone_indices = range(num_atoms)
 			clone_indices_to_remove = [idx for idx in clone_indices if idx not in fg_fg_indices]
 			functional_group_clone.deleteatoms(clone_indices_to_remove)
+			func_groups.append(functional_group_clone)
 
-			# TODO remove this later
-			combo_mol_test = molcif.combine(functional_group_clone)
-			cartesian_coordinates = combo_mol_test.coordsvect()
-			fcoords = frac_coord(cartesian_coordinates, cell_v)
-			# Getting the atom types.
-			allatomtypes = combo_mol_test.symvect()
-			cif_folder = f'{path2write}cif/'
-			mkdir_if_absent(cif_folder)
-			write_cif(f'{path2write}cif/functionalized_{base_mof_name}_{functional_group}_index_{func_indices}_test3.cif', cpar, fcoords, allatomtypes)	
-
-
+			# Debugging
+			
 
 	# Combining the mol3D objects.
-	# TODO will need to account for multiple clones down the line
-	combo_mol = molcif.combine(functional_group_clone) # adds the functional group template to the end of combo_mol (index-wise)
+	for new_fg in func_groups:
+		molcif = molcif.combine(new_fg) # Adds the functional group to the end of molcif (index-wise)
 
-	# TODO delete hydrogen on the carbon to be functionalized (probably by modifying mol3D class)
-		# For those last two points, use deleteatoms from mol3D. TODO
-	combo_mol.deleteatoms(H_indices_to_delete)
+	# Delete hydrogen atoms on the functionalized carbons.
+	molcif.deleteatoms(H_indices_to_delete)
 
 	# Getting the fractional coordinates.
-	cartesian_coordinates = combo_mol.coordsvect()
+	cartesian_coordinates = molcif.coordsvect()
 	fcoords = frac_coord(cartesian_coordinates, cell_v)
 	# Getting the atom types.
-	allatomtypes = combo_mol.symvect()
+	allatomtypes = molcif.symvect()
 
 	# """""""""
 	# Write the cif.
@@ -1437,6 +1394,51 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 	cif_folder = f'{path2write}cif/'
 	mkdir_if_absent(cif_folder)
 	write_cif(f'{path2write}cif/functionalized_{base_mof_name}_{functional_group}_index_{func_indices}.cif', cpar, fcoords, allatomtypes)
+
+
+def alignment_objective(rotation_vector, molcif_clone_reduced, main_carbon_index_MOF_red, side_carbon_indices_MOF_red, 
+	template_skeleton, main_carbon_index_ts, side_carbon_indices_ts, translation_vector):
+	"""
+	TODO
+
+	Parameters
+	----------
+	TODO : TODO
+		TODO
+
+	Returns
+	-------
+	TODO
+
+	"""	
+
+	# Unpacking
+	x_rotation = rotation_vector[0]
+	y_rotation = rotation_vector[1]
+	z_rotation = rotation_vector[2]
+
+	template_skeleton_copy = mol3D()
+	template_skeleton_copy.copymol3D(template_skeleton)
+
+	# Translate template_skeleton_copy.
+	template_skeleton_copy.translate(translation_vector)
+
+	# Rotate template_skeleton_copy through an axis passing through the main carbon, i.e. the carbon to be functionalized.
+	main_carbon_coordinate = template_skeleton_copy.getAtom(main_carbon_index_ts).coords()
+	template_skeleton_copy = rotate_around_axis(template_skeleton_copy, main_carbon_coordinate, [1,0,0], x_rotation)
+	template_skeleton_copy = rotate_around_axis(template_skeleton_copy, main_carbon_coordinate, [0,1,0], y_rotation)
+	template_skeleton_copy = rotate_around_axis(template_skeleton_copy, main_carbon_coordinate, [0,0,1], z_rotation)
+
+	# NOTE: small degree of flexibility here. Can align carbon 1 of side_carbon_indices_MOF_red to carbon 1 of side_carbon_indices_ts
+	# Or align carbon 1 of side_carbon_indices_MOF_red to carbon 2 of side_carbon_indices_ts. 
+	# I go with the former approach here.
+
+	distance1 = distance(molcif_clone_reduced.getAtom(main_carbon_index_MOF_red).coords(), template_skeleton_copy.getAtom(main_carbon_index_ts).coords())
+	distance2 = distance(molcif_clone_reduced.getAtom(side_carbon_indices_MOF_red[0]).coords(), template_skeleton_copy.getAtom(side_carbon_indices_ts[0]).coords())
+	distance3 = distance(molcif_clone_reduced.getAtom(side_carbon_indices_MOF_red[1]).coords(), template_skeleton_copy.getAtom(side_carbon_indices_ts[1]).coords())
+
+	objective_function = distance1 + distance2 + distance3 # Want to minimize this.
+	return objective_function
 
 
 def post_functionalization_overlap_and_bonding_check(cell_v, allatomtypes, fcoords, extra_atom_types):
