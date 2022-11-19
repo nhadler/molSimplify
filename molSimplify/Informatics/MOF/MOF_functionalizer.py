@@ -1185,24 +1185,6 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
 	mkdir_if_absent(cif_folder)
 	write_cif(f'{path2write}cif/functionalized_{base_mof_name}_{functional_group}_index_{func_indices}.cif', cpar, fcoords, allatomtypes)
 
-# def index_reader(functional_group):
-# 	"""
-# 	TODO
-
-# 	Parameters
-# 	----------
-# 	TODO : TODO
-# 		TODO
-
-# 	Returns
-# 	-------
-# 	TODO : TODO
-# 		TODO
-
-# 	"""
-# 	pass
-# 	# with open('monofunctionalized_BDC/index_information.txt', 'r') as f:
-
 
 def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_group, func_indices):
 	"""
@@ -1256,22 +1238,6 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 	# Read information about the important indices of the functional_group_template.
 	fg_fg_indices, fg_main_carbon_index, fg_carbon_neighbor_indices = INDEX_INFO[functional_group] # fg stands for functional group.
 
-	# Prepare a skeleton version of the functional group template, with just three carbon atoms.
-	# The carbon atom to be functionalized, and its two neighbors.
-	# This skeleton will be used to align the functional group in the functional group template to the desired carbon in the cif.
-	template_skeleton = mol3D()
-	template_skeleton.copymol3D(functional_group_template)	
-	# deleting atoms
-	all_atom_indices = range(template_skeleton.getNumAtoms())
-	three_carbons = [fg_main_carbon_index]+fg_carbon_neighbor_indices # The indices of the three carbon atoms of interest.
-	indices_to_remove = [idx for idx in all_atom_indices if idx not in three_carbons]
-	template_skeleton.deleteatoms(indices_to_remove)
-	# determining the index of the functionalized carbon in template skeleton
-	three_carbons.sort()
-	main_carbon_index_ts = three_carbons.index(fg_main_carbon_index) # ts: template skeleton
-	side_carbon_indices_ts = list(range(3))
-	side_carbon_indices_ts.remove(main_carbon_index_ts)
-
 	### Begin functionalization process ###
 
 	# To keep track of the hydrogen atoms replaced with functional groups.
@@ -1318,9 +1284,9 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 			### Doing some stuff with the MOF mol3D ###
 
 			# How should we rotate functional_group_clone so it aligns with the carbon we want to functionalize?
-			# Answer: align a copy of template_skeleton with the three carbons of interest in the cif.
-			molcif_clone_reduced = mol3D()
-			molcif_clone_reduced.copymol3D(molcif)
+			# Answer: align a copy of functional_group_template with the three carbons of interest in the cif.
+			molcif_clone = mol3D()
+			molcif_clone.copymol3D(molcif)
 
 			# Shift the two neighbor carbons by cell vectors until they are closest to the carbon to be functionalized.
 			shift_carbon_1 = compute_image_flag(cell_v, fcoords[func_index], fcoords[carbon_neighbor_indices[0]])
@@ -1329,29 +1295,18 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 			carbon_1_cart = fractional2cart(fcoords[carbon_neighbor_indices[0]]+shift_carbon_1, cell_v)
 			carbon_2_cart = fractional2cart(fcoords[carbon_neighbor_indices[1]]+shift_carbon_2, cell_v)
 			# Setting new positions.
-			molcif_clone_reduced.getAtoms()[carbon_neighbor_indices[0]].setcoords(carbon_1_cart)
-			molcif_clone_reduced.getAtoms()[carbon_neighbor_indices[1]].setcoords(carbon_2_cart)
-			molcif_clone_reduced.getAtoms()[func_index].setcoords(cart_coords[func_index])
-			# Deleting everything but three carbon atoms.
-			num_atoms = molcif_clone_reduced.getNumAtoms()
-			clone_reduced_indices = range(num_atoms)
-			three_carbons = [func_index]+carbon_neighbor_indices
-			clone_reduced_indices_to_remove = [idx for idx in clone_reduced_indices if idx not in three_carbons]
-			molcif_clone_reduced.deleteatoms(clone_reduced_indices_to_remove)
-			# Identifying the index of the main carbon and the side carbons.
-			three_carbons.sort()
-			main_carbon_index_MOF_red = three_carbons.index(func_index) # red: reduced (since delete all but three atoms)
-			side_carbon_indices_MOF_red = list(range(3))
-			side_carbon_indices_MOF_red.remove(main_carbon_index_MOF_red)
+			molcif_clone.getAtoms()[carbon_neighbor_indices[0]].setcoords(carbon_1_cart)
+			molcif_clone.getAtoms()[carbon_neighbor_indices[1]].setcoords(carbon_2_cart)
+			molcif_clone.getAtoms()[func_index].setcoords(cart_coords[func_index])
 
 			# Translate first. Just the difference between the two main carbon atoms.
 			# So, will make the two main carbons overlap.
-			translation_vector = np.array(molcif_clone_reduced.getAtom(main_carbon_index_MOF_red).coords()) - np.array(template_skeleton.getAtom(main_carbon_index_ts).coords())
+			translation_vector = np.array(molcif_clone.getAtom(func_index).coords()) - np.array(functional_group_template.getAtom(fg_main_carbon_index).coords())
 
 			### Now, answer the question of how much to rotate the functional group to align it to the carbon in the CIF. ###
 			initial_guess = np.zeros(3)
-			rotation_vector = scipy.optimize.fmin(alignment_objective, initial_guess, args=(molcif_clone_reduced, main_carbon_index_MOF_red, 
-				side_carbon_indices_MOF_red, template_skeleton, main_carbon_index_ts, side_carbon_indices_ts, translation_vector))
+			rotation_vector = scipy.optimize.fmin(alignment_objective, initial_guess, args=(molcif_clone, func_index, 
+				carbon_neighbor_indices, functional_group_template, fg_main_carbon_index, fg_carbon_neighbor_indices, translation_vector))
 
 			# Unpacking
 			x_rotation = rotation_vector[0]
@@ -1371,9 +1326,6 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 			clone_indices_to_remove = [idx for idx in clone_indices if idx not in fg_fg_indices]
 			functional_group_clone.deleteatoms(clone_indices_to_remove)
 			func_groups.append(functional_group_clone)
-
-			# Debugging
-			
 
 	# Combining the mol3D objects.
 	for new_fg in func_groups:
@@ -1396,46 +1348,69 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 	write_cif(f'{path2write}cif/functionalized_{base_mof_name}_{functional_group}_index_{func_indices}.cif', cpar, fcoords, allatomtypes)
 
 
-def alignment_objective(rotation_vector, molcif_clone_reduced, main_carbon_index_MOF_red, side_carbon_indices_MOF_red, 
-	template_skeleton, main_carbon_index_ts, side_carbon_indices_ts, translation_vector):
+def alignment_objective(rotation_vector, molcif_clone, MOF_main_carbon_index, MOF_carbon_neighbor_indices, 
+	functional_group_template, fg_main_carbon_index, fg_carbon_neighbor_indices, translation_vector):
 	"""
-	TODO
+	The objective function to be minimized by finding the optimal x, y, and z rotation angles.
 
 	Parameters
 	----------
-	TODO : TODO
-		TODO
+	rotation_vector : numpy.ndarray
+		The vector by which to rotate the functional group BDC template.
+		Shape is (3,).
+	molcif_clone : mol3D
+		Structure information on the MOF.
+	MOF_main_carbon_index : int
+		The index of the carbon to be functionalized in molcif_clone.
+	MOF_carbon_neighbor_indices : list of int
+		The two indices of the two carbon atoms bonded to the main carbon in molcif_clone.
+	functional_group_template : mol3D
+		Structure information on the functional group BDC template.
+	fg_main_carbon_index : int
+		The index of the carbon that is functionalized in functional_group_template.
+	fg_carbon_neighbor_indices : list of int
+		The two indices of the two carbon atoms bonded to the main carbon atom in functional_group_template.
+	translation_vector : numpy.ndarray
+		The vector by which to translate the functional group BDC template.
+		Shape is (3,).
 
 	Returns
 	-------
-	TODO
+	objective_function : float
+		The sum of the distances between each of the three carbons of interest.
+		Compares the carbons in the template BDC with the functional group, and the carbons in the MOF.
+		The main carbon is the carbon at which functionalization occurs. The neighbors are bonded to that main carbon.
 
 	"""	
+
+	print(f'Type checks')
+	print(rotation_vector.shape)
+	print(translation_vector.shape)
 
 	# Unpacking
 	x_rotation = rotation_vector[0]
 	y_rotation = rotation_vector[1]
 	z_rotation = rotation_vector[2]
 
-	template_skeleton_copy = mol3D()
-	template_skeleton_copy.copymol3D(template_skeleton)
+	template_copy = mol3D()
+	template_copy.copymol3D(functional_group_template)
 
-	# Translate template_skeleton_copy.
-	template_skeleton_copy.translate(translation_vector)
+	# Translate template_copy.
+	template_copy.translate(translation_vector)
 
-	# Rotate template_skeleton_copy through an axis passing through the main carbon, i.e. the carbon to be functionalized.
-	main_carbon_coordinate = template_skeleton_copy.getAtom(main_carbon_index_ts).coords()
-	template_skeleton_copy = rotate_around_axis(template_skeleton_copy, main_carbon_coordinate, [1,0,0], x_rotation)
-	template_skeleton_copy = rotate_around_axis(template_skeleton_copy, main_carbon_coordinate, [0,1,0], y_rotation)
-	template_skeleton_copy = rotate_around_axis(template_skeleton_copy, main_carbon_coordinate, [0,0,1], z_rotation)
+	# Rotate template_copy through an axis passing through the main carbon, i.e. the carbon to be functionalized.
+	main_carbon_coordinate = template_copy.getAtom(fg_main_carbon_index).coords()
+	template_copy = rotate_around_axis(template_copy, main_carbon_coordinate, [1,0,0], x_rotation)
+	template_copy = rotate_around_axis(template_copy, main_carbon_coordinate, [0,1,0], y_rotation)
+	template_copy = rotate_around_axis(template_copy, main_carbon_coordinate, [0,0,1], z_rotation)
 
-	# NOTE: small degree of flexibility here. Can align carbon 1 of side_carbon_indices_MOF_red to carbon 1 of side_carbon_indices_ts
-	# Or align carbon 1 of side_carbon_indices_MOF_red to carbon 2 of side_carbon_indices_ts. 
+	# NOTE: small degree of flexibility here. Can align carbon 1 of MOF_carbon_neighbor_indices to carbon 1 of fg_carbon_neighbor_indices
+	# Or align carbon 1 of MOF_carbon_neighbor_indices to carbon 2 of fg_carbon_neighbor_indices. 
 	# I go with the former approach here.
 
-	distance1 = distance(molcif_clone_reduced.getAtom(main_carbon_index_MOF_red).coords(), template_skeleton_copy.getAtom(main_carbon_index_ts).coords())
-	distance2 = distance(molcif_clone_reduced.getAtom(side_carbon_indices_MOF_red[0]).coords(), template_skeleton_copy.getAtom(side_carbon_indices_ts[0]).coords())
-	distance3 = distance(molcif_clone_reduced.getAtom(side_carbon_indices_MOF_red[1]).coords(), template_skeleton_copy.getAtom(side_carbon_indices_ts[1]).coords())
+	distance1 = distance(molcif_clone.getAtom(MOF_main_carbon_index).coords(), template_copy.getAtom(fg_main_carbon_index).coords())
+	distance2 = distance(molcif_clone.getAtom(MOF_carbon_neighbor_indices[0]).coords(), template_copy.getAtom(fg_carbon_neighbor_indices[0]).coords())
+	distance3 = distance(molcif_clone.getAtom(MOF_carbon_neighbor_indices[1]).coords(), template_copy.getAtom(fg_carbon_neighbor_indices[1]).coords())
 
 	objective_function = distance1 + distance2 + distance3 # Want to minimize this.
 	return objective_function
