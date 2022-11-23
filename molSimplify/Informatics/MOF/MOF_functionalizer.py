@@ -57,12 +57,7 @@ def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionaliz
 	None
 
 	"""
-	dict_approach = check_support(functional_group)
-	if not dict_approach:
-		# The requested functional group is more than two atoms deep, or has differing bond lengths/atom identities at a given depth.
-		# Use a different function for treating these.
-		functionalize_MOF_mol3D_merge(cif_file, path2write, functional_group, functionalization_limit, path_between_functionalizations)
-		return
+	check_support(functional_group)
 
 	base_mof_name = os.path.basename(cif_file)
 	if base_mof_name.endswith('.cif'):
