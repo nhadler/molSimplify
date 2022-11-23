@@ -31,9 +31,10 @@ import os
 
 # This script can only functionalize C-H bonds.
 
-def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionalization_limit = 1, path_between_functionalizations = 3):
+def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionalization_limit = 1, path_between_functionalizations = 3, additional_atom_offset = 0):
 	"""
 	Functionalizes the provided MOF and writes the functionalized version to a cif file.
+	Loops through the atoms of a MOF and functionalizes at suitable carbon atoms.
 
 	Parameters
 	----------
@@ -47,6 +48,9 @@ def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionaliz
 		The number of functionalizations per linker.
 	path_between_functionalizations : int
 		How many bonds away one functionalized atom should be from another, if functionalized_limit is greater than one.
+	additional_atom_offset : float
+		Extent to which to rotate the placement of depth 2 functional group atoms. Give in degrees.
+		Useful for preventing atomic overlap / unintended bonds.  
 
 	Returns
 	-------
@@ -92,8 +96,8 @@ def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionaliz
 
 		### Iterate over atoms until we find one suitable for functionalization.
 		for i, atom in enumerate(original_allatomtypes):
+			print(f'i is {i}')
 			if i in checkedlist:
-				# print('In checked list.')
 				continue # Move on to the next atom.
 			if atom != 'C': # Assumes that functionalization is performed on a C atom.
 				checkedlist.add(i)
@@ -111,12 +115,11 @@ def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionaliz
 				checkedlist.add(i)
 				continue
 			else: # Found a suitable location for functionalization.
-				# print('Flagged to check. Connected atoms are ', connected_atom_types)
 				functionalized = False
 				functionalization_counter = functionalization_limit
 
 				# Identifying the linker that has atom i.
-				# Also adds all the atoms in the identified linker to checkedlist.
+				# Also adds all the atoms in the identified linker to checkedlist. So, won't check this linker again.
 				linker_to_analyze, linker_to_analyze_index, checkedlist = linker_identification(linker_list, i, checkedlist)
 
 				linker_atom_types, linker_graph, linker_cart_coords = analyze_linker(cart_coords,
@@ -152,7 +155,8 @@ def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionaliz
 							delete_list,
 							extra_atom_coords,
 							extra_atom_types,
-							functionalized_atoms                            
+							functionalized_atoms,
+							additional_atom_offset=additional_atom_offset                            
 							)
 
 						break # Don't search the rest of the connected atoms if replaced a hydrogen and functionalized already at the atom with index i.
@@ -180,7 +184,8 @@ def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionaliz
 						delete_list,
 						extra_atom_coords,
 						extra_atom_types,
-						functionalized_atoms
+						functionalized_atoms,
+						additional_atom_offset=additional_atom_offset
 						)
 
 	"""""""""
@@ -209,6 +214,7 @@ def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionaliz
 	# Difference with the block above: allatomtypes and fcoords, instead of original_allatomtypes and original_fcoords
 	print('------- FUNCTIONALIZED CASE --------')
 	symmetry_check(allatomtypes, fcoords, cell_v)
+
 
 def first_functionalization(molcif,
 	allatomtypes,
@@ -322,7 +328,8 @@ def additional_functionalization(i,
 	delete_list,
 	extra_atom_coords,
 	extra_atom_types,
-	functionalized_atoms):
+	functionalized_atoms,
+	additional_atom_offset=0):
 	"""
 	Executes additional functionalization on the specified linker, 
 	at positions (path_between_functionalizations) bonds away from the atom with index i.
@@ -368,6 +375,9 @@ def additional_functionalization(i,
 		The chemical symbols of the atoms added through functional groups. Each inner list is a functional group.
 	functionalized_atoms : list of int
 		The global indices of atoms that have been functionalized.  
+	additional_atom_offset : float
+		Extent to which to rotate the placement of depth 2 functional group atoms. Give in degrees.
+		Useful for preventing atomic overlap / unintended bonds.  
 
 	Returns
 	-------
@@ -411,7 +421,8 @@ def additional_functionalization(i,
 				if (secondary_connected_atom == 'H') and (not functionalized):                      
 					molcif, atom_types_to_add, additions_to_cart, functionalization_counter, functionalized = apply_functionalization(molcif, 
 									allatomtypes, functionalization_index, secondary_connected_atom_list[l], secondary_connected_atom_list, 
-									functional_group, linker_cart_coords, linker_to_functionalize, linker_atom_types, linker_graph, functionalization_counter)
+									functional_group, linker_cart_coords, linker_to_functionalize, linker_atom_types, linker_graph, 
+									functionalization_counter, additional_atom_offset=additional_atom_offset)
 					delete_list.append(secondary_connected_atom_list[l])
 					extra_atom_coords.append(additions_to_cart)
 					extra_atom_types.append(atom_types_to_add)
@@ -1046,8 +1057,8 @@ def check_support(functional_group):
 	supported_functional_groups = ['F', 'Cl', 'Br', 'I', 'CH3', 'CN', 'NH2', 'NO2', 'CF3', 'OH', 'SH']
 
 	# These functional groups are not added via the dictionary approach since they go more than two atoms deep, or are not uniform in bond length at every atom depth.    
-	supported_functional_groups_by_smiles = ['OCF3', 'SO3H'] 
-	if functional_group not in supported_functional_groups+supported_functional_groups_by_smiles:
+	supported_functional_groups_by_mol3D_merge = ['OCF3', 'SO3H'] 
+	if functional_group not in supported_functional_groups+supported_functional_groups_by_mol3D_merge:
 		raise ValueError('Unsupported functional group requested.')
 	else:
 		dict_approach = functional_group in supported_functional_groups
@@ -1210,7 +1221,7 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 
 	"""
 
-	### Start of repeat code (in common with functionalize_MOF) ###
+	### Start of repeat code (in common with functionalize_MOF_at_indices) ###
 	base_mof_name = os.path.basename(cif_file)
 	if base_mof_name.endswith('.cif'):
 		base_mof_name = base_mof_name[:-4]
@@ -1329,7 +1340,7 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 
 	# Combining the mol3D objects.
 	for new_fg in func_groups:
-		molcif = molcif.combine(new_fg) # Adds the functional group to the end of molcif (index-wise)
+		molcif = molcif.combine(new_fg, dirty=True) # Adds the functional group to the end of molcif (index-wise)
 
 	# Delete hydrogen atoms on the functionalized carbons.
 	molcif.deleteatoms(H_indices_to_delete)
@@ -1382,10 +1393,6 @@ def alignment_objective(rotation_vector, molcif_clone, MOF_main_carbon_index, MO
 		The main carbon is the carbon at which functionalization occurs. The neighbors are bonded to that main carbon.
 
 	"""	
-
-	print(f'Type checks')
-	print(rotation_vector.shape)
-	print(translation_vector.shape)
 
 	# Unpacking
 	x_rotation = rotation_vector[0]
