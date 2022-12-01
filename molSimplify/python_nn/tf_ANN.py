@@ -537,12 +537,12 @@ def find_true_min_eu_dist(predictor: str,
     mat = load_training_data(predictor)
     train_mat = np.array(mat, dtype='float64')
     ## loop over rows
-    min_dist = 100000000.
+    min_dist = np.inf
     min_ind = 0
     for i, rows in enumerate(train_mat):
         scaled_row = np.squeeze(
             data_normalize(rows, train_mean_x.T, train_var_x.T, debug=debug))  # Normalizing the row before finding the distance
-        this_dist = np.linalg.norm(np.subtract(scaled_row, np.array(scaled_excitation)))
+        this_dist = float(np.linalg.norm(np.subtract(scaled_row, np.array(scaled_excitation))))  # Cast to float for mypy typing
         if this_dist < min_dist:
             min_dist = this_dist
             min_ind = i
@@ -720,8 +720,8 @@ def find_clf_lse(predictor: str,
             print(model_list)
             print(("Error: LSE cannot be calculated with modelname %s--The number of models is wrong." % modelname))
             return np.zeros_like(excitation)
-        fmat_train = np.array_split(fmat_train, 10, axis=0)
-        labels_train = np.array_split(labels_train, 10, axis=0)
+        fmat_train_split = np.array_split(fmat_train, 10, axis=0)
+        labels_train_split = np.array_split(labels_train, 10, axis=0)
         entropies_list = []
         for model in model_list:
             print(model)
@@ -729,6 +729,8 @@ def find_clf_lse(predictor: str,
             model_idx = int(model.split("/")[-1].split(".")[0].split("_")[-1])
             _fmat_train = array_stack(fmat_train, model_idx)
             _labels_train = array_stack(labels_train, model_idx)
+            _fmat_train = array_stack(fmat_train_split, model_idx)
+            _labels_train = array_stack(labels_train_split, model_idx)
             train_latent = get_layer_outputs(loaded_model, -4, _fmat_train, training_flag=False)
             test_latent = get_layer_outputs(loaded_model, -4, excitation, training_flag=False)
             nn_latent_dist_train, _, __ = dist_neighbor(train_latent, train_latent, _labels_train,
