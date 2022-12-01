@@ -19,7 +19,6 @@ import scipy
 from typing import List, Tuple, Union, Optional
 from tensorflow.keras import backend as K
 from tensorflow.keras.models import model_from_json, load_model
-from tensorflow.keras.optimizers import Adam
 from pkg_resources import resource_filename, Requirement
 import tensorflow as tf
 
@@ -399,9 +398,9 @@ def load_train_info(predictor: str, suffix: str = 'info') -> dict:
     return loaded_info_dict
 
 
-def load_keras_ann(predictor: str, suffix: str = 'model'):
-    ## this function loads the ANN for property
-    ## "predcitor"
+def load_keras_ann(predictor: str, suffix: str = 'model', compile: bool = False):
+    # this function loads the ANN for property
+    # "predcitor"
     # disable TF output text to reduce console spam
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     key = get_key(predictor, suffix)
@@ -413,46 +412,44 @@ def load_keras_ann(predictor: str, suffix: str = 'model'):
         # load weights into  model
         path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.h5')
         loaded_model.load_weights(path_to_file)
-    if "clf" in predictor:
+    else:
         path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.h5')
         loaded_model = load_model(path_to_file)
-    # compile model
-    if predictor == 'homo':
-        loaded_model.compile(loss="mse", optimizer=Adam(beta_2=1 - 0.0016204733101599046, beta_1=0.8718839135783554,
-                                                        decay=7.770243145972892e-05, lr=0.0004961686075897741),
-                             metrics=['mse', 'mae', 'mape'])
-    elif predictor == 'gap':
-        loaded_model.compile(loss="mse", optimizer=Adam(beta_2=1 - 0.00010929248596488832, beta_1=0.8406735969305784,
-                                                        decay=0.00011224350434148253, lr=0.0006759924688701965),
-                             metrics=['mse', 'mae', 'mape'])
-    elif predictor in ['oxo', 'hat']:
-        # loaded_model.compile(loss="mse", optimizer=Adam(beta_2=0.9637165412871632, beta_1=0.7560951483268549,
-        #                                                 decay=0.0006651401379502965, lr=0.0007727366541920176),
-        #                      metrics=['mse', 'mae', 'mape']) #decomissioned on 06/20/2019 by Aditya. Using hyperparams from oxo20.
-        loaded_model.compile(loss="mse", optimizer=Adam(lr=0.0012838133056087084, beta_1=0.9811686522122317,
-                                                        beta_2=0.8264616523572279, decay=0.0005114008091318582),
-                             metrics=['mse', 'mae', 'mape'])
-    elif predictor == 'oxo20':
-        loaded_model.compile(loss="mse", optimizer=Adam(lr=0.0012838133056087084, beta_1=0.9811686522122317,
-                                                        beta_2=0.8264616523572279, decay=0.0005114008091318582),
-                             metrics=['mse', 'mae', 'mape'])
-    elif predictor == 'homo_empty':
-        loaded_model.compile(loss="mse", optimizer=Adam(lr=0.006677578283098809, beta_1=0.8556594887870226,
-                                                        beta_2=0.9463468021275508, decay=0.0006621877134674607),
-                             metrics=['mse', 'mae', 'mape'])
+    if compile:
+        from tensorflow.keras.optimizers.legacy import Adam
+        if predictor == 'homo':
+            loaded_model.compile(loss="mse", optimizer=Adam(beta_2=1 - 0.0016204733101599046, beta_1=0.8718839135783554,
+                                                            decay=7.770243145972892e-05, lr=0.0004961686075897741),
+                                 metrics=['mse', 'mae', 'mape'])
+        elif predictor == 'gap':
+            loaded_model.compile(loss="mse", optimizer=Adam(beta_2=1 - 0.00010929248596488832, beta_1=0.8406735969305784,
+                                                            decay=0.00011224350434148253, lr=0.0006759924688701965),
+                                 metrics=['mse', 'mae', 'mape'])
+        elif predictor in ['oxo', 'hat']:
+            # loaded_model.compile(loss="mse", optimizer=Adam(beta_2=0.9637165412871632, beta_1=0.7560951483268549,
+            #                                                 decay=0.0006651401379502965, lr=0.0007727366541920176),
+            #                      metrics=['mse', 'mae', 'mape']) #decomissioned on 06/20/2019 by Aditya. Using hyperparams from oxo20.
+            loaded_model.compile(loss="mse", optimizer=Adam(lr=0.0012838133056087084, beta_1=0.9811686522122317,
+                                                            beta_2=0.8264616523572279, decay=0.0005114008091318582),
+                                 metrics=['mse', 'mae', 'mape'])
+        elif predictor == 'oxo20':
+            loaded_model.compile(loss="mse", optimizer=Adam(lr=0.0012838133056087084, beta_1=0.9811686522122317,
+                                                            beta_2=0.8264616523572279, decay=0.0005114008091318582),
+                                 metrics=['mse', 'mae', 'mape'])
+        elif predictor == 'homo_empty':
+            loaded_model.compile(loss="mse", optimizer=Adam(lr=0.006677578283098809, beta_1=0.8556594887870226,
+                                                            beta_2=0.9463468021275508, decay=0.0006621877134674607),
+                                 metrics=['mse', 'mae', 'mape'])
 
-    elif predictor in ['geo_static_clf', 'sc_static_clf']:
-        loaded_model.compile(loss='binary_crossentropy',
-                             optimizer=Adam(lr=0.00005,
-                                            beta_1=0.95,
-                                            decay=0.0001,
-                                            amsgrad=True),
-                             metrics=['accuracy'])
-    else:
-        loaded_model.compile(loss="mse", optimizer='adam',
-                             metrics=['mse', 'mae', 'mape'])
+        elif predictor in ['geo_static_clf', 'sc_static_clf']:
+            loaded_model.compile(loss='binary_crossentropy',
+                                 optimizer=Adam(lr=0.00005, beta_1=0.95, decay=0.0001, amsgrad=True),
+                                 metrics=['accuracy'])
+        else:
+            loaded_model.compile(loss="mse", optimizer='adam',
+                                 metrics=['mse', 'mae', 'mape'])
     # print("Keras/tf model loaded for " + str(predictor) + " from disk")
-    return (loaded_model)
+    return loaded_model
 
 
 def tf_ANN_excitation_prepare(predictor: str, descriptors: List[float], descriptor_names: List[str]) -> np.ndarray:
