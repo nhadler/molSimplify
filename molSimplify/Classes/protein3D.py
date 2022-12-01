@@ -6,7 +6,7 @@
 #  Dpt of Chemical Engineering, MIT
 
 # imports
-from molSimplify.Classes.AA3D import AA3D
+from molSimplify.Classes.monomer3D import monomer3D
 from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Classes.atom3D import atom3D
 from molSimplify.Classes.helpers import read_atom, makeMol
@@ -34,13 +34,13 @@ class protein3D:
     """
 
     def __init__(self, pdbCode='undef'):
-        # Number of amino acids
+        # Number of monomers
         self.naas = 0
         # Number of heteromolecules
         self.nhetmols = 0
         # Number of chains
         self.nchains = 0
-        # Dictionary of amino acids
+        # Dictionary of monomerss
         self.aas = {}
         # Dictionary of all atoms
         self.atoms = {}
@@ -52,7 +52,7 @@ class protein3D:
         self.chains = {}
         # Dictionary of missing atoms
         self.missing_atoms = {}
-        # List of missing amino acids
+        # List of missing monomers
         self.missing_aas = []
         # List of chain locations with more than one conformation
         self.conf = []
@@ -82,13 +82,13 @@ class protein3D:
         self.hull = []
 
     def setAAs(self, aas):
-        """ Set amino acids of a protein3D class to different amino acids.
+        """ Set monomers of a protein3D class to different monomers.
 
         Parameters
         ----------
             aas : dictionary
                 Keyed by chain and location
-                Valued by AA3D amino acids
+                Valued by monomer3D monomers (amino acids or nucleotides)
         """
         self.aas = aas
         self.naas = len(aas)
@@ -145,7 +145,7 @@ class protein3D:
         Parameters
         ----------
             missing_atoms : dictionary
-                Keyed by amino acid residues of origin
+                Keyed by amino acid residues / nucleotides of origin
                 Valued by missing atoms
         """
         self.missing_atoms = missing_atoms
@@ -198,7 +198,7 @@ class protein3D:
                                 c_ids.append(self.getIndex(j))
                         # print(c_ids)
                         self.stripAtoms(c_ids)
-                        if type(li) == AA3D and li in self.aas[c]:
+                        if type(li) == monomer3D and li in self.aas[c]:
                             self.aas[c].remove(li)
                         elif type(li) == mol3D and li in self.hetmols[c]:
                             self.hetmols[c].remove(li)
@@ -255,7 +255,7 @@ class protein3D:
 
         >>> pdb_system = protein3D()
         >>> pdb_system.fetch_pdb('1os7') # Fetch a PDB
-        >>> pdb_system.getMissingAAs()   # This gives a list of AA3D objects
+        >>> pdb_system.getMissingAAs()   # This gives a list of monomer3D objects
         >>> [pdb_system.getMissingAAs()[x].three_lc for x in range(len(val.getMissingAAs()))] # This returns
         >>>                     # the list of missing AAs by their 3-letter codes
         """
@@ -410,25 +410,25 @@ class protein3D:
 
         Returns
         -------
-            mol : AA3D or mol3D
-                the amino acid residue or heteromolecule containing the atom
+            mol : monomer3D or mol3D
+                the amino acid residue, nucleotide, or heteromolecule containing the atom
 
         Example demonstration of this method:
         >>> pdb_system = protein3D()
         >>> pdb_system.fetch_pdb('1os7') # Fetch a PDB
-        >>> pdb_system.getMolecule(a_id=2166) # This returns an molSimplify.Classes.AA3D.AA3D obejct indicating
-        >>>                                   # we that the atom is part of an amino acid
-        >>> pdb_system.getMolecule(a_id=2166).three_lc() # This prints the three letter code of the amino acid of which
-        >>>                                              # atom 2166 is a part of
+        >>> pdb_system.getMolecule(a_id=2166) # This returns an molSimplify.Classes.monomer3D obejct indicating
+        >>>                                   # that the atom is part of an amino acid or nucleotide
+        >>> pdb_system.getMolecule(a_id=2166).three_lc() # This prints the three letter code of the amino acid or
+        >>>                                              # nucleotide of which atom 2166 is a part of
         >>> pdb_system.getMolecule(a_id=9164) # This returns a mol3D object indicating that the atom is part of a molecule
-        >>>                                   # that is not an amino acid
+        >>>                                   # that is not an amino acid or nucleotide
         >>> pdb_system.getMolecule(a_id=9164).name # This prints the name of the molecule, in this case, it is 'TAU'
         """
         for s in self.aas.values():
-            for mol in s:  # mol is AA3D
+            for mol in s:  # mol is monomer3D
                 if (a_id, self.atoms[a_id]) in mol.atoms:
                     return mol
-        for mol in self.missing_atoms.keys():  # mol is incomplete AA3D
+        for mol in self.missing_atoms.keys():  # mol is incomplete monomer3D
             if (a_id, self.atoms[a_id]) in self.missing_atoms[mol]:
                 return mol
         if not aas_only:
@@ -645,7 +645,7 @@ class protein3D:
         Returns
         -------
             bound_mols : list
-                list of AA3D and/or mol3D instances of molecules bound to hetatm
+                list of monomer3D and/or mol3D instances of molecules bound to hetatm
         """
         bound_mols = []
         for b_id in self.atoms.keys():
@@ -730,7 +730,7 @@ class protein3D:
                     text = text.replace(line, '')
                 sp = line.split()
                 if len(sp) > 2:
-                    a = AA3D(sp[0], sp[1], sp[2])
+                    a = monomer3D(sp[0], sp[1], sp[2])
                     missing_aas.append(a)
 
         # start getting missing atoms
@@ -753,7 +753,7 @@ class protein3D:
                         if atom != enter and atom[0] in ['C', 'N', 'O', 'H']:
                             missing_atoms[(sp[1], sp[2])].append(
                                 atom3D(Sym=atom[0], greek=atom))
-        # start getting amino acids and heteroatoms
+        # start getting amino acids, nucleotides and heteroatoms
         pa_dict = {'AltLoc': ""}
         if "ENDMDL" in text:
             text.split("ENDMDL")
