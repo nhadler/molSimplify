@@ -54,10 +54,13 @@ def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionaliz
 
 	Returns
 	-------
-	None
+	functionalized_atoms : list of int
+		Which indices of the original cif file were functionalized.
 
 	"""
-	check_support(functional_group)
+	dict_approach = check_support(functional_group)
+	if not dict_approach:
+		raise Exception('That functional group is not supported through the dictionary approach.')
 
 	base_mof_name = os.path.basename(cif_file)
 	if base_mof_name.endswith('.cif'):
@@ -214,6 +217,8 @@ def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionaliz
 	# Difference with the block above: allatomtypes and fcoords, instead of original_allatomtypes and original_fcoords
 	print('------- FUNCTIONALIZED CASE --------')
 	symmetry_check(allatomtypes, fcoords, cell_v)
+
+	return functionalized_atoms
 
 
 def first_functionalization(molcif,
@@ -1051,13 +1056,13 @@ def check_support(functional_group):
 	-------
 	dict_approach : bool
 		Indicates whether the functional group is added using the dictionary approach.
-		If not, functional group is added using some hardcoded information on its structure.
+		If not, functional group is added using some template xyz about its structure, through a merge of mol3D objects.
 
 	"""
 	supported_functional_groups = ['F', 'Cl', 'Br', 'I', 'CH3', 'CN', 'NH2', 'NO2', 'CF3', 'OH', 'SH']
 
 	# These functional groups are not added via the dictionary approach since they go more than two atoms deep, or are not uniform in bond length at every atom depth.    
-	supported_functional_groups_by_mol3D_merge = ['OCF3', 'SO3H'] 
+	supported_functional_groups_by_mol3D_merge = ['OCF3', 'SO3H', 'OCH3'] 
 	if functional_group not in supported_functional_groups+supported_functional_groups_by_mol3D_merge:
 		raise ValueError('Unsupported functional group requested.')
 	else:
@@ -1079,9 +1084,10 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
 		The functional group to use for MOF functionalization.
 	func_indices : list of int
 		The indices of the atoms at which to functionalize. Zero-indexed.
-	additional_atom_offset : float
+	additional_atom_offset : float or list of float
 		Extent to which to rotate the placement of depth 2 functional group atoms. Give in degrees.
-		Useful for preventing atomic overlap / unintended bonds.  
+		Useful for preventing atomic overlap / unintended bonds. 
+		If list, must be the length of func_indices.
 
 	Returns
 	-------
@@ -1089,11 +1095,15 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
 
 	"""
 
+	if not isinstance(additional_atom_offset, list):
+		# Convert to a list.
+		additional_atom_offset = [additional_atom_offset] * len(func_indices)
+
 	dict_approach = check_support(functional_group)
 	if not dict_approach:
 		# The requested functional group is more than two atoms deep, or has differing bond lengths/atom identities at a given depth.
 		# Use a different function for treating these.
-		functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_group, func_indices)
+		functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_group, func_indices, additional_atom_offset)
 		return
 
 	### Start of repeat code (in common with functionalize_MOF) ###
@@ -1123,7 +1133,8 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
 	extra_atom_types = []
 	functionalized_atoms = []
 
-	for func_index in func_indices:
+	for _i, func_index in enumerate(func_indices):
+		print(f'On {_i+1} out of {len(func_indices)}')
 		atom_to_functionalize = allatomtypes[func_index]
 
 		# Atoms that are connected to atom at index func_index.
@@ -1171,7 +1182,7 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
 						extra_atom_coords,
 						extra_atom_types,
 						functionalized_atoms,
-						additional_atom_offset=additional_atom_offset                            
+						additional_atom_offset=additional_atom_offset[_i]                            
 						) # functionalized_atoms is not important here.
 
 					break # Don't search the rest of the connected atoms if replaced a hydrogen and functionalized already at the atom with index i.
@@ -1194,10 +1205,10 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
 	"""""""""
 	cif_folder = f'{path2write}cif/'
 	mkdir_if_absent(cif_folder)
-	write_cif(f'{path2write}cif/functionalized_{base_mof_name}_{functional_group}_index_{func_indices}.cif', cpar, fcoords, allatomtypes)
+	write_cif(f'{path2write}cif/functionalized_{base_mof_name}_{functional_group}_index.cif', cpar, fcoords, allatomtypes)
 
 
-def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_group, func_indices):
+def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_group, func_indices, additional_atom_offset):
 	"""
 	Functionalizes the provided MOF and writes the functionalized version to a cif file.
 	Functionalizes at the specified indices func_indices, provided the atoms at those indices are sp2 carbons with a hydrogen atom.
@@ -1214,6 +1225,10 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 		The functional group to use for MOF functionalization.
 	func_indices : list of int
 		The indices of the atoms at which to functionalize. Zero-indexed.
+	additional_atom_offset : list of float
+		Extent to which to rotate the placement of depth 2 functional group atoms. Give in degrees.
+		Useful for preventing atomic overlap / unintended bonds. 
+		Must be the length of func_indices.
 
 	Returns
 	-------
@@ -1247,7 +1262,7 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 	functional_group_template.readfromxyz(func_group_xyz_path) # This is a whole BDC linker with the requested functional group on it.
 
 	# Read information about the important indices of the functional_group_template.
-	fg_fg_indices, fg_main_carbon_index, fg_carbon_neighbor_indices = INDEX_INFO[functional_group] # fg stands for functional group.
+	fg_anchor_index, fg_fg_indices, fg_main_carbon_index, fg_carbon_neighbor_indices = INDEX_INFO[functional_group] # fg stands for functional group.
 
 	### Begin functionalization process ###
 
@@ -1257,7 +1272,8 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 	# To keep track of the functional groups to merge on the cif. These are mol3D objects.
 	func_groups = []
 
-	for func_index in func_indices: # Loop over all indices to be functionalized.
+	for _i, func_index in enumerate(func_indices): # Loop over all indices to be functionalized.
+		print(f'On {_i+1} out of {len(func_indices)}')
 		atom_to_functionalize = allatomtypes[func_index]
 
 		# Atoms that are connected to atom at index func_index.
@@ -1331,6 +1347,13 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 			functional_group_clone = rotate_around_axis(functional_group_clone, main_carbon_coordinate, [0,1,0], y_rotation)
 			functional_group_clone = rotate_around_axis(functional_group_clone, main_carbon_coordinate, [0,0,1], z_rotation)
 
+			# Account for additional_atom_offset
+			# Vector between functionalized carbon and the anchor atom of the functional group (e.g. the C in -CH3 functional group).
+			anchor_coordinate = functional_group_clone.getAtom(fg_anchor_index).coords()
+			direction_vector = np.array(anchor_coordinate) - np.array(main_carbon_coordinate)
+			functional_group_clone = rotate_around_axis(functional_group_clone, main_carbon_coordinate, direction_vector, additional_atom_offset[_i])
+			# TODO account for list of additional_atom_offset (make float to list if handed a float; iterate through items of list)
+
 			# Delete unwanted functional_group_template atoms.
 			num_atoms = functional_group_clone.getNumAtoms()
 			clone_indices = range(num_atoms)
@@ -1356,7 +1379,7 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 	# """""""""
 	cif_folder = f'{path2write}cif/'
 	mkdir_if_absent(cif_folder)
-	write_cif(f'{path2write}cif/functionalized_{base_mof_name}_{functional_group}_index_{func_indices}.cif', cpar, fcoords, allatomtypes)
+	write_cif(f'{path2write}cif/functionalized_{base_mof_name}_{functional_group}_index.cif', cpar, fcoords, allatomtypes)
 
 
 def alignment_objective(rotation_vector, molcif_clone, MOF_main_carbon_index, MOF_carbon_neighbor_indices, 
