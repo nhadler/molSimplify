@@ -1195,21 +1195,21 @@ def rotation_objective_func(rotations, lig3D, atom0, ligpiatoms, metal_lig_vec, 
 
     """
     lig3D_tmp = mol3D()
-    lig3D_tmp.copymol3D(lig3D)        
+    lig3D_tmp.copymol3D(lig3D)
 
-    for _i in range(3): # 3 axes of rotation
+    for _i in range(3):  # 3 axes of rotation
         # Three rotations
         rotate_around_axis(lig3D_tmp, lig3D_tmp.getAtom(atom0).coords(), directional_vectors[_i], rotations[_i])
 
     # Get the best fit plane for the aromatic atoms.
     aromatic_coordinates = np.zeros((3, len(ligpiatoms)))
-    for idx, _i in enumerate(ligpiatoms): # Iterate over the aromatic atoms
+    for idx, _i in enumerate(ligpiatoms):  # Iterate over the aromatic atoms
         current_coordinates = lig3D_tmp.getAtom(_i).coords()
 
-        for _j in range(3): # Iterate over the three dimensions of space
-            aromatic_coordinates[_j, _i] =  current_coordinates[_j]
+        for _j in range(3):  # Iterate over the three dimensions of space
+            aromatic_coordinates[_j, _i] = current_coordinates[_j]
 
-    normal_vector_plane = best_fit_plane(aromatic_coordinates) # plane formed by the aromatic ring atoms
+    normal_vector_plane = best_fit_plane(aromatic_coordinates)  # plane formed by the aromatic ring atoms
 
     # The roots for this objective function are to be found
     normalized_metal_lig_vec = metal_lig_vec / np.linalg.norm(metal_lig_vec)
@@ -1218,7 +1218,9 @@ def rotation_objective_func(rotations, lig3D, atom0, ligpiatoms, metal_lig_vec, 
 
 
 def align_pi_ring_lig(corerefcoords, lig3D, atom0, ligpiatoms, u):
-    """Rotates the ligand such that the aromatic ring that bonds to the central metal is perpendicular to the vector from the metal to the fictitous atom in the center of the ring.
+    """Rotates the ligand such that the aromatic ring that bonds to the central metal
+    is perpendicular to the vector from the metal to the fictitous atom in the center
+    of the ring.
 
     Parameters
     ----------
@@ -1227,11 +1229,14 @@ def align_pi_ring_lig(corerefcoords, lig3D, atom0, ligpiatoms, u):
         lig3D : mol3D
             mol3D class instance of the ligand.
         atom0 : int
-            Ligand connecting atom index. Here, refers to the fictitious atom in the center of the aromatic ring, since we have a ligand that coordinates through an aromatic ring.
+            Ligand connecting atom index. Here, refers to the fictitious atom in the
+            center of the aromatic ring, since we have a ligand that coordinates
+            through an aromatic ring.
         ligpiatoms : list
             List of ligand pi-connecting atom indices.
         u : list
-            Vector from the metal to the fictitious atom in the center of the aromatic ring. Length is 3.
+            Vector from the metal to the fictitious atom in the center of the aromatic
+            ring. Length is 3.
 
     Returns
     -------
@@ -1239,7 +1244,7 @@ def align_pi_ring_lig(corerefcoords, lig3D, atom0, ligpiatoms, u):
             mol3D class instance of aligned ligand.
 
     """
-    x_vec = np.array([1, 0, 0 ])
+    x_vec = np.array([1, 0, 0])
     y_vec = np.array([0, 1, 0])
     z_vec = np.array([0, 0, 1])
     directional_vectors = [x_vec, y_vec, z_vec]
@@ -1248,10 +1253,11 @@ def align_pi_ring_lig(corerefcoords, lig3D, atom0, ligpiatoms, u):
     # the plane formed by the aromatic ring atoms is perpendicular to u
     from scipy.optimize import fsolve
     initial_guess = [0, 0, 0]
-    rotations = fsolve(rotation_objective_func, initial_guess, args=(lig3D, atom0, ligpiatoms, np.array(u), directional_vectors))
+    rotations = fsolve(rotation_objective_func, initial_guess,
+                       args=(lig3D, atom0, ligpiatoms, np.array(u), directional_vectors))
 
     # rotate lig3D by the three rotations found
-    for _i in range(3): # 3 axes of rotation
+    for _i in range(3):  # 3 axes of rotation
         rotate_around_axis(lig3D, lig3D.getAtom(atom0).coords(), directional_vectors[_i], rotations[_i])
 
     return lig3D
@@ -1981,11 +1987,11 @@ def align_dent1_lig(args, cpoint, core3D, coreref, ligand, lig3D, catoms,
     # align ligand to correct M-L distance
     u = vecdiff(cpoint.coords(), corerefcoords)
     lig3D = aligntoaxis2(lig3D, cpoint.coords(), corerefcoords, u, bondl)
-    if rempi: # pi-coordinating ligand
+    if rempi:  # pi-coordinating ligand
         if len(ligpiatoms) == 2:
             # align linear (non-arom.) pi-coordinating ligand
             lig3D = align_linear_pi_lig(corerefcoords, lig3D, atom0, ligpiatoms)
-        else: # 5 and 6 membered rings dealt with here
+        else:  # 5 and 6 membered rings dealt with here
             lig3D = align_pi_ring_lig(corerefcoords, lig3D, atom0, ligpiatoms, u)
     elif lig3D.natoms > 1:
         # align ligand center of symmetry
@@ -2295,7 +2301,7 @@ def mcomplex(args, ligs, ligoc, licores, globs):
     backbatoms = []
     batslist = []
     bats = []
-    ffoption_list = [] # for each ligand, keeps track of what the forcefield option is.
+    ffoption_list = []  # for each ligand, keeps track of what the forcefield option is.
     # load bond data
     MLbonds = loaddata('/Data/ML.dat')
     # calculate occurrences, denticities etc for all ligands
@@ -2330,14 +2336,14 @@ def mcomplex(args, ligs, ligoc, licores, globs):
             occs0[i] += 1
             toccs += dent_i
 
-        if 'l' in args.ffoption: # ligands.dict control for force field option
-            if ligname in list(licores.keys()): # ligand is in the ligands dictionary
+        if 'l' in args.ffoption:  # ligands.dict control for force field option
+            if ligname in list(licores.keys()):  # ligand is in the ligands dictionary
                 forcefield_option_current_ligand = licores[ligname][4][0].lower()
                 ffoption_list.append(forcefield_option_current_ligand)
-            else: # default to 'ba' for ligands not in ligands.dict
+            else:  # default to 'ba' for ligands not in ligands.dict
                 ffoption_list.append('ba')
 
-    if 'l' in args.ffoption: # ligands.dict control for force field option
+    if 'l' in args.ffoption:  # ligands.dict control for force field option
         # Setting args.ffoption to the least-action option among the ligands.
         # So, if at least one of the ligands has 'n' as the forcefield option, no optimization.
         # Otherwise, if there is any mixture of 'b' and 'a' among the ligands, go with 'n' for consistency.
@@ -2492,7 +2498,7 @@ def mcomplex(args, ligs, ligoc, licores, globs):
             if emsg:
                 return False, emsg
         # Skip = False
-        for j in range(0, occs[i]): # The number of occurrences of the current ligand.
+        for j in range(0, occs[i]):  # The number of occurrences of the current ligand.
             if args.debug:
                 print(('loading copy '+str(j) + ' of ligand ' +
                        ligand + ' with dent ' + str(dents[i])))
@@ -2502,7 +2508,7 @@ def mcomplex(args, ligs, ligoc, licores, globs):
                 print('******')
             denticity = dents[i]
 
-            if not(ligand == 'x' or ligand == 'X') and (totlig-1+denticity < coord):
+            if not (ligand == 'x' or ligand == 'X') and (totlig-1+denticity < coord):
                 # add atoms to connected atoms list
                 catoms = lig.cat  # connection atoms
                 initatoms = core3D.natoms  # initial number of atoms in core3D
@@ -2702,7 +2708,8 @@ def mcomplex(args, ligs, ligoc, licores, globs):
                 core3D.convert2mol3D()
                 # remove dummy cm atom if requested
                 if rempi:
-                    core3D.deleteatom(core3D.natoms-1) # remove the fictitious center atom, for aromatic-bonding ligands like benzene
+                    # remove the fictitious center atom, for aromatic-bonding ligands like benzene
+                    core3D.deleteatom(core3D.natoms-1)
                 if args.debug:
                     print(('number of atoms in lig3D is ' + str(lig3D.natoms)))
                 if lig3D.natoms < 3:
@@ -2853,7 +2860,7 @@ def structgen(args, rootdir, ligands, ligoc, globs, sernum, write_files=True):
                 this_con = this_mol.cat
                 ligs.append(this_lig)
                 cons.append(this_con)
-                if name not in list(licores.keys()): # ligand is not in the ligands dictionary
+                if name not in list(licores.keys()):  # ligand is not in the ligands dictionary
                     if args.smicat and len(args.smicat) >= (smilesligs+1):
                         if 'pi' in args.smicat[smilesligs]:
                             cats0.append(['c'])
