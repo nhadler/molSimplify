@@ -1352,7 +1352,6 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 			anchor_coordinate = functional_group_clone.getAtom(fg_anchor_index).coords()
 			direction_vector = np.array(anchor_coordinate) - np.array(main_carbon_coordinate)
 			functional_group_clone = rotate_around_axis(functional_group_clone, main_carbon_coordinate, direction_vector, additional_atom_offset[_i])
-			# TODO account for list of additional_atom_offset (make float to list if handed a float; iterate through items of list)
 
 			# Delete unwanted functional_group_template atoms.
 			num_atoms = functional_group_clone.getNumAtoms()
