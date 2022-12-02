@@ -20,6 +20,7 @@ from typing import List, Tuple, Union, Optional
 from tensorflow.keras import backend as K
 from tensorflow.keras.models import model_from_json, load_model
 from pkg_resources import resource_filename, Requirement
+from packaging import version
 import tensorflow as tf
 
 from molSimplify.python_nn.clf_analysis_tool import array_stack, get_layer_outputs, dist_neighbor, get_entropy
@@ -503,7 +504,7 @@ def ANN_supervisor(predictor: str,
             print(('LOADED MODEL HAS ' + str(
                 len(loaded_model.layers)) + ' layers, so latent space measure will be from first ' + str(
                 len(loaded_model.layers) - 1) + ' layers'))
-        if not tf.__version__ >= '2.0.0':
+        if not version.parse(tf.__version__) >= version.parse('2.0.0'):
             get_outputs = K.function([loaded_model.layers[0].input, K.learning_phase()],
                                      [loaded_model.layers[len(loaded_model.layers) - 2].output])
             latent_space_vector = get_outputs([excitation, 0])  # Using test phase.
@@ -602,7 +603,7 @@ def find_ANN_10_NN_normalized_latent_dist(predictor, latent_space_vector, debug=
         norm_train_mat.append(scaled_excitation)
     norm_train_mat = np.squeeze(np.array(norm_train_mat))
     loaded_model = load_keras_ann(predictor)
-    if not tf.__version__ >= '2.0.0':
+    if not version.parse(tf.__version__) >= version.parse('2.0.0'):
         get_outputs = K.function([loaded_model.layers[0].input, K.learning_phase()],
                                  [loaded_model.layers[len(loaded_model.layers) - 2].output])
         latent_space_train = np.squeeze(np.array(get_outputs([norm_train_mat, 0])))
@@ -644,13 +645,13 @@ def find_ANN_latent_dist(predictor, latent_space_vector, debug=False):
         print(('loaded model has  ' + str(
             len(loaded_model.layers)) + ' layers, so latent space measure will be from first ' + str(
             len(loaded_model.layers) - 1) + ' layers'))
-    if not tf.__version__ >= '2.0.0':
+    if not version.parse(tf.__version__) >= version.parse('2.0.0'):
         get_outputs = K.function([loaded_model.layers[0].input, K.learning_phase()],
                                  [loaded_model.layers[len(loaded_model.layers) - 2].output])
     for i, rows in enumerate(train_mat):
         scaled_row = np.squeeze(
             data_normalize(rows, train_mean_x.T, train_var_x.T, debug=debug))  # Normalizing the row before finding the distance
-        if not tf.__version__ >= '2.0.0':
+        if not version.parse(tf.__version__) >= version.parse('2.0.0'):
             latent_train_row = get_outputs([np.array([scaled_row]), 0])
         else:
             latent_train_row = get_layer_outputs(loaded_model, len(loaded_model.layers) - 2,
