@@ -1,6 +1,6 @@
-import warnings
 import os
 import operator
+from typing import List
 
 
 def get_subfolders(path: str = "./") -> list:
@@ -12,11 +12,11 @@ def get_subfolders(path: str = "./") -> list:
     return folders
 
 
-def sanity_check(folders: list, trigger: str = "_derivNo_") -> dict:
+def sanity_check(folders: List[str], trigger: str = "_derivNo_") -> dict:
     trigger_appear = False
-    basename = list()
-    folders_ignored = list()
-    jobs = dict()
+    basename: List[str] = []
+    folders_ignored = []
+    jobs = {}
     for folder in folders:
         if trigger in folder:
             trigger_appear = True
@@ -36,7 +36,7 @@ def sanity_check(folders: list, trigger: str = "_derivNo_") -> dict:
     if len(basename) > 1:
         raise ValueError("multiple base jobs occur: %s" % basename)
     if len(folders_ignored):
-        print("Warning: The following folders are ignored: %s" % str(folders_ignored))
+        print("Warning: The following folders are ignored: %s" % folders_ignored)
     return jobs
 
 
