@@ -275,9 +275,10 @@ def check_metal(metal: str, oxidation_state: str) -> Tuple[bool, str]:
     return outcome, oxidation_state
 
 
-def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
+def tf_ANN_preproc(metal, oxstate, spin, ligs: List[str], occs: List[int], dents: List[int],
                    batslist: List[List[int]], tcats: List[str],
-                   licores: dict, debug: bool = False) -> Tuple[bool, str, dict, bool]:
+                   licores: dict, decoration, decoration_index, exchange, geometry: str = "oct",
+                   debug: bool = False) -> Tuple[bool, str, dict, bool]:
     # prepares and runs ANN calculation
 
     class DebugTimer:
@@ -304,8 +305,8 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
     emsg = list()
     valid = True
     catalysis = False
-    metal = args.core
-    spin = args.spin
+    # Set default oxidation state variables
+    ox = 0
     this_metal = metal.lower()
     if len(this_metal) > 2:
         this_metal = this_metal[0:2]
@@ -327,9 +328,9 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
             newdents.append(dents[i])
             newcats.append(tcats[i])
             newoccs.append(1)
-            if args.decoration:
-                newdecs[count] = (args.decoration[i])
-                newdec_inds[count] = (args.decoration_index[i])
+            if decoration:
+                newdecs[count] = (decoration[i])
+                newdec_inds[count] = (decoration_index[i])
 
     ligs = newligs
     dents = newdents
@@ -338,17 +339,17 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
     if debug:
         print('tf_nn has finished prepping ligands')
 
-    if not args.geometry == "oct":
+    if not geometry == "oct":
         emsg.append(
             "[ANN] Geometry is not supported at this time, MUST give -geometry = oct if you want an ANN prediction.")
         valid = False
         ANN_reason = 'geometry not oct'
-    if not args.oxstate:
+    if not oxstate:
         emsg.append("\n oxidation state must be given for an ANN prediction.")
         valid = False
         ANN_reason = 'oxstate not given'
     if valid:
-        oxidation_state = args.oxstate
+        oxidation_state = oxstate
         valid, oxidation_state = check_metal(this_metal, oxidation_state)
         if debug:
             print(f'valid after running check_metal? {valid}')
@@ -432,7 +433,7 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
                     print(('decorating ' + str(axl) + ' with ' + str(newdecs[axial_ind_list[ii]]) + ' at sites ' + str(
                         newdec_inds[axial_ind_list[ii]])))
                     ax_lig3D = decorate_ligand(
-                        args, axl, newdecs[axial_ind_list[ii]], newdec_inds[axial_ind_list[ii]])
+                        axl, newdecs[axial_ind_list[ii]], newdec_inds[axial_ind_list[ii]], debug)
             ax_lig3D.convert2mol3D()  # mol3D representation of ligand
             for jj in range(0, ax_occs[ii]):
                 ax_ligands_list.append(this_lig)
@@ -465,8 +466,8 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
                     if debug:
                         print(('decorating ' + str(eql) + ' with ' + str(
                             newdecs[equatorial_ind_list[ii]]) + ' at sites ' + str(newdec_inds[equatorial_ind_list[ii]])))
-                    eq_lig3D = decorate_ligand(args, eql, newdecs[equatorial_ind_list[ii]],
-                                               newdec_inds[equatorial_ind_list[ii]])
+                    eq_lig3D = decorate_ligand(eql, newdecs[equatorial_ind_list[ii]],
+                                               newdec_inds[equatorial_ind_list[ii]], debug)
                     c += 1
 
             eq_lig3D.convert2mol3D()  # mol3D representation of ligand
@@ -532,18 +533,18 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
                 this_complex, custom_ligand_dict, ox_modifier)
 
             # get one-hot-encoding (OHE)
-            ohe_names, ohe_values = create_OHE(metal, oxidation_state)
+            ohe_names, ohe_values = create_OHE(metal, ox)
             descriptor_names += ohe_names
             descriptors += ohe_values
 
             # get alpha
             alpha = 0.2  # default for B3LYP
-            if args.exchange:
+            if exchange:
                 try:
-                    if float(args.exchange) > 1:
-                        alpha = float(args.exchange) / 100  # if given as %
-                    elif float(args.exchange) <= 1:
-                        alpha = float(args.exchange)
+                    if float(exchange) > 1:
+                        alpha = float(exchange) / 100  # if given as %
+                    elif float(exchange) <= 1:
+                        alpha = float(exchange)
                 except ValueError:
                     print('cannot cast exchange argument as a float, using 20%')
             descriptor_names += ['alpha']
@@ -560,12 +561,12 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
 
         # get bond lengths:
         with DebugTimer('GEO ANN', debug):
-            if oxidation_state == '2':
+            if ox == 2:
                 r_ls, latent_r_ls = ANN_supervisor(
                     'ls_ii', descriptors, descriptor_names, debug)
                 r_hs, latent_r_hs = ANN_supervisor(
                     'hs_ii', descriptors, descriptor_names, debug)
-            elif oxidation_state == '3':
+            elif ox == 3:
                 r_ls, latent_r_ls = ANN_supervisor(
                     'ls_iii', descriptors, descriptor_names, debug)
                 r_hs, latent_r_hs = ANN_supervisor(
@@ -721,12 +722,12 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
                 this_complex, custom_ligand_dict, ox_modifier)
             # get alpha
             alpha = 20  # default for B3LYP
-            if args.exchange:
+            if exchange:
                 try:
-                    if float(args.exchange) < 1:
-                        alpha = float(args.exchange) * 100  # if given as %
-                    elif float(args.exchange) >= 1:
-                        alpha = float(args.exchange)
+                    if float(exchange) < 1:
+                        alpha = float(exchange) * 100  # if given as %
+                    elif float(exchange) >= 1:
+                        alpha = float(exchange)
                 except ValueError:
                     print('cannot cast exchange argument to float, using 20%')
             descriptor_names += ['alpha', 'ox', 'spin', 'charge_lig']
@@ -866,7 +867,6 @@ def tf_ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
         # This is done to get rid of the attribute error that is a bug in tensorflow.
         K.clear_session()
 
-    if catalysis:
         total_ANN_time = time.perf_counter() - start_time
         print(f'Total Catalysis ML functions took {total_ANN_time:.2f} seconds')
 
