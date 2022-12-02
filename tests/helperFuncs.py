@@ -642,6 +642,6 @@ def runtestMulti(tmpdir, name, threshMLBL, threshLG, threshOG):
                     output_xyz, ref_xyz, threshMLBL, threshLG, threshOG)
                 [passNumAtoms, passMLBL, passLG, passOG] = pass_xyz
                 pass_report = compare_report_new(output_report, ref_report)
-        pass_structures.append(
-            [f, passNumAtoms, passMLBL, passLG, passOG, pass_report])
+            pass_structures.append(
+                [f, passNumAtoms, passMLBL, passLG, passOG, pass_report])
     return [passMultiFileCheck, pass_structures]
