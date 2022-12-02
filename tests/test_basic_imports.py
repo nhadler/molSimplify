@@ -3,18 +3,14 @@ Test for imports where the packges will be used in molSimplify.
 """
 
 import sys
-import pickle
-import pytest
-import molSimplify
-import numpy as np
-import pandas as pd
-from pkg_resources import resource_filename, Requirement
+
 
 def test_molsimplify_imported():
     '''
     Sample test, will always pass so long as import statement worked
     '''
     assert "molSimplify" in sys.modules
+
 
 def test_psi4_import():
     '''
@@ -26,15 +22,6 @@ def test_psi4_import():
     except ImportError:
         assert 0
 
-def test_torch_import():
-    '''
-    Test whether torch can be imported
-    '''
-    try:
-        import torch
-        assert "torch" in sys.modules
-    except ImportError:
-        assert 0
 
 def test_tf_import():
     '''
@@ -46,6 +33,7 @@ def test_tf_import():
     except ImportError:
         assert 0
 
+
 def test_keras_import():
     '''
     Test whether keras can be imported
@@ -55,6 +43,7 @@ def test_keras_import():
         assert "keras" in sys.modules
     except ImportError:
         assert 0
+
 
 def test_openbabel_import():
     '''
