@@ -724,8 +724,6 @@ def find_clf_lse(predictor: str,
             print(model)
             loaded_model = load_model(model)
             model_idx = int(model.split("/")[-1].split(".")[0].split("_")[-1])
-            _fmat_train = array_stack(fmat_train, model_idx)
-            _labels_train = array_stack(labels_train, model_idx)
             _fmat_train = array_stack(fmat_train_split, model_idx)
             _labels_train = array_stack(labels_train_split, model_idx)
             train_latent = get_layer_outputs(loaded_model, -4, _fmat_train, training_flag=False)
