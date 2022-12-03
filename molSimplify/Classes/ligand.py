@@ -365,6 +365,7 @@ def ligand_assign(mol, liglist, ligdents, ligcons, loud=False, name=False, eq_sy
     valid = True
     # loud = False
     pentadentate = False
+    hexadentate = False
     built_ligand_list = list()
     lig_natoms_list = list()
     unique_ligands = list()
