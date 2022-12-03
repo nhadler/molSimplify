@@ -133,7 +133,7 @@ def compareLG(xyz1, xyz2, thresh):
     if len(ligs1) != len(ligs2):
         passLG = False
         return passLG
-    for i in range(0, len(ligs1)):
+    for i in range(0, len(ligs1)): # Iterate over the ligands
         print("Checking geometry for ligand # ", i)
         ligs1[i], U, d0, d1 = kabsch(ligs1[i], ligs2[i])
         rmsd12 = ligs1[i].rmsd(ligs2[i])
@@ -276,8 +276,9 @@ def parse4testNoFF(infile, tmpdir):
         print("FF optimization used in original input file. "
               "Now test for no FF result.")
         for line in data:
+            # By getting rid of -ffoption, will use the force field option default, which is "N"
             if not (("-jobdir" in line) or ("-name" in line)
-                    or ("-ff " in line)):
+                    or ("-ff " in line) or ("-ffoption " in line)):
                 newdata += line
         newdata += "-jobdir " + newname + "\n"
         newdata += "-name " + newname + "\n"
@@ -313,7 +314,7 @@ def compare_report_new(report1, report2):
     with open(report1, 'r') as f_in:
         data1 = f_in.readlines()
     with open(report2, 'r') as f_in:
-        data2 = f_in.readlines()
+        data2 = f_in.readlines()  
     if data1 and data2:
         Equal = True
         dict1 = report_to_dict(data1)
@@ -411,7 +412,7 @@ def compare_qc_input(inp, inp_ref):
     return passQcInputCheck
 
 
-def runtest(tmpdir, name, threshMLBL, threshLG, threshOG, seed=None):
+def runtest(tmpdir, name, threshMLBL, threshLG, threshOG, seed=31415):
     # Set seeds to eliminate randomness from test results
     random.seed(seed)
     np.random.seed(seed)
@@ -602,8 +603,8 @@ def runtestNoFF(tmpdir, name, threshMLBL, threshLG, threshOG):
         print("Reference report status: ", pass_report)
         pass_qcin = compare_qc_input(output_qcin, ref_qcin)
         print("Reference qc input file: ", ref_qcin)
-        print("Test qc input file:", output_qcin)
-        print("Qc input status:", pass_qcin)
+        print("Test qc input file: ", output_qcin)
+        print("Qc input status: ", pass_qcin)
     return [passNumAtoms, passMLBL, passLG, passOG, pass_report, pass_qcin]
 
 
@@ -629,7 +630,7 @@ def runtestMulti(tmpdir, name, threshMLBL, threshLG, threshOG):
         for f in myfiles:
             if ".xyz" in f:
                 r = f.replace(".xyz", ".report")
-                output_xyz = output_xyz = myjobdir + f
+                output_xyz = myjobdir + f
                 ref_xyz = refdir + f
                 output_report = myjobdir + r
                 ref_report = refdir + r

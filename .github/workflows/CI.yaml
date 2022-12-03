@@ -24,11 +24,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        python-version: [3.7]
-        include:
-          - os: ubuntu-latest
-            python-version: 3.7
+        os: ["ubuntu-latest"]
+        python-version: ["3.7"]
+#         include:
+#           - os: ubuntu-latest
+#             python-version: 3.7
     defaults:
       run:
         shell: bash -l {0}
@@ -46,14 +46,16 @@ jobs:
       uses: conda-incubator/setup-miniconda@v2
       id: conda-setup
       with:
+        mamba-version: "*"
+        channels: conda-forge,defaults
         activate-environment: mols_test
     # Get date for the cache key
     - name: Get current time
-      uses: josStorer/get-current-time@v2
+      uses: josStorer/get-current-time@v2.0.2
       id: current-time
     # Actual caching
     - name: Cache conda env
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       id: cache
       env:
         # Increase this value to reset cache if mols.yml has not changed
@@ -68,7 +70,7 @@ jobs:
           env.CACHE_NUMBER }}
     # Install environment from yaml file if cache-hit == false
     - name: Update conda env
-      run: conda env update -n mols_test -f devtools/conda-envs/mols.yml
+      run: mamba env update -n mols_test -f devtools/conda-envs/mols.yml
       if: steps.cache.outputs.cache-hit != 'true'
 
     - name: Install package

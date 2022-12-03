@@ -15,7 +15,7 @@ import time
 import difflib
 
 import openbabel
-from typing import Any, List, Dict, Tuple, Union
+from typing import Any, List, Dict, Tuple, Union, Optional
 from pkg_resources import resource_filename, Requirement
 
 from molSimplify.Classes.globalvars import (globalvars,
@@ -465,7 +465,7 @@ def loadcoord(coord: str) -> List[List[float]]:
 #  @return mol3D of core, error messages
 
 
-def core_load(usercore: str, mcores: dict = None) -> Tuple[Union[mol3D, None], str]:
+def core_load(usercore: str, mcores: Optional[dict] = None) -> Tuple[Union[mol3D, None], str]:
     if mcores is None:
         mcores = getmcores()
     globs = globalvars()
@@ -550,7 +550,7 @@ def core_load(usercore: str, mcores: dict = None) -> Tuple[Union[mol3D, None], s
 def substr_load(usersubstrate: str,
                 sub_i: int,
                 subcatoms: List[int],
-                subcores: dict = None) -> Tuple[Union[mol3D, None], List[int], str]:
+                subcores: Optional[dict] = None) -> Tuple[Union[mol3D, None], List[int], str]:
     # if not using a user-defined substrate dictionary
     if subcores is None:
         subcores = getsubcores()
@@ -661,7 +661,7 @@ def substr_load(usersubstrate: str,
 
 # TODO: Output currently typed as any instead of Union[mol3D, None] because many other
 # scripts depend on a mol3D as first return value.
-def lig_load(userligand: str, licores: dict = None) -> Tuple[Any, str]:
+def lig_load(userligand: str, licores: Optional[dict] = None) -> Tuple[Any, str]:
 
     if licores is None:
         licores = getlicores()

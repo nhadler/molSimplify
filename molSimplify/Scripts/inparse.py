@@ -484,17 +484,18 @@ def cleaninput(args):
         opts = args.ffoption
         if 'ba' in opts[0].lower():
             args.ffoption = 'ba'
+        elif 'no' in opts[0].lower() or 'n' in opts[0].lower():
+            args.ffoption = 'no'
+        elif 'l' in opts[0].lower():
+            args.ffoption = 'l' # ligands.dict control
         else:
-            if 'no' in opts[0].lower() or 'n' in opts[0].lower():
-                args.ffoption = 'no'
-            else:
-                args.ffoption = ''
-                for op in opts:
-                    op = op.strip(' ')
-                    if op[0].lower() == 'b':
-                        args.ffoption += 'b'
-                    if op[0].lower() == 'a':
-                        args.ffoption += 'a'
+            args.ffoption = ''
+            for op in opts:
+                op = op.strip(' ')
+                if op[0].lower() == 'b':
+                    args.ffoption += 'b'
+                if op[0].lower() == 'a':
+                    args.ffoption += 'a'
 
 # Generates input file from command line input
 #  @param args Namespace of arguments
@@ -1129,7 +1130,7 @@ def parseinputs_basic(*p):
     parser.add_argument(
         "-ff", help="select force field for FF optimization. Available: (default) MMFF94, UFF, GAFF, Ghemical, XTB, GFNFF", default='uff')
     parser.add_argument(
-        "-ffoption", help="select when to perform FF optimization. Options: B(Before),A(After), (default) BA, N(No)", default='BA')
+        "-ffoption", help="select when to perform FF optimization. Options: B(Before), A(After), BA(Before and after), N(default, no force field), L(ligands.dict controlled)", default='N')
     parser.add_argument(
         "-ff_final_opt", help="optionally select different force field for "
         "final FF optimization after structure generation (defaults to option"

@@ -16,10 +16,9 @@ import os
 import numpy as np
 import pandas as pd
 import scipy
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Optional
 from tensorflow.keras import backend as K
 from tensorflow.keras.models import model_from_json, load_model
-from tensorflow.keras.optimizers import Adam
 from pkg_resources import resource_filename, Requirement
 import tensorflow as tf
 
@@ -123,7 +122,7 @@ def matrix_loader(path: str, rownames: bool = False) -> Union[Tuple[List[List[st
         return mat
 
 
-def get_key(predictor: str, suffix: str = None) -> str:
+def get_key(predictor: str, suffix: Optional[str] = None) -> str:
     if suffix:
         if predictor in ['ls_ii', 'hs_ii', 'ls_iii', 'hs_iii']:
             key = 'geos/' + predictor + '_%s' % suffix
@@ -399,9 +398,9 @@ def load_train_info(predictor: str, suffix: str = 'info') -> dict:
     return loaded_info_dict
 
 
-def load_keras_ann(predictor: str, suffix: str = 'model'):
-    ## this function loads the ANN for property
-    ## "predcitor"
+def load_keras_ann(predictor: str, suffix: str = 'model', compile: bool = False):
+    # this function loads the ANN for property
+    # "predcitor"
     # disable TF output text to reduce console spam
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     key = get_key(predictor, suffix)
@@ -413,46 +412,44 @@ def load_keras_ann(predictor: str, suffix: str = 'model'):
         # load weights into  model
         path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.h5')
         loaded_model.load_weights(path_to_file)
-    if "clf" in predictor:
+    else:
         path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.h5')
         loaded_model = load_model(path_to_file)
-    # compile model
-    if predictor == 'homo':
-        loaded_model.compile(loss="mse", optimizer=Adam(beta_2=1 - 0.0016204733101599046, beta_1=0.8718839135783554,
-                                                        decay=7.770243145972892e-05, lr=0.0004961686075897741),
-                             metrics=['mse', 'mae', 'mape'])
-    elif predictor == 'gap':
-        loaded_model.compile(loss="mse", optimizer=Adam(beta_2=1 - 0.00010929248596488832, beta_1=0.8406735969305784,
-                                                        decay=0.00011224350434148253, lr=0.0006759924688701965),
-                             metrics=['mse', 'mae', 'mape'])
-    elif predictor in ['oxo', 'hat']:
-        # loaded_model.compile(loss="mse", optimizer=Adam(beta_2=0.9637165412871632, beta_1=0.7560951483268549,
-        #                                                 decay=0.0006651401379502965, lr=0.0007727366541920176),
-        #                      metrics=['mse', 'mae', 'mape']) #decomissioned on 06/20/2019 by Aditya. Using hyperparams from oxo20.
-        loaded_model.compile(loss="mse", optimizer=Adam(lr=0.0012838133056087084, beta_1=0.9811686522122317,
-                                                        beta_2=0.8264616523572279, decay=0.0005114008091318582),
-                             metrics=['mse', 'mae', 'mape'])
-    elif predictor == 'oxo20':
-        loaded_model.compile(loss="mse", optimizer=Adam(lr=0.0012838133056087084, beta_1=0.9811686522122317,
-                                                        beta_2=0.8264616523572279, decay=0.0005114008091318582),
-                             metrics=['mse', 'mae', 'mape'])
-    elif predictor == 'homo_empty':
-        loaded_model.compile(loss="mse", optimizer=Adam(lr=0.006677578283098809, beta_1=0.8556594887870226,
-                                                        beta_2=0.9463468021275508, decay=0.0006621877134674607),
-                             metrics=['mse', 'mae', 'mape'])
+    if compile:
+        from tensorflow.keras.optimizers.legacy import Adam
+        if predictor == 'homo':
+            loaded_model.compile(loss="mse", optimizer=Adam(beta_2=1 - 0.0016204733101599046, beta_1=0.8718839135783554,
+                                                            decay=7.770243145972892e-05, lr=0.0004961686075897741),
+                                 metrics=['mse', 'mae', 'mape'])
+        elif predictor == 'gap':
+            loaded_model.compile(loss="mse", optimizer=Adam(beta_2=1 - 0.00010929248596488832, beta_1=0.8406735969305784,
+                                                            decay=0.00011224350434148253, lr=0.0006759924688701965),
+                                 metrics=['mse', 'mae', 'mape'])
+        elif predictor in ['oxo', 'hat']:
+            # loaded_model.compile(loss="mse", optimizer=Adam(beta_2=0.9637165412871632, beta_1=0.7560951483268549,
+            #                                                 decay=0.0006651401379502965, lr=0.0007727366541920176),
+            #                      metrics=['mse', 'mae', 'mape']) #decomissioned on 06/20/2019 by Aditya. Using hyperparams from oxo20.
+            loaded_model.compile(loss="mse", optimizer=Adam(lr=0.0012838133056087084, beta_1=0.9811686522122317,
+                                                            beta_2=0.8264616523572279, decay=0.0005114008091318582),
+                                 metrics=['mse', 'mae', 'mape'])
+        elif predictor == 'oxo20':
+            loaded_model.compile(loss="mse", optimizer=Adam(lr=0.0012838133056087084, beta_1=0.9811686522122317,
+                                                            beta_2=0.8264616523572279, decay=0.0005114008091318582),
+                                 metrics=['mse', 'mae', 'mape'])
+        elif predictor == 'homo_empty':
+            loaded_model.compile(loss="mse", optimizer=Adam(lr=0.006677578283098809, beta_1=0.8556594887870226,
+                                                            beta_2=0.9463468021275508, decay=0.0006621877134674607),
+                                 metrics=['mse', 'mae', 'mape'])
 
-    elif predictor in ['geo_static_clf', 'sc_static_clf']:
-        loaded_model.compile(loss='binary_crossentropy',
-                             optimizer=Adam(lr=0.00005,
-                                            beta_1=0.95,
-                                            decay=0.0001,
-                                            amsgrad=True),
-                             metrics=['accuracy'])
-    else:
-        loaded_model.compile(loss="mse", optimizer='adam',
-                             metrics=['mse', 'mae', 'mape'])
+        elif predictor in ['geo_static_clf', 'sc_static_clf']:
+            loaded_model.compile(loss='binary_crossentropy',
+                                 optimizer=Adam(lr=0.00005, beta_1=0.95, decay=0.0001, amsgrad=True),
+                                 metrics=['accuracy'])
+        else:
+            loaded_model.compile(loss="mse", optimizer='adam',
+                                 metrics=['mse', 'mae', 'mape'])
     # print("Keras/tf model loaded for " + str(predictor) + " from disk")
-    return (loaded_model)
+    return loaded_model
 
 
 def tf_ANN_excitation_prepare(predictor: str, descriptors: List[float], descriptor_names: List[str]) -> np.ndarray:
@@ -537,12 +534,12 @@ def find_true_min_eu_dist(predictor: str,
     mat = load_training_data(predictor)
     train_mat = np.array(mat, dtype='float64')
     ## loop over rows
-    min_dist = 100000000.
+    min_dist = np.inf
     min_ind = 0
     for i, rows in enumerate(train_mat):
         scaled_row = np.squeeze(
             data_normalize(rows, train_mean_x.T, train_var_x.T, debug=debug))  # Normalizing the row before finding the distance
-        this_dist = np.linalg.norm(np.subtract(scaled_row, np.array(scaled_excitation)))
+        this_dist = float(np.linalg.norm(np.subtract(scaled_row, np.array(scaled_excitation))))  # Cast to float for mypy typing
         if this_dist < min_dist:
             min_dist = this_dist
             min_ind = i
@@ -684,7 +681,7 @@ def find_clf_lse(predictor: str,
                  excitation,
                  loaded_model,
                  ensemble: bool = False,
-                 modelname: str = None,
+                 modelname: Optional[str] = None,
                  debug: bool = False) -> np.ndarray:
     if modelname is None:
         modelname = "spectro"
@@ -720,15 +717,15 @@ def find_clf_lse(predictor: str,
             print(model_list)
             print(("Error: LSE cannot be calculated with modelname %s--The number of models is wrong." % modelname))
             return np.zeros_like(excitation)
-        fmat_train = np.array_split(fmat_train, 10, axis=0)
-        labels_train = np.array_split(labels_train, 10, axis=0)
+        fmat_train_split = np.array_split(fmat_train, 10, axis=0)
+        labels_train_split = np.array_split(labels_train, 10, axis=0)
         entropies_list = []
         for model in model_list:
             print(model)
             loaded_model = load_model(model)
             model_idx = int(model.split("/")[-1].split(".")[0].split("_")[-1])
-            _fmat_train = array_stack(fmat_train, model_idx)
-            _labels_train = array_stack(labels_train, model_idx)
+            _fmat_train = array_stack(fmat_train_split, model_idx)
+            _labels_train = array_stack(labels_train_split, model_idx)
             train_latent = get_layer_outputs(loaded_model, -4, _fmat_train, training_flag=False)
             test_latent = get_layer_outputs(loaded_model, -4, excitation, training_flag=False)
             nn_latent_dist_train, _, __ = dist_neighbor(train_latent, train_latent, _labels_train,
@@ -742,7 +739,8 @@ def find_clf_lse(predictor: str,
     return lse
 
 
-def save_model(model: tf.keras.Model, predictor: str, num: int = None, suffix: str = None):
+def save_model(model: tf.keras.Model, predictor: str,
+               num: Optional[int] = None, suffix: Optional[str] = None):
     key = get_key(predictor, suffix)
     base_path = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key)
     base_path = base_path + 'ensemble_models'

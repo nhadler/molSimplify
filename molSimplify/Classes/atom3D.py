@@ -23,7 +23,7 @@ class atom3D:
             partialcharge : int, optional
                 Charge assigned to atom when added to mol. Default is None.
     """
-    def __init__(self, Sym='C', xyz=None, name=False, partialcharge=None, Tfactor=0, greek='', occup=1.00, loc=''):
+    def __init__(self, Sym='C', xyz=None, name=False, partialcharge=None, Tfactor=0, greek='', occup=1.00, loc='', line=""):
 
         # Element symbol
         self.sym = Sym
@@ -74,6 +74,9 @@ class atom3D:
 
         # Conformation (only useful for proteins)
         self.loc = ""
+
+        # PDB line (only useful for proteins)
+        self.line = line
 
     def __repr__(self):
         """Returns all bound methods of the mol3D class..
@@ -143,7 +146,7 @@ class atom3D:
         dz = xyz[2]-point[2]
         return [dx, dy, dz]
 
-    def ismetal(self, transition_metals_only: bool = True) -> bool:
+    def ismetal(self, transition_metals_only=True):
         """ Identify whether an atom is a metal.
 
         Parameters

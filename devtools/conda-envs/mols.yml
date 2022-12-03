@@ -2,6 +2,7 @@ name: mols_test
 channels:
      - hjkgroup
      - psi4
+     - intel
      - conda-forge
      - anaconda
      - pytorch
@@ -9,10 +10,10 @@ channels:
      - defaults
 dependencies:
      - python=3.7
-     - openbabel
+     - openbabel=2.4
      - xtb
-     - psi4
-     - tensorflow
+     - psi4=1.5
+     - tensorflow=2.8
      - keras
      - pytorch
        #- torchvision, optional

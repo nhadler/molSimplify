@@ -146,7 +146,7 @@ def test_get_geometry_type_catoms_arr():
     mol.readfromxyz(xyz_file)
 
     with pytest.raises(ValueError):
-        geo_report = mol.get_geometry_type(num_coord=6, catoms_arr=[1], debug=True)
+        mol.get_geometry_type(num_coord=6, catoms_arr=[1], debug=True)
 
     geo_report = mol.get_geometry_type(num_coord=6, catoms_arr=[1, 4, 7, 10, 13, 16], debug=True)
 
