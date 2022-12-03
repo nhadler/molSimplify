@@ -1,14 +1,14 @@
 import helperFuncs as hp
-from packaging import version
-import openbabel
 
 
 def test_example_5(tmpdir):
     # There are two versions of this test depending on the openbabel version.
     # This is necessary because openbabel changed the numbering of atoms for v3.
-    if version.parse(openbabel.__version__) > version.parse('3.0.0'):
+    try:
+        # This is recommended method to import openbabel for v3
+        from openbabel import openbabel  # noqa: F401
         testName = "example_5_v3"
-    else:
+    except ImportError:
         testName = "example_5"
     threshMLBL = 0.1
     threshLG = 0.5
@@ -25,9 +25,11 @@ def test_example_5(tmpdir):
 def test_example_5_No_FF(tmpdir):
     # There are two versions of this test depending on the openbabel version.
     # This is necessary because openbabel changed the numbering of atoms for v3.
-    if version.parse(openbabel.__version__) > version.parse('3.0.0'):
+    try:
+        # This is recommended method to import openbabel for v3
+        from openbabel import openbabel  # noqa: F401
         testName = "example_5_v3"
-    else:
+    except ImportError:
         testName = "example_5"
     threshMLBL = 0.1
     threshLG = 0.5
