@@ -60,7 +60,7 @@ jobs:
     - name: Typecheck with mypy
       run: |
         # Ignore Informatics, job_manager, and molscontrol for now
-        mypy --ignore-missing-imports --exclude '(Informatics|molscontrol)' molSimplify
+        mypy --ignore-missing-imports --exclude '(frag_functionalizer|bridge_functionalizer|macrocycle_synthesis|molscontrol/_version)' molSimplify
 
     - name: Report Status
       # Slack notifications only on the main repo
