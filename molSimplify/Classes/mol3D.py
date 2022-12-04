@@ -3618,6 +3618,8 @@ class mol3D:
             if atom.ismetal():
                 metal_atom = atom
                 break
+        else:
+            raise ValueError('No metal found.')
         metal_coord = metal_atom.coords()
         for atom1 in self.atoms:
             if atom1.sym == 'H':
@@ -4666,12 +4668,12 @@ class mol3D:
                                                         debug=debug,
                                                         BondedOct=BondedOct,
                                                         angle_ref=angle_ref)
-            if not dict_lig_distort['rmsd_max'] == 'lig_mismatch':
-                _, catoms_arr = self.oct_comp(angle_ref, catoms_arr, debug=debug)
-            else:
-                print("Warning: Potential issues about lig_mismatch.")
+                if not dict_lig_distort['rmsd_max'] == 'lig_mismatch':
+                    _, catoms_arr = self.oct_comp(angle_ref, catoms_arr, debug=debug)
+                else:
+                    print("Warning: Potential issues about lig_mismatch.")
 
-            # Unsure if still needed. RM 22/07/19
+            # Unsure if still needed. RM 2022/07/19
             _, _ = self.check_angle_linear(catoms_arr=catoms_arr)
             if debug:
                 self.print_geo_dict()
@@ -4779,12 +4781,12 @@ class mol3D:
                                                         debug=debug,
                                                         BondedOct=BondedOct,
                                                         angle_ref=angle_ref)
-            if not dict_lig_distort['rmsd_max'] == 'lig_mismatch':
-                _, catoms_arr = self.oct_comp(angle_ref, catoms_arr, debug=debug)
-            else:
-                self.num_coord_metal = -1
-                print('!!!!!Should always match. WRONG!!!!!')
-            # Unsure if still needed. RM 22/07/19
+                if not dict_lig_distort['rmsd_max'] == 'lig_mismatch':
+                    _, catoms_arr = self.oct_comp(angle_ref, catoms_arr, debug=debug)
+                else:
+                    self.num_coord_metal = -1
+                    print('!!!!!Should always match. WRONG!!!!!')
+            # Unsure if still needed. RM 2022/07/19
             _, _ = self.check_angle_linear(catoms_arr=catoms_arr)
             if debug:
                 self.print_geo_dict()
@@ -5143,7 +5145,7 @@ class mol3D:
         return safedet
 
     def get_symmetry_denticity(self, return_eq_catoms=False):
-        """ 
+        """
         Get symmetry class of molecule.
 
         Parameters
@@ -5171,6 +5173,7 @@ class mol3D:
         # self.writexyz("test.xyz")
         from molSimplify.Classes.ligand import ligand_breakdown, ligand_assign_consistent, get_lig_symmetry
         liglist, ligdents, ligcons = ligand_breakdown(self)
+        flat_eq_ligcons = []
         try:
             _, _, _, _, _, _, _, eq_con_list, _ = ligand_assign_consistent(
                 self, liglist, ligdents, ligcons)
@@ -5221,7 +5224,7 @@ class mol3D:
             return eqsym, maxdent, ligdents, homoleptic, ligsymmetry, eq_catoms
 
     def is_sandwich_compound(self):
-        """ 
+        """
         Evaluates whether a compound is a sandwich compound
 
         Returns

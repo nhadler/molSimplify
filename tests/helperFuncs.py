@@ -538,6 +538,8 @@ def runtestgeo(tmpdir, name, thresh, deleteH=True, geo_type="oct"):
             init_mol=init_mol, dict_check=dict_oneempty_check_st,
             angle_ref=oneempty_angle_ref, num_coord=5, debug=False,
             flag_deleteH=deleteH)
+    else:
+        raise ValueError(f"Invalid geo_type {geo_type}")
     with open(refjson, "r") as fo:
         dict_ref = json.load(fo)
     # passGeo = (sorted(dict_ref.items()) == sorted(dict_struct_info.items()))
