@@ -399,10 +399,6 @@ def draw_supervisor(args, rundir):
 
 
 def rungen(rundir, args, chspfname, globs, write_files=True):
-    try:
-        from Classes.mWidgets import mQDialogInf
-    except ImportError:
-        args.gui = False
     emsg = False
     globs.nosmiles = 0  # reset smiles ligands for each run
     # check for specified ligands/functionalization
@@ -649,10 +645,11 @@ def rungen(rundir, args, chspfname, globs, write_files=True):
                     print('SGE jobscripts generated!')
 
             elif multidx != -1:  # if ligand input was a list of smiles strings, write good smiles strings to separate list
-                with open(ligfilename+'-good.smi', 'a') as f:
+                with open(ligfilename + '-good.smi', 'a') as f:
                     f.write(args.lig[0])
         elif not emsg:
             if args.gui:
+                from Classes.mWidgets import mQDialogInf
                 qq = mQDialogInf('Folder skipped', 'Folder ' +
                                  rootdir+' was skipped.')
                 qq.setParent(args.gui.wmain)

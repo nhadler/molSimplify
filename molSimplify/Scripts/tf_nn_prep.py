@@ -395,10 +395,8 @@ def tf_ANN_preproc(metal, oxstate, spin, ligs: List[str], occs: List[int], dents
 
         if catalysis:
             valid = False
-    if (not valid) and (not catalysis):
-        ANN_reason = 'found incorrect ligand symmetry'
-        # or, an invalid metal, oxidation state, spin state combination was used
-    elif not valid and catalysis:
+
+    if not valid and catalysis:
         if debug:
             print('tf_nn detects catalytic')
         ANN_reason = 'catalytic structure presented'
@@ -408,7 +406,11 @@ def tf_ANN_preproc(metal, oxstate, spin, ligs: List[str], occs: List[int], dents
     metal_mol.addAtom(atom3D(metal))
 
     net_lig_charge = 0
-    if valid or catalysis:
+    if (not valid) and (not catalysis):
+        ANN_reason = 'found incorrect ligand symmetry'
+        # or, an invalid metal, oxidation state, spin state combination was used
+        return valid, ANN_reason, ANN_attributes, catalysis
+    else:  # valid or catalysis:
         if debug:
             print('loading axial ligands')
         ax_ligands_list = list()
