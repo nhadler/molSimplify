@@ -414,9 +414,9 @@ def rungen(rundir, args, chspfname, globs, write_files=True):
             ligfilename = args.lig[0].split('.')[0]
         if args.lig:
             mligs, catoms, multidx = checkmultilig(args.lig)
-        if args.debug:
-            print(('after checking for multiple ligs, we found  ' +
-                   str(multidx) + ' ligands'))
+            if args.debug:
+                print('after checking for multiple ligs, we found '
+                      f'{multidx} ligands')
     # save initial
     smicat0 = [ss for ss in args.smicat] if args.smicat else False
     # loop over ligands
