@@ -1,13 +1,12 @@
 from molSimplify.Scripts.cellbuilder_tools import *
 from molSimplify.Classes.mol3D import mol3D
-from molSimplify.Informatics.autocorrelation import*
-from molSimplify.Informatics.misc_descriptors import*
-from molSimplify.Informatics.graph_analyze import*
+from molSimplify.Informatics.autocorrelation import *
+from molSimplify.Informatics.misc_descriptors import *
+from molSimplify.Informatics.graph_analyze import *
 from molSimplify.Informatics.RACassemble import *
 import os
 import numpy as np
 import pandas as pd
-from scipy.spatial import distance
 from scipy import sparse
 import itertools
 from molSimplify.Informatics.MOF.PBC_functions import *
