@@ -329,11 +329,13 @@ def tf_ANN_preproc(metal: str, oxstate, spin, ligs: List[str], occs: List[int], 
         emsg.append(
             "[ANN] Geometry is not supported at this time, MUST give -geometry = oct if you want an ANN prediction.")
         valid = False
-        ANN_reason = 'geometry not oct'
+        ANN_reason = 'geometry not octahedral'
+        return valid, ANN_reason, ANN_attributes, catalysis
     if not oxstate:
         emsg.append("\n oxidation state must be given for an ANN prediction.")
         valid = False
         ANN_reason = 'oxstate not given'
+        return valid, ANN_reason, ANN_attributes, catalysis
     if valid:
         oxidation_state = oxstate
         valid, oxidation_state = check_metal(this_metal, oxidation_state)
@@ -354,44 +356,45 @@ def tf_ANN_preproc(metal: str, oxstate, spin, ligs: List[str], occs: List[int], 
     if not valid and not catalysis:
         emsg.append("\n The only metals that are supported are Fe, Mn, Cr, Co, and Ni")
         emsg.append("\n Oxidation state not available for this metal")
-        ANN_reason = 'ox state not available for metal'
+        ANN_reason = 'metal / oxidation state combination not available'
+        return valid, ANN_reason, ANN_attributes, catalysis
     if valid:
         try:
             spin_classify(this_metal, spin, ox)
         except KeyError:
             valid = False
-    if not valid and not catalysis:
-        emsg.append("\n this spin state not available for this metal")
-        ANN_reason = 'spin state not available for metal'
+
     if emsg:
         print((str(" ".join(["ANN messages:"] + [str(i) for i in emsg]))))
 
-    if valid or catalysis:
-        (valid, axial_ligs, equatorial_ligs, ax_dent, eq_dent, ax_tcat, eq_tcat, axial_ind_list,
-         equatorial_ind_list, ax_occs, eq_occs, pentadentate) = tf_check_ligands(
-            ligs, batslist, dents, tcats, occs, debug)
+    if not valid and not catalysis:
+        emsg.append("\n this spin state not available for this metal")
+        ANN_reason = 'spin state not available for metal'
+        return valid, ANN_reason, ANN_attributes, catalysis
+    # Else, i.e. valid or catalysis
+    (valid, axial_ligs, equatorial_ligs, ax_dent, eq_dent, ax_tcat, eq_tcat, axial_ind_list,
+        equatorial_ind_list, ax_occs, eq_occs, pentadentate) = tf_check_ligands(
+        ligs, batslist, dents, tcats, occs, debug)
 
-        if debug:
-            print(("ligand validity is  " + str(valid)))
-            print(('Occs', occs))
-            print(('Ligands', ligs))
-            print(('Dents', dents))
-            print(('Bats (backbone atoms)', batslist))
-            print(('lig validity', valid))
-            print(('ax ligs', axial_ligs))
-            print(('eq ligs', equatorial_ligs))
-            print(('spin is', spin))
+    if debug:
+        print(("ligand validity is  " + str(valid)))
+        print(('Occs', occs))
+        print(('Ligands', ligs))
+        print(('Dents', dents))
+        print(('Bats (backbone atoms)', batslist))
+        print(('lig validity', valid))
+        print(('ax ligs', axial_ligs))
+        print(('eq ligs', equatorial_ligs))
+        print(('spin is', spin))
 
-        if catalysis:
-            valid = False
-
-    if not valid and catalysis:
+    if catalysis:
+        valid = False
         if debug:
             print('tf_nn detects catalytic')
         ANN_reason = 'catalytic structure presented'
 
     net_lig_charge = 0
-    if (not valid) and (not catalysis):
+    if not valid and not catalysis:
         ANN_reason = 'found incorrect ligand symmetry'
         # or, an invalid metal, oxidation state, spin state combination was used
         return valid, ANN_reason, ANN_attributes, catalysis
@@ -454,7 +457,7 @@ def tf_ANN_preproc(metal: str, oxstate, spin, ligs: List[str], occs: List[int], 
                     print(('decorating ' + str(eql) + ' with ' + str(
                         newdecs[equatorial_ind_list[ii]]) + ' at sites ' + str(newdec_inds[equatorial_ind_list[ii]])))
                 eq_lig3D = decorate_ligand(eql, newdecs[equatorial_ind_list[ii]],
-                                            newdec_inds[equatorial_ind_list[ii]], debug)
+                                           newdec_inds[equatorial_ind_list[ii]], debug)
                 c += 1
 
         eq_lig3D.convert2mol3D()  # mol3D representation of ligand
@@ -474,9 +477,9 @@ def tf_ANN_preproc(metal: str, oxstate, spin, ligs: List[str], occs: List[int], 
             l.mol.writexyz('eqlig-' + str(kk) + '.xyz')
     # make description of complex
     custom_ligand_dict = {"eq_ligand_list": eq_ligands_list,
-                            "ax_ligand_list": ax_ligands_list,
-                            "eq_con_int_list": [h.mol.cat for h in eq_ligands_list],
-                            "ax_con_int_list": [h.mol.cat for h in ax_ligands_list]}
+                          "ax_ligand_list": ax_ligands_list,
+                          "eq_con_int_list": [h.mol.cat for h in eq_ligands_list],
+                          "ax_con_int_list": [h.mol.cat for h in ax_ligands_list]}
 
     # placeholder for metal
     metal_mol = mol3D()
