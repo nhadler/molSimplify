@@ -1551,6 +1551,9 @@ def slab_module_supervisor(args, rootdir):
         if slab_gen:
             print(
                 '\n\n ************************ starting placement ***************** \n\n')
+            # Whoever started this obviously has not finished this part of the implementation:
+            # Variables needed in the next few lines, such as new_dup_vector are not assigned...
+            raise NotImplementedError()
         if not slab_gen:
             print(
                 '\n\n ************************ placement on existing slab  ***************** \n\n')

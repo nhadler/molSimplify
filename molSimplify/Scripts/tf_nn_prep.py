@@ -591,10 +591,12 @@ def evaluate_tmc_anns(this_complex: mol3D, metal: str, ox: int, spin: int,
                 'ls_iii', descriptors, descriptor_names, debug)
             r_hs, latent_r_hs = ANN_supervisor(
                 'hs_iii', descriptors, descriptor_names, debug)
-    if not high_spin:
-        r = r_ls[0]
-    else:
+        else:
+            raise ValueError(f'Oxidation state {ox} not available')
+    if high_spin:
         r = r_hs[0]
+    else:
+        r = r_ls[0]
 
     with DebugTimer('homo ANN', debug):
         homo, latent_homo = ANN_supervisor(

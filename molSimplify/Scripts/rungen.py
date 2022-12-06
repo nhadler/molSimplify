@@ -406,8 +406,6 @@ def rungen(rundir, args, chspfname, globs, write_files=True):
     # check for files specified for multiple ligands
     mligs, catoms = [False], [False]
     if args.lig is not None:
-        if '.smi' in args.lig[0]:
-            ligfilename = args.lig[0].split('.')[0]
         if args.lig:
             mligs, catoms, multidx = checkmultilig(args.lig)
             if args.debug:
@@ -643,10 +641,11 @@ def rungen(rundir, args, chspfname, globs, write_files=True):
                 elif args.jsched in 'SGE Sungrid sge':
                     sgejobgen(args, jobdirs)
                     print('SGE jobscripts generated!')
-
             elif multidx != -1:  # if ligand input was a list of smiles strings, write good smiles strings to separate list
-                with open(ligfilename + '-good.smi', 'a') as f:
-                    f.write(args.lig[0])
+                if '.smi' in args.lig[0]:
+                    ligfilename = args.lig[0].split('.')[0]
+                    with open(ligfilename + '-good.smi', 'a') as f:
+                        f.write(args.lig[0])
         elif not emsg:
             if args.gui:
                 from Classes.mWidgets import mQDialogInf
