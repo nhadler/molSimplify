@@ -213,7 +213,8 @@ def init_ANN(args, ligands: List[str], occs: List[int], dents: List[int],
     return ANN_flag, ANN_bondl, ANN_reason, ANN_attributes, catalysis_flag
 
 
-def init_template(args, cpoints_required, globs):
+def init_template(args, cpoints_required: int,
+                  globs) -> Tuple[mol3D, mol3D, str, list, int, mol3D]:
     """Initializes core and template mol3Ds and properties.
 
     Parameters
@@ -247,7 +248,7 @@ def init_template(args, cpoints_required, globs):
     # container for ordered list of core reference atoms
     corerefatoms = mol3D()
     # geometry load flag
-    geom = False
+    geom = 'unknown'
     backbatoms = []
     coord = 0
     # build mode
@@ -317,8 +318,8 @@ def init_template(args, cpoints_required, globs):
 
         # load core
         core, emsg = core_load(args.core)
-        if emsg:
-            return False, emsg
+        if core is None or emsg:
+            raise ValueError(emsg)
         core.convert2mol3D()
         core3D.copymol3D(core)
         m3D.copymol3D(core3D)
@@ -2869,7 +2870,6 @@ def generate_report(args, ligands, ligoc, licores, globs):
                           "ax_con_int_list": ax_cons}
     core3D = assemble_connectivity_from_parts(
         metal_mol, custom_ligand_dict)
-    name_core = args.core
 
     cpoints_required = 0
     for i, ligand_val in enumerate(ligands):
@@ -2975,7 +2975,6 @@ def structgen(args, rootdir, ligands, ligoc, globs, sernum, write_files=True):
                 args, ligands, ligoc, licores, globs)
             if args.debug:
                 print(('subcatoms_ext are ' + str(subcatoms_ext)))
-            name_core = args.core
             if emsg:
                 return False, emsg
     else:
@@ -2987,7 +2986,8 @@ def structgen(args, rootdir, ligands, ligoc, globs, sernum, write_files=True):
         else:
             atom = atom3D(Sym=args.core, xyz=[0, 0, 0])
             core3D.addAtom(atom)
-        name_core = args.core
+
+    name_core = args.core
 
     if args.calccharge:
         args.charge = core3D.charge
