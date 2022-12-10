@@ -46,7 +46,6 @@ from molSimplify.Classes.globalvars import (elementsbynum,
                                             romans,
                                             )
 from molSimplify.Informatics.decoration_manager import (decorate_ligand)
-from molSimplify.Informatics.RACassemble import (assemble_connectivity_from_parts)
 from molSimplify.Classes.ligand import ligand as ligand_class
 import logging
 
@@ -2849,27 +2848,9 @@ def generate_report(args, ligands, ligoc, licores, globs):
     # sort by descending denticity (needed for adjacent connection atoms)
     ligandsU, occsU, dentsU = ligs, occs0, dentl  # save unordered lists
     indcs = smartreorderligs(ligs, dentl, args.ligalign)
-    lig_instances = [ligs[i] for i in indcs]  # sort ligands list
     occs = [occs0[i] for i in indcs]    # sort occurrences list
     tcats = [cats0[i] for i in indcs]   # sort connections list
     dents = [dentl[i] for i in indcs]   # sort denticities list
-    # CURRENTLY ASSUMES EQ, AX1, AX2 in that ORDER, CANNOT HANDLE DENTICITIES OUT OF 1, 2, 4
-    eq_number = int(4/dents[0])
-    eq_cons = eq_number*[cons[0]]
-    eq_ligs = eq_number*[lig_instances[0]]
-    if (len(dents) > 1) and (dents[-2] == 2):
-        ax_ligs = 1*[lig_instances[-2]]
-        ax_cons = 1*[cons[-2]]
-    else:
-        ax_ligs = [lig_instances[-2], lig_instances[-1]]
-        ax_cons = [cons[-2], cons[-1]]
-
-    custom_ligand_dict = {"eq_ligand_list": eq_ligs,
-                          "ax_ligand_list": ax_ligs,
-                          "eq_con_int_list": eq_cons,
-                          "ax_con_int_list": ax_cons}
-    core3D = assemble_connectivity_from_parts(
-        metal_mol, custom_ligand_dict)
 
     cpoints_required = 0
     for i, ligand_val in enumerate(ligands):
