@@ -12,7 +12,7 @@ import openbabel
 import random
 import itertools
 import numpy as np
-from typing import Any, List, Tuple, Dict
+from typing import Any, List, Tuple, Dict, Union
 from molSimplify.Scripts.distgeom import GetConf
 from molSimplify.Scripts.geometry import (aligntoaxis2,
                                           best_fit_plane,
@@ -601,7 +601,7 @@ def smartreorderligs(ligs: List[str], dentl: List[int],
 
 
 def ffopt(ff: str, mol, connected, constopt, frozenats, frozenangles,
-          mlbonds, nsteps: int, spin: int = 1, debug: bool = False):
+          mlbonds, nsteps: Union[int, str], spin: int = 1, debug: bool = False):
     """Main constrained FF opt routine.
 
     Parameters
@@ -656,7 +656,7 @@ def ffopt(ff: str, mol, connected, constopt, frozenats, frozenangles,
 
 
 def openbabel_ffopt(ff: str, mol: mol3D, connected, constopt, frozenats, frozenangles,
-                    mlbonds, nsteps: int, debug: bool = False) -> Tuple[mol3D, float]:
+                    mlbonds, nsteps: Union[int, str], debug: bool = False) -> Tuple[mol3D, float]:
     """ OpenBabel constraint optimization. To optimize metal-containing
     complexes with MMFF94, an intricate procedure of masking the metal
     atoms and manually editing their valences is applied. OpenBabel's
@@ -846,7 +846,7 @@ def openbabel_ffopt(ff: str, mol: mol3D, connected, constopt, frozenats, frozena
 
 
 def xtb_opt(ff: str, mol: mol3D, connected, constopt, frozenats, frozenangles,
-            mlbonds, nsteps: int, spin: int = 1, inertial: bool = False,
+            mlbonds, nsteps: Union[int, str], spin: int = 1, inertial: bool = False,
             debug: bool = False) -> Tuple[mol3D, float]:
     """ XTB optimization. Writes an input file (xtb.in) containing
     all the constraints and parameters to a temporary folder,
@@ -2246,7 +2246,7 @@ def align_dent3_lig(args, cpoint, batoms, m3D, core3D, coreref, ligand, lig3D,
     return lig3D_aligned, frozenats, MLoptbds
 
 
-def mcomplex(args, ligs, ligoc, licores, globs):
+def mcomplex(args, ligs, ligoc, licores, globs):  # -> Tuple[mol3D, List[mol3D], str, run_diag, List, List]:
     """Main ligand placement routine
 
     Parameters
@@ -2268,7 +2268,7 @@ def mcomplex(args, ligs, ligoc, licores, globs):
             mol3D class instance for core.
         complex3D : mol3D
             mol3D class instance for built complex.
-        emsg : bool
+        emsg : str
             Flag for error. String if error, with error message.
         this_diag: run_diag
             run_diag class instance of the complex.
@@ -2288,7 +2288,8 @@ def mcomplex(args, ligs, ligoc, licores, globs):
         # import gui options
         from Classes.mWidgets import mQDialogWarn
     # initialize variables
-    emsg, complex3D = False, []
+    emsg = ''
+    complex3D = []
     occs0 = []      # occurrences of each ligand
     toccs = 0       # total occurrence count (number of ligands)
     smilesligs = 0  # count how many smiles strings
@@ -2906,7 +2907,7 @@ def generate_report(args, ligands, ligoc, licores, globs):
     return core3D, complex3D, emsg, this_diag, subcatoms_ext, mligcatoms_ext
 
 
-def structgen(args, rootdir, ligands, ligoc, globs, sernum, write_files=True):
+def structgen(args, rootdir, ligands, ligoc, globs, sernum, write_files=True) -> Tuple[List[str], str, run_diag]:
     """Main structure generation routine - multiple structures
 
     Parameters
@@ -2931,15 +2932,15 @@ def structgen(args, rootdir, ligands, ligoc, globs, sernum, write_files=True):
     -------
         strfiles : str
             List of XYZ files.
-        emsg : bool
+        emsg : str
             Error message for structure generation. If True, has string.
         this_diag : run_diag
             run_diag class instance containing properties of structure.
 
     """
-    emsg = False
+    emsg = ''
 
-    strfiles = []
+    strfiles: List[str] = []
     # load ligand dictionary
     licores = getlicores()
     # build structure
@@ -2950,14 +2951,14 @@ def structgen(args, rootdir, ligands, ligoc, globs, sernum, write_files=True):
             core3D, complex3D, emsg, this_diag, subcatoms_ext, mligcatoms_ext = generate_report(
                 args, ligands, ligoc, licores, globs)
             if emsg:
-                return False, emsg
+                return strfiles, emsg, this_diag
         else:
             core3D, complex3D, emsg, this_diag, subcatoms_ext, mligcatoms_ext = mcomplex(
                 args, ligands, ligoc, licores, globs)
             if args.debug:
                 print(('subcatoms_ext are ' + str(subcatoms_ext)))
             if emsg:
-                return False, emsg
+                return strfiles, emsg, this_diag
     else:
         print('You specified no ligands. The whole mcomplex is read from the core.')
         # read mol3D from core

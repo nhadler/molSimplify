@@ -399,7 +399,7 @@ def draw_supervisor(args, rundir):
 
 
 def rungen(rundir, args, chspfname, globs, write_files=True):
-    emsg = False
+    emsg = ''
     globs.nosmiles = 0  # reset smiles ligands for each run
     # check for specified ligands/functionalization
     ligocc = []
@@ -523,7 +523,7 @@ def rungen(rundir, args, chspfname, globs, write_files=True):
                 os.mkdir(rootcheck)
             except FileExistsError:
                 print(('Directory '+rootcheck+' can not be created. Exiting..\n'))
-                return
+                return 'Directory '+rootcheck+' can not be created. Exiting..'
             # check for actual directory
         if os.path.isdir(rootdir) and not args.checkdirb and not skip and not args.jobdir:
             args.checkdirb = True
@@ -656,5 +656,5 @@ def rungen(rundir, args, chspfname, globs, write_files=True):
                 print(('Folder '+rootdir+' was skipped..\n'))
     if write_files:
         return emsg  # Default behavior
-    else:
-        return strfiles, emsg, this_diag  # Assume that user wants these if they're not writing files
+    # else:
+    return strfiles, emsg, this_diag  # Assume that user wants these if they're not writing files
