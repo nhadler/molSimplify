@@ -12,7 +12,7 @@ import openbabel
 import random
 import itertools
 import numpy as np
-from typing import Any, List, Tuple, Dict, Union
+from typing import Any, List, Tuple, Dict, Union, Optional
 from molSimplify.Scripts.distgeom import GetConf
 from molSimplify.Scripts.geometry import (aligntoaxis2,
                                           best_fit_plane,
@@ -600,7 +600,7 @@ def smartreorderligs(ligs: List[str], dentl: List[int],
     return indices
 
 
-def ffopt(ff: str, mol, connected, constopt, frozenats, frozenangles,
+def ffopt(ff: str, mol: mol3D, connected, constopt, frozenats: List[int], frozenangles,
           mlbonds, nsteps: Union[int, str], spin: int = 1, debug: bool = False):
     """Main constrained FF opt routine.
 
@@ -1927,7 +1927,8 @@ def align_dent2_catom2_refined(args, lig3D, catoms, bondl, r1, r0, core3D, rtarg
 def align_dent1_lig(args, cpoint, core3D, coreref, ligand, lig3D, catoms,
                     rempi=False, ligpiatoms=[], MLb=[], ANN_flag=False,
                     ANN_bondl: float = np.nan, this_diag=0, MLbonds=dict(),
-                    MLoptbds=None, i=0, EnableAutoLinearBend=True):
+                    MLoptbds: Optional[List[float]] = None, i: int = 0,
+                    EnableAutoLinearBend=True) -> Tuple[mol3D, List[float]]:
     """Aligns a monodentate ligand to core connecting atom coordinates.
 
     Parameters
@@ -2013,7 +2014,8 @@ def align_dent1_lig(args, cpoint, core3D, coreref, ligand, lig3D, catoms,
 
 def align_dent2_lig(args, cpoint, batoms, m3D, core3D, coreref, ligand, lig3D,
                     catoms, MLb, ANN_flag, ANN_bondl: float, this_diag, MLbonds,
-                    MLoptbds, frozenats, i):
+                    MLoptbds: List[float], frozenats: List[int], i: int
+                    ) -> Tuple[mol3D, List[int], List[float]]:
     """Aligns a bidentate ligand to core connecting atom coordinates.
 
     Parameters
@@ -2103,7 +2105,8 @@ def align_dent2_lig(args, cpoint, batoms, m3D, core3D, coreref, ligand, lig3D,
 
 def align_dent3_lig(args, cpoint, batoms, m3D, core3D, coreref, ligand, lig3D,
                     catoms, MLb, ANN_flag, ANN_bondl, this_diag, MLbonds,
-                    MLoptbds, frozenats, i):
+                    MLoptbds: List[float], frozenats: List[int], i: int
+                    ) -> Tuple[mol3D, List[int], List[float]]:
     """Aligns a tridentate ligand to core connecting atom coordinates
 
     Parameters
@@ -2289,7 +2292,7 @@ def mcomplex(args, ligs, ligoc, licores, globs):  # -> Tuple[mol3D, List[mol3D],
         from Classes.mWidgets import mQDialogWarn
     # initialize variables
     emsg = ''
-    complex3D = []
+    complex3D: List[mol3D] = []
     occs0 = []      # occurrences of each ligand
     toccs = 0       # total occurrence count (number of ligands)
     smilesligs = 0  # count how many smiles strings
@@ -2498,7 +2501,7 @@ def mcomplex(args, ligs, ligoc, licores, globs):  # -> Tuple[mol3D, List[mol3D],
             # initialize ligand
             lig3D, rempi, ligpiatoms = init_ligand(args, lig, tcats, keepHs, i)
             if emsg:
-                return False, emsg
+                return core3D, complex3D, emsg, this_diag, subcatoms_ext, mligcatoms_ext
         # Skip = False
         for j in range(0, occs[i]):  # The number of occurrences of the current ligand.
             if args.debug:
