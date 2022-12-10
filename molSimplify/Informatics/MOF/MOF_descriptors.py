@@ -473,7 +473,7 @@ def failure_response(path, failure_str):
     write2file(path,"/FailedStructures.log",failure_str)
     return full_names, full_descriptors
 
-def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=False):
+def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=False, wiggle_room=1, max_num_atoms=2000):
     """
     Generates RAC descriptors on a MOF.
     Writes three files: sbu_descriptors.csv, linker_descriptors.csv, and lc_descriptors.csv
@@ -497,6 +497,10 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
     graph_provided : bool
         Whether or not the cif file has graph information of the structure (i.e. what atoms are bonded to what atoms). 
         If not, computes the N^2 pairwise distance matrix, which is expensive.
+    wiggle_room : float
+        A multiplier that allows for more or less strict bond distance cutoffs.
+    max_num_atoms : int
+        The maximum number of atoms in the unit cell for which analysis is conducted.
 
     Returns
     -------
@@ -530,9 +534,9 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
     cell_v = mkcell(cpar)
     cart_coords = fractional2cart(fcoords, cell_v)
     name = os.path.basename(data).strip(".cif")
-    if len(cart_coords) > 2000: # Don't deal with large cifs because of computational resources required for their treatment.
+    if len(cart_coords) > max_num_atoms: # Don't deal with large cifs because of computational resources required for their treatment.
         print("Too large cif file, skipping it for now...")
-        failure_str = f"Failed to featurize {name}: large primitive cell\n"
+        failure_str = f"Failed to featurize {name}: large primitive cell\n {len(cart_coords)} atoms"
         full_names, full_descriptors = failure_response(path, failure_str)
         return full_names, full_descriptors
 
@@ -542,7 +546,7 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
     if not graph_provided: # Make the adjacency matrix.
         distance_mat = compute_distance_matrix3(cell_v,cart_coords)
         try:
-            adj_matrix=compute_adj_matrix(distance_mat,allatomtypes)
+            adj_matrix,_=compute_adj_matrix(distance_mat,allatomtypes,wiggle_room)
         except NotImplementedError:
             failure_str = f"Failed to featurize {name}: atomic overlap\n"
             full_names, full_descriptors = failure_response(path, failure_str)

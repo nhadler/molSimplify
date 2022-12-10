@@ -5,7 +5,7 @@
 #
 #  Dpt of Chemical Engineering, MIT
 
-from molSimplify.Classes.AA3D import AA3D
+from molSimplify.Classes.monomer3D import monomer3D
 from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Classes.atom3D import atom3D
 
@@ -39,14 +39,14 @@ def read_atom(line):
 
 
 def makeMol(a_dict, mols, conf, chains, prev_a_dict, bonds, aa=True):
-    """ Creates an AA3D from a_dicts and adds it to the appropriate places.
+    """ Creates an monomer3D from a_dicts and adds it to the appropriate places.
 
     Parameters
     ----------
         a_dict : dictionary
             created from the read_atom method
         mols : dictionary
-            keyed by chain and location, valued by AA3Ds or mol3Ds
+            keyed by chain and location, valued by monomer3Ds or mol3Ds
         conf : list
             contains amino acid conformations
         chains : dictionary
@@ -56,7 +56,7 @@ def makeMol(a_dict, mols, conf, chains, prev_a_dict, bonds, aa=True):
         bonds : dictionary
             contains bonding info
         aa : boolean
-            True if mols consists of AA3Ds, False if consists of mol3Ds
+            True if mols consists of monomer3Ds, False if consists of mol3Ds
 
     Returns
     -------
@@ -70,7 +70,7 @@ def makeMol(a_dict, mols, conf, chains, prev_a_dict, bonds, aa=True):
     key = (a_dict['ChainID'], a_dict['ResSeq'])
     if key not in mols.keys():
         if aa:
-            m = AA3D(a_dict['ResName'], a_dict['ChainID'], a_dict['ResSeq'],
+            m = monomer3D(a_dict['ResName'], a_dict['ChainID'], a_dict['ResSeq'],
                      a_dict['Occupancy'], loc)
         else:
             m = mol3D(a_dict['ResName'], loc)
@@ -79,7 +79,7 @@ def makeMol(a_dict, mols, conf, chains, prev_a_dict, bonds, aa=True):
         li = ord(ploc)
         if loc > chr(li) and len(mols[key]) <= li-64:
             if aa:
-                m = AA3D(a_dict['ResName'], a_dict['ChainID'],
+                m = monomer3D(a_dict['ResName'], a_dict['ChainID'],
                          a_dict['ResSeq'], a_dict['Occupancy'], loc)
                 m.temp_list = mols[key][-1].temp_list
             else:
@@ -94,7 +94,7 @@ def makeMol(a_dict, mols, conf, chains, prev_a_dict, bonds, aa=True):
                     weirdo = False
             if weirdo:
                 if aa:
-                    m = AA3D(a_dict['ResName'], a_dict['ChainID'],
+                    m = monomer3D(a_dict['ResName'], a_dict['ChainID'],
                              a_dict['ResSeq'], a_dict['Occupancy'], loc)
                     m.temp_list = mols[key][-1].temp_list
                 else:
