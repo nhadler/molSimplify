@@ -549,13 +549,11 @@ def find_true_min_eu_dist(predictor: str,
 
     if debug:
         print(('min dist EU is ' + str(min_dist)))
-    if predictor in ['oxo', 'hat', 'homo', 'gap']:
-        if predictor in ['homo', 'gap']:
-            key = 'homolumo/' + predictor + '_train_names'
-        elif predictor in ['oxo', 'hat']:
-            key = 'oxocatalysis/' + predictor + '_train_names'
-        elif predictor in ['oxo20', 'homo_empty']:
-            key = 'oxoandhomo/' + predictor + '_train_names'
+    folder_dict = {'homo': 'homolumo', 'gap': 'homolumo',
+                   'oxo': 'oxocatalysis', 'hat': 'oxocatalysis',
+                   'oxo20': 'oxoandhomo', 'homo_empty': 'oxoandhomo'}
+    if predictor in folder_dict:
+        key = f'{folder_dict[predictor]}/{predictor}_train_names'
         path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.csv')
         with open(path_to_file, "r") as f:
             csv_lines = list(csv.reader(f))
@@ -664,13 +662,11 @@ def find_ANN_latent_dist(predictor, latent_space_vector, debug=False):
     # flatten min row
     if debug:
         print(('min dist is ' + str(min_dist) + ' at  ' + str(min_ind)))
-    if predictor in ['oxo', 'hat', 'homo', 'gap']:
-        if predictor in ['homo', 'gap']:
-            key = 'homolumo/' + predictor + '_train_names'
-        elif predictor in ['oxo', 'hat']:
-            key = 'oxocatalysis/' + predictor + '_train_names'
-        elif predictor in ['oxo20', 'homo_empty']:
-            key = 'oxoandhomo/' + predictor + '_train_names'
+    folder_dict = {'homo': 'homolumo', 'gap': 'homolumo',
+                   'oxo': 'oxocatalysis', 'hat': 'oxocatalysis',
+                   'oxo20': 'oxoandhomo', 'homo_empty': 'oxoandhomo'}
+    if predictor in folder_dict:
+        key = f'{folder_dict[predictor]}/{predictor}_train_names'
         path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.csv')
         with open(path_to_file, "r") as f:
             csv_lines = list(csv.reader(f))
@@ -686,13 +682,13 @@ def find_clf_lse(predictor: str,
                  debug: bool = False) -> np.ndarray:
     if modelname is None:
         modelname = "spectro"
-        if predictor == "geo_static_clf":
-            avrg_latent_dist = 33.21736244173539
-        elif predictor == "sc_static_clf":
-            avrg_latent_dist = 38.276809428032685
-        else:
-            print("Unknown model type")
-            return np.zeros_like(excitation)
+    if predictor == "geo_static_clf":
+        avrg_latent_dist = 33.21736244173539
+    elif predictor == "sc_static_clf":
+        avrg_latent_dist = 38.276809428032685
+    else:
+        print("Unknown model type")
+        return np.zeros_like(excitation)
     key = get_key(predictor, suffix='')
     base_path = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key)
     train_mean_x, train_mean_y, train_var_x, train_var_y = load_normalization_data(predictor)

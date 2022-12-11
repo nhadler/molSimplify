@@ -112,6 +112,8 @@ def call_bash(string, error=False, version=1):
         p = subprocess.Popen(string.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     elif version == 2:
         p = subprocess.Popen(string, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    else:
+        raise NotImplementedError(f"Unknown version {version}")
     out, err = p.communicate()
 
     if sys.version_info > (3, 0):
@@ -256,7 +258,7 @@ def list_active_jobs(ids=False, home_directory=False, parse_bundles=False):
     if get_machine() == 'gibraltar':
         names = job_report.wordgrab('jobname:', 2)[0]
         names = [i for i in names if i]  # filters out NoneTypes
-    elif get_machine() in ['comet', 'bridges', "mustang", "supercloud",'expanse']:
+    elif get_machine() in ['comet', 'bridges', "mustang", "supercloud", 'expanse']:
         names = job_report.wordgrab(get_username(), 2)[0]
         names = [i for i in names if i]  # filters out NoneTypes
     else:
@@ -265,14 +267,18 @@ def list_active_jobs(ids=False, home_directory=False, parse_bundles=False):
         job_ids = []
         if get_machine() == 'gibraltar':
             line_indices_of_jobnames = job_report.wordgrab('jobname:', 2, matching_index=True)[0]
-        elif get_machine() in ['comet', 'bridges', "mustang", "supercloud",'expanse']:
+        elif get_machine() in ['comet', 'bridges', "mustang", "supercloud", 'expanse']:
             line_indices_of_jobnames = job_report.wordgrab(get_username(), 2, matching_index=True)[0]
+        else:
+            raise ValueError
         line_indices_of_jobnames = [i for i in line_indices_of_jobnames if i]  # filters out NoneTypes
         for line_index in line_indices_of_jobnames:
             if get_machine() == 'gibraltar':
                 job_ids.append(int(job_report.lines[line_index - 1].split()[0]))
-            elif get_machine() in ['comet', 'bridges', "mustang", "supercloud",'expanse']:
+            elif get_machine() in ['comet', 'bridges', "mustang", "supercloud", 'expanse']:
                 job_ids.append(int(job_report.lines[line_index].split()[0]))
+            else:
+                raise ValueError
         if len(names) != len(job_ids):
             print(len(names))
             print(len(job_ids))

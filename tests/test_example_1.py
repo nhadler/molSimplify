@@ -13,6 +13,7 @@ def test_example_1(tmpdir):
     assert passLG
     assert passOG
     assert pass_report
+    assert hp.runtest_reportonly(tmpdir, testName)
 
 
 def test_example_1_No_FF(tmpdir):

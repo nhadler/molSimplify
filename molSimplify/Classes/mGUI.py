@@ -1594,6 +1594,7 @@ class mGUI():
                 self.DBWindow, 'Error', 'Please specify molecule and name!')
         else:
             # add to database
+            emsg = ''
             if 'ligand' in coption:
                 emsg = addtoldb(smimol, sminame, smident,
                                 smicat, smigrps, smictg, ffopt)
