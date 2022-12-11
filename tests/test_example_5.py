@@ -5,7 +5,7 @@ def test_example_5(tmpdir):
     # There are two versions of this test depending on the openbabel version.
     # This is necessary because openbabel changed the numbering of atoms for v3.
     try:
-        # This is recommended method to import openbabel for v3
+        # This is the recommended method to import openbabel for v3
         from openbabel import openbabel  # noqa: F401
         testName = "example_5_v3"
     except ImportError:
@@ -26,7 +26,7 @@ def test_example_5_No_FF(tmpdir):
     # There are two versions of this test depending on the openbabel version.
     # This is necessary because openbabel changed the numbering of atoms for v3.
     try:
-        # This is recommended method to import openbabel for v3
+        # This is the recommended method to import openbabel for v3
         from openbabel import openbabel  # noqa: F401
         testName = "example_5_v3"
     except ImportError:
