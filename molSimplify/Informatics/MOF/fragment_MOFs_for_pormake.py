@@ -545,7 +545,7 @@ def make_MOF_fragments(data, depth, path=False, xyzpath = False):
         return None, None
     distance_mat = compute_distance_matrix2(cell_v,cart_coords)
     try:
-        adj_matrix=compute_adj_matrix(distance_mat,allatomtypes)
+        adj_matrix, _ =compute_adj_matrix(distance_mat,allatomtypes)
     except NotImplementedError:
         tmpstr = "Failed to featurize %s: atomic overlap\n"%(name)
         write2file(path,"/FailedStructures.log",tmpstr)
@@ -644,11 +644,5 @@ def make_MOF_fragments(data, depth, path=False, xyzpath = False):
         print('=== SKIPPING DUE TO LINKER BEING TOO SHORT!')
         return 3
 
-    return_code = breakdown_MOF(SBU_list, SBU_subgraphlist, molcif, depth, name , cell_v,anc_atoms, sbupath, connections_list, connections_subgraphlist,linkerpath)
+    return_code = breakdown_MOF(SBU_list, SBU_subgraphlist, molcif, depth, name, cell_v, anc_atoms, sbupath, connections_list, connections_subgraphlist, linkerpath)
     return return_code
-
-
-
-
-
-
