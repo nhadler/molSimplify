@@ -118,6 +118,7 @@ def readcif(name):
             #     if char.isdigit(): # This means one of the characters in the atom type is a number.
             #         at_type = ln[type_index][:idx] # Overwriting. Use the atom element symbol without numbers.
             #         break # Get the characters up to the number, then stop
+            at_type = at_type.capitalize()
             atomtypes.append(at_type)
 
         cpar=np.array([cell_a,cell_b,cell_c,cell_alpha,cell_beta,cell_gamma])
@@ -584,24 +585,24 @@ def findPaths(G,u,n):
         # Example of paths: [[12, 3, 7, 6], [12, 3, 7, 14], [12, 4, 0, 14], [12, 4, 0, 15], [12, 4, 9, 5], [12, 4, 9, 11]]
     return paths
 
-def fractional2cart(fcoord, cell):
+def fractional2cart(fcoords, cell):
     """
     Convert from fractional coordinates to Cartesian coordinates.
 
     Parameters
     ----------
-    fcoord : numpy.ndarray
+    fcoords : numpy.ndarray
         The fractional positions of the atoms of the cif file. Shape is (number of atoms, 3).
     cell : The three Cartesian vectors representing the edges of the crystal cell.
         Shape is (3,3).
 
     Returns
     -------
-    np.dot(fcoord,cell) : numpy.ndarray
+    np.dot(fcoords,cell) : numpy.ndarray
         The Cartesian coordinates of the crystal atoms. Shape is (number of atoms, 3).
 
     """
-    return np.dot(fcoord,cell)
+    return np.dot(fcoords,cell)
 
 def frac_coord(coord, cell):
     """
@@ -757,7 +758,7 @@ def make_supercell(cell,atoms,fcoords,exp_coeff):
     return supercell,superatoms,superfcoords
 
 
-def compute_adj_matrix(distance_mat,allatomtypes):
+def compute_adj_matrix(distance_mat,allatomtypes,wiggle_room=1,handle_overlap=False):
     """
     Calculates what atoms are bonded to each other.
 
@@ -770,14 +771,21 @@ def compute_adj_matrix(distance_mat,allatomtypes):
         The distance of each atom to each other atom. Shape is (number of atoms, number of atoms).
     allatomtypes : list of str
         The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms.
+    wiggle_room : float
+        A multiplier that allows for more or less strict bond distance cutoffs.
+    handle_overlap : bool
+        Indicates whether to provide diagnostics for atoms that are overlapping, or to just raise an error if it finds overlaps
 
     Returns
     -------
     sparse.csr_matrix(adj_matrix) : scipy.sparse.csr.csr_matrix
         1 represents a bond, 0 represents no bond. Shape is (number of atoms, number of atoms).
+    overlap_atoms : list
+        Indices of atoms that overlap with any atom of a lower index.
 
     """
 
+    overlap_atoms = []
     adj_matrix=np.zeros(distance_mat.shape)
     for i,e1 in enumerate(allatomtypes[:-1]): # Iterating through all pairs of atoms.
         for j,e2 in enumerate(allatomtypes[i+1:]):
@@ -791,8 +799,13 @@ def compute_adj_matrix(distance_mat,allatomtypes):
             dist = distance_mat[i,i+j+1]
             # check for atomic overlap:
             if dist < min(COVALENT_RADII[e1] , COVALENT_RADII[e2]):
-                print("atomic overlap!")
-                raise NotImplementedError
+                print(f"Atomic overlap involving atom {i} and {i+j+1}! Zero-indexed.")
+                print(f"dist is {dist} and the cutoff is {min(COVALENT_RADII[e1] , COVALENT_RADII[e2])}")
+                if handle_overlap:
+                    overlap_atoms.append(i+j+1) # The atom with index i+j+1 overlapped with another atom.
+                else:   
+                    print('Overlapping atoms! Error')
+                    raise NotImplementedError # Exit the function.
             tempsf = 0.9 # This is modified below under certain conditions, to account for looser or tigher bonding.
             # There is probably a better way to fix these kinds of issues.
             # In the context of sets, & is the intersection. If the intersection is null, the (&) expression is False.
@@ -823,11 +836,14 @@ def compute_adj_matrix(distance_mat,allatomtypes):
                 tempsf = 0.95
             if(elements ==set(["C"]) ):
                 tempsf = 0.85
-            if dist*tempsf < rad: # and not (alkali & elements):
+            if dist*tempsf < rad * wiggle_room: # and not (alkali & elements):
                 # Entering this if statement means there is a bond between the two atoms.
                 adj_matrix[i,i+j+1]=1
                 adj_matrix[i+j+1,i]=1
-    return sparse.csr_matrix(adj_matrix)
+
+        # Removing duplicates and sorting.
+        overlap_atoms = [*set(overlap_atoms)]
+    return sparse.csr_matrix(adj_matrix), overlap_atoms
 
 
 
@@ -1003,10 +1019,70 @@ def disorder_detector(name):
 
         return disordered_atom_indices, disordered_atom_types, disordered_atom_occupancies
 
-def solvent_removal(cif_path, new_cif_path):
+def remove_duplicate_atoms(allatomtypes, fcoords):
     """
-    It is recommended that get_primitive be run before this function is applied.
-    Reads a cif file, removes floating solvent, and writes the cif to the provided path.
+    Removes any atoms that have the exact same coordinate as a lower index atom.
+    This pops up after removing symmetry with Vesta. Symmetry removal helps the molSimplify code get connectivity right.
+
+    Parameters
+    ----------
+    allatomtypes : list of str
+        The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms.
+    fcoords : numpy.ndarray
+        The fractional positions of the atoms of the cif file. Shape is (number of atoms, 3).
+
+    Returns
+    -------
+    allatomtypes_trim : list of str
+        The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms. 
+        All duplicate atoms removed.
+    fcoords_trim : numpy.ndarray
+        The fractional positions of the atoms of the cif file. Shape is (number of atoms, 3).
+        All duplicate atoms removed.
+
+    """
+
+    # Get the unique fractional coordinate 3-tuples.
+    fcoords_trim, indices = np.unique(fcoords, axis=0, return_index=True)
+    # Get the atom types of the unique fractional coordinates.
+    allatomtypes_trim = [allatomtypes[_i] for _i in indices]
+
+    return allatomtypes_trim, fcoords_trim
+
+def remove_undesired_atoms(undesired_indices, allatomtypes, fcoords):
+    """
+    Takes a list of indices, and removes those elements from allatomtypes and fcoords.
+
+    Parameters
+    ----------
+    undesired_indices : list
+        The indices of the atoms to remove.
+    allatomtypes : list of str
+        The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms.
+    fcoords : numpy.ndarray
+        The fractional positions of the atoms of the cif file. Shape is (number of atoms, 3).
+
+    Returns
+    -------
+    allatomtypes_trim : list of str
+        The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms. 
+        All undesired atoms removed.
+    fcoords_trim : numpy.ndarray
+        The fractional positions of the atoms of the cif file. Shape is (number of atoms, 3).
+        All undesired atoms removed.
+
+    """
+    number_of_atoms = len(allatomtypes)
+    desired_indices = [_i for _i in list(range(number_of_atoms)) if (_i not in undesired_indices)] # The indices we want to keep.
+    allatomtypes_trim = [value for (_i, value) in enumerate(allatomtypes) if (_i in desired_indices)]
+    fcoords_trim = fcoords[desired_indices]
+
+    return allatomtypes_trim, fcoords_trim
+
+
+def overlap_removal(cif_path, new_cif_path, wiggle_room=1):
+    """
+    Reads a cif file, removes overlapping atoms, and writes the cif to the provided path.
 
     Parameters
     ----------
@@ -1014,6 +1090,52 @@ def solvent_removal(cif_path, new_cif_path):
         The path of the cif file to be read.
     new_cif_path : str
         The path to which the modified cif file will be written.
+    wiggle_room : float
+        A multiplier that allows for more or less strict bond distance cutoffs.
+        Useful for some trouble CIFs with long bonds.
+
+    Returns
+    -------
+    None
+
+    """
+
+    # Much of this code parallels that in the beginning of the MOF_descriptors.get_MOF_descriptors function
+
+    # Loading the cif and getting information about the crystal cell.
+    cpar, allatomtypes, fcoords = readcif(cif_path)
+    allatomtypes, fcoords = remove_duplicate_atoms(allatomtypes, fcoords)
+    cell_v = mkcell(cpar)
+    cart_coords = fractional2cart(fcoords, cell_v)
+    # if len(cart_coords) > 2000: # Don't deal with large cifs because of computational resources required for their treatment.
+    #     raise Exception("Too large of a cif file") 
+
+    # Assuming that the cif does not have graph information of the structure.
+    distance_mat = compute_distance_matrix3(cell_v,cart_coords)
+    adj_matrix, overlap_atoms = compute_adj_matrix(distance_mat, allatomtypes, wiggle_room=wiggle_room, handle_overlap=True)
+
+    # Dealing with the case of overlapping atoms.
+    if len(overlap_atoms) != 0:
+        print('Dealing with overlap')
+        allatomtypes, fcoords = remove_undesired_atoms(overlap_atoms, allatomtypes, fcoords)
+
+    # Writing the cif files
+    write_cif(new_cif_path,cpar,fcoords,allatomtypes)
+
+def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
+    """
+    Reads a cif file, removes floating solvent and overlapping atoms, and writes the cif to the provided path.
+    If MOF has a lot of solvent, you may need to apply this function multiple times.
+
+    Parameters
+    ----------
+    cif_path : str
+        The path of the cif file to be read.
+    new_cif_path : str
+        The path to which the modified cif file will be written.
+    wiggle_room : float
+        A multiplier that allows for more or less strict bond distance cutoffs.
+        Useful for some trouble CIFs with long bonds.
 
     Returns
     -------
@@ -1027,13 +1149,13 @@ def solvent_removal(cif_path, new_cif_path):
     cpar, allatomtypes, fcoords = readcif(cif_path)
     cell_v = mkcell(cpar)
     cart_coords = fractional2cart(fcoords, cell_v)
-    if len(cart_coords) > 2000: # Don't deal with large cifs because of computational resources required for their treatment.
-        raise Exception("Too large of a cif file")
+    # if len(cart_coords) > 2000: # Don't deal with large cifs because of computational resources required for their treatment.
+    #     raise Exception("Too large of a cif file") 
 
     # Assuming that the cif does not have graph information of the structure.
     distance_mat = compute_distance_matrix3(cell_v,cart_coords)
     try:
-        adj_matrix=compute_adj_matrix(distance_mat,allatomtypes)
+        adj_matrix, overlap_atoms = compute_adj_matrix(distance_mat, allatomtypes, wiggle_room=wiggle_room, handle_overlap=False)
     except NotImplementedError:
         raise Exception("Failed due to atomic overlap")
 
@@ -1044,6 +1166,9 @@ def solvent_removal(cif_path, new_cif_path):
 
     # Finding the connected components
     n_components, labels_components = sparse.csgraph.connected_components(csgraph=adj_matrix, directed=False, return_labels=True)
+    print(f'n_components: {n_components}')
+    print(f'labels_components: {labels_components}')
+    print(f'len is {len(labels_components)}')
     metal_list = set([at for at in molcif.findMetal(transition_metals_only=False)]) # the atom indices of the metals
     if not len(metal_list) > 0:
         raise Exception("No metal in the structure.")
@@ -1054,14 +1179,10 @@ def solvent_removal(cif_path, new_cif_path):
         inds_in_comp = [i for i in range(len(labels_components)) if labels_components[i]==comp]
         if not set(inds_in_comp) & metal_list: # In the context of sets, & is the intersection. If the intersection is null, the (&) expression is False; the `not` would then make it True.
             # If this if statement is entered, there is an entire connected component that has no metals in it. No connections to any metal. I.e. solvent.
-
             solvent_indices.extend(inds_in_comp)
 
     # Removing the atoms corresponding to the solvent.
-    number_of_atoms = len(allatomtypes)
-    nonsolvent_indices = [_i for _i in list(range(number_of_atoms)) if (_i not in solvent_indices)] # The indices we want to keep.
-    allatomtypes = [value for (_i, value) in enumerate(allatomtypes) if (_i in nonsolvent_indices)]
-    fcoords = fcoords[nonsolvent_indices]
+    allatomtypes, fcoords = remove_undesired_atoms(solvent_indices, allatomtypes, fcoords)
 
     # print(f'The solvent indices are {solvent_indices}')
 

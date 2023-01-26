@@ -1,24 +1,16 @@
 from molSimplify.Scripts.cellbuilder_tools import *
 from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Classes.atom3D import atom3D
-from molSimplify.Informatics.autocorrelation import*
-from molSimplify.Informatics.misc_descriptors import*
-from molSimplify.Informatics.graph_analyze import*
+from molSimplify.Informatics.autocorrelation import *
+from molSimplify.Informatics.misc_descriptors import *
+from molSimplify.Informatics.graph_analyze import *
 from molSimplify.Informatics.RACassemble import *
 import os
 import numpy as np
 import itertools
-import pandas as pd
-from scipy.spatial import distance
 from scipy import sparse
-import itertools
 from molSimplify.Informatics.MOF.PBC_functions import *
-from molSimplify.Scripts.geometry import distance
 import networkx as nx
-from math import gcd
-from functools import reduce
-import time
-import json
 
 
 def periodic_checker(graph, coords, atoms):
@@ -39,21 +31,22 @@ def periodic_checker(graph, coords, atoms):
     return periodic
 
 
-def branch(molcif, main_paths,atoms_in_sbu, new_atoms=[]):
+def branch(molcif, main_paths, atoms_in_sbu, new_atoms=None):
     # This function climbs out from a given atom and adds the atoms that are in the branch.
     # This is important for getting all atoms in a branched functional group of a linker.
+    if new_atoms is None:
+        new_atoms = []
     original_atoms = atoms_in_sbu.copy()
     for atom in new_atoms:
         bonded_list = molcif.getBondedAtoms(atom)
-        if (len(set(bonded_list)-set(main_paths)-set(atoms_in_sbu))>0):
-            temp_atoms = list(set(bonded_list)-set(main_paths))
+        if (len(set(bonded_list)-set(main_paths)-set(atoms_in_sbu)) > 0):
             new_atoms += list(set(bonded_list)-set(main_paths))
             new_atoms = list(set(new_atoms))
             atoms_in_sbu += new_atoms
     if len(original_atoms) == len(atoms_in_sbu):
         return new_atoms, atoms_in_sbu
     else:
-        branch_atoms, branch_atoms_in_sbu = branch(molcif, main_paths,atoms_in_sbu, new_atoms)
+        branch_atoms, branch_atoms_in_sbu = branch(molcif, main_paths, atoms_in_sbu, new_atoms)
         new_atoms += branch_atoms
         atoms_in_sbu += branch_atoms_in_sbu
         return new_atoms, atoms_in_sbu
@@ -552,7 +545,7 @@ def make_MOF_fragments(data, depth, path=False, xyzpath = False):
         return None, None
     distance_mat = compute_distance_matrix2(cell_v,cart_coords)
     try:
-        adj_matrix=compute_adj_matrix(distance_mat,allatomtypes)
+        adj_matrix, _ =compute_adj_matrix(distance_mat,allatomtypes)
     except NotImplementedError:
         tmpstr = "Failed to featurize %s: atomic overlap\n"%(name)
         write2file(path,"/FailedStructures.log",tmpstr)
@@ -651,11 +644,5 @@ def make_MOF_fragments(data, depth, path=False, xyzpath = False):
         print('=== SKIPPING DUE TO LINKER BEING TOO SHORT!')
         return 3
 
-    return_code = breakdown_MOF(SBU_list, SBU_subgraphlist, molcif, depth, name , cell_v,anc_atoms, sbupath, connections_list, connections_subgraphlist,linkerpath)
+    return_code = breakdown_MOF(SBU_list, SBU_subgraphlist, molcif, depth, name, cell_v, anc_atoms, sbupath, connections_list, connections_subgraphlist, linkerpath)
     return return_code
-
-
-
-
-
-

@@ -1,6 +1,7 @@
 import json
 import os
 import random
+import shutil
 import numpy as np
 from molSimplify.Scripts.geometry import kabsch, distance
 from molSimplify.Scripts.generator import startgen
@@ -8,6 +9,8 @@ from molSimplify.Classes.globalvars import (dict_oneempty_check_st,
                                             oneempty_angle_ref)
 from molSimplify.Classes.mol3D import mol3D
 from pkg_resources import resource_filename, Requirement
+from typing import Dict
+from pathlib import Path
 
 
 def fuzzy_equal(x1, x2, thresh):
@@ -133,7 +136,7 @@ def compareLG(xyz1, xyz2, thresh):
     if len(ligs1) != len(ligs2):
         passLG = False
         return passLG
-    for i in range(0, len(ligs1)): # Iterate over the ligands
+    for i in range(0, len(ligs1)):  # Iterate over the ligands
         print("Checking geometry for ligand # ", i)
         ligs1[i], U, d0, d1 = kabsch(ligs1[i], ligs2[i])
         rmsd12 = ligs1[i].rmsd(ligs2[i])
@@ -202,7 +205,7 @@ def comparedict(ref, gen, thresh):
     return passComp
 
 
-def jobname(infile):
+def jobname(infile: str) -> str:
     name = os.path.basename(infile)
     name = name.replace(".in", "")
     return name
@@ -216,7 +219,7 @@ def jobdir(infile):
     return mydir
 
 
-def parse4test(infile, tmpdir, isMulti=False, external={}):
+def parse4test(infile, tmpdir: Path, isMulti: bool = False, external: Dict[str, str] = {}) -> str:
     name = jobname(infile)
     f = tmpdir.join(os.path.basename(infile))
     newname = f.dirname + "/" + os.path.basename(infile)
@@ -314,7 +317,7 @@ def compare_report_new(report1, report2):
     with open(report1, 'r') as f_in:
         data1 = f_in.readlines()
     with open(report2, 'r') as f_in:
-        data2 = f_in.readlines()  
+        data2 = f_in.readlines()
     if data1 and data2:
         Equal = True
         dict1 = report_to_dict(data1)
@@ -412,7 +415,7 @@ def compare_qc_input(inp, inp_ref):
     return passQcInputCheck
 
 
-def runtest(tmpdir, name, threshMLBL, threshLG, threshOG, seed=None):
+def runtest(tmpdir, name, threshMLBL, threshLG, threshOG, seed=31415):
     # Set seeds to eliminate randomness from test results
     random.seed(seed)
     np.random.seed(seed)
@@ -538,6 +541,8 @@ def runtestgeo(tmpdir, name, thresh, deleteH=True, geo_type="oct"):
             init_mol=init_mol, dict_check=dict_oneempty_check_st,
             angle_ref=oneempty_angle_ref, num_coord=5, debug=False,
             flag_deleteH=deleteH)
+    else:
+        raise ValueError(f"Invalid geo_type {geo_type}")
     with open(refjson, "r") as fo:
         dict_ref = json.load(fo)
     # passGeo = (sorted(dict_ref.items()) == sorted(dict_struct_info.items()))
@@ -557,10 +562,12 @@ def runtestgeo_optonly(tmpdir, name, thresh, deleteH=True, geo_type="oct"):
     if geo_type == "oct":
         _, _, dict_struct_info = mymol.IsOct(debug=False,
                                              flag_deleteH=deleteH)
-    with open(refjson, "r") as fo:
-        dict_ref = json.load(fo)
-    passGeo = comparedict(dict_ref, dict_struct_info, thresh)
-    return passGeo
+        with open(refjson, "r") as fo:
+            dict_ref = json.load(fo)
+        passGeo = comparedict(dict_ref, dict_struct_info, thresh)
+        return passGeo
+    else:
+        raise NotImplementedError('Only octahedral geometries supported for now')
 
 
 def runtestNoFF(tmpdir, name, threshMLBL, threshLG, threshOG):
@@ -608,6 +615,43 @@ def runtestNoFF(tmpdir, name, threshMLBL, threshLG, threshOG):
     return [passNumAtoms, passMLBL, passLG, passOG, pass_report, pass_qcin]
 
 
+def runtest_reportonly(tmpdir, name, seed=31415):
+    # Set seeds to eliminate randomness from test results
+    random.seed(seed)
+    np.random.seed(seed)
+    infile = resource_filename(Requirement.parse(
+        "molSimplify"), "tests/inputs/" + name + ".in")
+    # Copy the input file to the temporary folder
+    shutil.copy(infile, tmpdir/f'{name}_reportonly.in')
+    # Add the report only flag
+    with open(tmpdir/f'{name}_reportonly.in', 'a') as f:
+        f.write('-reportonly True\n')
+    newinfile = parse4test(tmpdir/f'{name}_reportonly.in', tmpdir)
+    args = ['main.py', '-i', newinfile]
+    with open(newinfile, 'r') as f:
+        print(f.readlines())
+    startgen(args, False, False)
+    myjobdir = jobdir(f'{infile}_reportonly')
+    output_report = myjobdir + '/' + name + '_reportonly.report'
+    ref_report = resource_filename(Requirement.parse(
+        "molSimplify"), "tests/refs/" + name + ".report")
+    # Copy the reference report to the temporary folder
+    shutil.copy(ref_report, tmpdir/f'{name}_ref.report')
+    with open(tmpdir/f'{name}_ref.report', 'r') as f:
+        lines = f.read()
+    lines = lines.replace('Min_dist (A), 1000', 'Min_dist (A), graph')
+    with open(tmpdir/f'{name}_ref.report', 'w') as f:
+        f.write(lines)
+
+    print("Test input file: ", newinfile)
+    print("Test output files are generated in ", myjobdir)
+    pass_report = compare_report_new(output_report, tmpdir/f'{name}_ref.report')
+    print("Test report file: ", output_report)
+    print("Reference report file: ", ref_report)
+    print("Reference report status: ", pass_report)
+    return pass_report
+
+
 def runtestMulti(tmpdir, name, threshMLBL, threshLG, threshOG):
     infile = resource_filename(Requirement.parse(
         "molSimplify"), "tests/inputs/" + name + ".in")
@@ -630,7 +674,7 @@ def runtestMulti(tmpdir, name, threshMLBL, threshLG, threshOG):
         for f in myfiles:
             if ".xyz" in f:
                 r = f.replace(".xyz", ".report")
-                output_xyz = output_xyz = myjobdir + f
+                output_xyz = myjobdir + f
                 ref_xyz = refdir + f
                 output_report = myjobdir + r
                 ref_report = refdir + r
@@ -642,6 +686,6 @@ def runtestMulti(tmpdir, name, threshMLBL, threshLG, threshOG):
                     output_xyz, ref_xyz, threshMLBL, threshLG, threshOG)
                 [passNumAtoms, passMLBL, passLG, passOG] = pass_xyz
                 pass_report = compare_report_new(output_report, ref_report)
-        pass_structures.append(
-            [f, passNumAtoms, passMLBL, passLG, passOG, pass_report])
+            pass_structures.append(
+                [f, passNumAtoms, passMLBL, passLG, passOG, pass_report])
     return [passMultiFileCheck, pass_structures]

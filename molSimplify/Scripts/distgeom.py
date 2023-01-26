@@ -525,6 +525,8 @@ def findshape(args, master_ligand) -> Dict:
             break
         else:
             bind += 1*int(args.ligocc[i])*int(lig.denticity)
+    else:
+        raise ValueError("master_ligand not in args.lig")
 
     metal_coords = np.array(core[0])
     ligating_coords = []

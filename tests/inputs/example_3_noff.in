@@ -9,7 +9,6 @@
 -checkdirb True
 -core ferrcore
 -ligocc 1
--geometry oct
 -spin 1
 -bcharge 0
 -basis lacvps_ecp

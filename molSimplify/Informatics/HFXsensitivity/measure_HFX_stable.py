@@ -231,6 +231,7 @@ def measure_R2(X, y):
 
 def symmetry_class(complex_name):
     namelist = complex_name.split('_')
+    symmetry = 'unknown'
     if namelist[2] != namelist[4]:
         symmetry = 'cis'
     elif (namelist[2]==namelist[4]) and (namelist[2]==namelist[6]) and (namelist[2]==namelist[7]):

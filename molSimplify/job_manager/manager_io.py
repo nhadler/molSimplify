@@ -269,7 +269,7 @@ def read_infile(outfile_path):
             raise Exception(
                 'The current implementation of tools.read_infile() is known to behave poorly when an infile specifies both a multibasis and constraints')
 
-    elif qm_code == 'orca':
+    else:  # qm_code == 'orca':
         ligand_basis, run_type, method, parallel_environment, charge, spinmult, coordinates = inp.wordgrab(
             ['! MULLIKEN'] * 3 + [r'%pal'] + [r'xyzfile'] * 3,
             [2, 3, 4, 2, 1, 2, 3], last_line=True)

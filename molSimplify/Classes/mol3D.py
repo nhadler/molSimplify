@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 from math import sqrt
 import numpy as np
 import openbabel
-from typing import List
+from typing import List, Optional
 from scipy.spatial import ConvexHull
 from molSimplify.utils.decorators import deprecated
 
@@ -218,7 +218,7 @@ class mol3D:
             xyz = submol_to_move.getAtomCoords(i)
             self.atoms[atidx].__init__(Sym=asym, xyz=xyz)
 
-    def addAtom(self, atom: atom3D, index: int = None, auto_populate_BO_dict: bool = True):
+    def addAtom(self, atom: atom3D, index: Optional[int] = None, auto_populate_BO_dict: bool = True):
         """
         Adds an atom to the atoms attribute, which contains a list of
         atom3D class instances.
@@ -2650,32 +2650,29 @@ class mol3D:
             atom_count = int(s[0])
         except ValueError:
             atom_count = 0
-        current_atom_counter = 0
         start = 2
         if read_final_optim_step:
-            start = len(s) - int(s[0]) - 2
-        for line in s[start:]:
+            start = len(s) - int(s[0])
+        for line in s[start:start+atom_count]:
             line_split = line.split()
             # If the split line has more than 4 elements, only elements 0 through 3 will be used.
             # this means that it should work with any XYZ file that also stores something like mulliken charge
             # Next, this looks for unique atom IDs in files
-            # print(line_split, 'linesplit')
             if len(line_split) > 0:
-                current_atom_counter += 1
                 lm = re.search(r'\d+$', line_split[0])
                 # if the string ends in digits m will be a Match object, or None otherwise.
                 if line_split[0] in list(amassdict.keys()) or ligand_unique_id:
                     atom = atom3D(line_split[0], [float(line_split[1]), float(
                         line_split[2]), float(line_split[3])])
                 elif lm is not None:
+                    print(line_split)
                     symb = re.sub(r'\d+', '', line_split[0])
                     atom = atom3D(symb, [float(line_split[1]), float(line_split[2]), float(line_split[3])],
                                   name=line_split[0])
                 else:
                     print('cannot find atom type')
                     sys.exit()
-                if current_atom_counter <= atom_count:
-                    self.addAtom(atom)
+                self.addAtom(atom)
 
     def readfrommol2(self, filename, readstring=False, trunc_sym="X"):
         """
@@ -3618,6 +3615,8 @@ class mol3D:
             if atom.ismetal():
                 metal_atom = atom
                 break
+        else:
+            raise ValueError('No metal found.')
         metal_coord = metal_atom.coords()
         for atom1 in self.atoms:
             if atom1.sym == 'H':
@@ -4666,12 +4665,12 @@ class mol3D:
                                                         debug=debug,
                                                         BondedOct=BondedOct,
                                                         angle_ref=angle_ref)
-            if not dict_lig_distort['rmsd_max'] == 'lig_mismatch':
-                _, catoms_arr = self.oct_comp(angle_ref, catoms_arr, debug=debug)
-            else:
-                print("Warning: Potential issues about lig_mismatch.")
+                if not dict_lig_distort['rmsd_max'] == 'lig_mismatch':
+                    _, catoms_arr = self.oct_comp(angle_ref, catoms_arr, debug=debug)
+                else:
+                    print("Warning: Potential issues about lig_mismatch.")
 
-            # Unsure if still needed. RM 22/07/19
+            # Unsure if still needed. RM 2022/07/19
             _, _ = self.check_angle_linear(catoms_arr=catoms_arr)
             if debug:
                 self.print_geo_dict()
@@ -4779,12 +4778,12 @@ class mol3D:
                                                         debug=debug,
                                                         BondedOct=BondedOct,
                                                         angle_ref=angle_ref)
-            if not dict_lig_distort['rmsd_max'] == 'lig_mismatch':
-                _, catoms_arr = self.oct_comp(angle_ref, catoms_arr, debug=debug)
-            else:
-                self.num_coord_metal = -1
-                print('!!!!!Should always match. WRONG!!!!!')
-            # Unsure if still needed. RM 22/07/19
+                if not dict_lig_distort['rmsd_max'] == 'lig_mismatch':
+                    _, catoms_arr = self.oct_comp(angle_ref, catoms_arr, debug=debug)
+                else:
+                    self.num_coord_metal = -1
+                    print('!!!!!Should always match. WRONG!!!!!')
+            # Unsure if still needed. RM 2022/07/19
             _, _ = self.check_angle_linear(catoms_arr=catoms_arr)
             if debug:
                 self.print_geo_dict()
@@ -4966,8 +4965,8 @@ class mol3D:
         self.OBMol = OBMol
         self.convert2mol3D()
 
-    def get_smiles(self, canonicalize=False, use_mol2=False):
-        """ 
+    def get_smiles(self, canonicalize=False, use_mol2=False) -> str:
+        """
         Read a smiles string and convert it to a mol3D class instance.
 
         Parameters
@@ -5143,7 +5142,7 @@ class mol3D:
         return safedet
 
     def get_symmetry_denticity(self, return_eq_catoms=False):
-        """ 
+        """
         Get symmetry class of molecule.
 
         Parameters
@@ -5171,6 +5170,7 @@ class mol3D:
         # self.writexyz("test.xyz")
         from molSimplify.Classes.ligand import ligand_breakdown, ligand_assign_consistent, get_lig_symmetry
         liglist, ligdents, ligcons = ligand_breakdown(self)
+        flat_eq_ligcons = []
         try:
             _, _, _, _, _, _, _, eq_con_list, _ = ligand_assign_consistent(
                 self, liglist, ligdents, ligcons)
@@ -5221,7 +5221,7 @@ class mol3D:
             return eqsym, maxdent, ligdents, homoleptic, ligsymmetry, eq_catoms
 
     def is_sandwich_compound(self):
-        """ 
+        """
         Evaluates whether a compound is a sandwich compound
 
         Returns

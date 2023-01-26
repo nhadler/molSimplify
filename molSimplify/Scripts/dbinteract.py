@@ -430,14 +430,12 @@ def dbsearch(rundir, args, globs):
     flag = False
 
     obab = 'obabel'
-    if args.gui:
-        from molSimplify.Classes.mWidgets import mQDialogWarn
-        from molSimplify.Classes.mWidgets import mQDialogInf
     ### in any case do similarity search over indexed db ###
     outf = args.dbfname if args.dbfname else 'simres.smi'  # output file
     # convert to SMILES/SMARTS if file
     if not args.dbbase:
         if args.gui:
+            from molSimplify.Classes.mWidgets import mQDialogWarn
             qqb = mQDialogWarn('Warning', "No database file found within " +
                                globs.chemdbdir + '. Search not possible.')
             qqb.setParent(args.gui.DBWindow)
@@ -541,6 +539,7 @@ def dbsearch(rundir, args, globs):
     nmols = '10000' if not args.dbnsearch else args.dbnsearch
     finger = 'FP2' if not args.dbfinger else args.dbfinger
     if int(nmols) > 3000 and args.gui:
+        from molSimplify.Classes.mWidgets import mQDialogInf
         qqb = mQDialogInf(
             'Warning', "Database search is going to take a few minutes. Please wait..OK?")
         qqb.setParent(args.gui.DBWindow)
@@ -556,6 +555,7 @@ def dbsearch(rundir, args, globs):
         print(('after similarity search, outf is ' + str(outputf)))
     if flag:
         if args.gui:
+            from molSimplify.Classes.mWidgets import mQDialogWarn
             qqb = mQDialogWarn('Warning', "No matches found in search..")
             qqb.setParent(args.gui.DBWindow)
         print("No matches found in search..")
