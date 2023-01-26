@@ -169,7 +169,10 @@ class ligand:
         if self.master_mol.bo_dict:
             save_bo_dict = self.master_mol.get_bo_dict_from_inds(this_mol2_inds)
             this_mol2.bo_dict = save_bo_dict
-        lig_mol_graph_det = this_mol2.get_mol_graph_det()
+        try:
+            lig_mol_graph_det = this_mol2.get_mol_graph_det()
+        except:
+            lig_mol_graph_det = None
         lig_mol2_string = this_mol2.writemol2('ligand', writestring=True)
         self.mol2string = lig_mol2_string
         self.lig_mol_graph_det = lig_mol_graph_det
