@@ -19,9 +19,9 @@ dependencies:
   # Database
   - pymongo
   # Machine learning
-  - pytorch::pytorch
-  - hyperopt
+  #- pytorch::pytorch
+  #- hyperopt
   # QM interfaces
   - theochem::iodata
   - xtb
-  - psi4::psi4
+  #- psi4::psi4
