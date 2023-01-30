@@ -37,20 +37,10 @@ jobs:
         uname -a
         df -h
         ulimit -a
-
-    # More info on the whole conda setup: https://github.com/conda-incubator/setup-miniconda
-    - name: Setup Conda
-      uses: conda-incubator/setup-miniconda@v2
-      id: conda-setup
-      with:
-        mamba-version: "*"
-        channels: conda-forge,defaults
-        activate-environment: mols_test
     # Get date for the cache key
     - name: Get current time
       uses: josStorer/get-current-time@v2.0.2
       id: current-time
-    # Actual caching
     - name: Cache conda env
       uses: actions/cache@v3
       id: cache
@@ -65,14 +55,24 @@ jobs:
           ${{ runner.os }}-${{ runner.arch }}-conda-${{ steps.current-time.outputs.year }}-${{
           steps.current-time.outputs.month }}-${{ hashFiles('devtools/conda-envs/mols.yml') }}-${{
           env.CACHE_NUMBER }}
-    # Install environment from yaml file if cache-hit == false
-    - name: Update conda env
-      run: mamba env update -n mols_test -f devtools/conda-envs/mols.yml
-      if: steps.cache.outputs.cache-hit != 'true'
+
+    # More info on the whole conda setup: https://github.com/conda-incubator/setup-miniconda
+    - name: Setup Conda
+      uses: conda-incubator/setup-miniconda@v2
+      id: conda-setup
+      with:
+        # mamba-version: "*" # uncomment to activate mamba 
+        python-version: ${{ matrix.python-version }}
+        miniforge-variant: Mambaforge
+        channels: conda-forge,defaults
+        environment-file: devtools/conda-envs/mols.yml
+
+        activate-environment: mols_test
+        use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
 
     - name: Install package
       run: |
-        pip install -e .
+        pip install -e . --no-deps
         pip install pytest-cov codecov
         conda list
     
