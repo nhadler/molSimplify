@@ -1,4 +1,3 @@
-name: molsimp
 channels:
   - conda-forge
 dependencies:
@@ -8,8 +7,8 @@ dependencies:
   - pyyaml
   - pandas
   - scipy
-  - theochem::iodata
   - libffi
+  - pip
   - pip:
     - pytest
 
@@ -23,5 +22,6 @@ dependencies:
   - pytorch::pytorch
   - hyperopt
   # QM interfaces
+  - theochem::iodata
   - xtb
   - psi4::psi4
