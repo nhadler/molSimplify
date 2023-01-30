@@ -25,10 +25,7 @@ jobs:
     strategy:
       matrix:
         os: ["ubuntu-latest"]
-        python-version: ["3.7"]
-#         include:
-#           - os: ubuntu-latest
-#             python-version: 3.7
+        python-version: ["3.8"]
     defaults:
       run:
         shell: bash -l {0}
