@@ -1,9 +1,6 @@
 name: mols_test
 channels:
      - conda-forge
-     - anaconda
-     - theochem
-     - defaults
 dependencies:
      - python=3.8
      - hjkgroup::openbabel=2.4
@@ -15,5 +12,5 @@ dependencies:
      - scikit-learn
      - pandas
      - scipy
-     - iodata
+     - theochem::iodata
      - libffi
