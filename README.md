@@ -11,28 +11,30 @@ molSimplify is an open source toolkit for the automated, first-principles screen
 We currently recommend installation via the [Conda](https://conda.io/docs/) package management system.
 1. Prerequisite: have [Anaconda or miniconda](https://www.anaconda.com/distribution/) installed on your system. **For M1 Macs, please use [Miniforge](https://github.com/conda-forge/miniforge) for Mac OSX arm64.** (We do not recommend simultaneously installing Anaconda and Miniforge - only install Miniforge.)
 
-2. Clone molSimplify source from github.
+2. Clone molSimplify source from github and change into the directory.
 
    ```bash
    git clone https://github.com/hjkgrp/molSimplify.git
+   cd molSimplify
    ```
 
-3. Go to the folder root folder for molSimplify, create the conda environment from the yaml file (`devtools/conda-envs/mols.yml`). **For M1 Macs, use** `mols_m1.yml` **instead**; see [this file](devtools/conda-envs/README.md) if you are having issues. This step will help you get all the dependencies correct in a newly created conda environment named "mols_test". You can specify a different name for this environment at the first line of the yaml file.
+3. Create a new conda environment with a python version of your choice (we currently recommend 3.8). from the yaml file (`devtools/conda-envs/mols.yml`).
 
    ```bash
-   cd molSimplify/devtools/conda-envs
-   conda env create -f mols.yml
+   conda create --name molsimp python=3.8
    ```
-4. Activate the conda environment you just created. Go back to the root directory of molSimplify (where the setup.py file locates). Local install with pip.
+4. Activate the conda environment you just created and update using one of the provided environment yaml files. For standard command line usage use the file `devtools/conda-envs/mols_minimal.yml`. The full environment file `devtools/conda-envs/mols.yml` includes all optional dependencies and can easily be adapted by commenting any of the optional lines.
    ```bash
-   conda activate mols_test
-   cd ..
-   pip install -e .
+   conda activate molsimp
+   conda env update --file devtools/conda-envs/mols_minimal.yml
    ```
-5. **(For M1 Macs only)** Install the M1-compatible version of Tensorflow by running `source devtools/conda-envs/install_tensorflow_m1.sh`.
+5. Locally install the molSimplify package using pip.
+   ```bash
+   pip install -e . --no-deps
+   ```
 6. To test your installation, you can run the command below at the root directory of molSimplify. You are good to go if all the tests are passed!
    ```bash
-   python setup.py test
+   pytest
    ```
 
 ### via docker
