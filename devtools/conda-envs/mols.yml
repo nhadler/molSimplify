@@ -2,15 +2,15 @@ name: mols_test
 channels:
      - conda-forge
 dependencies:
-     - python=3.8
      - openbabel
      - tensorflow-base
      - keras
-     - pip
+     - scikit-learn
      - pyqt
      - qt
-     - scikit-learn
+     - pyyaml
      - pandas
      - scipy
      - theochem::iodata
      - libffi
+     - pip
