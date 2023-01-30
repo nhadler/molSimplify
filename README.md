@@ -23,10 +23,10 @@ We currently recommend installation via the [Conda](https://conda.io/docs/) pack
    ```bash
    conda create --name molsimp python=3.8
    ```
-4. Activate the conda environment you just created and update using one of the provided environment yaml files. For pure command line usage use the file `devtools/conda-envs/mols_minimal.yml`. The full environment file `devtools/conda-envs/mols.yml` includes all optional dependencies and can easily be adapted by commenting any of the optional lines.
+4. Activate the conda environment you just created and update using one of the provided environment yaml files. In case you are experiencing problems using the full environment file in `devtools/conda-envs/mols.yml` **(some packages might not be available on all architectures such as M1 Macs)** try commenting the lines marked optional or switch to the minimal environment file `devtools/conda-envs/mols_minimal.yml`.
    ```bash
    conda activate molsimp
-   conda env update --file devtools/conda-envs/mols_minimal.yml
+   conda env update --file devtools/conda-envs/mols.yml
    ```
 5. Locally install the molSimplify package using pip.
    ```bash
