@@ -3,7 +3,7 @@ channels:
      - conda-forge
 dependencies:
      - python=3.8
-     - hjkgroup::openbabel=2.4
+     - openbabel
      - tensorflow-base
      - keras
      - pip
