@@ -18,12 +18,12 @@ We currently recommend installation via the [Conda](https://conda.io/docs/) pack
    cd molSimplify
    ```
 
-3. Create a new conda environment with a python version of your choice (we currently recommend 3.8). from the yaml file (`devtools/conda-envs/mols.yml`).
+3. Create a new conda environment and specify the desired Python version (we currently recommend 3.8).
 
    ```bash
    conda create --name molsimp python=3.8
    ```
-4. Activate the conda environment you just created and update using one of the provided environment yaml files. For standard command line usage use the file `devtools/conda-envs/mols_minimal.yml`. The full environment file `devtools/conda-envs/mols.yml` includes all optional dependencies and can easily be adapted by commenting any of the optional lines.
+4. Activate the conda environment you just created and update using one of the provided environment yaml files. For pure command line usage use the file `devtools/conda-envs/mols_minimal.yml`. The full environment file `devtools/conda-envs/mols.yml` includes all optional dependencies and can easily be adapted by commenting any of the optional lines.
    ```bash
    conda activate molsimp
    conda env update --file devtools/conda-envs/mols_minimal.yml
