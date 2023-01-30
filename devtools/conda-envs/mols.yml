@@ -1,18 +1,27 @@
-name: mols_test
+name: molsimp
 channels:
-     - conda-forge
+  - conda-forge
 dependencies:
-     - openbabel
-     - tensorflow-base
-     - scikit-learn
-     - pyqt
-     - qt
-     - pyyaml
-     - pandas
-     - scipy
-     - theochem::iodata
-     - libffi
-     - pip
-    # Optional
-    # - xtb
-    # - psi4::psi4
+  - openbabel
+  - tensorflow-base
+  - scikit-learn
+  - pyyaml
+  - pandas
+  - scipy
+  - theochem::iodata
+  - libffi
+  - pip:
+    - pytest
+
+  # Optional
+  # GUI
+  - pyqt
+  - qt
+  # Database
+  - pymongo
+  # Machine learning
+  - pytorch::pytorch
+  - hyperopt
+  # QM interfaces
+  - xtb
+  - psi4::psi4

@@ -25,7 +25,7 @@ jobs:
     strategy:
       matrix:
         os: ["ubuntu-latest"]
-        python-version: ["3.7", "3.8"]
+        python-version: ["3.7", "3.8", "3.9"]
     defaults:
       run:
         shell: bash -l {0}
@@ -66,7 +66,7 @@ jobs:
         channels: conda-forge,defaults
         environment-file: devtools/conda-envs/mols.yml
 
-        activate-environment: mols_test
+        activate-environment: molsimp
         use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
 
     - name: Install package
