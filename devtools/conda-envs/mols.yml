@@ -4,7 +4,6 @@ channels:
 dependencies:
      - openbabel
      - tensorflow-base
-     - keras
      - scikit-learn
      - pyqt
      - qt
@@ -14,3 +13,6 @@ dependencies:
      - theochem::iodata
      - libffi
      - pip
+    # Optional
+    # - xtb
+    # - psi4::psi4

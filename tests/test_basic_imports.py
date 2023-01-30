@@ -3,6 +3,7 @@ Test for imports where the packges will be used in molSimplify.
 """
 
 import sys
+import pytest
 
 
 def test_molsimplify_imported():
@@ -12,6 +13,7 @@ def test_molsimplify_imported():
     assert "molSimplify" in sys.modules
 
 
+@pytest.mark.skip("PSI4 is no longer on the list of required dependencies.")
 def test_psi4_import():
     '''
     Test whether psi4 can be imported
@@ -39,7 +41,7 @@ def test_keras_import():
     Test whether keras can be imported
     '''
     try:
-        import keras  # noqa: F401
+        from tensorflow import keras  # noqa: F401
         assert "keras" in sys.modules
     except ImportError:
         assert 0
