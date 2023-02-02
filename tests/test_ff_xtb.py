@@ -3,7 +3,7 @@ import shutil
 import helperFuncs as hp
 
 
-# Decorator to skip test is xtb is not installed
+# Decorator to skip test if xtb is not installed
 xtb_installed = pytest.mark.skipif(shutil.which('xtb') is None,
                                    reason='Could not find xtb installation')
 

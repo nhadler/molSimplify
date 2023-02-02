@@ -1250,8 +1250,8 @@ class mol3D:
 
         Parameters
         ----------
-            constraints : list, optional
-                List of atom indices to employ cartesian constraints before ffopt.
+            constraints : int, optional
+                Range of atom indices to employ cartesian constraints before ffopt.
             ff : str, optional
                 Force field to be used in openbabel. Default is UFF.
 

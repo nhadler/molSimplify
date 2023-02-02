@@ -20,9 +20,12 @@ from molSimplify.Scripts.io import getlicores, lig_load
 
 def decorate_ligand(ligand_to_decorate: mol3D, decoration, decoration_index,
                     debug: bool = False) -> mol3D:
+    # This function is useful for functionalization. Adding functional groups to a base ligand.
+
     # structgen depends on decoration_manager, and decoration_manager depends on structgen.ffopt
     # Thus, this import needs to be placed here to avoid a circular dependence
     from molSimplify.Scripts.structgen import ffopt
+
     # INPUT
     #   - ligand_to_decorate: mol3D ligand
     #   - set ligand_to_decorate.ob_dict to False or empty dictionary first to avoid potential error
@@ -30,9 +33,8 @@ def decorate_ligand(ligand_to_decorate: mol3D, decoration, decoration_index,
     #   - decoration_index: list of ligand atoms to replace
     #   - debug: debugging flag for additional prints
     # OUTPUT
-    #   - new_ligand: built ligand
-    #   - complex3D: list of all mol3D ligands and core
-    #   - emsg: error messages
+    #   - merged_ligand: built ligand
+    
     lig = ligand_to_decorate
     # reorder to ensure highest atom index
     # removed first
@@ -167,7 +169,7 @@ def decorate_ligand(ligand_to_decorate: mol3D, decoration, decoration_index,
                 else:
                     bonds_to_add.append((bond_partner, merged_ligand.natoms-1, els))
 
-        # perfrom delete
+        # perform delete
         merged_ligand.deleteatom(decoration_index[i])
 
         merged_ligand.convert2OBMol()
