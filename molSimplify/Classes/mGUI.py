@@ -1577,7 +1577,8 @@ class mGUI():
                     self.cDBWindow, 'Select a writable directory.')
                 if len(new_path) > 0:
                     globs.add_custom_path(new_path)
-                    copy_to_custom_path()  # this funciton lives in scripts/io.py
+                    globs.custom_path = new_path
+                    copy_to_custom_path()  # this function lives in scripts/io.py
         # instdir = globs.installdir
         if self.lFFb.getState() and self.lFFa.getState():
             ffopt = 'BA'
@@ -1646,7 +1647,7 @@ class mGUI():
 
     def dbchange(self):
         ci = self.DBsel.currentIndex()
-        if (ci == 1):
+        if ci == 1:
             self.rtDBsmident.setDisabled(False)
             self.DBdent.setDisabled(False)
             self.rtDBsmicat.setDisabled(False)
@@ -1655,7 +1656,7 @@ class mGUI():
             self.etDBgrps.setDisabled(False)
             self.lFFb.setDisabled(False)
             self.lFFa.setDisabled(False)
-        elif(ci == 0):
+        elif ci == 0:
             self.rtDBsmident.setDisabled(True)
             self.DBdent.setDisabled(True)
             self.rtDBsmicat.setDisabled(False)
