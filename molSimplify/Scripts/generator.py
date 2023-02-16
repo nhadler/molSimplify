@@ -150,6 +150,8 @@ def startgen(argv, flag, gui, inputfile_str=None, write_files=True):
             args.core = [core]
             args.substrate = [sub]
             args.tsgen = True
+    if 'custom_data_dir' in args:
+        globs.custom_path = args.custom_data_dir
 
     # if not args.postp and not args.dbsearch and not args.dbfinger and not args.drawmode
     # and not (args.slab_gen or args.place_on_slab) and not (args.chain) and not (args.correlate):
