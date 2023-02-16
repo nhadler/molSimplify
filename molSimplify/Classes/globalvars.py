@@ -12,6 +12,7 @@ import glob
 import platform
 import sys
 import subprocess
+from molSimplify.utils.metaclasses import Singleton
 
 # Dictionary containing atomic mass, atomic number, covalent radius, num valence electrons
 # Data from http://www.webelements.com/ (last accessed May 13th 2015)
@@ -467,7 +468,7 @@ def mybash(cmd):
 
 
 # Defines global variables used throughout the code
-class globalvars:
+class globalvars(metaclass=Singleton):
     """Globalvars class. Defines global variables used throughout the code, including periodic table.
     """
     def __init__(self):

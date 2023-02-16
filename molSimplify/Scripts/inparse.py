@@ -487,7 +487,7 @@ def cleaninput(args):
         elif 'no' in opts[0].lower() or 'n' in opts[0].lower():
             args.ffoption = 'no'
         elif 'l' in opts[0].lower():
-            args.ffoption = 'l' # ligands.dict control
+            args.ffoption = 'l'  # ligands.dict control
         else:
             args.ffoption = ''
             for op in opts:
@@ -567,6 +567,8 @@ def parseinputfile(args, inputfile_str=None):
 
                 if (args.rundir[-1] == '/'):
                     args.rundir = args.rundir[:-1]
+            if (l[0] == '-custom_data_dir'):
+                args.custom_data_dir = l[1]
             if (l[0] == '-suff'):
                 args.suff = l[1].strip('\n')
             if (l[0] == '-name'):
@@ -1124,6 +1126,9 @@ def parseinputs_basic(*p):
     parser.add_argument(
         "-rundir", help="directory for jobs, default ~/Runs", action="store_true")
     parser.add_argument(
+        "-custom_data_dir", help="optional custom data directory to override the path in ~/.molSimplify"
+    )
+    parser.add_argument(
         "-smicat", help="connecting atoms corresponding to smiles. Indexing starts at 1 which is the default value as well. Use [] for multiple SMILES ligands, e.g. [1],[2]", action="store_true")
     parser.add_argument(
         "-ligloc", help="force location of ligands in the structure generation (default False)", default=False)
@@ -1272,9 +1277,10 @@ def parseinputs_slabgen(*p):
 def parseinputs_autocorr(*p):
     parser = p[0]
     parser.add_argument(
-        '-correlate', help="path to file for analysis, should contain name,value,folder where name.xyz geo is located on each line")  # 0
+        '-correlate',help="path to file for analysis, should contain name,value,folder where name.xyz geo is located on each line")  # 0
     parser.add_argument(
-        '-lig_only', help="set to true to force only whole ligand descriptors (if metal is constant etc)", action="store_true")  # 1
+        '-lig_only', action="store_true",
+        help="set to true to force only whole ligand descriptors (if metal is constant etc)")  # 1
     parser.add_argument(
         '-simple', help="set to true to force only simple default autocorrelations")  # 1
     parser.add_argument(
@@ -1365,7 +1371,8 @@ def parseinputs_db(*p):
     parser.add_argument(
         "-ligcon", help="list of connecting atoms for ligand to be added", action="store_true")
     parser.add_argument(
-        "-ligffopt", help="so we ff optimize the ligand before or (B), after (A) placement, never (N) or both (BA)", action="store_true")
+        "-ligffopt", action="store_true",
+        help="so we ff optimize the ligand before or (B), after (A) placement, never (N) or both (BA)")
     if len(p) == 1:  # only one input, printing help only
         args = parser.parse_args()
         return args
@@ -1413,13 +1420,17 @@ def parseinputs_inputgen(*p):
     parser.add_argument(
         "-ndfunc", help="NDFUNC option for diffuse functions in GAMESS e.g. 1", action="store_true")
     parser.add_argument(
-        "-sysoption", help="extra arguments for $SYSTEM GAMESS block in syntax keyword value, e.g. MWORDS 20", action="store_true")
+        "-sysoption", action="store_true", 
+        help="extra arguments for $SYSTEM GAMESS block in syntax keyword value, e.g. MWORDS 20")
     parser.add_argument(
-        "-ctrloption", help="extra arguments for $CONTRL GAMESS block in syntax keyword value, e.g. ISPHER 1", action="store_true")
+        "-ctrloption", action="store_true",
+        help="extra arguments for $CONTRL GAMESS block in syntax keyword value, e.g. ISPHER 1")
     parser.add_argument(
-        "-scfoption", help="extra arguments for $SCF GAMESS block in syntax keyword value, e.g. DIIS .TRUE.", action="store_true")
+        "-scfoption", action="store_true",
+        help="extra arguments for $SCF GAMESS block in syntax keyword value, e.g. DIIS .TRUE.")
     parser.add_argument(
-        "-statoption", help="extra arguments for $STATPT GAMESS block in syntax keyword value, e.g. NSTEP 100", action="store_true")
+        "-statoption", action="store_true",
+        help="extra arguments for $STATPT GAMESS block in syntax keyword value, e.g. NSTEP 100")
     parser.add_argument(
         "-jsched", help="job scheduling system. Choices: SLURM or SGE", default='sge')
     parser.add_argument(
@@ -1527,21 +1538,29 @@ def parseinputs_binding(*p):
     parser.add_argument(
         "-nambsmi", help="name of SMILES string for binding species e.g. carbonmonoxide", action="store_true")
     parser.add_argument(
-        "-maxd", help="maximum distance above cluster size for molecules placement maxdist=size1+size2+maxd", action="store_true")
+        "-maxd", help="maximum distance above cluster size for molecules placement maxdist=size1+size2+maxd",
+        action="store_true")
     parser.add_argument(
-        "-mind", help="minimum distance above cluster size for molecules placement mindist=size1+size2+mind", action="store_true")
+        "-mind", help="minimum distance above cluster size for molecules placement mindist=size1+size2+mind",
+        action="store_true")
     parser.add_argument(
-        "-place", help="place binding species relative to core. Takes either angle (0-360) or ax/s for axial side", action="store_true")
-    parser.add_argument("-bcharge", "--bcharge", default='0',
-                        help="binding species charge, default 0", action="store_true")
+        "-place", help="place binding species relative to core. Takes either angle (0-360) or ax/s for axial side",
+        action="store_true")
     parser.add_argument(
-        "-bphi", "--bphi", help="azimuthal angle phi for binding species, default random between 0 and 180", action="store_true")
+        "-bcharge", "--bcharge", default='0', action="store_true",
+        help="binding species charge, default 0")
     parser.add_argument(
-        "-bref", "--bref", help="reference atoms for placement of extra molecules, default COM (center of mass). e.g. 1,5 or 1-5, Fe, COM", action="store_true")
+        "-bphi", "--bphi", action="store_true",
+        help="azimuthal angle phi for binding species, default random between 0 and 180")
     parser.add_argument(
-        "-bsep", "--bsep", help="flag for separating extra molecule in input or xyz file", action="store_true")
-    parser.add_argument("-btheta", "--btheta",
-                        help="polar angle theta for binding species, default random between 0 and 360", action="store_true")
+        "-bref", "--bref", action="store_true",
+        help="reference atoms for placement of extra molecules, default COM (center of mass). e.g. 1,5 or 1-5, Fe, COM")
+    parser.add_argument(
+        "-bsep", "--bsep", action="store_true",
+        help="flag for separating extra molecule in input or xyz file")
+    parser.add_argument(
+        "-btheta", "--btheta", action="store_true",
+        help="polar angle theta for binding species, default random between 0 and 360")
     if len(p) == 1:  # only one input, printing help only
         args = parser.parse_args()
         return args
@@ -1623,8 +1642,8 @@ def parseinputs_ligdict(*p):
     parser = p[0]
 
     available_ligands = getligs().split(' ')
-    available_ligands.sort() # Sorting the ligands in alphabetical order
-    available_ligands = "\n".join(available_ligands) # Converting back from a list to a string
+    available_ligands.sort()  # Sorting the ligands in alphabetical order
+    available_ligands = "\n".join(available_ligands)  # Converting back from a list to a string
     available_ligands = "ligands to be included in complex; available ligands in the ligands dictionary at molSimplify/molSimplify/Ligands/ligands.dict are: \n%s}" % available_ligands
 
     parser.add_argument(

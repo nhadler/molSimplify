@@ -29,7 +29,7 @@ def test_parseinputs_basic(monkeypatch):
                     ffoption='N', geo=False, geometry=False, keepHs=None,
                     lig=None, ligloc=False, ligocc=False, multiplicity=None,
                     oxstate=None, rundir=False, skipANN=None, smicat=False,
-                    spin=None, spinmultiplicity=None)
+                    spin=None, spinmultiplicity=None, custom_data_dir=None)
     assert args.__dict__ == defaults
 
 
