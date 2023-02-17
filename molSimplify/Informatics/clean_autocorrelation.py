@@ -248,6 +248,7 @@ def metal_only_deltametric(mol, prop, d, oct=True, catoms=None,
                                            catoms=catoms)
             deltametric_vector = np.divide(deltametric_vector, n_met)
         else:
+            metal_ind = mol.findMetal()[0]
             deltametric_vector = func(mol, w, metal_ind, d, oct=oct,
                                       catoms=catoms)
     except:

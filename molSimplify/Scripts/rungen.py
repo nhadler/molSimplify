@@ -399,24 +399,18 @@ def draw_supervisor(args, rundir):
 
 
 def rungen(rundir, args, chspfname, globs, write_files=True):
-    try:
-        from Classes.mWidgets import mQDialogInf
-    except ImportError:
-        args.gui = False
-    emsg = False
+    emsg = ''
     globs.nosmiles = 0  # reset smiles ligands for each run
     # check for specified ligands/functionalization
     ligocc = []
     # check for files specified for multiple ligands
     mligs, catoms = [False], [False]
     if args.lig is not None:
-        if '.smi' in args.lig[0]:
-            ligfilename = args.lig[0].split('.')[0]
         if args.lig:
             mligs, catoms, multidx = checkmultilig(args.lig)
-        if args.debug:
-            print(('after checking for multiple ligs, we found  ' +
-                   str(multidx) + ' ligands'))
+            if args.debug:
+                print('after checking for multiple ligs, we found '
+                      f'{multidx} ligands')
     # save initial
     smicat0 = [ss for ss in args.smicat] if args.smicat else False
     # loop over ligands
@@ -529,7 +523,7 @@ def rungen(rundir, args, chspfname, globs, write_files=True):
                 os.mkdir(rootcheck)
             except FileExistsError:
                 print(('Directory '+rootcheck+' can not be created. Exiting..\n'))
-                return
+                return 'Directory '+rootcheck+' can not be created. Exiting..'
             # check for actual directory
         if os.path.isdir(rootdir) and not args.checkdirb and not skip and not args.jobdir:
             args.checkdirb = True
@@ -647,12 +641,14 @@ def rungen(rundir, args, chspfname, globs, write_files=True):
                 elif args.jsched in 'SGE Sungrid sge':
                     sgejobgen(args, jobdirs)
                     print('SGE jobscripts generated!')
-
             elif multidx != -1:  # if ligand input was a list of smiles strings, write good smiles strings to separate list
-                with open(ligfilename+'-good.smi', 'a') as f:
-                    f.write(args.lig[0])
+                if '.smi' in args.lig[0]:
+                    ligfilename = args.lig[0].split('.')[0]
+                    with open(ligfilename + '-good.smi', 'a') as f:
+                        f.write(args.lig[0])
         elif not emsg:
             if args.gui:
+                from Classes.mWidgets import mQDialogInf
                 qq = mQDialogInf('Folder skipped', 'Folder ' +
                                  rootdir+' was skipped.')
                 qq.setParent(args.gui.wmain)
@@ -660,5 +656,5 @@ def rungen(rundir, args, chspfname, globs, write_files=True):
                 print(('Folder '+rootdir+' was skipped..\n'))
     if write_files:
         return emsg  # Default behavior
-    else:
-        return strfiles, emsg, this_diag  # Assume that user wants these if they're not writing files
+    # else:
+    return strfiles, emsg, this_diag  # Assume that user wants these if they're not writing files

@@ -14,6 +14,7 @@ import re
 import unicodedata
 import openbabel
 import shutil
+import ast
 
 
 # Add molecule to ligand database
@@ -30,8 +31,9 @@ def addtoldb(smimol, sminame, smident, smicat, smigrps, smictg, ffopt, smichg=No
     globs = globalvars()
     if not globs.custom_path or not os.path.exists(str(globs.custom_path)):
         print('To add to database, you need to set a custom path. Please enter a writeable file path:')
-        new_path = eval(input('path='))
+        new_path = ast.literal_eval(input('path='))
         globs.add_custom_path(new_path)
+        globs.custom_path = new_path
         copy_to_custom_path()
 
     lipath = globs.custom_path + "/Ligands/ligands.dict"
@@ -122,8 +124,9 @@ def addtocdb(smimol, sminame, smicat):
     globs = globalvars()
     if not globs.custom_path or not os.path.exists(str(globs.custom_path)):
         print('To add to database, you need to set a custom path. Please enter a writeable file path:')
-        new_path = eval(input('path='))
+        new_path = ast.literal_eval(input('path='))
         globs.add_custom_path(new_path)
+        globs.custom_path = new_path
         copy_to_custom_path()
     cpath = globs.custom_path + "/Cores/cores.dict"
     mcores = readdict(cpath)
@@ -182,8 +185,9 @@ def addtobdb(smimol, sminame):
     globs = globalvars()
     if not globs.custom_path or not os.path.exists(str(globs.custom_path)):
         print('To add to database, you need to set a custom path. Please enter a writeable file path:')
-        new_path = eval(input('path='))
+        new_path = ast.literal_eval(input('path='))
         globs.add_custom_path(new_path)
+        globs.custom_path = new_path
         copy_to_custom_path()
     bpath = globs.custom_path + "/Bind/bind.dict"
     bindcores = readdict(bpath)
@@ -246,8 +250,9 @@ def removefromDB(sminame, ropt):
     globs = globalvars()
     if not globs.custom_path or not os.path.exists(str(globs.custom_path)):
         print('To database, you need to set a custom path. Please enter a writeable file path:')
-        new_path = eval(input('path='))
+        new_path = ast.literal_eval(input('path='))
         globs.add_custom_path(new_path)
+        globs.custom_path = new_path
         copy_to_custom_path()
     li_path = globs.custom_path + "/Ligands/ligands.dict"
     li_folder = globs.custom_path + "/Ligands/"

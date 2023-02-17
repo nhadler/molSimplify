@@ -1,4 +1,6 @@
 import os
+import warnings
+
 
 def tensorflow_silence():
     # thanks to
@@ -18,4 +20,4 @@ def tensorflow_silence():
         deprecation.deprecated = deprecated
 
     except ImportError:
-        pass
+        warnings.warn('Failed to silence tensorflow')

@@ -20,6 +20,7 @@ from typing import List, Tuple, Union, Optional
 from tensorflow.keras import backend as K
 from tensorflow.keras.models import model_from_json, load_model
 from pkg_resources import resource_filename, Requirement
+from packaging import version
 import tensorflow as tf
 
 from molSimplify.python_nn.clf_analysis_tool import array_stack, get_layer_outputs, dist_neighbor, get_entropy
@@ -503,7 +504,7 @@ def ANN_supervisor(predictor: str,
             print(('LOADED MODEL HAS ' + str(
                 len(loaded_model.layers)) + ' layers, so latent space measure will be from first ' + str(
                 len(loaded_model.layers) - 1) + ' layers'))
-        if not tf.__version__ >= '2.0.0':
+        if not version.parse(tf.__version__) >= version.parse('2.0.0'):
             get_outputs = K.function([loaded_model.layers[0].input, K.learning_phase()],
                                      [loaded_model.layers[len(loaded_model.layers) - 2].output])
             latent_space_vector = get_outputs([excitation, 0])  # Using test phase.
@@ -548,13 +549,11 @@ def find_true_min_eu_dist(predictor: str,
 
     if debug:
         print(('min dist EU is ' + str(min_dist)))
-    if predictor in ['oxo', 'hat', 'homo', 'gap']:
-        if predictor in ['homo', 'gap']:
-            key = 'homolumo/' + predictor + '_train_names'
-        elif predictor in ['oxo', 'hat']:
-            key = 'oxocatalysis/' + predictor + '_train_names'
-        elif predictor in ['oxo20', 'homo_empty']:
-            key = 'oxoandhomo/' + predictor + '_train_names'
+    folder_dict = {'homo': 'homolumo', 'gap': 'homolumo',
+                   'oxo': 'oxocatalysis', 'hat': 'oxocatalysis',
+                   'oxo20': 'oxoandhomo', 'homo_empty': 'oxoandhomo'}
+    if predictor in folder_dict:
+        key = f'{folder_dict[predictor]}/{predictor}_train_names'
         path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.csv')
         with open(path_to_file, "r") as f:
             csv_lines = list(csv.reader(f))
@@ -602,7 +601,7 @@ def find_ANN_10_NN_normalized_latent_dist(predictor, latent_space_vector, debug=
         norm_train_mat.append(scaled_excitation)
     norm_train_mat = np.squeeze(np.array(norm_train_mat))
     loaded_model = load_keras_ann(predictor)
-    if not tf.__version__ >= '2.0.0':
+    if not version.parse(tf.__version__) >= version.parse('2.0.0'):
         get_outputs = K.function([loaded_model.layers[0].input, K.learning_phase()],
                                  [loaded_model.layers[len(loaded_model.layers) - 2].output])
         latent_space_train = np.squeeze(np.array(get_outputs([norm_train_mat, 0])))
@@ -644,13 +643,13 @@ def find_ANN_latent_dist(predictor, latent_space_vector, debug=False):
         print(('loaded model has  ' + str(
             len(loaded_model.layers)) + ' layers, so latent space measure will be from first ' + str(
             len(loaded_model.layers) - 1) + ' layers'))
-    if not tf.__version__ >= '2.0.0':
+    if not version.parse(tf.__version__) >= version.parse('2.0.0'):
         get_outputs = K.function([loaded_model.layers[0].input, K.learning_phase()],
                                  [loaded_model.layers[len(loaded_model.layers) - 2].output])
     for i, rows in enumerate(train_mat):
         scaled_row = np.squeeze(
             data_normalize(rows, train_mean_x.T, train_var_x.T, debug=debug))  # Normalizing the row before finding the distance
-        if not tf.__version__ >= '2.0.0':
+        if not version.parse(tf.__version__) >= version.parse('2.0.0'):
             latent_train_row = get_outputs([np.array([scaled_row]), 0])
         else:
             latent_train_row = get_layer_outputs(loaded_model, len(loaded_model.layers) - 2,
@@ -663,13 +662,11 @@ def find_ANN_latent_dist(predictor, latent_space_vector, debug=False):
     # flatten min row
     if debug:
         print(('min dist is ' + str(min_dist) + ' at  ' + str(min_ind)))
-    if predictor in ['oxo', 'hat', 'homo', 'gap']:
-        if predictor in ['homo', 'gap']:
-            key = 'homolumo/' + predictor + '_train_names'
-        elif predictor in ['oxo', 'hat']:
-            key = 'oxocatalysis/' + predictor + '_train_names'
-        elif predictor in ['oxo20', 'homo_empty']:
-            key = 'oxoandhomo/' + predictor + '_train_names'
+    folder_dict = {'homo': 'homolumo', 'gap': 'homolumo',
+                   'oxo': 'oxocatalysis', 'hat': 'oxocatalysis',
+                   'oxo20': 'oxoandhomo', 'homo_empty': 'oxoandhomo'}
+    if predictor in folder_dict:
+        key = f'{folder_dict[predictor]}/{predictor}_train_names'
         path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.csv')
         with open(path_to_file, "r") as f:
             csv_lines = list(csv.reader(f))
@@ -685,13 +682,13 @@ def find_clf_lse(predictor: str,
                  debug: bool = False) -> np.ndarray:
     if modelname is None:
         modelname = "spectro"
-        if predictor == "geo_static_clf":
-            avrg_latent_dist = 33.21736244173539
-        elif predictor == "sc_static_clf":
-            avrg_latent_dist = 38.276809428032685
-        else:
-            print("Unknown model type")
-            return np.zeros_like(excitation)
+    if predictor == "geo_static_clf":
+        avrg_latent_dist = 33.21736244173539
+    elif predictor == "sc_static_clf":
+        avrg_latent_dist = 38.276809428032685
+    else:
+        print("Unknown model type")
+        return np.zeros_like(excitation)
     key = get_key(predictor, suffix='')
     base_path = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key)
     train_mean_x, train_mean_y, train_var_x, train_var_y = load_normalization_data(predictor)

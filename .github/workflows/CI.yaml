@@ -25,10 +25,7 @@ jobs:
     strategy:
       matrix:
         os: ["ubuntu-latest"]
-        python-version: ["3.7"]
-#         include:
-#           - os: ubuntu-latest
-#             python-version: 3.7
+        python-version: ["3.7", "3.8"]
     defaults:
       run:
         shell: bash -l {0}
@@ -40,20 +37,10 @@ jobs:
         uname -a
         df -h
         ulimit -a
-
-    # More info on the whole conda setup: https://github.com/conda-incubator/setup-miniconda
-    - name: Setup Conda
-      uses: conda-incubator/setup-miniconda@v2
-      id: conda-setup
-      with:
-        mamba-version: "*"
-        channels: conda-forge,defaults
-        activate-environment: mols_test
     # Get date for the cache key
     - name: Get current time
       uses: josStorer/get-current-time@v2.0.2
       id: current-time
-    # Actual caching
     - name: Cache conda env
       uses: actions/cache@v3
       id: cache
@@ -61,30 +48,47 @@ jobs:
         # Increase this value to reset cache if mols.yml has not changed
         CACHE_NUMBER: 0
       with:
-        # TODO: Figure out how to avoid this hard coded path. For some reason $CONDA does not work.
-        path: /usr/share/miniconda/envs/mols_test
+        path: ~/conda_pkgs_dir
         key:
           # Key contains current year and month to ensure it is updated once a month
-          ${{ runner.os }}-${{ runner.arch }}-conda-${{ steps.current-time.outputs.year }}-${{
+          ${{ runner.os }}-py${{ matrix.python-version }}-conda-${{ steps.current-time.outputs.year }}-${{
           steps.current-time.outputs.month }}-${{ hashFiles('devtools/conda-envs/mols.yml') }}-${{
           env.CACHE_NUMBER }}
-    # Install environment from yaml file if cache-hit == false
-    - name: Update conda env
-      run: mamba env update -n mols_test -f devtools/conda-envs/mols.yml
-      if: steps.cache.outputs.cache-hit != 'true'
+
+    # More info on the whole conda setup: https://github.com/conda-incubator/setup-miniconda
+    - name: Setup Conda
+      uses: conda-incubator/setup-miniconda@v2
+      id: conda-setup
+      with:
+        # mamba-version: "*" # uncomment to activate mamba 
+        python-version: ${{ matrix.python-version }}
+        miniforge-variant: Mambaforge
+        channels: conda-forge,defaults
+        environment-file: devtools/conda-envs/mols.yml
+
+        activate-environment: molsimp
+        use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
 
     - name: Install package
       run: |
-        pip install -e .
-        pip install pytest-cov codecov
+        pip install -e . --no-deps
+        pip install pytest-cov
         conda list
     
     - name: Run tests
       run: |
-        pytest -v --cov=molSimplify
+        pytest -v --cov=molSimplify --cov-report=xml
     
     - name: Upload coverage report to codecov
-      run: codecov
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        directory: ./coverage/reports/
+        env_vars: OS,PYTHON
+        files: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        verbose: true
     
     - name: Report Status
       # Slack notifications only on the main repo
