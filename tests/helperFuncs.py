@@ -10,6 +10,7 @@ from molSimplify.Classes.globalvars import (dict_oneempty_check_st,
 from molSimplify.Classes.mol3D import mol3D
 from pkg_resources import resource_filename, Requirement
 from typing import Dict
+from contextlib import contextmanager
 from pathlib import Path
 
 
@@ -26,6 +27,16 @@ def is_number(s):
         return True
     except ValueError:
         return False
+
+
+@contextmanager
+def working_directory(path: Path):
+    prev_cwd = os.getcwd()
+    try:
+        os.chdir(path)
+        yield
+    finally:
+        os.chdir(prev_cwd)
 
 
 def fuzzy_compare_xyz(xyz1, xyz2, thresh):
