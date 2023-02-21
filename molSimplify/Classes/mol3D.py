@@ -11,7 +11,6 @@ import sys
 import tempfile
 import time
 import xml.etree.ElementTree as ET
-from math import sqrt
 import numpy as np
 import openbabel
 from typing import List, Optional
@@ -493,7 +492,7 @@ class mol3D:
         u = 0.0
         for u0 in bondv:
             u += (u0 * u0)
-        u = sqrt(u)
+        u = np.sqrt(u)
         dR = [i * (d / u - 1) for i in bondv]
         submolidxes = self.findsubMol(idx1, idx2)
         for submolidx in submolidxes:
@@ -2883,7 +2882,7 @@ class mol3D:
                 rmsd = 0
             else:
                 rmsd /= Nat0
-            return sqrt(rmsd)
+            return np.sqrt(rmsd)
 
     def geo_rmsd(self, mol2):
         """
@@ -2925,7 +2924,7 @@ class mol3D:
                 rmsd = 0
             else:
                 rmsd /= Nat0
-            return sqrt(rmsd)
+            return np.sqrt(rmsd)
         else:
             raise ValueError("Number of atom does not match between two mols.")
 
@@ -3057,7 +3056,7 @@ class mol3D:
                 if (not atom0.sym == 'H') and (not atom1.sym == 'H'):
                     rmsd += (atom0.distance(atom1)) ** 2
             rmsd /= Nat0
-            return sqrt(rmsd)
+            return np.sqrt(rmsd)
 
     def maxatomdist_nonH(self, mol2):
         """
