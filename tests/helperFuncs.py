@@ -14,14 +14,8 @@ from contextlib import contextmanager
 from pathlib import Path
 
 
-def fuzzy_equal(x1, x2, thresh):
-    return np.fabs(float(x1) - float(x2)) < thresh
-
-
-# check whether the string is a integral/float/scientific
-
-
 def is_number(s):
+    """check whether the string is a integral/float/scientific"""
     try:
         float(s)
         return True
@@ -37,6 +31,10 @@ def working_directory(path: Path):
         yield
     finally:
         os.chdir(prev_cwd)
+
+
+def fuzzy_equal(x1, x2, thresh):
+    return np.fabs(float(x1) - float(x2)) < thresh
 
 
 def fuzzy_compare_xyz(xyz1, xyz2, thresh):
@@ -100,10 +98,8 @@ def getMetalLigBondLength(mymol3d):
     return blength
 
 
-# Compare number of atoms
-
-
 def compareNumAtoms(xyz1, xyz2):
+    """Compare number of atoms"""
     print("Checking total number of atoms")
     mol1 = mol3D()
     mol1.readfromxyz(xyz1)
@@ -115,10 +111,8 @@ def compareNumAtoms(xyz1, xyz2):
     return passNumAtoms
 
 
-# Compare Metal Ligand Bond Length
-
-
 def compareMLBL(xyz1, xyz2, thresh):
+    """Compare Metal Ligand Bond Length"""
     print("Checking metal-ligand bond length")
     mol1 = mol3D()
     mol1.readfromxyz(xyz1)
@@ -136,10 +130,8 @@ def compareMLBL(xyz1, xyz2, thresh):
     return passMLBL
 
 
-# Compare Ligand Geometry
-
-
 def compareLG(xyz1, xyz2, thresh):
+    """Compare Ligand Geometry"""
     print("Checking the Ligand Geometries")
     passLG = True
     ligs1 = getAllLigands(xyz1)
@@ -275,40 +267,6 @@ def parse4testNoFF(infile, tmpdir: Path, isMulti: bool = False) -> str:
     newinfile = str(tmpdir / (name + "_noff.in"))
     shutil.copyfile(infile, newinfile)
     return parse4test(newinfile, tmpdir, isMulti, extra_args={"-ffoption": "N"})
-
-
-def parse4testNoFF_old(infile, tmpdir):
-    name = jobname(infile)
-    newname = name + "_noff"
-    newinfile = name + "_noff.in"
-    f = tmpdir.join(newinfile)
-    fullnewname = f.dirname + "/" + newinfile
-    with open(infile, 'r') as f_in:
-        data = f_in.readlines()
-    newdata = ""
-    hasFF = False
-    for line in data:
-        if ("-ff " in line):
-            hasFF = True
-            break
-    if not hasFF:
-        print("No FF optimization used in original input file. "
-              "No need to do further test.")
-        fullnewname = ""
-    else:
-        print("FF optimization used in original input file. "
-              "Now test for no FF result.")
-        for line in data:
-            # By getting rid of -ffoption, will use the force field option default, which is "N"
-            if not (("-jobdir" in line) or ("-name" in line)
-                    or ("-ff " in line) or ("-ffoption " in line)):
-                newdata += line
-        newdata += "-jobdir " + newname + "\n"
-        newdata += "-name " + newname + "\n"
-        print(newdata)
-        f.write(newdata)
-        print("Input file parsed for no FF test is located: ", fullnewname)
-    return fullnewname
 
 
 def report_to_dict(lines):
