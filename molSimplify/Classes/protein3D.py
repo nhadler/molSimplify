@@ -40,7 +40,7 @@ class protein3D:
         self.nhetmols = 0
         # Number of chains
         self.nchains = 0
-        # Dictionary of monomerss
+        # Dictionary of monomers
         self.aas = {}
         # Dictionary of all atoms
         self.atoms = {}
@@ -152,7 +152,6 @@ class protein3D:
 
     def setMissingAAs(self, missing_aas):
         """ Set missing amino acids of a protein3D class to a new list.
-
         Parameters
         ----------
             missing_aas : list
@@ -256,7 +255,7 @@ class protein3D:
         >>> pdb_system = protein3D()
         >>> pdb_system.fetch_pdb('1os7') # Fetch a PDB
         >>> pdb_system.getMissingAAs()   # This gives a list of monomer3D objects
-        >>> [pdb_system.getMissingAAs()[x].three_lc for x in range(len(val.getMissingAAs()))] # This returns
+        >>> [pdb_system.getMissingAAs()[x].three_lc for x in range(len(pdb_system.getMissingAAs()))] # This returns
         >>>                     # the list of missing AAs by their 3-letter codes
         """
         return self.missing_aas
@@ -359,42 +358,65 @@ class protein3D:
         >>> pdb_system.getChain('A') # Get chain A of the PDB
         """
         p = protein3D()
+        p.setPDBCode(self.pdbCode)
         p.setChains({chain_id: self.chains[chain_id]})
-        p.setAAs(set(self.chains[chain_id]))
         p.setR(self.R)
         p.setRfree(self.Rfree)
+        
         missing_aas = []
         for aa in self.missing_aas:
             if aa.chain == chain_id:
-                missing_aas.append(aa)
+                missing_aas.append(aa)      
         p.setMissingAAs(missing_aas)
+
+        aas = {}
+        for aa in self.aas:
+            if aa[0] == chain_id:
+                aas[aa] = self.aas[aa]     
+        p.setAAs(aas)
+
         gone_atoms = {}
         for aa in self.missing_atoms.keys():
-            if aa.chain == chain_id:
+            if aa[0] == chain_id:
                 gone_atoms[aa] = self.missing_atoms[aa]
         p.setMissingAtoms(gone_atoms)
-        gone_hets = self.hetatms
+
+        hets_flipped = {value[0]:key for key, value in self.hetmols.items()}
         atoms = {}
+        a_ids = {}
+        hets = {}
         for a_id in self.atoms:
-            aa = self.getResidue(a_id)
-            if aa is not None:
+            aa = self.getMolecule(a_id)
+
+            if type(aa) == monomer3D:
                 if aa.chain == chain_id:
                     atoms[a_id] = self.atoms[a_id]
+                    a_ids[self.atoms[a_id]] = a_id
             else:
-                if chain_id not in gone_hets[(a_id, self.atoms[a_id])]:
-                    del gone_hets[(a_id, self.atoms[a_id])]
-                else:
+                if aa not in hets_flipped:
+                    print(a_id)
+                het = hets_flipped[aa]
+                het_chain_id = het[0]
+                if het_chain_id == chain_id:
+                    hets[het] = self.hetmols[het]
                     atoms[a_id] = self.atoms[a_id]
-        p.setHetatms(gone_hets)
+                    a_ids[self.atoms[a_id]] = a_id
+
+        p.setHetmols(hets)
         p.setAtoms(atoms)
+
         bonds = {}
         for a in self.bonds.keys():
             if a in p.atoms.values():
                 bonds[a] = set()
                 for b in self.bonds[a]:
                     if b in p.atoms.values():
-                        bonds[a].add(b)
+                        bonds[a].add(b)                
         p.setBonds(bonds)
+
+        p.setIndices(a_ids)
+        p.setConf([conf for conf in self.conf if conf[0] == chain_id])
+
         return p
 
     def getMolecule(self, a_id, aas_only=False):
@@ -628,7 +650,6 @@ class protein3D:
         if hasattr(self, 'a_ids') and atom in self.a_ids.keys():
             idx = self.a_ids[atom]
         else:
-            print(atom.sym)
             idx = list(self.atoms.keys())[list(self.atoms.values()).index(atom)]
         return idx
 
@@ -730,8 +751,11 @@ class protein3D:
                     text = text.replace(line, '')
                 sp = line.split()
                 if len(sp) > 2:
-                    a = monomer3D(sp[0], sp[1], sp[2])
-                    missing_aas.append(a)
+                    res_num = int(sp[2])
+                    # Ignoring expression tags which are negative residues
+                    if res_num > 0:
+                        a = monomer3D(sp[0], sp[1], sp[2])
+                        missing_aas.append(a)
 
         # start getting missing atoms
         if "M RES CSSEQI  ATOMS" in text:
@@ -987,7 +1011,8 @@ class protein3D:
             dict2_str = out2.decode("UTF-8")
             dictionary = ast.literal_eval(dict2_str)
         link = dictionary["atom_scores"]
-        df = pd.read_csv(link, error_bad_lines=False)
+        df = pd.read_csv(link, on_bad_lines='skip')
+
         for i, row in df.iterrows():
             EDIA = row["EDIA"]
             index = row["Infile id"]
