@@ -425,8 +425,8 @@ def tf_ANN_preproc(metal: str, oxstate, spin, ligs: List[str], occs: List[int], 
         ax_lig3D.convert2mol3D()  # mol3D representation of ligand
         for jj in range(0, ax_occs[ii]):
             ax_ligands_list.append(this_lig)
-    print(('Obtained the net ligand charge, which is... ', net_lig_charge))
     if debug:
+        print(f'Obtained the net ligand charge, which is... {net_lig_charge}')
         print('ax_ligands_list:')
         print(ax_ligands_list)
         print([h.mol.cat for h in ax_ligands_list])
