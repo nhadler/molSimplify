@@ -12,7 +12,10 @@ import tempfile
 import time
 import xml.etree.ElementTree as ET
 import numpy as np
-import openbabel
+try:
+    from openbabel import openbabel  # version 3 style import
+except ImportError:
+    import openbabel  # fallback to version 2
 from typing import List, Optional
 from scipy.spatial import ConvexHull
 from molSimplify.utils.decorators import deprecated

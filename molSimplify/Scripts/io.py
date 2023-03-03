@@ -14,7 +14,10 @@ import os
 import time
 import difflib
 
-import openbabel
+try:
+    from openbabel import openbabel  # version 3 style import
+except ImportError:
+    import openbabel  # fallback to version 2
 from typing import Any, List, Dict, Tuple, Union, Optional
 from pkg_resources import resource_filename, Requirement
 

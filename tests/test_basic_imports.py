@@ -53,7 +53,10 @@ def test_openbabel_import():
     Test whether openbabel can be imported
     '''
     try:
-        import openbabel  # noqa: F401
+        try:
+            from openbabel import openbabel  # version 3 style import
+        except ImportError:  # fallback to version 2
+            import openbabel  # noqa: F401
         assert "openbabel" in sys.modules
     except ImportError:
         assert 0

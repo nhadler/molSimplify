@@ -25,8 +25,6 @@ from molSimplify.python_nn.tf_ANN import (ANN_supervisor,
                                           find_true_min_eu_dist)
 
 
-# import numpy
-# import openbabel
 def spin_classify(metal: str, spin: Union[int, str], ox: int) -> Tuple[bool, List[int]]:
     metal_spin_dictionary = {'co': {2: 4, 3: 5},
                              'cr': {2: 5, 3: 4},
