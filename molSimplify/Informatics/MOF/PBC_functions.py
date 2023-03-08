@@ -12,6 +12,8 @@ from molSimplify.Informatics.MOF.atomic import (
     metals,     
     )
 
+# PBC: periodic boundary conditions
+
 deg2rad = np.pi/180.0
 def readcif(name):
     """
@@ -304,25 +306,22 @@ def XYZ_connected(cell,cart_coords,adj_mat):
 
 def writeXYZfcoords(filename,atoms,cell,fcoords):
     """
-    TODO
+    Write an XYZ file using fractional coordinates.
 
     Parameters
     ----------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
+    filename : str
+        The path to where the xyz of the MOF structure will be written.
+    atoms : list of str
+        The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms.
+    cell : numpy.ndarray
+        The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
+    fcoords : numpy.ndarray
+        The fractional positions of the atoms of the cif file. Shape is (number of atoms, 3).
 
     Returns
     -------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
+    None
 
     """
     with open(filename,"w") as fo:
@@ -399,25 +398,20 @@ def returnXYZandGraph(filename,atoms,cell,fcoords,molgraph):
 
 def writeXYZcoords(filename,atoms,coords):
     """
-    TODO
+    Write an XYZ file using Cartesian coordinates.
 
     Parameters
     ----------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
+    filename : str
+        The path to where the xyz of the MOF structure will be written.
+    atoms : list of str
+        The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms.
+    coords : numpy.ndarray
+        The Cartesian positions of the atoms of the cif file. Shape is (number of atoms, 3).
 
     Returns
     -------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
+    None
 
     """
     with open(filename,"w") as fo:
@@ -429,25 +423,18 @@ def writeXYZcoords(filename,atoms,coords):
 
 def writeXYZcoords_withcomment(filename,atoms,coords,comment):
     """
-    TODO
+    Write an XYZ file using Cartesian coordinates, with a comment included.
 
     Parameters
     ----------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-
-    Returns
-    -------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
+    filename : str
+        The path to where the xyz of the MOF structure will be written.
+    atoms : list of str
+        The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms.
+    coords : numpy.ndarray
+        The Cartesian positions of the atoms of the cif file. Shape is (number of atoms, 3).
+    comment : str
+        The comment to include in the XYZ file.
 
     """
     with open(filename,"w") as fo:
