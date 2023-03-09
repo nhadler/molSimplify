@@ -1277,6 +1277,41 @@ class mol3D:
         self.convert2mol3D()
         return en
 
+    def apply_ffopt_list_constraints(self, list_constraints=False, ff='uff'):
+        """
+        Apply forcefield optimization to a given mol3D class.
+        Differs from apply_ffopt in that one can specify constrained atoms as a list.
+
+        Parameters
+        ----------
+            list_constraints : list of int, optional
+                List of atom indices to employ cartesian constraints before ffopt.
+            ff : str, optional
+                Force field to be used in openbabel. Default is UFF.
+
+        Returns
+        -------
+            energy : float
+                Energy of the ffopt in kJ/mol.
+
+        """
+        forcefield = openbabel.OBForceField.FindForceField(ff)
+        constr = openbabel.OBFFConstraints()
+        if list_constraints:
+            for catom in list_constraints:
+                # Openbabel uses a 1 index instead of a 0 index.
+                constr.AddAtomConstraint(catom+1)
+        self.convert2OBMol()
+        forcefield.Setup(self.OBMol, constr)
+        if self.OBMol.NumHvyAtoms() > 10:
+            forcefield.ConjugateGradients(200)
+        else:
+            forcefield.ConjugateGradients(50)
+        forcefield.GetCoordinates(self.OBMol)
+        en = forcefield.Energy()
+        self.convert2mol3D()
+        return en
+
     def findcloseMetal(self, atom0):
         """
         Find the nearest metal to a given atom3D class.
