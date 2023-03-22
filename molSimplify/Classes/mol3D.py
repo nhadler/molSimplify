@@ -5001,7 +5001,7 @@ class mol3D:
 
     def get_smiles(self, canonicalize=False, use_mol2=False) -> str:
         """
-        Read a smiles string and convert it to a mol3D class instance.
+        Returns the SMILES string representing the mol3D object.
 
         Parameters
         ----------
