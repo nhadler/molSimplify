@@ -280,7 +280,7 @@ def XYZ_connected(cell,cart_coords,adj_mat):
     from scipy import sparse
     n_components, labels_components = sparse.csgraph.connected_components(csgraph=adj_mat, directed=False, return_labels=True)
     # print(n_components,'comp',labels_components)
-    tested_index = 0 # The label for the connected components. 0 indicates the first connected componet, etc.
+    tested_index = 0 # The label for the connected components. 0 indicates the first connected component, etc.
     index_counter = 0
     while len(connected_components) < len(cart_coords):
         try:
