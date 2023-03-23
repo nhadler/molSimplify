@@ -261,7 +261,7 @@ class ligand:
         return percent_buried
 
 
-def ligand_breakdown(mol, flag_loose=False, BondedOct=False, silent=True):
+def ligand_breakdown(mol, flag_loose=False, BondedOct=False, silent=True, transition_metals_only=True):
     """Extract axial and equatorial components of a octahedral complex.
 
     Parameters
@@ -287,7 +287,7 @@ def ligand_breakdown(mol, flag_loose=False, BondedOct=False, silent=True):
     """
     # this function takes an octahedral
     # complex and returns ligands
-    metal_index = mol.findMetal()[0]
+    metal_index = mol.findMetal(transition_metals_only=transition_metals_only)[0]
     bondedatoms = mol.getBondedAtomsSmart(metal_index, oct=True)
     # print('!!!!!boundatoms', bondedatoms)
     # print('from get oct' + str(bondedatoms))
