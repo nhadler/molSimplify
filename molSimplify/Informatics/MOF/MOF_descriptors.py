@@ -546,7 +546,7 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
     if not graph_provided: # Make the adjacency matrix.
         distance_mat = compute_distance_matrix3(cell_v,cart_coords)
         try:
-            adj_matrix,_=compute_adj_matrix(distance_mat,allatomtypes,wiggle_room)
+            adj_matrix, _ = compute_adj_matrix(distance_mat,allatomtypes,wiggle_room)
         except NotImplementedError:
             failure_str = f"Failed to featurize {name}: atomic overlap\n"
             full_names, full_descriptors = failure_response(path, failure_str)
