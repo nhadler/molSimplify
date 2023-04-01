@@ -17,7 +17,4 @@ Molecular Revised Autocorrelations
 Revised Autocorrelations for MOFs
 ---------------------------------
 
-.. automodule:: molSimplify.Informatics.MOF.MOF_descriptors
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Documentation for RACs coming soon!
