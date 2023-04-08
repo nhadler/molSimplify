@@ -800,16 +800,17 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
         # except:
         #     full_names = [0]
         #     full_descriptors = [0]
-    elif len(linker_subgraphlist) == 1: # this never happens, right?
+    elif len(linker_subgraphlist) == 1: # Only one linker identified.
         print('Suspicious featurization')
         full_names = [1]
         full_descriptors = [1]
-    else:
-        print('Failed to featurize this MOF.')
+    else: # Means len(linker_subgraphlist) is zero.
+        print('Failed to featurize this MOF; no linkers were identified.')
         full_names = [0]
         full_descriptors = [0]
     if (len(full_names) <= 1) and (len(full_descriptors) <= 1):
-        tmpstr = "Failed to featurize %s\n"%(name)
+        print(f'full_names is {full_names} and full_descriptors is {full_descriptors}')
+        tmpstr = "Failed to featurize %s: Only zero or one total linkers identified.\n"%(name)
         write2file(path,"/FailedStructures.log",tmpstr)
     return full_names, full_descriptors
 
