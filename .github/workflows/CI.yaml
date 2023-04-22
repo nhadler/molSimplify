@@ -79,6 +79,11 @@ jobs:
       run: |
         pytest -v --cov=molSimplify --cov-report=xml
     
+    - name: Run doctest
+      # For now only testing the files in the Classes folder
+      run: |
+        pytest --doctest-modules molSimplify/Classes
+    
     - name: Upload coverage report to codecov
       uses: codecov/codecov-action@v3
       with:

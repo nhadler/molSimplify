@@ -7,7 +7,8 @@
 
 
 class monomer3D:
-    """Holds information about a monomer, used to do manipulations.  Reads information from structure file (pdb) or is directly built from molsimplify.
+    """Holds information about a monomer, used to do manipulations.
+    Reads information from structure file (pdb) or is directly built from molsimplify.
 
     """
 
@@ -231,9 +232,6 @@ class monomer3D:
                 Index of added atom. Default is None.
             auto_populate_BO_dict : bool, optional
                 Populate bond order dictionary with newly added atom. Default is True.
-
-        >>> C_atom = atom3D('C',[1, 1, 1])
-        >>> complex_mol.addAtom(C_atom) # Add carbon atom at cartesian position 1, 1, 1 to mol3D object.
         """
 
         if index is None:
