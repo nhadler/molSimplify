@@ -125,8 +125,7 @@ class mol3D:
         self.use_atom_specific_cutoffs = use_atom_specific_cutoffs
 
     def __repr__(self):
-        """
-        Returns all bound methods of the mol3D class.
+        return f"mol3D({self.make_formula(latex=False)})"
 
         Returns
         -------

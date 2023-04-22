@@ -42,6 +42,9 @@ class monomer3D:
         # Temporary list for storing conformations
         self.temp_list = []
 
+    def __repr__(self):
+        return f"monomer3D({self.three_lc}, id={self.id})"
+
     def identify(self):
         """ States whether the amino acid is (positively/negatively) charged, polar, or hydrophobic.
 
