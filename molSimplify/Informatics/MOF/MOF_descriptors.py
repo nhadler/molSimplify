@@ -4,6 +4,7 @@ import copy
 from scipy import sparse
 import numpy as np
 import pandas as pd
+from molSimplify.Classes.atom3D import atom3D
 from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Scripts.cellbuilder_tools import import_from_cif
 from molSimplify.Informatics.RACassemble import append_descriptors
@@ -15,9 +16,13 @@ from molSimplify.Informatics.autocorrelation import (
     generate_multimetal_deltametrics,
     full_autocorrelation, 
     )
+from molSimplify.Informatics.MOF.atomic import (
+    COVALENT_RADII,   
+    )
 from molSimplify.Informatics.MOF.PBC_functions import (
     compute_adj_matrix, 
     compute_distance_matrix3, 
+    compute_image_flag, 
     fractional2cart, 
     get_closed_subgraph, 
     include_extra_shells, 
@@ -508,7 +513,7 @@ def failure_response(path, failure_str):
     write2file(path,"/FailedStructures.log",failure_str)
     return full_names, full_descriptors
 
-def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=False, wiggle_room=1, max_num_atoms=2000):
+def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=False, wiggle_room=1, max_num_atoms=2000, get_sbu_linker_bond_info=False):
     """
     Generates RAC descriptors on a MOF.
     Writes three files: sbu_descriptors.csv, linker_descriptors.csv, and lc_descriptors.csv
@@ -536,6 +541,8 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
         A multiplier that allows for more or less strict bond distance cutoffs.
     max_num_atoms : int
         The maximum number of atoms in the unit cell for which analysis is conducted.
+    get_sbu_linker_bond_info : bool
+        Whether or not a TXT file is written with information on the bonds between SBUs and linkers.
 
     Returns
     -------
@@ -848,6 +855,54 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
         print(f'full_names is {full_names} and full_descriptors is {full_descriptors}')
         tmpstr = "Failed to featurize %s: Only zero or one total linkers identified.\n"%(name)
         write2file(path,"/FailedStructures.log",tmpstr)
+
+
+    # Getting bond information if requested, and writing it to a TXT file.
+    if get_sbu_linker_bond_info:
+        bond_length_list = []
+        scaled_bond_length_list = []
+        for linker_idx, linker_atoms_list in enumerate(linker_list): # Iterate over all linkers
+            # Getting the connection points of the linker
+            for anchor_super_idx in range(len(linkeranchors_superlist)):
+                if list(linkeranchors_superlist[anchor_super_idx])[0] in linker_atoms_list: # Any anchor index in the current entry of linkeranchors_superlist is in the current linker's indices
+                    linker_connection_points = list(linkeranchors_superlist[anchor_super_idx]) # Indices of the connection points in the linker  
+            for con_point in linker_connection_points:
+                connected_atoms = adj_matrix.todense()[con_point,:]
+                connected_atoms = np.ravel(connected_atoms)
+
+                connected_atoms = np.nonzero(connected_atoms)[0] # The indices of atoms connected to atom with index con_point.
+
+                for con_atom in connected_atoms:
+                    con_atom3D = molcif.getAtom(con_atom) # atom3D of an atom connected to the connection point
+                    con_point3D = molcif.getAtom(con_point) # atom3D of the connection point on the linker
+                    # Check if the atom is a metal
+                    if con_atom3D.ismetal(transition_metals_only=False):
+                        # Finding the optimal unit cell shift
+                        molcif_cart_coords = np.array([atom.coords() for atom in molcif.atoms])
+                        invcell=np.linalg.inv(cell_v)
+                        fcoords=np.dot(molcif_cart_coords,invcell) # fractional coordinates
+                        fcoords[con_atom]+=compute_image_flag(cell_v,fcoords[con_point],fcoords[con_atom]) # Shifting the connected metal
+                        ccoords = fractional2cart(fcoords, cell_v)
+                        shifted_con_atom3D = atom3D(Sym=con_atom3D.symbol(), xyz=list(ccoords[con_atom,:]))
+
+                        bond_len = shifted_con_atom3D.distance(con_point3D)
+                        con_atom_radius = COVALENT_RADII[shifted_con_atom3D.symbol()]
+                        con_point_radius = COVALENT_RADII[con_point3D.symbol()]
+                        relative_bond_len = bond_len / (con_atom_radius + con_point_radius)
+
+                        bond_length_list.append(bond_len)
+                        scaled_bond_length_list.append(relative_bond_len)
+        mean_bond_len = np.mean(bond_length_list) # Average over all SBU-linker atom to atom connections
+        mean_scaled_bond_len = np.mean(scaled_bond_length_list) # Average over all SBU-linker atom to atom connections
+        std_bond_len = np.std(bond_length_list)
+        std_scaled_bond_len = np.std(scaled_bond_length_list)
+
+        with open(f"{path}/sbu_linker_bondlengths.txt", "w") as f:
+            f.write(f'Mean bond length: {mean_bond_len}\n')
+            f.write(f'Mean scaled bond length: {mean_scaled_bond_len}\n')
+            f.write(f'Stdev bond length: {std_bond_len}\n')
+            f.write(f'Stdev scaled bond length: {std_scaled_bond_len}')
+
     return full_names, full_descriptors
 
 
