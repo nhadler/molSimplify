@@ -1,6 +1,6 @@
 name: Linter
 
-on: 
+on:
   pull_request:
   push:
     branches: ["master", "main"]
@@ -44,7 +44,7 @@ jobs:
         status: ${{ job.status }}
       env:
         SLACK_WEBHOOK_URL: ${{secrets.SLACK_WEBHOOK}}
-        MATRIX_CONTEXT: ${{ toJson(matrix) }} # required  
+        MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
 
   mypy:
 
