@@ -1,4 +1,4 @@
-                
+
 from helperFuncs import jobname
 from molSimplify.Scripts.generator import startgen_pythonic
 
@@ -28,4 +28,3 @@ def test_joption_pythonic(tmpdir):
         assert i==j
 
 #test_joption_pythonic("../Runs")
-    

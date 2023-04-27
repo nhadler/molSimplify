@@ -396,7 +396,7 @@ class protein3D:
         missing_aas = []
         for aa in self.missing_aas:
             if aa.chain == chain_id:
-                missing_aas.append(aa)      
+                missing_aas.append(aa)
         p.setMissingAAs(missing_aas)
 
         aas = {}
@@ -441,7 +441,7 @@ class protein3D:
                 bonds[a] = set()
                 for b in self.bonds[a]:
                     if b in p.atoms.values():
-                        bonds[a].add(b)                
+                        bonds[a].add(b)
         p.setBonds(bonds)
 
         p.setIndices(a_ids)

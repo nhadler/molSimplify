@@ -10,5 +10,5 @@
 -oxstate III
 -lig c1(nn[nH]n1)c1ncccc1
 -smicat 7,5
--debug 
+-debug
 -ffoption BA

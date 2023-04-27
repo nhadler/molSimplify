@@ -6,7 +6,7 @@ Welcome to molSimplify's documentation!
 
 
 .. toctree::
-   :maxdepth: 2 
+   :maxdepth: 2
    :caption: General Information
 
    Installation

@@ -704,7 +704,7 @@ class mol3D:
                     '@<TRIPOS>UNITY_ATOM_ATTR')[0].split('\n')[:-1]
             else:
                 lines = ss.split('ATOM\n')[1].split(
-                    '@<TRIPOS>BOND')[0].split('\n')[:-1]  
+                    '@<TRIPOS>BOND')[0].split('\n')[:-1]
             for i, line in enumerate(lines):
                 if '.' in line.split()[5]:
                     self.atoms[i].name = line.split()[5].split('.')[1]

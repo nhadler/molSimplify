@@ -60,7 +60,7 @@ jobs:
       uses: conda-incubator/setup-miniconda@v2
       id: conda-setup
       with:
-        # mamba-version: "*" # uncomment to activate mamba 
+        # mamba-version: "*" # uncomment to activate mamba
         python-version: ${{ matrix.python-version }}
         miniforge-variant: Mambaforge
         channels: conda-forge,defaults
@@ -74,16 +74,16 @@ jobs:
         pip install -e . --no-deps
         pip install pytest-cov
         conda list
-    
+
     - name: Run tests
       run: |
         pytest -v --cov=molSimplify --cov-report=xml
-    
+
     - name: Run doctest
       # For now still excluding several subfolders and files
       run: |
         pytest --doctest-modules --ignore=molSimplify/job_manager --ignore=molSimplify/Informatics/MOF --ignore=molSimplify/Scripts/in_b3lyp_usetc.py --ignore=molSimplify/Informatics/jupyter_vis.py --ignore=molSimplify/Informatics/macrocycle_synthesis.py --ignore=molSimplify/Informatics/organic_fingerprints.py molSimplify
-    
+
     - name: Upload coverage report to codecov
       uses: codecov/codecov-action@v3
       with:
@@ -94,7 +94,7 @@ jobs:
         flags: unittests
         name: codecov-umbrella
         verbose: true
-    
+
     - name: Report Status
       # Slack notifications only on the main repo
       if: ${{job.status == 'failure' && github.event_name != 'pull_request' && github.repository == 'hjkgrp/molSimplify' }}

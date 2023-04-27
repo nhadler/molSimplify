@@ -178,7 +178,7 @@ def main(temp_list):
                         used_func_groups.add(func)
                     else:
                         smiles = left+'('+func+')'+right
-                        func_counter += 1  
+                        func_counter += 1
                         shifter4 += func_shift
                         shifter3 += func_shift
                         shifter2 += func_shift
@@ -229,7 +229,7 @@ def main(temp_list):
                         new_df.to_csv('failed_bridge_func.csv', index=False)
                 print('counter',lignum, rounds, func_counter)
         temp_dict = {}
-        temp_dict['name'] = ligand['name'] 
+        temp_dict['name'] = ligand['name']
         temp_dict['charge'] = ligand['charge']
         temp_dict['func_groups'] = list(used_func_groups)
         lig_func_list.append(temp_dict)
