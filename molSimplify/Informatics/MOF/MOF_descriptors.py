@@ -568,7 +568,7 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
     cpar, allatomtypes, fcoords = readcif(data)
     cell_v = mkcell(cpar)
     cart_coords = fractional2cart(fcoords, cell_v)
-    name = os.path.basename(data).strip(".cif")
+    name = os.path.basename(data).replace(".cif", "")
     if len(cart_coords) > max_num_atoms: # Don't deal with large cifs because of computational resources required for their treatment.
         print("Too large cif file, skipping it for now...")
         failure_str = f"Failed to featurize {name}: large primitive cell\n {len(cart_coords)} atoms"
