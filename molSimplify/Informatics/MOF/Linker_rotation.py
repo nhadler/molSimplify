@@ -177,4 +177,3 @@ for elem in func_group:
                os.mkdir(path_directory)
         write_cif(f'{path_directory}/modified_{elem}_{int(rot_angle_degree[i])}.cif', cpar, coords_new, allatomtypes)
     print(str(elem) + " done")
-

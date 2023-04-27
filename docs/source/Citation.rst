@@ -122,4 +122,3 @@ If you use the machine learning (ML) models in molSimplify to predict the spin-s
 	doi = {10.1021/acscatal.9b02165},
 	year={2019},
 	}
-

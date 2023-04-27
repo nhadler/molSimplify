@@ -88,4 +88,3 @@ III. Run Test Cases
          py.test -k <keyword-of-your-test>
          For example, to run all the tests for generation of tetrahedral complexes, do:
          py.test -k tetrahedral
-

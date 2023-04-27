@@ -58,4 +58,3 @@ Welcome to molSimplify's documentation!
    Report an Issue <https://github.com/hjkgrp/molSimplify/issues>
    Visit Our Research Group Website <https://hjkgrp.mit.edu>
    Visit Our Interactive Site <https://molsimplify.mit.edu>
-

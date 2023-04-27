@@ -63,4 +63,3 @@ configuration file for a `pre-commit <https://pre-commit.com/>`_ hook. After
 can be installed using the command::
 
     pre-commit install
-
