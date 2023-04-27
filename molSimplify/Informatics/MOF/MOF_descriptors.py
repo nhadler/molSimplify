@@ -285,8 +285,9 @@ def make_MOF_SBU_RACs(SBUlist, SBU_subgraph, molcif, depth, name, cell, anchorin
         sbu_index_connection_indices = []
         for item in global_connection_indices:
             if item in SBU:
-                sbu_index_connection_indices.append(str(SBU.index(item)))
-        sbu_index_connection_indices.sort()
+                sbu_index_connection_indices.append(SBU.index(item))
+        sbu_index_connection_indices = list(np.sort(sbu_index_connection_indices)) # Sort in ascending order
+        sbu_index_connection_indices = [str(item) for item in sbu_index_connection_indices]
         with open(f'{sbupath}/{name}_connection_indices_sbu_{i}.txt', 'w') as f:
             f.write(' '.join(sbu_index_connection_indices))
 
@@ -383,8 +384,9 @@ def make_MOF_linker_RACs(linkerlist, linker_subgraphlist, molcif, depth, name, c
         linker_index_connection_indices = []
         for item in global_connection_indices:
             if item in linker:
-                linker_index_connection_indices.append(str(linker.index(item)))
-        linker_index_connection_indices.sort()
+                linker_index_connection_indices.append(linker.index(item))
+        linker_index_connection_indices = list(np.sort(linker_index_connection_indices)) # Sort in ascending order
+        linker_index_connection_indices = [str(item) for item in linker_index_connection_indices]
         with open(f'{linkerpath}/{name}_connection_indices_linker_{i}.txt', 'w') as f:
             f.write(' '.join(linker_index_connection_indices))
 
