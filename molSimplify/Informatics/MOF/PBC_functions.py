@@ -12,6 +12,8 @@ from molSimplify.Informatics.MOF.atomic import (
     metals,     
     )
 
+# PBC: periodic boundary conditions
+
 deg2rad = np.pi/180.0
 def readcif(name):
     """
@@ -278,7 +280,7 @@ def XYZ_connected(cell,cart_coords,adj_mat):
     from scipy import sparse
     n_components, labels_components = sparse.csgraph.connected_components(csgraph=adj_mat, directed=False, return_labels=True)
     # print(n_components,'comp',labels_components)
-    tested_index = 0 # The label for the connected components. 0 indicates the first connected componet, etc.
+    tested_index = 0 # The label for the connected components. 0 indicates the first connected component, etc.
     index_counter = 0
     while len(connected_components) < len(cart_coords):
         try:
@@ -304,25 +306,22 @@ def XYZ_connected(cell,cart_coords,adj_mat):
 
 def writeXYZfcoords(filename,atoms,cell,fcoords):
     """
-    TODO
+    Write an XYZ file using fractional coordinates.
 
     Parameters
     ----------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
+    filename : str
+        The path to where the xyz of the MOF structure will be written.
+    atoms : list of str
+        The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms.
+    cell : numpy.ndarray
+        The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
+    fcoords : numpy.ndarray
+        The fractional positions of the atoms of the cif file. Shape is (number of atoms, 3).
 
     Returns
     -------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
+    None
 
     """
     with open(filename,"w") as fo:
@@ -399,25 +398,20 @@ def returnXYZandGraph(filename,atoms,cell,fcoords,molgraph):
 
 def writeXYZcoords(filename,atoms,coords):
     """
-    TODO
+    Write an XYZ file using Cartesian coordinates.
 
     Parameters
     ----------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
+    filename : str
+        The path to where the xyz of the MOF structure will be written.
+    atoms : list of str
+        The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms.
+    coords : numpy.ndarray
+        The Cartesian positions of the atoms of the cif file. Shape is (number of atoms, 3).
 
     Returns
     -------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
+    None
 
     """
     with open(filename,"w") as fo:
@@ -429,25 +423,18 @@ def writeXYZcoords(filename,atoms,coords):
 
 def writeXYZcoords_withcomment(filename,atoms,coords,comment):
     """
-    TODO
+    Write an XYZ file using Cartesian coordinates, with a comment included.
 
     Parameters
     ----------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-
-    Returns
-    -------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
+    filename : str
+        The path to where the xyz of the MOF structure will be written.
+    atoms : list of str
+        The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms.
+    coords : numpy.ndarray
+        The Cartesian positions of the atoms of the cif file. Shape is (number of atoms, 3).
+    comment : str
+        The comment to include in the XYZ file.
 
     """
     with open(filename,"w") as fo:
@@ -662,6 +649,58 @@ def compute_distance_matrix3(cell, cart_coords, num_cells = 1):
     distance_matrix = np.min(dist, axis=-1) # Consider the distance between two atoms at the crystal cell shift where they are closest.
     return distance_matrix
 
+def position_nearest_atom(cell, cart_coords, index_of_interest, num_cells = 1):
+    """
+    Computes the pairwise distances between all atoms in the crystal cell to the atom specified by index_of_interest; returns the position of the nearest atom.
+
+    Parameters
+    ----------
+    cell : numpy.ndarray
+        The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
+    cart_coords : numpy.ndarray
+        The Cartesian coordinates of the crystal atoms. Shape is (number of atoms, 3).
+    index_of_interest : int
+        The index of the atom to which we want to find the nearest atom's position.
+    num_cells : int
+        The number of crystal cells to put together for the evaluation of distances.
+
+    Returns
+    -------
+    nearest_position : numpy.ndarray
+        The Cartesian coordinates of the nearest atom. Shape is (3,).
+    nearest_index : numpy.int64
+        The index of the nearest atom.
+    shift_for_nearest_atom : numpy.ndarray
+        The crystal cell shifts that position the nearest atom closest to the atom of interest. Shape is (3,). Will look something like [-1  0 -1] or [0 0 0] or etc.
+
+    """
+    pos = np.arange(-num_cells, num_cells+1, 1) # [-1, 0, 1] if num_cells is 1
+    combos = np.array(np.meshgrid(pos, pos, pos)).T.reshape(-1,3) # The 27 combinations of -1, 0, 1 if num_cells is 1
+    shifts = np.sum(np.expand_dims(cell, axis=0)*np.expand_dims(combos, axis=-1), axis=1) # The possible shifts by the crystal cell vectors.
+    # NxNxCells distance array
+    shifted = np.expand_dims(cart_coords, axis=1) + np.expand_dims(shifts, axis=0) # The shifted Cartesian coordinates. Shape is (number of atoms, number of combinations in combos, 3)
+
+    # The distances between atoms, across different crystal cell shifts, for the three Cartesian dimensions.
+    dist = np.expand_dims(np.expand_dims(cart_coords[index_of_interest], axis=0), axis=0) - shifted # Shape is (number of atoms, number of combinations in combos, 3)
+        # The shape of np.expand_dims(np.expand_dims(cart_coords[index_of_interest], axis=0), axis=0) is (1, 1, 3). These are the coordinates of the atom of interest.
+        # numpy subtraction expands out the axes of length one for the subtraction.
+
+    # The standard distance formula of square root of x^2 + y^2 + z^2
+    dist = np.sqrt(np.sum(np.square(dist), axis=-1)) # Shape is (number of atoms, number of combinations in combos)
+
+    # Want the atom that is closest to index_of_interest, given the ideal shift
+    # Don't want to consider distance of atom of interest to itself, so I eliminate it from consideration this way.
+    dist[index_of_interest,:] = np.array([np.Inf]*np.shape(dist)[1]) 
+    # Find the index of the closest atom.
+    index_nearest_atom = np.argmin(dist)
+    index_nearest_atom = np.unravel_index(index_nearest_atom, np.shape(dist)) # This is (atom index, shift index)
+
+    # Get the Cartesian coordinates of the nearest atom
+    nearest_position = shifted[index_nearest_atom[0], index_nearest_atom[1], :]
+    nearest_index = index_nearest_atom[0]
+    shift_for_nearest_atom = combos[index_nearest_atom[1],:]
+
+    return nearest_position, nearest_index, shift_for_nearest_atom
 
 def make_graph_from_nodes_edges(nodes,edges,attribs):
     """
@@ -692,13 +731,13 @@ def make_graph_from_nodes_edges(nodes,edges,attribs):
     gr.add_edges_from(edges)
     return gr
 
-def mkcell(params):
+def mkcell(cpar):
     """
     Update the cell representation to match the parameters.
 
     Parameters
     ----------
-    params : numpy.ndarray
+    cpar : numpy.ndarray
         The parameters (i.e. lattice constants) of the MOF cell. Specifically, A, B, C, alpha, beta, and gamma. Shape is (6,).
 
     Returns
@@ -708,8 +747,8 @@ def mkcell(params):
 
     """
 
-    a_mag, b_mag, c_mag = params[:3]
-    alpha, beta, gamma = [x * deg2rad for x in params[3:]] # Converting the angles to radians from degrees.
+    a_mag, b_mag, c_mag = cpar[:3]
+    alpha, beta, gamma = [x * deg2rad for x in cpar[3:]] # Converting the angles to radians from degrees.
     a_vec = np.array([a_mag, 0.0, 0.0]) # a_vec is taken to be along the x axis
     b_vec = np.array([b_mag * np.cos(gamma), b_mag * np.sin(gamma), 0.0]) # See this depiction of lattice parameters for reasoning behind these equations. https://www.doitpoms.ac.uk/tlplib/crystallography3/parameters.php. b_vec is taken to be in the X-Y plane.
     c_x = c_mag * np.cos(beta)

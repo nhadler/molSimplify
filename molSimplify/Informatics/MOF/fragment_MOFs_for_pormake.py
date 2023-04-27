@@ -545,7 +545,7 @@ def make_MOF_fragments(data, depth, path=False, xyzpath = False):
         return None, None
     distance_mat = compute_distance_matrix2(cell_v,cart_coords)
     try:
-        adj_matrix, _ =compute_adj_matrix(distance_mat,allatomtypes)
+        adj_matrix, _ = compute_adj_matrix(distance_mat,allatomtypes)
     except NotImplementedError:
         tmpstr = "Failed to featurize %s: atomic overlap\n"%(name)
         write2file(path,"/FailedStructures.log",tmpstr)

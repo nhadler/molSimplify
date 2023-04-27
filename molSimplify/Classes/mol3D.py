@@ -698,9 +698,13 @@ class mol3D:
             #####
             obConversion.SetOutFormat('mol2')
             ss = obConversion.WriteString(OBMol)
-            # Update atom types from OBMol
-            lines = ss.split('ATOM\n')[1].split(
-                '@<TRIPOS>BOND')[0].split('\n')[:-1]
+            # Update atom types from OBMol.
+            if "UNITY_ATOM_ATTR" in ss: # If this section is present, it will be before the @<TRIPOS>BOND section.
+                lines = ss.split('ATOM\n')[1].split(
+                    '@<TRIPOS>UNITY_ATOM_ATTR')[0].split('\n')[:-1]
+            else:
+                lines = ss.split('ATOM\n')[1].split(
+                    '@<TRIPOS>BOND')[0].split('\n')[:-1]  
             for i, line in enumerate(lines):
                 if '.' in line.split()[5]:
                     self.atoms[i].name = line.split()[5].split('.')[1]
@@ -1260,6 +1264,41 @@ class mol3D:
         constr = openbabel.OBFFConstraints()
         if constraints:
             for catom in range(constraints):
+                # Openbabel uses a 1 index instead of a 0 index.
+                constr.AddAtomConstraint(catom+1)
+        self.convert2OBMol()
+        forcefield.Setup(self.OBMol, constr)
+        if self.OBMol.NumHvyAtoms() > 10:
+            forcefield.ConjugateGradients(200)
+        else:
+            forcefield.ConjugateGradients(50)
+        forcefield.GetCoordinates(self.OBMol)
+        en = forcefield.Energy()
+        self.convert2mol3D()
+        return en
+
+    def apply_ffopt_list_constraints(self, list_constraints=False, ff='uff'):
+        """
+        Apply forcefield optimization to a given mol3D class.
+        Differs from apply_ffopt in that one can specify constrained atoms as a list.
+
+        Parameters
+        ----------
+            list_constraints : list of int, optional
+                List of atom indices to employ cartesian constraints before ffopt.
+            ff : str, optional
+                Force field to be used in openbabel. Default is UFF.
+
+        Returns
+        -------
+            energy : float
+                Energy of the ffopt in kJ/mol.
+
+        """
+        forcefield = openbabel.OBForceField.FindForceField(ff)
+        constr = openbabel.OBFFConstraints()
+        if list_constraints:
+            for catom in list_constraints:
                 # Openbabel uses a 1 index instead of a 0 index.
                 constr.AddAtomConstraint(catom+1)
         self.convert2OBMol()
@@ -4978,7 +5017,7 @@ class mol3D:
 
     def get_smiles(self, canonicalize=False, use_mol2=False) -> str:
         """
-        Read a smiles string and convert it to a mol3D class instance.
+        Returns the SMILES string representing the mol3D object.
 
         Parameters
         ----------

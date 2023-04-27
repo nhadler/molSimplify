@@ -316,7 +316,7 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath = False):
         return full_names, full_descriptors
     distance_mat = compute_distance_matrix2(cell_v,cart_coords)
     try:
-        adj_matrix=compute_adj_matrix(distance_mat,allatomtypes)
+        adj_matrix, _ = compute_adj_matrix(distance_mat,allatomtypes)
     except NotImplementedError:
         full_names = [0]
         full_descriptors = [0]

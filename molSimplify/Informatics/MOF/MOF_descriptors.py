@@ -45,7 +45,8 @@ from molSimplify.Informatics.MOF.PBC_functions import (
 # Pymatgen is used to get the primitive cell.                                           #
 #########################################################################################
 
-### Defining pymatgen function for getting primitive, since molSimplify does not depend on pymatgen.
+### Defining pymatgen function for getting primitive, since molSimplify does not depend on pymatgen. 
+# This function is commented out and should be uncommented if used.
 from pymatgen.io.cif import CifParser
 
 def get_primitive(datapath, writepath, occupancy_tolerance=1):
@@ -145,7 +146,7 @@ def gen_and_append_desc(temp_mol, target_list, depth, descriptor_names, descript
 # the vector to be of constant dimension so we can correlate the output property.       #
 #########################################################################################
 
-def make_MOF_SBU_RACs(SBUlist, SBU_subgraph, molcif, depth, name, cell, anchoring_atoms, sbupath, connections_list=False, connections_subgraphlist=False):
+def make_MOF_SBU_RACs(SBUlist, SBU_subgraph, molcif, depth, name, cell, anchoring_atoms, sbupath, linkeranchors_superlist, connections_list=False, connections_subgraphlist=False):
     """
     Generated RACs on the SBUs of the MOF, as well as on the lc atoms (SBU-connected atoms of linkers).
 
@@ -167,6 +168,8 @@ def make_MOF_SBU_RACs(SBUlist, SBU_subgraph, molcif, depth, name, cell, anchorin
         Linker atoms that are bonded to a metal.
     sbupath : str
         Path of the folder to make a csv file in.  
+    linkeranchors_superlist : list of set
+        Coordinating atoms of linkers. Number of sets is the number of linkers.
     connections_list : list of lists of int
         Each inner list is its own separate linker. The ints are the atom indices of that linker. Length is # of linkers.
     connections_subgraphlist : list of scipy.sparse.csr.csr_matrix
@@ -192,6 +195,10 @@ def make_MOF_SBU_RACs(SBUlist, SBU_subgraph, molcif, depth, name, cell, anchorin
     descriptors = []
 
     sbu_descriptor_path, sbu_descriptors, lc_descriptors = load_sbu_lc_descriptors(sbupath)
+
+    global_connection_indices = []
+    for item in linkeranchors_superlist:
+        global_connection_indices.extend(list(item))
 
     """""""""
     Loop over all SBUs as identified by subgraphs. Then create the mol3Ds for each SBU.
@@ -273,6 +280,17 @@ def make_MOF_SBU_RACs(SBUlist, SBU_subgraph, molcif, depth, name, cell, anchorin
         if not os.path.exists(xyz_path):            
             SBU_mol_fcoords_connected = XYZ_connected(cell, SBU_mol_cart_coords, SBU_mol_adj_mat)
             writeXYZandGraph(xyz_path, SBU_mol_atom_labels, cell, SBU_mol_fcoords_connected,SBU_mol_adj_mat)
+
+        # Write TXT file indicating the connecting atoms
+        sbu_index_connection_indices = []
+        for item in global_connection_indices:
+            if item in SBU:
+                sbu_index_connection_indices.append(SBU.index(item))
+        sbu_index_connection_indices = list(np.sort(sbu_index_connection_indices)) # Sort in ascending order
+        sbu_index_connection_indices = [str(item) for item in sbu_index_connection_indices]
+        with open(f'{sbupath}/{name}_connection_indices_sbu_{i}.txt', 'w') as f:
+            f.write(' '.join(sbu_index_connection_indices))
+
         """""""""
         Generate all of the SBU based RACs (full scope, mc)
         """""""""
@@ -300,7 +318,7 @@ def make_MOF_SBU_RACs(SBUlist, SBU_subgraph, molcif, depth, name, cell, anchorin
     averaged_SBU_descriptors = np.mean(np.array(descriptor_list), axis=0) # Average the SBU RACs over all of the SBUs in the MOF.
     return names, averaged_SBU_descriptors, lc_names, averaged_lc_descriptors
 
-def make_MOF_linker_RACs(linkerlist, linker_subgraphlist, molcif, depth, name, cell, linkerpath):
+def make_MOF_linker_RACs(linkerlist, linker_subgraphlist, molcif, depth, name, cell, linkerpath, linkeranchors_superlist):
     """
     Generate RACs on the linkers of the MOF.
 
@@ -319,7 +337,9 @@ def make_MOF_linker_RACs(linkerlist, linker_subgraphlist, molcif, depth, name, c
     cell : numpy.ndarray
         The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
     linkerpath : str
-        Path of the folder to make a csv file in.    
+        Path of the folder to make a csv file in. 
+    linkeranchors_superlist : list of set
+        Coordinating atoms of linkers. Number of sets is the number of linkers.
 
     Returns
     -------
@@ -339,6 +359,11 @@ def make_MOF_linker_RACs(linkerlist, linker_subgraphlist, molcif, depth, name, c
             linker_descriptors = pd.read_csv(linker_descriptor_path+'/linker_descriptors.csv')
         else:
             linker_descriptors = pd.DataFrame()
+
+    global_connection_indices = []
+    for item in linkeranchors_superlist:
+        global_connection_indices.extend(list(item))
+
     for i, linker in enumerate(linkerlist): # Iterating through the linkers.
         # Preparing a mol3D object for the current linker.
         linker_mol = mol3D() 
@@ -355,6 +380,16 @@ def make_MOF_linker_RACs(linkerlist, linker_subgraphlist, molcif, depth, name, c
         if not os.path.exists(xyz_path):
             linker_mol_fcoords_connected = XYZ_connected(cell, linker_mol_cart_coords, linker_mol_adj_mat)
             writeXYZandGraph(xyz_path, linker_mol_atom_labels, cell, linker_mol_fcoords_connected, linker_mol_adj_mat)
+        # Write TXT file indicating the connecting atoms
+        linker_index_connection_indices = []
+        for item in global_connection_indices:
+            if item in linker:
+                linker_index_connection_indices.append(linker.index(item))
+        linker_index_connection_indices = list(np.sort(linker_index_connection_indices)) # Sort in ascending order
+        linker_index_connection_indices = [str(item) for item in linker_index_connection_indices]
+        with open(f'{linkerpath}/{name}_connection_indices_linker_{i}.txt', 'w') as f:
+            f.write(' '.join(linker_index_connection_indices))
+
         allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
         labels_strings = ['chi', 'Z', 'I', 'T', 'S']
         colnames = []
@@ -546,7 +581,7 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
     if not graph_provided: # Make the adjacency matrix.
         distance_mat = compute_distance_matrix3(cell_v,cart_coords)
         try:
-            adj_matrix,_=compute_adj_matrix(distance_mat,allatomtypes,wiggle_room)
+            adj_matrix, _ = compute_adj_matrix(distance_mat,allatomtypes,wiggle_room)
         except NotImplementedError:
             failure_str = f"Failed to featurize {name}: atomic overlap\n"
             full_names, full_descriptors = failure_response(path, failure_str)
@@ -675,6 +710,7 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
     templist = linker_list.copy()
     long_ligands = False
     max_min_linker_length , min_max_linker_length = (0,100) # The maximum value of the minimum linker length, and the minimum value of the maximum linker length. Updated later.
+    linkeranchors_superlist = [] # Will contain the indices of the linker atoms that coordinate to metals
     for ii, atoms_list in reversed(list(enumerate(linker_list))): # Loop over all linker subgraphs
         linkeranchors_list = set()
         linkeranchors_atoms = set()
@@ -695,6 +731,7 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
                         sbuanchors_list.add(sbu_atoms)
                         sbu_connect_list.add(kk) #Add if unique SBUs
         min_length,max_length = linker_length(linker_subgraphlist[ii].todense(), linkeranchors_list)
+        linkeranchors_superlist.append(linkeranchors_atoms)
 
         if len(linkeranchors_list) >= 2 : # linker, and in one ambiguous case, could be a ligand.
             if len(sbu_connect_list) >= 2: # Something that connects two SBUs is certain to be a linker
@@ -791,24 +828,25 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
     """""""""
     if len(linker_subgraphlist)>=1: # Featurize cases that did not fail.
         # try:
-            descriptor_names, descriptors, lc_descriptor_names, lc_descriptors = make_MOF_SBU_RACs(SBU_list, SBU_subgraphlist, molcif, depth, name, cell_v, anc_atoms, sbupath, connections_list, connections_subgraphlist)
-            lig_descriptor_names, lig_descriptors = make_MOF_linker_RACs(linker_list, linker_subgraphlist, molcif, depth, name, cell_v, linkerpath)
+            descriptor_names, descriptors, lc_descriptor_names, lc_descriptors = make_MOF_SBU_RACs(SBU_list, SBU_subgraphlist, molcif, depth, name, cell_v, anc_atoms, sbupath, linkeranchors_superlist, connections_list, connections_subgraphlist)
+            lig_descriptor_names, lig_descriptors = make_MOF_linker_RACs(linker_list, linker_subgraphlist, molcif, depth, name, cell_v, linkerpath, linkeranchors_superlist)
             full_names = descriptor_names+lig_descriptor_names+lc_descriptor_names #+ ECFP_names
             full_descriptors = list(descriptors)+list(lig_descriptors)+list(lc_descriptors)
             print(len(full_names),len(full_descriptors))
         # except:
         #     full_names = [0]
         #     full_descriptors = [0]
-    elif len(linker_subgraphlist) == 1: # this never happens, right?
+    elif len(linker_subgraphlist) == 1: # Only one linker identified.
         print('Suspicious featurization')
         full_names = [1]
         full_descriptors = [1]
-    else:
-        print('Failed to featurize this MOF.')
+    else: # Means len(linker_subgraphlist) is zero.
+        print('Failed to featurize this MOF; no linkers were identified.')
         full_names = [0]
         full_descriptors = [0]
     if (len(full_names) <= 1) and (len(full_descriptors) <= 1):
-        tmpstr = "Failed to featurize %s\n"%(name)
+        print(f'full_names is {full_names} and full_descriptors is {full_descriptors}')
+        tmpstr = "Failed to featurize %s: Only zero or one total linkers identified.\n"%(name)
         write2file(path,"/FailedStructures.log",tmpstr)
     return full_names, full_descriptors
 

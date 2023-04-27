@@ -145,7 +145,7 @@ for elem in func_group:
     cell_v = np.array(cell_vector)
     cart_coords = fractional2cart(fcoords,cell_v)
     distance_mat = compute_distance_matrix3(cell_v,cart_coords) # distance matrix of all atoms
-    adj_matrix = compute_adj_matrix(distance_mat,allatomtypes) # from distance matrix and heuristics for bond distances, obtains connectivity information in the form of adjacency matrix (graph)
+    adj_matrix, _ = compute_adj_matrix(distance_mat,allatomtypes) # from distance matrix and heuristics for bond distances, obtains connectivity information in the form of adjacency matrix (graph)
     molcif.graph = adj_matrix.todense() # dense form of adjacency matrix / graph is saved to molcif object
 
 
