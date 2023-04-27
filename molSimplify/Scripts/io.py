@@ -14,7 +14,10 @@ import os
 import time
 import difflib
 
-import openbabel
+try:
+    from openbabel import openbabel  # version 3 style import
+except ImportError:
+    import openbabel  # fallback to version 2
 from typing import Any, List, Dict, Tuple, Union, Optional
 from pkg_resources import resource_filename, Requirement
 
@@ -994,7 +997,8 @@ def name_complex(rootdir: str, core, geometry, ligs, ligoc, sernum,
             else:  # ligand is in ligands.dict
                 name += '_' + str(lig) + '_' + str(ligoc[i])
         name += "_s_"+str(spin)
-        print([nconf, args.nconfs])
+        if args.debug:
+            print([nconf, args.nconfs])
         if nconf and int(args.nconfs) >= 1:
             name += "_conf_"+str(nconf)
         if args.bind:

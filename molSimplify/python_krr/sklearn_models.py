@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.externals import joblib
+import joblib
 from pkg_resources import resource_filename, Requirement
 from molSimplify.python_nn.tf_ANN import (tf_ANN_excitation_prepare,
                                           load_normalization_data,

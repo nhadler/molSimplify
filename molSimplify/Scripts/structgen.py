@@ -8,7 +8,10 @@
 import os
 import subprocess
 import tempfile
-import openbabel
+try:
+    from openbabel import openbabel  # version 3 style import
+except ImportError:
+    import openbabel  # fallback to version 2
 import random
 import itertools
 import numpy as np

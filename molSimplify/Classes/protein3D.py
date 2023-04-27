@@ -157,6 +157,7 @@ class protein3D:
     def setMissingAAs(self, missing_aas):
         """
         Set missing amino acids of a protein3D class to a new list.
+
         Parameters
         ----------
         missing_aas : list
@@ -250,12 +251,13 @@ class protein3D:
         Examples
         --------
         >>> pdb_system = protein3D()
-        >>> pdb_system.fetch_pdb('1os7') # Fetch a PDB
-        >>> for symbol_list in pdb_system.getMissingAtoms():
-        >>>     for symbol in symbol_list:
-        >>>         print(symbol.sym) # Prints the symbol of missing atom
-        >>>         print(symbol.coords()) # Prints the coordinates of the missing atom - they are all the
-        >>>                         # coordinates of origin by default (0.0,0.0,0.0) for missing atoms
+        >>> pdb_system.fetch_pdb('1MH1') # Fetch a PDB
+        fetched: 1MH1
+        >>> missing_atoms = pdb_system.getMissingAtoms()
+
+        List atoms in the first set of missing_atoms
+        >>> [atom.sym for atom in list(missing_atoms)[0]]
+        ['C', 'C', 'C', 'C', 'C', 'C', 'O']
         """
         return self.missing_atoms.values()
 
@@ -266,10 +268,10 @@ class protein3D:
         Examples
         --------
         >>> pdb_system = protein3D()
-        >>> pdb_system.fetch_pdb('1os7') # Fetch a PDB
+        >>> pdb_system.fetch_pdb('1MH1') # Fetch a PDB
+        fetched: 1MH1
         >>> pdb_system.getMissingAAs()   # This gives a list of monomer3D objects
-        >>> [pdb_system.getMissingAAs()[x].three_lc for x in range(len(pdb_system.getMissingAAs()))] # This returns
-        >>>                     # the list of missing AAs by their 3-letter codes
+        [monomer3D(VAL, id=182), monomer3D(LYS, id=183), monomer3D(LYS, id=184)]
         """
         return self.missing_aas
 
@@ -281,7 +283,9 @@ class protein3D:
         --------
         >>> pdb_system = protein3D()
         >>> pdb_system.fetch_pdb('1os7') # Fetch a PDB
+        fetched: 1os7
         >>> pdb_system.countAAs() # This return the number of AAs in the PDB for all the chains.
+        1121
         """
         return self.naas
 
@@ -307,8 +311,11 @@ class protein3D:
         --------
         >>> pdb_system = protein3D()
         >>> pdb_system.fetch_pdb('1os7') # Fetch a PDB
+        fetched: 1os7
         >>> pdb_system.findAtom(sym="S", aa=True) # Returns indices of sulphur atoms present in amino acids
+        [2166, 4442, 6733, 9041]
         >>> pdb_system.findAtom(sym="S", aa=False) # Returns indices of sulphur atoms present in heteromolecules
+        [9164, 9182, 9200]
         """
         inds = []
         if aa:
@@ -345,8 +352,13 @@ class protein3D:
         --------
         >>> pdb_system = protein3D()
         >>> pdb_system.fetch_pdb('1os7') # Fetch a PDB
-        >>> pdb_system.findAA(three_lc = 'MET') # Returns a set of pairs where each pair is a combination of the chain name
-        >>>                              # and the index of the amino acid specified (in this case, 'MET')
+        fetched: 1os7
+
+        Return a set of pairs where each pair is a combination of the chain name and
+        the index of the amino acid specified (in this case, 'MET')
+        >>> aa_set = pdb_system.findAA(three_lc = 'MET')
+        >>> sorted(aa_set)  # Sorting for reproducible order in doctest
+        [('A', 268), ('B', 268), ('C', 268), ('D', 268)]
         """
         inds = set()
         for aa in self.aas.values():
@@ -372,14 +384,15 @@ class protein3D:
         --------
         >>> pdb_system = protein3D()
         >>> pdb_system.fetch_pdb('1os7') # Fetch a PDB
-        >>> pdb_system.getChain('A') # Get chain A of the PDB
+        fetched: 1os7
+        >>> pdb_system.getChain('A') # doctest: +SKIP
         """
         p = protein3D()
         p.setPDBCode(self.pdbCode)
         p.setChains({chain_id: self.chains[chain_id]})
         p.setR(self.R)
         p.setRfree(self.Rfree)
-        
+
         missing_aas = []
         for aa in self.missing_aas:
             if aa.chain == chain_id:
@@ -389,7 +402,7 @@ class protein3D:
         aas = {}
         for aa in self.aas:
             if aa[0] == chain_id:
-                aas[aa] = self.aas[aa]     
+                aas[aa] = self.aas[aa]
         p.setAAs(aas)
 
         gone_atoms = {}
@@ -398,7 +411,7 @@ class protein3D:
                 gone_atoms[aa] = self.missing_atoms[aa]
         p.setMissingAtoms(gone_atoms)
 
-        hets_flipped = {value[0]:key for key, value in self.hetmols.items()}
+        hets_flipped = {value[0]: key for key, value in self.hetmols.items()}
         atoms = {}
         a_ids = {}
         hets = {}
@@ -457,13 +470,17 @@ class protein3D:
         --------
         >>> pdb_system = protein3D()
         >>> pdb_system.fetch_pdb('1os7') # Fetch a PDB
-        >>> pdb_system.getMolecule(a_id=2166) # This returns an molSimplify.Classes.monomer3D obejct indicating
-        >>>                                   # that the atom is part of an amino acid or nucleotide
-        >>> pdb_system.getMolecule(a_id=2166).three_lc() # This prints the three letter code of the amino acid or
-        >>>                                              # nucleotide of which atom 2166 is a part of
-        >>> pdb_system.getMolecule(a_id=9164) # This returns a mol3D object indicating that the atom is part of a molecule
-        >>>                                   # that is not an amino acid or nucleotide
+        fetched: 1os7
+
+        This returns an molSimplify.Classes.monomer3D object indicating that the atom is part of an amino acid or nucleotide:
+        >>> pdb_system.getMolecule(a_id=2166)
+        monomer3D(MET, id=268)
+
+        This returns a mol3D object indicating that the atom is part of a molecule that is not an amino acid or nucleotide
+        >>> pdb_system.getMolecule(a_id=9164)
+        mol3D(S1O3N1C2)
         >>> pdb_system.getMolecule(a_id=9164).name # This prints the name of the molecule, in this case, it is 'TAU'
+        'TAU'
         """
         for s in self.aas.values():
             for mol in s:  # mol is monomer3D
@@ -492,6 +509,7 @@ class protein3D:
         --------
         >>> pdb_system = protein3D()
         >>> pdb_system.fetch_pdb('1os7') # Fetch a PDB
+        fetched: 1os7
         >>> pdb_system.stripAtoms([2166, 4442, 6733, 2165]) # This removes the list of atoms with
         >>>                                                # indices listedin the code
         """
@@ -573,8 +591,9 @@ class protein3D:
         Examples
         --------
         >>> pdb_system = protein3D()
-        >>> pdb_system.fetch_pdb('1os7') # Fetch a PDB
-        >>> pdb_system.stripHetMol()
+        >>> pdb_system.fetch_pdb('3I40') # Fetch a PDB
+        fetched: 3I40
+        >>> pdb_system.stripHetMol('HOH')
         """
         hets = self.hetmols.copy()
         for k in hets.keys():
@@ -586,7 +605,10 @@ class protein3D:
                     for a in m.atoms:
                         ids.append(self.a_ids[a])
                     self.stripAtoms(ids)
-                    del self.hetmols[k]
+                    try:  # RM 2023/04/22: I don't think this is necessary as stripAtoms takes care of deleting the hetmol
+                        del self.hetmols[k]
+                    except KeyError:
+                        pass
 
     def findMetal(self, transition_metals_only=True):
         """
@@ -606,6 +628,9 @@ class protein3D:
         --------
         >>> pdb_system = protein3D()
         >>> pdb_system.fetch_pdb('1os7')
+        fetched: 1os7
+        >>> pdb_system.findMetal()
+        [9160, 9178, 9196, 9214]
         """
         if not self.metals:
             metal_list = []
@@ -949,11 +974,13 @@ class protein3D:
             print("warning: %s not found.\n" % pdbCode)
         else:
             try:
-                ### We then use beautiful soup to read the XML doc. LXML is an XML reader. The soup object is what we then use to parse!
+                # We then use beautiful soup to read the XML doc. LXML is an XML reader.
+                # The soup object is what we then use to parse!
                 soup = BeautifulSoup(xml_doc.content, 'lxml-xml')
 
-                ### We can then use methods of the soup object to find "tags" within the XML file. This is how we would extract sections.
-                ### This is an example of getting everything with a "sec" tag.
+                # We can then use methods of the soup object to find "tags" within the XML file.
+                # This is how we would extract sections.
+                # This is an example of getting everything with a "sec" tag.
                 body = soup.find_all('wwPDB-validation-information')
                 entry = body[0].find_all("Entry")
                 if "DataCompleteness" not in entry[0].attrs.keys():
@@ -1025,7 +1052,8 @@ class protein3D:
             The 4-character code of the protein3D class.
         """
         code = self.pdbCode
-        cmd = 'curl -d \'{"edia":{ "pdbCode":"'+code+'"}}\' -H "Accept: application/json" -H "Content-Type: application/json" -X POST https://proteins.plus/api/edia_rest -k'
+        cmd = ('curl -d \'{"edia":{ "pdbCode":"'+code+'"}}\' -H "Accept: application/json"'
+               ' -H "Content-Type: application/json" -X POST https://proteins.plus/api/edia_rest -k')
         args = shlex.split(cmd)
         result = subprocess.Popen(args, stdout=subprocess.PIPE,
                                   stderr=subprocess.PIPE)
