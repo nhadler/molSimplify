@@ -7,9 +7,9 @@ import copy
 from molSimplify.Scripts.cellbuilder_tools import import_from_cif
 from molSimplify.Informatics.MOF.atomic import (
     COVALENT_RADII,
-    alkali, 
-    lanthanides, 
-    metals,     
+    alkali,
+    lanthanides,
+    metals,
     )
 
 # PBC: periodic boundary conditions
@@ -46,7 +46,7 @@ def readcif(name):
             if (not line) or line_stripped.startswith("#"):
                 continue
             line_splitted=line.split()
-            
+
             if line_stripped.startswith("_cell_length_a"):
                 temp = line_splitted[1].replace(')','')
                 temp = temp.replace('(','')
@@ -92,7 +92,7 @@ def readcif(name):
                     fracz_index=atom_props_count
                 # elif "charge" in line_stripped:
                 #     charge_index=atom_props_count
-    
+
                 if cond:
                     atom_props_count+=1 # Another atom property in the block we are interested in.
 
@@ -104,9 +104,9 @@ def readcif(name):
                     continue # Allow for newlines between the _atom_ lines and the lines holding the atom information
                 else:
                     break # Don't need to keep looking through the file, since we've seen all the desired information for all atoms. We left the block.
-        
+
             counter+=1
-        
+
         positions=[]
         atomtypes=[]
         for cn,at in enumerate(atomlines):
@@ -242,7 +242,7 @@ def ligand_detect(cell,cart_coords,adj_mat,anchorlist):
         current_node = connected_components[counter]
         for j,v in enumerate(adj_mat[current_node]):
             if v==1 and (j not in checked) and (j not in connected_components): # If find a bonded atom that hasn't been checked yet
-                image_flag = compute_image_flag(cell,fcoords[current_node],fcoords[j]) 
+                image_flag = compute_image_flag(cell,fcoords[current_node],fcoords[j])
                 fcoords[j] += image_flag # Shifting fractional coordinates by the number of cells specified by compute_image_flag
                 connected_components.append(j)
                 checked.append(j)
@@ -289,7 +289,7 @@ def XYZ_connected(cell,cart_coords,adj_mat):
             indices = [i for i, x in enumerate(labels_components) if x == tested_index] # Indices corresponding to atoms in the component corresponding to tested_index
             current_node = indices[index_counter]
             # print(current_node,indices)
-            
+
             if index_counter == (len(indices)-1):
                 tested_index += 1
                 index_counter = 0
@@ -361,7 +361,7 @@ def writeXYZandGraph(filename,atoms,cell,fcoords,molgraph):
             s="%10.2f %10.2f %10.2f"%(cart_coord[0],cart_coord[1],cart_coord[2]) # X, Y, Z
             fo.write("%s %s\n"%(atoms[i],s)) # Writing the coordinates of each atom.
     tmpstr=",".join([at for at in atoms])
-    np.savetxt(filename[:-4]+".net",molgraph,fmt="%i",delimiter=",",header=tmpstr) # Save a net file. 
+    np.savetxt(filename[:-4]+".net",molgraph,fmt="%i",delimiter=",",header=tmpstr) # Save a net file.
 
 
 def returnXYZandGraph(filename,atoms,cell,fcoords,molgraph):
@@ -392,7 +392,7 @@ def returnXYZandGraph(filename,atoms,cell,fcoords,molgraph):
         cart_coord=np.dot(fcoord,cell)
         coord_list.append([cart_coord[0],cart_coord[1],cart_coord[2]])
     tmpstr=",".join([at for at in atoms])
-    if filename != None: 
+    if filename != None:
         np.savetxt(filename[:-4]+".net",molgraph,fmt="%i",delimiter=",",header=tmpstr)
     return coord_list, molgraph
 
@@ -690,7 +690,7 @@ def position_nearest_atom(cell, cart_coords, index_of_interest, num_cells = 1):
 
     # Want the atom that is closest to index_of_interest, given the ideal shift
     # Don't want to consider distance of atom of interest to itself, so I eliminate it from consideration this way.
-    dist[index_of_interest,:] = np.array([np.Inf]*np.shape(dist)[1]) 
+    dist[index_of_interest,:] = np.array([np.Inf]*np.shape(dist)[1])
     # Find the index of the closest atom.
     index_nearest_atom = np.argmin(dist)
     index_nearest_atom = np.unravel_index(index_nearest_atom, np.shape(dist)) # This is (atom index, shift index)
@@ -754,7 +754,7 @@ def mkcell(cpar):
     c_x = c_mag * np.cos(beta)
     c_y = c_mag * (np.cos(alpha) - np.cos(gamma) * np.cos(beta)) / np.sin(gamma) # You have to use a matrix to convert. This is derived in most textbooks on crystallography, such as McKie & McKie 'Essentials of Crystallography'. https://chemistry.stackexchange.com/questions/136836/converting-fractional-coordinates-into-cartesian-coordinates-for-crystallography
     c_vec = np.array([c_x, c_y, (c_mag**2 - c_x**2 - c_y**2)**0.5]) # c_x**2 + c_y**2 + c_z**2 = c_mag**2
-    vectors = np.array([a_vec, b_vec, c_vec]) 
+    vectors = np.array([a_vec, b_vec, c_vec])
     return vectors
 
 def make_supercell(cell,atoms,fcoords,exp_coeff):
@@ -842,7 +842,7 @@ def compute_adj_matrix(distance_mat,allatomtypes,wiggle_room=1,handle_overlap=Fa
                 print(f"dist is {dist} and the cutoff is {min(COVALENT_RADII[e1] , COVALENT_RADII[e2])}")
                 if handle_overlap:
                     overlap_atoms.append(i+j+1) # The atom with index i+j+1 overlapped with another atom.
-                else:   
+                else:
                     print('Overlapping atoms! Error')
                     raise NotImplementedError # Exit the function.
             tempsf = 0.9 # This is modified below under certain conditions, to account for looser or tigher bonding.
@@ -853,7 +853,7 @@ def compute_adj_matrix(distance_mat,allatomtypes,wiggle_room=1,handle_overlap=Fa
             if (set("C") < elements) and  (elements & metals):
                 tempsf = 0.95
             if (set("H") < elements) and  (elements & metals) and (not elements & alkali):
-                tempsf = 0.75 
+                tempsf = 0.75
 
             if (set("O") < elements) and (elements & metals):
                 tempsf = 0.85
@@ -1014,7 +1014,7 @@ def disorder_detector(name):
             if (not line) or line_stripped.startswith("#"):
                 continue
             line_splitted=line.split()
-            
+
             if line_stripped.startswith("_atom") :
 
                 if line_stripped == "_atom_site_label" or line_stripped == '_atom_site_type_symbol':
@@ -1024,7 +1024,7 @@ def disorder_detector(name):
                     type_index=atom_props_count
                 elif line_stripped=="_atom_site_occupancy":
                     occupancy_index=atom_props_count
-    
+
                 if cond:
                     atom_props_count+=1 # Another atom property in the block we are interested in.
 
@@ -1034,7 +1034,7 @@ def disorder_detector(name):
                 else:
                     break # Don't need to keep looking through the file, since we've seen all the desired information for all atoms. We left the block.
 
-                
+
         disordered_atom_indices = []
         disordered_atom_types = []
         disordered_atom_occupancies = []
@@ -1073,7 +1073,7 @@ def remove_duplicate_atoms(allatomtypes, fcoords):
     Returns
     -------
     allatomtypes_trim : list of str
-        The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms. 
+        The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms.
         All duplicate atoms removed.
     fcoords_trim : numpy.ndarray
         The fractional positions of the atoms of the cif file. Shape is (number of atoms, 3).
@@ -1104,7 +1104,7 @@ def remove_undesired_atoms(undesired_indices, allatomtypes, fcoords):
     Returns
     -------
     allatomtypes_trim : list of str
-        The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms. 
+        The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms.
         All undesired atoms removed.
     fcoords_trim : numpy.ndarray
         The fractional positions of the atoms of the cif file. Shape is (number of atoms, 3).
@@ -1147,7 +1147,7 @@ def overlap_removal(cif_path, new_cif_path, wiggle_room=1):
     cell_v = mkcell(cpar)
     cart_coords = fractional2cart(fcoords, cell_v)
     # if len(cart_coords) > 2000: # Don't deal with large cifs because of computational resources required for their treatment.
-    #     raise Exception("Too large of a cif file") 
+    #     raise Exception("Too large of a cif file")
 
     # Assuming that the cif does not have graph information of the structure.
     distance_mat = compute_distance_matrix3(cell_v,cart_coords)
@@ -1189,7 +1189,7 @@ def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
     cell_v = mkcell(cpar)
     cart_coords = fractional2cart(fcoords, cell_v)
     # if len(cart_coords) > 2000: # Don't deal with large cifs because of computational resources required for their treatment.
-    #     raise Exception("Too large of a cif file") 
+    #     raise Exception("Too large of a cif file")
 
     # Assuming that the cif does not have graph information of the structure.
     distance_mat = compute_distance_matrix3(cell_v,cart_coords)
