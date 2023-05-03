@@ -34,7 +34,7 @@ def decorate_ligand(ligand_to_decorate: mol3D, decoration, decoration_index,
     #   - debug: debugging flag for additional prints
     # OUTPUT
     #   - merged_ligand: built ligand
-    
+
     lig = ligand_to_decorate
     # reorder to ensure highest atom index
     # removed first

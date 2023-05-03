@@ -1420,7 +1420,7 @@ def parseinputs_inputgen(*p):
     parser.add_argument(
         "-ndfunc", help="NDFUNC option for diffuse functions in GAMESS e.g. 1", action="store_true")
     parser.add_argument(
-        "-sysoption", action="store_true", 
+        "-sysoption", action="store_true",
         help="extra arguments for $SYSTEM GAMESS block in syntax keyword value, e.g. MWORDS 20")
     parser.add_argument(
         "-ctrloption", action="store_true",

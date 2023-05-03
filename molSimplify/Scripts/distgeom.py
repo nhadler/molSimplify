@@ -16,7 +16,10 @@
 
 import numpy as np
 import numpy
-import openbabel
+try:
+    from openbabel import openbabel  # version 3 style import
+except ImportError:
+    import openbabel  # fallback to version 2
 from scipy import optimize
 from math import sqrt, cos
 

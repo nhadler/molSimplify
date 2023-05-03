@@ -5,16 +5,16 @@ from molSimplify.Informatics.MOF.MOF_descriptors import get_primitive
 from molSimplify.Informatics.MOF.monofunctionalized_BDC.index_information import INDEX_INFO
 from molSimplify.Scripts.geometry import checkplanar, PointRotateAxis, setPdistance, kabsch, rotate_mat, distance, rotate_around_axis
 from molSimplify.Informatics.MOF.PBC_functions import (
-	compute_adj_matrix, 
-	compute_distance_matrix3, 
+	compute_adj_matrix,
+	compute_distance_matrix3,
 	compute_image_flag,
-	findPaths, 
-	frac_coord, 
-	fractional2cart, 
+	findPaths,
+	frac_coord,
+	fractional2cart,
 	get_closed_subgraph,
-	readcif, 
-	XYZ_connected, 
-	write_cif, 
+	readcif,
+	XYZ_connected,
+	write_cif,
 	)
 from pkg_resources import resource_filename, Requirement
 import numpy as np
@@ -50,7 +50,7 @@ def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionaliz
 		How many bonds away one functionalized atom should be from another, if functionalized_limit is greater than one.
 	additional_atom_offset : float
 		Extent to which to rotate the placement of depth 2 functional group atoms. Give in degrees.
-		Useful for preventing atomic overlap / unintended bonds.  
+		Useful for preventing atomic overlap / unintended bonds.
 
 	Returns
 	-------
@@ -108,7 +108,7 @@ def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionaliz
 
 			# Atoms that are connected to atom i.
 			connected_atom_list, connected_atom_types = connected_atoms_from_adjmat(adj_matrix, i, original_allatomtypes)
-			
+
 			if ('H' not in connected_atom_types) or (connected_atom_types.count('H')>1 or len(connected_atom_types) != 3): ### must functionalize where an H was. Needs sp2 C.
 				# Note: if a carbon has more than one hydrogen bonded to it, it is not considered for functionalization.
 				# So, the carbons treated by this code will carbons in a benzene-style ring for the most part, I assume.
@@ -159,7 +159,7 @@ def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionaliz
 							extra_atom_coords,
 							extra_atom_types,
 							functionalized_atoms,
-							additional_atom_offset=additional_atom_offset                            
+							additional_atom_offset=additional_atom_offset
 							)
 
 						break # Don't search the rest of the connected atoms if replaced a hydrogen and functionalized already at the atom with index i.
@@ -168,16 +168,16 @@ def functionalize_MOF(cif_file, path2write, functional_group = 'F', functionaliz
 				Any additional linker functionalizations.
 				"""""""""
 				# If there is more than one functionalization, this is where that happens.
-				# Will check other atoms on the linker to potentially functionalize them. 
+				# Will check other atoms on the linker to potentially functionalize them.
 				while functionalization_counter > 0: # Still have some more functionalizations to make.
 					molcif, functionalization_counter, delete_list, extra_atom_coords, extra_atom_types, functionalized_atoms = additional_functionalization(i,
-						linker_to_analyze, 
-						linker_subgraphlist, 
-						linker_to_analyze_index, 
-						path_between_functionalizations, 
+						linker_to_analyze,
+						linker_subgraphlist,
+						linker_to_analyze_index,
+						path_between_functionalizations,
 						functionalized,
-						adj_matrix, 
-						allatomtypes, 
+						adj_matrix,
+						allatomtypes,
 						molcif,
 						functional_group,
 						linker_cart_coords,
@@ -248,7 +248,7 @@ def first_functionalization(molcif,
 	allatomtypes : list of str
 		The atom types of the MOF, indicated by chemical symbols like 'O' and 'Cu'. Length is the number of atoms.
 	i : int
-		The global index of the atom of to be functionalized.      
+		The global index of the atom of to be functionalized.
 	connected_atom_list : numpy.ndarray of numpy.int32
 		The indices of the atoms connected to the atom of interest i.
 	k : int
@@ -265,11 +265,11 @@ def first_functionalization(molcif,
 	linker_graph : numpy.ndarray of numpy.float64
 		The adjacency matrix of the linker. Shape is (number of atoms in linker, number of atoms in linker).
 	functionalization_counter : int
-		The number of functionalizations left to be done on the linker. 
+		The number of functionalizations left to be done on the linker.
 	delete_list : list of numpy.int32
 		The indices of atoms that are deleted because they are replaced by functional groups.
 	extra_atom_coords : list of numpy.ndarray of numpy.float64
-		The Cartesian coordinates of the atoms added during functionalization. 
+		The Cartesian coordinates of the atoms added during functionalization.
 		Each item of the list is a new functional group.
 		Shape of each numpy.ndarray is (number of atoms in functional group, 3).
 	extra_atom_types : list of list of str
@@ -278,7 +278,7 @@ def first_functionalization(molcif,
 		The global indices of atoms that have been functionalized.
 	additional_atom_offset : float
 		Extent to which to rotate the placement of depth 2 functional group atoms. Give in degrees.
-		Useful for preventing atomic overlap / unintended bonds.  
+		Useful for preventing atomic overlap / unintended bonds.
 
 	Returns
 	-------
@@ -291,17 +291,17 @@ def first_functionalization(molcif,
 	delete_list : list of numpy.int32
 		The updated indices of atoms that are deleted because they are replaced by functional groups.
 	extra_atom_coords : list of numpy.ndarray of numpy.float64
-		The updated Cartesian coordinates of the atoms added during functionalization.      
+		The updated Cartesian coordinates of the atoms added during functionalization.
 	extra_atom_types : list of list of str
-		The updated chemical symbols of the atoms added through functional groups. Each inner list is a functional group.     
+		The updated chemical symbols of the atoms added through functional groups. Each inner list is a functional group.
 	functionalized_atoms : list of int
-		The updated global indices of atoms that have been functionalized.      
+		The updated global indices of atoms that have been functionalized.
 
 
 	"""
 	# Apply the functionalization to the MOF.
-	molcif, atom_types_to_add, additions_to_cart, functionalization_counter, functionalized = apply_functionalization(molcif, 
-										allatomtypes, i, connected_atom_list[k], connected_atom_list, functional_group, 
+	molcif, atom_types_to_add, additions_to_cart, functionalization_counter, functionalized = apply_functionalization(molcif,
+										allatomtypes, i, connected_atom_list[k], connected_atom_list, functional_group,
 										linker_cart_coords, linker_to_functionalize, linker_atom_types, linker_graph, functionalization_counter, additional_atom_offset=additional_atom_offset)
 
 	# Add the atom that's been functionalized to the deleted atom list so that it isn't kept in the final structure.
@@ -317,13 +317,13 @@ def first_functionalization(molcif,
 	return molcif, functionalization_counter, functionalized, delete_list, extra_atom_coords, extra_atom_types, functionalized_atoms
 
 def additional_functionalization(i,
-	linker_to_functionalize, 
-	linker_subgraphlist, 
-	linker_to_functionalize_index, 
-	path_between_functionalizations, 
+	linker_to_functionalize,
+	linker_subgraphlist,
+	linker_to_functionalize_index,
+	path_between_functionalizations,
 	functionalized,
-	adj_matrix, 
-	allatomtypes, 
+	adj_matrix,
+	allatomtypes,
 	molcif,
 	functional_group,
 	linker_cart_coords,
@@ -336,7 +336,7 @@ def additional_functionalization(i,
 	functionalized_atoms,
 	additional_atom_offset=0):
 	"""
-	Executes additional functionalization on the specified linker, 
+	Executes additional functionalization on the specified linker,
 	at positions (path_between_functionalizations) bonds away from the atom with index i.
 
 	Parameters
@@ -369,35 +369,35 @@ def additional_functionalization(i,
 	linker_graph : numpy.ndarray of numpy.float64
 		The adjacency matrix of the linker. Shape is (number of atoms in linker, number of atoms in linker).
 	functionalization_counter : int
-		The number of functionalizations left to be done on the linker. 
+		The number of functionalizations left to be done on the linker.
 	delete_list : list of numpy.int32
 		The indices of atoms that are deleted because they are replaced by functional groups.
 	extra_atom_coords : list of numpy.ndarray of numpy.float64
-		The Cartesian coordinates of the atoms added during functionalization. 
+		The Cartesian coordinates of the atoms added during functionalization.
 		Each item of the list is a new functional group.
 		Shape of each numpy.ndarray is (number of atoms in functional group, 3).
 	extra_atom_types : list of list of str
 		The chemical symbols of the atoms added through functional groups. Each inner list is a functional group.
 	functionalized_atoms : list of int
-		The global indices of atoms that have been functionalized.  
+		The global indices of atoms that have been functionalized.
 	additional_atom_offset : float
 		Extent to which to rotate the placement of depth 2 functional group atoms. Give in degrees.
-		Useful for preventing atomic overlap / unintended bonds.  
+		Useful for preventing atomic overlap / unintended bonds.
 
 	Returns
 	-------
 	molcif : molSimplify.Classes.mol3D.mol3D
 		The cell of the functionalized MOF.
 	functionalization_counter : int
-		The number of functionalizations left to be done on the linker. This variable is decreased by one when this function is run successfully.       
+		The number of functionalizations left to be done on the linker. This variable is decreased by one when this function is run successfully.
 	delete_list : list of numpy.int32
-		The updated indices of atoms that are deleted because they are replaced by functional groups.  
+		The updated indices of atoms that are deleted because they are replaced by functional groups.
 	extra_atom_coords : list of numpy.ndarray of numpy.float64
-		The updated Cartesian coordinates of the atoms added during functionalization.           
+		The updated Cartesian coordinates of the atoms added during functionalization.
 	extra_atom_types : list of list of str
-		The chemical symbols of the atoms added through functional groups. Each inner list is a functional group.    
+		The chemical symbols of the atoms added through functional groups. Each inner list is a functional group.
 	functionalized_atoms : list of int
-		The updated global indices of atoms that have been functionalized.       
+		The updated global indices of atoms that have been functionalized.
 
 	"""
 	original_functionalization_counter = functionalization_counter
@@ -417,16 +417,16 @@ def additional_functionalization(i,
 		# Get the neighbors of the atom that we are considering for functionalization.
 		secondary_connected_atom_list, secondary_connected_atom_types = connected_atoms_from_adjmat(adj_matrix, functionalization_index, allatomtypes)
 
-		if 'H' not in secondary_connected_atom_types: 
+		if 'H' not in secondary_connected_atom_types:
 			continue # Must functionalize where an H was. If not, skip.
 		elif functionalization_index in functionalized_atoms:
 			continue # This atom has already been functionalized.
 		else:
 			for l, secondary_connected_atom in enumerate(secondary_connected_atom_types):
-				if (secondary_connected_atom == 'H') and (not functionalized):                      
-					molcif, atom_types_to_add, additions_to_cart, functionalization_counter, functionalized = apply_functionalization(molcif, 
-									allatomtypes, functionalization_index, secondary_connected_atom_list[l], secondary_connected_atom_list, 
-									functional_group, linker_cart_coords, linker_to_functionalize, linker_atom_types, linker_graph, 
+				if (secondary_connected_atom == 'H') and (not functionalized):
+					molcif, atom_types_to_add, additions_to_cart, functionalization_counter, functionalized = apply_functionalization(molcif,
+									allatomtypes, functionalization_index, secondary_connected_atom_list[l], secondary_connected_atom_list,
+									functional_group, linker_cart_coords, linker_to_functionalize, linker_atom_types, linker_graph,
 									functionalization_counter, additional_atom_offset=additional_atom_offset)
 					delete_list.append(secondary_connected_atom_list[l])
 					extra_atom_coords.append(additions_to_cart)
@@ -441,7 +441,7 @@ def additional_functionalization(i,
 
 	return molcif, functionalization_counter, delete_list, extra_atom_coords, extra_atom_types, functionalized_atoms
 
-def apply_functionalization(molcif, allatomtypes, position_to_functionalize, atom_to_replace, position_to_functionalize_neighbors, 
+def apply_functionalization(molcif, allatomtypes, position_to_functionalize, atom_to_replace, position_to_functionalize_neighbors,
 										functional_group, linker_cart_coords, linker_to_analyze, linker_atom_types, linker_graph, functionalization_counter, additional_atom_offset=0):
 	#######################################################################################################
 	# Note: position_to_functionalize is distinct from atom_to_replace. When functionalizing a C-H bond,  #
@@ -451,8 +451,8 @@ def apply_functionalization(molcif, allatomtypes, position_to_functionalize, ato
 	# allows determination of the plane of functionalization (important for symmetry preservation).       #
 	#######################################################################################################
 	"""
-	Functionalizes at the specified position. Supports some multi-atom functional groups. 
-	Functionalization will take place at the index position_to_functionalize. 
+	Functionalizes at the specified position. Supports some multi-atom functional groups.
+	Functionalization will take place at the index position_to_functionalize.
 	The atom with that index is in the linker described by linker_cart_coords, linker_to_analyze, linker_atom_types, and linker_graph.
 
 	Parameters
@@ -480,10 +480,10 @@ def apply_functionalization(molcif, allatomtypes, position_to_functionalize, ato
 	linker_graph : numpy.ndarray of numpy.float64
 		The adjacency matrix of the linker. 1 indicates a bond. 0 indicates the absence of a bond.
 	functionalization_counter : int
-		The number of functionalizations left to be done on the linker.      
+		The number of functionalizations left to be done on the linker.
 	additional_atom_offset : float
 		Extent to which to rotate the placement of depth 2 functional group atoms. Give in degrees.
-		Useful for preventing atomic overlap / unintended bonds.                  
+		Useful for preventing atomic overlap / unintended bonds.
 
 	Returns
 	-------
@@ -508,17 +508,17 @@ def apply_functionalization(molcif, allatomtypes, position_to_functionalize, ato
 	functionalization_position_on_linker = linker_to_analyze.index(position_to_functionalize)
 	temp_idx = linker_to_analyze.index(neighbors_not_to_replace[0]) # The first of the not-to-be-replaced atoms bonded to the atom to functionalize.
 	connected_atom_list, connected_atom_types = connected_atoms_from_adjmat(scipy.sparse.csr_matrix(linker_graph), temp_idx, linker_atom_types) # Atoms connected to that first of the not-to-be-replaced atoms.
-	
+
 	"""""""""
 	Vector preparation.
 	"""""""""
 
-	initial_placement, directional_unit_vector, norm_cp = vector_preparation(connected_atom_types, 
-		neighbors_not_to_replace, 
-		linker_to_analyze, 
-		linker_cart_coords, 
-		functionalization_position_on_linker, 
-		connection_length_dict, 
+	initial_placement, directional_unit_vector, norm_cp = vector_preparation(connected_atom_types,
+		neighbors_not_to_replace,
+		linker_to_analyze,
+		linker_cart_coords,
+		functionalization_position_on_linker,
+		connection_length_dict,
 		functional_group)
 
 	"""""""""
@@ -536,17 +536,17 @@ def apply_functionalization(molcif, allatomtypes, position_to_functionalize, ato
 	"""""""""
 
 	# Necessary for functional groups like CF3. Adds the atoms (e.g. the fluorines) that are not the connecting atom (e.g. C for CF3).
-	if len(connection_atom_dict[functional_group])>1: 
-		molcif, atom_types_to_add, additions_to_cart = multiatomic_functionalization(connection_atom_dict, 
-			bond_length_dict, 
-			bond_angle_dict, 
+	if len(connection_atom_dict[functional_group])>1:
+		molcif, atom_types_to_add, additions_to_cart = multiatomic_functionalization(connection_atom_dict,
+			bond_length_dict,
+			bond_angle_dict,
 			bond_rotation_dict,
 			functional_group,
 			directional_unit_vector,
 			norm_cp,
 			initial_placement,
 			additions_to_cart,
-			atom_types_to_add, 
+			atom_types_to_add,
 			molcif,
 			additional_atom_offset=additional_atom_offset
 			)
@@ -581,9 +581,9 @@ def analyze_linker(cart_coords,
 	linker_subgraphlist : list of scipy.sparse.csr.csr_matrix
 		The atom connections in the linker subgraph. Length is # of linkers.
 	linker_to_analyze_index : int
-		The number identifier of the linker that contains the atom of interest.  
+		The number identifier of the linker that contains the atom of interest.
 	cell_v : numpy.ndarray of numpy.float64
-		Each row corresponds to one of the cell vectors. Shape is (3, 3).   
+		Each row corresponds to one of the cell vectors. Shape is (3, 3).
 
 	Returns
 	-------
@@ -594,7 +594,7 @@ def analyze_linker(cart_coords,
 	linker_cart_coords : numpy.ndarray of numpy.float64
 		The Cartesian coordinates of the atoms in the linker. Shape is (number of atoms in linker, 3).
 
-	"""    
+	"""
 	# Get the cartesian coordinates of the linker from the linker atoms.
 	linker_coords = [cart_coords[val,:] for val in linker_to_analyze] ### contains the atom numbers in the linker.
 	# Get the linker atom types of the linker from the linker atoms.
@@ -641,7 +641,7 @@ def symmetry_check(allatomtypes, fcoords, cell_v, precision=1):
 	space_group_number = int(dataset['number'])
 	print('spacegroup before:', spcg)
 	print('space group number before:', space_group_number)
-	lattice_new, scaled_positions_new, numbers_new = spglib.standardize_cell(full_cell_for_spg, to_primitive=False, 
+	lattice_new, scaled_positions_new, numbers_new = spglib.standardize_cell(full_cell_for_spg, to_primitive=False,
 		no_idealize=False, symprec=precision, angle_tolerance=precision)
 	niggli_lattice = spglib.niggli_reduce(lattice_new, eps=1e-5) # Niggli reduction
 	spcg = spglib.get_spacegroup((niggli_lattice, scaled_positions_new, numbers_new), symprec=precision)
@@ -671,7 +671,7 @@ def linker_identification(linker_list, i, checkedlist):
 	linker_to_analyze_index : int
 		The number identifier of the linker that contains the atom of interest.
 	checkedlist : set of int
-		The indices of atoms that have already been checked for functionalization. 
+		The indices of atoms that have already been checked for functionalization.
 		Updated to include the atoms in the identified linker.
 
 	"""
@@ -682,7 +682,7 @@ def linker_identification(linker_list, i, checkedlist):
 			# Once a linker has been functionalized, we want to be done with that linker and not functionalize it again.
 			[checkedlist.add(val) for val in linker]
 			break # Don't need to keep looking through the linkers in this case, since the atom i which is to be functionalized was in the current linker.
-	
+
 	if linker_to_analyze is None: # linker_to_analyze was never overwritten.
 		raise Exception(f"Atom {i} was not in any linker - something has gone wrong.")
 
@@ -704,10 +704,10 @@ def geo_dict_loader():
 	connection_atom_dict : dict
 		For each functional group, indicates the element in the functional group that connects to the carbon atom; then indicates remaining elements for multiatomic functional groups.
 	bond_length_dict : dict
-		For each functional group (as applicable), indicates the bond length of the connecting atom on the functional group to the other atoms in the functional group, in angstroms. 
+		For each functional group (as applicable), indicates the bond length of the connecting atom on the functional group to the other atoms in the functional group, in angstroms.
 		Pertinent to multiatomic functional groups.
 	bond_angle_dict : dict
-		For each functional group (as applicable), indicates how far off a straight line the non-connecting functional group atoms are, 
+		For each functional group (as applicable), indicates how far off a straight line the non-connecting functional group atoms are,
 		relative to a directional unit vector that goes through the connecting carbon and the connecting atom on the functional group.
 		For example, for CF3, this is the C-C-F angle, where the first C is the carbon being functionalized and the second C is part of the CF3 functional group.
 		Pertinent to multiatomic functional groups.
@@ -727,15 +727,15 @@ def geo_dict_loader():
 	bond_length_dict = {'CH3':1.09, 'CN':1.17, 'NH2':1.02, 'NO2':1.25, 'CF3':1.36, 'OH':1.03, 'SH':1.34}
 
 	bond_angle_dict = {'CH3':110, 'CN':180, 'NH2':120, 'NO2':122.5, 'CF3':112, 'OH':100, 'SH':100}
-	
-	# The bond rotation dictionary is a list of the angles to rotate by, followed by the number of 
-	# times the motif must be repeated, in addition to the initial bond placement (e.g. CH3 needs 2 
+
+	# The bond rotation dictionary is a list of the angles to rotate by, followed by the number of
+	# times the motif must be repeated, in addition to the initial bond placement (e.g. CH3 needs 2
 	# more CH bonds in additional to the one originally placed).
 	bond_rotation_dict = {'CH3':[120, 2], 'CN':0, 'NH2':[180, 1], 'NO2': [180, 1], 'CF3': [120, 2], 'OH': 0, 'SH': 0}
 
 	return connection_length_dict, connection_atom_dict, bond_length_dict, bond_angle_dict, bond_rotation_dict
 
-def vector_preparation(connected_atom_types, neighbors_not_to_replace, linker_to_analyze, linker_cart_coords, functionalization_position_on_linker, 
+def vector_preparation(connected_atom_types, neighbors_not_to_replace, linker_to_analyze, linker_cart_coords, functionalization_position_on_linker,
 	connection_length_dict, functional_group):
 	"""
 	Prepares placement information for monoatomic and multiatomic functionalization.
@@ -760,21 +760,21 @@ def vector_preparation(connected_atom_types, neighbors_not_to_replace, linker_to
 	Returns
 	-------
 	initial_placement : numpy.ndarray of numpy.float64
-		The Cartesian coordinates of the connecting atom of the functional group. 
+		The Cartesian coordinates of the connecting atom of the functional group.
 		Pertinent to mono and multiatomic functionalization. Shape is (3,).
 	directional_unit_vector : numpy.ndarray of numpy.float64
-		Vector resulting from the addition of the two vectors from the two not-to-be-replaced neighbor atoms to the atom to be functionalized. 
-		Normalized. 
+		Vector resulting from the addition of the two vectors from the two not-to-be-replaced neighbor atoms to the atom to be functionalized.
+		Normalized.
 		Pertinent to multiatomic functionalization later. Shape is (3,).
 	norm_cp : numpy.ndarray of numpy.float64
-		Cross product of the two vectors from the two not-to-be-replaced neighbor atoms to the atom to be functionalized. 
-		Normalized. 
+		Cross product of the two vectors from the two not-to-be-replaced neighbor atoms to the atom to be functionalized.
+		Normalized.
 		Pertinent to multiatomic functionalization. Shape is (3,).
 
 	"""
 	# NOTE: there is an assumption here that neighbors_not_to_replace is length 2, based on the code below.
 		# These are the two not-to-be-replaced neighbor atoms.
-	
+
 	if 'H' in connected_atom_types: # The first of the not-to-be-replaced atoms has hydrogen bonded to it.
 		print('First type of vector_a')
 		vector_a = neighbors_not_to_replace[0] # vector is a misnomer here, but this variable is used to calculate a vector in a few lines.
@@ -783,12 +783,12 @@ def vector_preparation(connected_atom_types, neighbors_not_to_replace, linker_to
 		print('Second type of vector_a')
 		vector_a = neighbors_not_to_replace[1]
 		vector_b = neighbors_not_to_replace[0]
-	
+
 	neighbor1 = linker_to_analyze.index(vector_a) # The index of the index vector_a in the list of indices linker_to_analyze.
 	neighbor2 = linker_to_analyze.index(vector_b)
 	v1 = linker_cart_coords[functionalization_position_on_linker]-linker_cart_coords[neighbor1] # Vector from one of the not-to-be-replaced atoms to the atom to functionalize.
 	v2 = linker_cart_coords[functionalization_position_on_linker]-linker_cart_coords[neighbor2] # Vector from the other of the not-to-be-replaced atoms to the atom to functionalize.
-	
+
 	cp = np.cross(v1, v2) # cross product to get a perpendicular vector to v1 and v2
 	# a, b, c = cp
 	directional_unit_vector = (v1+v2)/np.linalg.norm(v1+v2) # points in the direction of where the functional group should be placed. Draw it out to visualize it!
@@ -798,7 +798,7 @@ def vector_preparation(connected_atom_types, neighbors_not_to_replace, linker_to
 	direction_to_place_connecting = directional_unit_vector*connection_length_dict[functional_group] # This is a vector. Direction * magnitude
 
 	# Apply the vector to the starting position, linker_cart_coords[functionalization_position_on_linker]
-	initial_placement = linker_cart_coords[functionalization_position_on_linker]+direction_to_place_connecting 
+	initial_placement = linker_cart_coords[functionalization_position_on_linker]+direction_to_place_connecting
 
 	#### Check if it is in the plane with the original 3 atoms (it should be)
 	planartest = checkplanar(initial_placement, linker_cart_coords[functionalization_position_on_linker], linker_cart_coords[neighbor1],linker_cart_coords[neighbor2])
@@ -821,7 +821,7 @@ def connecting_atom_functionalization(connection_atom_dict,
 	functional_group : str
 		The functional group to use for MOF functionalization.
 	initial_placement : numpy.ndarray of numpy.float64
-		The Cartesian coordinates of the connecting atom of the functional group. 
+		The Cartesian coordinates of the connecting atom of the functional group.
 		Shape is (3,).
 	molcif : molSimplify.Classes.mol3D.mol3D
 		The cell of the cif file to be functionalized.
@@ -835,24 +835,24 @@ def connecting_atom_functionalization(connection_atom_dict,
 	additions_to_cart : numpy.ndarray of numpy.float64
 		The Cartesian coordinates of the atoms added during functionalization. When leaving this function, shape is (1, 3).
 
-	"""    
+	"""
 	connecting_atom = atom3D(connection_atom_dict[functional_group][0], initial_placement)
 	molcif.addAtom(connecting_atom)
 	additions_to_cart = np.array([initial_placement])
 	atom_types_to_add = []
-	atom_types_to_add.append(connection_atom_dict[functional_group][0])    
+	atom_types_to_add.append(connection_atom_dict[functional_group][0])
 	return molcif, atom_types_to_add, additions_to_cart
 
-def multiatomic_functionalization(connection_atom_dict, 
-	bond_length_dict, 
-	bond_angle_dict, 
+def multiatomic_functionalization(connection_atom_dict,
+	bond_length_dict,
+	bond_angle_dict,
 	bond_rotation_dict,
 	functional_group,
 	directional_unit_vector,
 	norm_cp,
 	initial_placement,
 	additions_to_cart,
-	atom_types_to_add, 
+	atom_types_to_add,
 	molcif,
 	additional_atom_offset=0):
 	"""
@@ -864,25 +864,25 @@ def multiatomic_functionalization(connection_atom_dict,
 	connection_atom_dict : dict
 		For each functional group, indicates the element in the functional group that connects to the carbon atom; then indicates remaining elements for multiatomic functional groups.
 	bond_length_dict : dict
-		For each functional group (as applicable), indicates the bond length of the connecting atom on the functional group to the other atoms in the functional group, in angstroms. 
+		For each functional group (as applicable), indicates the bond length of the connecting atom on the functional group to the other atoms in the functional group, in angstroms.
 	bond_angle_dict : dict
-		For each functional group (as applicable), indicates how far off a straight line the non-connecting functional group atoms are, 
+		For each functional group (as applicable), indicates how far off a straight line the non-connecting functional group atoms are,
 		relative to a directional unit vector that goes through the connecting carbon and the connecting atom on the functional group.
 		For example, for CF3, this is the C-C-F angle, where the first C is the carbon being functionalized and the second C is part of the CF3 functional group.
 	bond_rotation_dict : dict
-		For each functional group (as applicable), indicates the angle rotation and the number of rotations for non-connecting atoms. E.g. for CH3, the hydrogens are 120 degrees rotated apart. 
+		For each functional group (as applicable), indicates the angle rotation and the number of rotations for non-connecting atoms. E.g. for CH3, the hydrogens are 120 degrees rotated apart.
 	functional_group : str
 		The functional group to use for MOF functionalization.
 	directional_unit_vector : numpy.ndarray of numpy.float64
-		Vector resulting from the addition of the two vectors from the two not-to-be-replaced neighbor atoms to the atom to be functionalized. 
-		Normalized. 
+		Vector resulting from the addition of the two vectors from the two not-to-be-replaced neighbor atoms to the atom to be functionalized.
+		Normalized.
 		Shape is (3,).
 	norm_cp : numpy.ndarray of numpy.float64
-		Cross product of the two vectors from the two not-to-be-replaced neighbor atoms to the atom to be functionalized. 
-		Normalized. 
+		Cross product of the two vectors from the two not-to-be-replaced neighbor atoms to the atom to be functionalized.
+		Normalized.
 		Shape is (3,).
 	initial_placement : numpy.ndarray of numpy.float64
-		The Cartesian coordinates of the connecting atom of the functional group. 
+		The Cartesian coordinates of the connecting atom of the functional group.
 		Shape is (3,).
 	additions_to_cart : numpy.ndarray of numpy.float64
 		The Cartesian coordinates of the atoms added during functionalization. When entering this function, shape is (1, 3).
@@ -909,7 +909,7 @@ def multiatomic_functionalization(connection_atom_dict,
 	bonded_placement = ((np.cos((180-bond_angle_dict[functional_group])*deg2rad))*directional_unit_vector*bond_length_dict[functional_group]+
 		(np.sin((180-bond_angle_dict[functional_group])*deg2rad))*(np.cross(norm_cp, directional_unit_vector*bond_length_dict[functional_group])))
 
-	# The shape of bonded_placement is (3,), as is the shape of initial_placement        
+	# The shape of bonded_placement is (3,), as is the shape of initial_placement
 
 	##### Find where the first functionalization should be placed.
 	final_placement = initial_placement + bonded_placement
@@ -919,7 +919,7 @@ def multiatomic_functionalization(connection_atom_dict,
 	molcif.addAtom(bonded_atom)
 	additions_to_cart = np.concatenate((additions_to_cart, np.array([final_placement])))
 	atom_types_to_add.append(connection_atom_dict[functional_group][1])
-	if bond_rotation_dict[functional_group] != 0: 
+	if bond_rotation_dict[functional_group] != 0:
 		rotated_atom3Ds = []
 		num_rotations = bond_rotation_dict[functional_group][1]
 		counter = 1
@@ -948,7 +948,7 @@ def make_networkx_graph(adj_matrix):
 	Returns
 	-------
 	G : networkx.classes.graph.Graph
-		The networkx graph of the bonds of the atoms in the linker. 
+		The networkx graph of the bonds of the atoms in the linker.
 
 	"""
 	if scipy.sparse.issparse(adj_matrix):
@@ -984,7 +984,7 @@ def get_linkers(molcif, adj_matrix, allatomtypes):
 	SBUlist = set() # Will contain the indices of atoms belonging to SBUs.
 	[SBUlist.update(set([metal])) for metal in molcif.findMetal(transition_metals_only=False)] # Consider all metals as part of the SBUs.
 	[SBUlist.update(set(molcif.getBondedAtomsSmart(metal))) for metal in molcif.findMetal(transition_metals_only=False)] # Also consider all atoms bonded to a metals part of the SBUs.
-	
+
 	removelist = set()
 	[removelist.update(set([metal])) for metal in molcif.findMetal(transition_metals_only=False)] # Remove all metals as part of the SBU.
 	# for metal in removelist:
@@ -993,9 +993,9 @@ def get_linkers(molcif, adj_matrix, allatomtypes):
 
 	# Add to removelist any atoms that are only bonded to metals (not counting hydrogens).
 		# The all() function returns True if all items in an iterable are true, otherwise it returns False.
-	[removelist.update(set([atom])) for atom in SBUlist if all((molcif.getAtom(val).ismetal() or 
-		molcif.getAtom(val).symbol().upper() == 'H') for val in molcif.getBondedAtomsSmart(atom))] 
-	
+	[removelist.update(set([atom])) for atom in SBUlist if all((molcif.getAtom(val).ismetal() or
+		molcif.getAtom(val).symbol().upper() == 'H') for val in molcif.getBondedAtomsSmart(atom))]
+
 	allatoms = set(range(0, adj_matrix.shape[0])) # A set that goes from 0 to the number of atoms - 1
 	linkers = allatoms - removelist
 	linker_list, linker_subgraphlist = get_closed_subgraph(linkers.copy(), removelist.copy(), adj_matrix)
@@ -1061,8 +1061,8 @@ def check_support(functional_group):
 	"""
 	supported_functional_groups = ['F', 'Cl', 'Br', 'I', 'CH3', 'CN', 'NH2', 'NO2', 'CF3', 'OH', 'SH']
 
-	# These functional groups are not added via the dictionary approach since they go more than two atoms deep, or are not uniform in bond length at every atom depth.    
-	supported_functional_groups_by_mol3D_merge = ['OCF3', 'SO3H', 'OCH3'] 
+	# These functional groups are not added via the dictionary approach since they go more than two atoms deep, or are not uniform in bond length at every atom depth.
+	supported_functional_groups_by_mol3D_merge = ['OCF3', 'SO3H', 'OCH3']
 	if functional_group not in supported_functional_groups+supported_functional_groups_by_mol3D_merge:
 		raise ValueError('Unsupported functional group requested.')
 	else:
@@ -1086,7 +1086,7 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
 		The indices of the atoms at which to functionalize. Zero-indexed.
 	additional_atom_offset : float or list of float
 		Extent to which to rotate the placement of depth 2 functional group atoms. Give in degrees.
-		Useful for preventing atomic overlap / unintended bonds. 
+		Useful for preventing atomic overlap / unintended bonds.
 		If list, must be the length of func_indices.
 
 	Returns
@@ -1120,7 +1120,7 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
 	adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes)
 	molcif.graph = adj_matrix.todense()
 
-	### End of repeat code ### 
+	### End of repeat code ###
 
 	###### At this point, we have most things we need to functionalize.
 	# Thus the first step is to break down into linkers. This uses what we developed for MOF featurization
@@ -1182,7 +1182,7 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
 						extra_atom_coords,
 						extra_atom_types,
 						functionalized_atoms,
-						additional_atom_offset=additional_atom_offset[_i]                            
+						additional_atom_offset=additional_atom_offset[_i]
 						) # functionalized_atoms is not important here.
 
 					break # Don't search the rest of the connected atoms if replaced a hydrogen and functionalized already at the atom with index i.
@@ -1227,7 +1227,7 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 		The indices of the atoms at which to functionalize. Zero-indexed.
 	additional_atom_offset : list of float
 		Extent to which to rotate the placement of depth 2 functional group atoms. Give in degrees.
-		Useful for preventing atomic overlap / unintended bonds. 
+		Useful for preventing atomic overlap / unintended bonds.
 		Must be the length of func_indices.
 
 	Returns
@@ -1250,7 +1250,7 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 	adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes)
 	molcif.graph = adj_matrix.todense()
 
-	### End of repeat code ### 
+	### End of repeat code ###
 
 
 	### Section with the functional group template ###
@@ -1332,7 +1332,7 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 
 			### Now, answer the question of how much to rotate the functional group to align it to the carbon in the CIF. ###
 			initial_guess = np.zeros(3)
-			rotation_vector = scipy.optimize.fmin(alignment_objective, initial_guess, args=(molcif_clone, func_index, 
+			rotation_vector = scipy.optimize.fmin(alignment_objective, initial_guess, args=(molcif_clone, func_index,
 				carbon_neighbor_indices, functional_group_template, fg_main_carbon_index, fg_carbon_neighbor_indices, translation_vector))
 
 			# Unpacking
@@ -1381,7 +1381,7 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 	write_cif(f'{path2write}cif/functionalized_{base_mof_name}_{functional_group}_index.cif', cpar, fcoords, allatomtypes)
 
 
-def alignment_objective(rotation_vector, molcif_clone, MOF_main_carbon_index, MOF_carbon_neighbor_indices, 
+def alignment_objective(rotation_vector, molcif_clone, MOF_main_carbon_index, MOF_carbon_neighbor_indices,
 	functional_group_template, fg_main_carbon_index, fg_carbon_neighbor_indices, translation_vector):
 	"""
 	The objective function to be minimized by finding the optimal x, y, and z rotation angles.
@@ -1414,7 +1414,7 @@ def alignment_objective(rotation_vector, molcif_clone, MOF_main_carbon_index, MO
 		Compares the carbons in the template BDC with the functional group, and the carbons in the MOF.
 		The main carbon is the carbon at which functionalization occurs. The neighbors are bonded to that main carbon.
 
-	"""	
+	"""
 
 	# Unpacking
 	x_rotation = rotation_vector[0]
@@ -1434,7 +1434,7 @@ def alignment_objective(rotation_vector, molcif_clone, MOF_main_carbon_index, MO
 	template_copy = rotate_around_axis(template_copy, main_carbon_coordinate, [0,0,1], z_rotation)
 
 	# NOTE: small degree of flexibility here. Can align carbon 1 of MOF_carbon_neighbor_indices to carbon 1 of fg_carbon_neighbor_indices
-	# Or align carbon 1 of MOF_carbon_neighbor_indices to carbon 2 of fg_carbon_neighbor_indices. 
+	# Or align carbon 1 of MOF_carbon_neighbor_indices to carbon 2 of fg_carbon_neighbor_indices.
 	# I go with the former approach here.
 
 	distance1 = distance(molcif_clone.getAtom(MOF_main_carbon_index).coords(), template_copy.getAtom(fg_main_carbon_index).coords())
@@ -1453,7 +1453,7 @@ def post_functionalization_overlap_and_bonding_check(cell_v, allatomtypes, fcoor
 	Parameters
 	----------
 	cell_v : numpy.ndarray of numpy.float64
-		Each row corresponds to one of the cell vectors. Shape is (3, 3).   
+		Each row corresponds to one of the cell vectors. Shape is (3, 3).
 	allatomtypes : list of str
 		The atom types of the MOF, indicated by chemical symbols like 'O' and 'Cu'. Length is the number of atoms.
 	fcoords : numpy.ndarray of numpy.float64
@@ -1534,11 +1534,11 @@ def atom_addition(extra_atom_types, final_atom_types, new_coord_list, extra_atom
 	new_coord_list : numpy.ndarray
 		The Cartesian coordinates of the crystal atoms. Shape is (number of atoms, 3).
 	extra_atom_coords : list of numpy.ndarray of numpy.float64
-		The Cartesian coordinates of the atoms added during functionalization. 
+		The Cartesian coordinates of the atoms added during functionalization.
 		Each item of the list is a new functional group.
 		Shape of each numpy.ndarray is (number of atoms in functional group, 3).
 	cell_v : numpy.ndarray of numpy.float64
-		Each row corresponds to one of the cell vectors. Shape is (3, 3).   
+		Each row corresponds to one of the cell vectors. Shape is (3, 3).
 
 	Returns
 	-------
@@ -1576,7 +1576,7 @@ def DS_remover(file_list):
 	"""
 	file_list = [_i for _i in file_list if 'DS_Store' not in _i]
 	return file_list
-	
+
 def mkdir_if_absent(folder_path):
 	"""
 	Makes a folder at folder_path if it does not yet exist.
@@ -1628,11 +1628,11 @@ def main():
 			for func in func_group:
 				super_func_folder = f'{base_write_path}{MOF}_{num_func}_functionalization/'
 				mkdir_if_absent(super_func_folder)
-				
+
 				func_folder = f'{base_write_path}{MOF}_{num_func}_functionalization/{func}/'
 				if not os.path.exists(func_folder):
 					os.mkdir(func_folder) # Making the folder if it doesn't exist yet.
-					functionalize_MOF(f'{base_database_path_primitive}{MOF}.cif', func_folder, 
+					functionalize_MOF(f'{base_database_path_primitive}{MOF}.cif', func_folder,
 						path_between_functionalizations=path, functionalization_limit=num_func, functional_group=func)
 				else:
 					continue
