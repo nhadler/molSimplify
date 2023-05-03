@@ -842,6 +842,7 @@ def compute_adj_matrix(distance_mat,allatomtypes,wiggle_room=1,handle_overlap=Fa
                 print(f"dist is {dist} and the cutoff is {min(COVALENT_RADII[e1] , COVALENT_RADII[e2])}")
                 if handle_overlap:
                     overlap_atoms.append(i+j+1) # The atom with index i+j+1 overlapped with another atom.
+                    # Currently, code does not consider whether atom i is already in overlap_atoms and will be removed.
                 else:
                     print('Overlapping atoms! Error')
                     raise NotImplementedError # Exit the function.
@@ -1122,6 +1123,7 @@ def remove_undesired_atoms(undesired_indices, allatomtypes, fcoords):
 def overlap_removal(cif_path, new_cif_path, wiggle_room=1):
     """
     Reads a cif file, removes overlapping atoms, and writes the cif to the provided path.
+    For a new CIF, recommended to remove symmetry (either with Vesta or with get_primitive), then run overlap_removal, then run solvent_removal.
 
     Parameters
     ----------
