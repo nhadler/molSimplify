@@ -1122,6 +1122,7 @@ def remove_undesired_atoms(undesired_indices, allatomtypes, fcoords):
 def overlap_removal(cif_path, new_cif_path, wiggle_room=1):
     """
     Reads a cif file, removes overlapping atoms, and writes the cif to the provided path.
+    For a new CIF, recommended to remove symmetry (either with Vesta or with get_primitive), then run overlap_removal, then run solvent_removal.
 
     Parameters
     ----------
