@@ -4051,7 +4051,7 @@ class mol3D:
                         flag_lbd=True, debug=False, depth=3,
                         BondedOct=False, angle_ref=False):
         """
-        Get the ligand distortion by comparing each individule ligands in init_mol and opt_mol.
+        Get the ligand distortion by comparing each individual ligands in init_mol and opt_mol.
 
         Parameters
         ----------
