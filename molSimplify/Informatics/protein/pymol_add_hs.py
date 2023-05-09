@@ -1,8 +1,8 @@
 # add hydrogens to pdb file
 
 import os
-from pymol import cmd, stored, editing
-from molSimplify.Classes.protein3D import *
+from pymol import cmd
+from molSimplify.Classes.protein3D import protein3D
 
 d1 = "Fe-2His_xyz_turned_pdb/" # directory of pdb files
 d2 = 'h_added/' # directory to add pdb files with hydrogens
