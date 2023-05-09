@@ -1,4 +1,4 @@
-from molSimplify.Classes.protein3D import AA3D
+from molSimplify.Classes.monomer3D import monomer3D
 from molSimplify.Classes.mol3D import mol3D
 import pickle
 
