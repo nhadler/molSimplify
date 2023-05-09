@@ -9,8 +9,7 @@ import pickle
 # activesites = folder of metal active sites
 
 with open("filename.txt", 'r') as fin:
-    text = fin.read()
-text = text.split('\n')
+    text = fin.readlines()
 for pdbid in text:
     p = pickle.load(open('chosen_confs/' + pdbid + '.pkl', 'rb'))
     for metal in p.findAtom("metal", False):
@@ -34,7 +33,7 @@ for pdbid in text:
             fout.write(p.atoms[metal].line)
             coords.append(p.atoms[metal].coords())
             for m in metal_all:
-                if type(m) == AA3D:
+                if type(m) == monomer3D:
                     for (a_id, a) in m.atoms:
                         if a.coords() not in coords:
                             ids.append(a_id)
