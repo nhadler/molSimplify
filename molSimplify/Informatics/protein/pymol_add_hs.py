@@ -26,7 +26,7 @@ for filename in os.listdir(d1):
         if sele != "":
             cmd.select(sele)
             cmd.alter("sele", "formal_charge=1",quiet=1, space=None)
-        cmd.h_add("("+filename[:-4]+")") 
-        cmd.save(d2+filename) 
-        cmd.delete("all") 
+        cmd.h_add("("+filename[:-4]+")")
+        cmd.save(d2+filename)
+        cmd.delete("all")
         print(filename)
