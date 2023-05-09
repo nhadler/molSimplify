@@ -11,7 +11,8 @@ import pickle
 with open("filename.txt", 'r') as fin:
     text = fin.readlines()
 for pdbid in text:
-    p = pickle.load(open('chosen_confs/' + pdbid + '.pkl', 'rb'))
+    with open('chosen_confs/' + pdbid + '.pkl', 'rb') as fin:
+        p = pickle.load(fin)
     for metal in p.findAtom("metal", False):
         pdb = 'pdbs/' + pdbid
         with open(pdb+'.pdb', 'r') as fin:
