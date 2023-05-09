@@ -25,8 +25,6 @@ from molSimplify.python_nn.tf_ANN import (ANN_supervisor,
                                           find_true_min_eu_dist)
 
 
-# import numpy
-# import openbabel
 def spin_classify(metal: str, spin: Union[int, str], ox: int) -> Tuple[bool, List[int]]:
     metal_spin_dictionary = {'co': {2: 4, 3: 5},
                              'cr': {2: 5, 3: 4},
@@ -427,8 +425,8 @@ def tf_ANN_preproc(metal: str, oxstate, spin, ligs: List[str], occs: List[int], 
         ax_lig3D.convert2mol3D()  # mol3D representation of ligand
         for jj in range(0, ax_occs[ii]):
             ax_ligands_list.append(this_lig)
-    print(('Obtained the net ligand charge, which is... ', net_lig_charge))
     if debug:
+        print(f'Obtained the net ligand charge, which is... {net_lig_charge}')
         print('ax_ligands_list:')
         print(ax_ligands_list)
         print([h.mol.cat for h in ax_ligands_list])

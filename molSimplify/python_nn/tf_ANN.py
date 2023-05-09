@@ -63,7 +63,7 @@ def perform_ANN_prediction(RAC_dataframe: pd.DataFrame, predictor_name: str,
 
     RAC_subset_for_ANN = RAC_dataframe.loc[:, train_vars].astype(float)
     normalized_input = data_normalize(RAC_subset_for_ANN, train_mean_x, train_var_x)
-    ANN_prediction = my_ANN.predict(normalized_input)
+    ANN_prediction = my_ANN.predict(normalized_input, verbose=0)
     rescaled_output = data_rescale(ANN_prediction, train_mean_y, train_var_y)
 
     # Get latent vectors for training data and queried data
@@ -399,7 +399,7 @@ def load_train_info(predictor: str, suffix: str = 'info') -> dict:
     return loaded_info_dict
 
 
-def load_keras_ann(predictor: str, suffix: str = 'model', compile: bool = False):
+def load_keras_ann(predictor: str, suffix: str = 'model', compile: bool = False) -> tf.keras.Model:
     # this function loads the ANN for property
     # "predcitor"
     # disable TF output text to reduce console spam
@@ -498,7 +498,7 @@ def ANN_supervisor(predictor: str,
 
     ## fetch ANN
     loaded_model = load_keras_ann(predictor)
-    result = data_rescale(loaded_model.predict(excitation), train_mean_y, train_var_y, debug=debug)
+    result = data_rescale(loaded_model.predict(excitation, verbose=0), train_mean_y, train_var_y, debug=debug)
     if "clf" not in predictor:
         if debug:
             print(('LOADED MODEL HAS ' + str(

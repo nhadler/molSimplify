@@ -7,9 +7,9 @@
 #$ -q gpus
 #$ -l gpus=1
 #$ -pe smp 1
-# -fin terachem_input 
-# -fin *.xyz 
-# -fout scr/ 
+# -fin terachem_input
+# -fin *.xyz
+# -fout scr/
 module load cuda
 module load terachem
 export OMP_NUM_THREADS=1

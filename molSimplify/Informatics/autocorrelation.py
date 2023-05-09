@@ -1,4 +1,5 @@
 import numpy as np
+from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Classes.ligand import ligand_breakdown, ligand_assign
 from molSimplify.Scripts.geometry import distance
 from molSimplify.Classes.globalvars import globalvars
@@ -214,7 +215,7 @@ def summetric(mol, prop_vec, orig, d, oct=True, catoms=None):
     return (result_vector)
 
 
-def deltametric(mol, prop_vec, orig, d, oct=True, catoms=None):
+def deltametric(mol: mol3D, prop_vec, orig, d: int, oct=True, catoms=None):
     # # this function returns the deltametric
     # # over the whole molecule
     # Inputs:
@@ -631,7 +632,7 @@ def layer_density_in_3D(mol, prop_vec, orig, d, oct=True):
     return result_vector
 
 
-def construct_property_vector(mol, prop, oct=True, modifier=False):
+def construct_property_vector(mol: mol3D, prop: str, oct=True, modifier=False):
     # # assigns the value of property
     # # for atom i (zero index) in mol
     # # to position i in returned vector
