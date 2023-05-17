@@ -178,7 +178,7 @@ def substplaceff_mode1(core, substr, substreact, compreact, cpoint, ligalignpt, 
 
 
 def tsgen(mode, args, rootdir, core, substr, compreact, substreact, globs):
-    emsg = False    
+    emsg = False
     ts3D = mol3D()
     this_diag = run_diag()
     strfiles = []

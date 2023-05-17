@@ -94,7 +94,6 @@ def get_descriptor_vector(this_complex, custom_ligand_dict=False,
                               'eq_ligand_list': eq_ligand_list,
                               'ax_con_int_list': ax_con_int_list,
                               'eq_con_int_list': eq_con_int_list}
-    print("custom_ligand_dict: ", custom_ligand_dict)
     # misc descriptors
     results_dictionary = generate_all_ligand_misc(this_complex, loud=False,
                                                   custom_ligand_dict=custom_ligand_dict,

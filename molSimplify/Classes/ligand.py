@@ -275,12 +275,12 @@ def ligand_breakdown(mol, BondedOct=False, silent=True, transition_metals_only=T
 
     Returns
     -------
-        liglist : list
-            List of ligands
-        ligdents : list
-            List of ligand denticities
-        ligcons : list
-            List of ligand connection indices (in mol)
+        liglist : list of list of int
+            List of ligands. Length is the number of ligands. Each inner list contains the global indices of a ligand
+        ligdents : list of int
+            List of ligand denticities. Length is the number of ligands
+        ligcons : list of list of int
+            List of ligand connection indices (in mol). Length is the number of ligands
 
     """
     # this function takes an octahedral

@@ -167,7 +167,7 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath = False):
         return None, None
     distance_mat = pbc_funs.compute_distance_matrix2(cell_v, cart_coords)
     try:
-        adj_matrix = pbc_funs.compute_adj_matrix(distance_mat, allatomtypes)
+        adj_matrix, _ = pbc_funs.compute_adj_matrix(distance_mat, allatomtypes)
     except NotImplementedError:
         tmpstr = "Failed to featurize %s: atomic overlap\n" % (name)
         pbc_funs.write2file(path, "/FailedStructures.log", tmpstr)

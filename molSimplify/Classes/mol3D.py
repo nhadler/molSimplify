@@ -12,7 +12,10 @@ import tempfile
 import time
 import xml.etree.ElementTree as ET
 import numpy as np
-import openbabel
+try:
+    from openbabel import openbabel  # version 3 style import
+except ImportError:
+    import openbabel  # fallback to version 2
 from typing import List, Optional
 from scipy.spatial import ConvexHull
 from molSimplify.utils.decorators import deprecated
@@ -42,7 +45,7 @@ class mol3D:
     Example instantiation of an octahedral iron-ammonia complex from an XYZ file:
 
     >>> complex_mol = mol3D()
-    >>> complex_mol.readfromxyz('fe_nh3_6.xyz')
+    >>> complex_mol.readfromxyz('fe_nh3_6.xyz')  # doctest: +SKIP
 
     """
 
@@ -122,21 +125,9 @@ class mol3D:
         self.use_atom_specific_cutoffs = use_atom_specific_cutoffs
 
     def __repr__(self):
-        """
-        Returns all bound methods of the mol3D class.
+        return f"mol3D({self.make_formula(latex=False)})"
 
-        Returns
-        -------
-            method_string : string
-                String of methods available in mol3D class.
-        """
-
-        method_string = "\nClass mol3D has the following methods:\n"
-        for method in dir(self):
-            if callable(getattr(self, method)):
-                method_string += method + '\n'
-        return method_string
-
+    @deprecated("Preliminary testing showed this function is unreliable at best")
     def ACM(self, idx1, idx2, idx3, angle):
         """
         Performs angular movement on mol3D class. A submolecule is
@@ -152,8 +143,6 @@ class mol3D:
                 Index of anchor atom 2.
             angle : float
                 New bond angle in degrees.
-
-        >>> complex_mol.ACM(2, 1, 0, 180) # Make atom 2 form a 180 degree angle with atoms 1 and 0.
         """
 
         atidxs_to_move = self.findsubMol(idx1, idx2)
@@ -231,7 +220,8 @@ class mol3D:
             auto_populate_BO_dict : bool, optional
                 Populate bond order dictionary with newly added atom. Default is True.
 
-        >>> C_atom = atom3D('C',[1, 1, 1])
+        >>> complex_mol = mol3D()
+        >>> C_atom = atom3D('C', [1, 1, 1])
         >>> complex_mol.addAtom(C_atom) # Add carbon atom at cartesian position 1, 1, 1 to mol3D object.
         """
 
@@ -484,7 +474,13 @@ class mol3D:
             d : float
                 Bond distance in angstroms.
 
-        >>> complex_mol.BCM(1, 0, 1.5) # Set distance between atoms 0 and 1 to be 1.5 angstroms. Move atom 1.
+        >>> complex_mol = mol3D()
+        >>> complex_mol.addAtom(atom3D('H', [0, 0, 0]))
+        >>> complex_mol.addAtom(atom3D('H', [0, 0, 1]))
+        >>> complex_mol.BCM(1, 0, 0.7) # Set distance between atoms 0 and 1 to be 1.5 angstroms. Move atom 1.
+        >>> complex_mol.coordsvect()
+        array([[0. , 0. , 0. ],
+               [0. , 0. , 0.7]])
         """
 
         bondv = self.getAtom(idx1).distancev(self.getAtom(idx2))  # 1 - 2
@@ -702,9 +698,13 @@ class mol3D:
             #####
             obConversion.SetOutFormat('mol2')
             ss = obConversion.WriteString(OBMol)
-            # Update atom types from OBMol
-            lines = ss.split('ATOM\n')[1].split(
-                '@<TRIPOS>BOND')[0].split('\n')[:-1]
+            # Update atom types from OBMol.
+            if "UNITY_ATOM_ATTR" in ss: # If this section is present, it will be before the @<TRIPOS>BOND section.
+                lines = ss.split('ATOM\n')[1].split(
+                    '@<TRIPOS>UNITY_ATOM_ATTR')[0].split('\n')[:-1]
+            else:
+                lines = ss.split('ATOM\n')[1].split(
+                    '@<TRIPOS>BOND')[0].split('\n')[:-1]
             for i, line in enumerate(lines):
                 if '.' in line.split()[5]:
                     self.atoms[i].name = line.split()[5].split('.')[1]
@@ -1659,7 +1659,7 @@ class mol3D:
 
         """
 
-        if len(self.graph): # The graph exists.
+        if len(self.graph):  # The graph exists.
             nats = list(np.nonzero(np.ravel(self.graph[idx]))[0])
         else:
             ratom = self.getAtom(idx)
@@ -2573,25 +2573,33 @@ class mol3D:
                 The directory to which generated reaction coordinate
                 geoemtries are written, if writegeo=True.
 
-        >>> complex_mol.RCAngle(2, 1, 0, 90, 180, 0.5, True, 'rc_geometries') # Generate reaction coordinate
-        >>>             # geometries using the given structure by changing the angle between atoms 2, 1,
-        >>>             # and 0 from 90 degrees to 180 degrees in intervals of 0.5 degrees, and write the
-        >>>             # generated geometries to 'rc_geometries' directory.
-        >>> complex_mol.RCAngle(2, 1, 0, 180, 90, -0.5) # Generate reaction coordinates
-        >>>             # with the given geometry by changing the angle between atoms 2, 1, and 0 from
-        >>>             # 180 degrees to 90 degrees in intervals of 0.5 degrees, and the generated
-        >>>             # geometries will not be written to a directory.
+        >>> complex_mol = mol3D()
+        >>> complex_mol.addAtom(atom3D('O', [0, 0, 0]))
+        >>> complex_mol.addAtom(atom3D('H', [0, 0, 1]))
+        >>> complex_mol.addAtom(atom3D('H', [0, 1, 0]))
+
+        Generate reaction coordinate geometries using the given structure by changing the angle between atoms 2, 1,
+        and 0 from 90 degrees to 160 degrees in intervals of 10 degrees
+        >>> complex_mol.RCAngle(2, 1, 0, 90, 160, 10)
+        [mol3D(O1H2), mol3D(O1H2), mol3D(O1H2), mol3D(O1H2), mol3D(O1H2), mol3D(O1H2), mol3D(O1H2), mol3D(O1H2)]
+
+        Generate reaction coordinates with the given geometry by changing the angle between atoms 2, 1, and 0 from
+        160 degrees to 90 degrees in intervals of 10 degrees, and the generated geometries will not be written to
+        a directory.
+        >>> complex_mol.RCAngle(2, 1, 0, 160, 90, -10)
+        [mol3D(O1H2), mol3D(O1H2), mol3D(O1H2), mol3D(O1H2), mol3D(O1H2), mol3D(O1H2), mol3D(O1H2), mol3D(O1H2)]
         """
         if writegeo:
             os.mkdir(dir_name)
-            temp_list = []
-            for ang_val in np.arange(anglei, anglef+angleint, angleint):
-                temp_angle = mol3D()
-                temp_angle.copymol3D(self)
-                temp_angle.ACM(idx1, idx2, idx3, ang_val)
-                temp_list.append(temp_angle)
+        temp_list = []
+        for ang_val in np.arange(anglei, anglef+angleint, angleint):
+            temp_angle = mol3D()
+            temp_angle.copymol3D(self)
+            temp_angle.ACM(idx1, idx2, idx3, ang_val)
+            temp_list.append(temp_angle)
+            if writegeo:
                 temp_angle.writexyz(str(dir_name)+"/rc_"+str(str("{:.4f}".format(ang_val)))+'.xyz')
-            return temp_list
+        return temp_list
 
     def RCDistance(self, idx1, idx2, disti, distf, distint=0.05, writegeo=False, dir_name='rc_distance_geometries'):
         """
@@ -2618,26 +2626,34 @@ class mol3D:
                 The directory to which generated reaction coordinate
                 geoemtries are written if writegeo=True.
 
-        >>> complex_mol.RCDistance(1, 0, 1.0, 3.0, 0.01, True, 'rc_geometries') # Generate reaction coordinate
-        >>>             # geometries using the given structure by changing the distance between atoms 1 and 0
-        >>>             # from 1.0 to 3.0 angstrom (atom 1 is moved) in intervals of 0.01 angstrom, and write
-        >>>             # the generated geometries to 'rc_geometries' directory.
-        >>> complex_mol.RCDistance(1, 0, 3.0, 1.0, -0.02) # Generate reaction coordinates
-        >>>             # geometries using the given structure by changing the distance between atoms 1 and 0
-        >>>             # from 3.0 to 1.0 angstrom (atom 1 is moved) in intervals of 0.02 angstrom, and
-        >>>             # the generated geometries will not be written to a directory.
+        >>> complex_mol = mol3D()
+        >>> complex_mol.addAtom(atom3D('H', [0, 0, 0]))
+        >>> complex_mol.addAtom(atom3D('H', [0, 0, 1]))
+
+        Generate reaction coordinate geometries using the given structure by changing the distance between atoms 1 and 0
+        from 1.0 to 3.0 angstrom (atom 1 is moved) in intervals of 0.5 angstrom
+        >>> complex_mol.RCDistance(1, 0, 1.0, 3.0, 0.5)
+        [mol3D(H2), mol3D(H2), mol3D(H2), mol3D(H2), mol3D(H2)]
+
+        Generate reaction coordinates
+        geometries using the given structure by changing the distance between atoms 1 and 0
+        from 3.0 to 1.0 angstrom (atom 1 is moved) in intervals of 0.2 angstrom, and
+        the generated geometries will not be written to a directory.
+        >>> complex_mol.RCDistance(1, 0, 3.0, 1.0, -0.25)
+        [mol3D(H2), mol3D(H2), mol3D(H2), mol3D(H2), mol3D(H2), mol3D(H2), mol3D(H2), mol3D(H2), mol3D(H2)]
         """
 
         if writegeo:
             os.mkdir(dir_name)
-            temp_list = []
-            for dist_val in np.arange(disti, distf+distint, distint):
-                temp_dist = mol3D()
-                temp_dist.copymol3D(self)
-                temp_dist.BCM(idx1, idx2, dist_val)
-                temp_list.append(temp_dist)
+        temp_list = []
+        for dist_val in np.arange(disti, distf+distint, distint):
+            temp_dist = mol3D()
+            temp_dist.copymol3D(self)
+            temp_dist.BCM(idx1, idx2, dist_val)
+            temp_list.append(temp_dist)
+            if writegeo:
                 temp_dist.writexyz(str(dir_name)+"/rc_"+str(str("{:.4f}".format(dist_val)))+'.xyz')
-            return temp_list
+        return temp_list
 
     def returnxyz(self):
         """
@@ -4035,7 +4051,7 @@ class mol3D:
                         flag_lbd=True, debug=False, depth=3,
                         BondedOct=False, angle_ref=False):
         """
-        Get the ligand distortion by comparing each individule ligands in init_mol and opt_mol.
+        Get the ligand distortion by comparing each individual ligands in init_mol and opt_mol.
 
         Parameters
         ----------
@@ -4836,7 +4852,7 @@ class mol3D:
         return flag_oct, flag_list, dict_oct_info, flag_oct_loose, flag_list_loose
 
     def get_fcs(self, strict_cutoff=False, catom_list=None):
-        """ 
+        """
         Get first coordination shell of a transition metal complex.
 
         Parameters
@@ -4861,7 +4877,7 @@ class mol3D:
         return fcs
 
     def get_bo_dict_from_inds(self, inds):
-        """ 
+        """
         Recreate bo_dict with correct indices
 
         Parameters
@@ -4893,7 +4909,7 @@ class mol3D:
         return new_bo_dict
 
     def create_mol_with_inds(self, inds):
-        """ 
+        """
         Create molecule with indices.
 
         Parameters
@@ -4922,7 +4938,7 @@ class mol3D:
         return molnew
 
     def make_formula(self, latex=True):
-        """ 
+        """
         Get a chemical formula from the mol3D class instance.
 
         Parameters
@@ -4957,7 +4973,7 @@ class mol3D:
         return retstr
 
     def read_smiles(self, smiles, ff="mmff94", steps=2500):
-        """ 
+        """
         Read a smiles string and convert it to a mol3D class instance.
 
         Parameters
@@ -5032,7 +5048,7 @@ class mol3D:
         return smi
 
     def mols_symbols(self):
-        """ 
+        """
         Store symbols and their frequencies in symbols_dict attributes.
         """
         self.symbols_dict = {}
@@ -5043,7 +5059,7 @@ class mol3D:
                 self.symbols_dict[atom.symbol()] += 1
 
     def read_bonder_order(self, bofile):
-        """ 
+        """
         Get bond order information from file.
 
         Parameters
@@ -5087,7 +5103,7 @@ class mol3D:
                 self.bodavrg_dict.update({ii: np.mean(devi)})
 
     def read_charge(self, chargefile):
-        """ 
+        """
         Get charge information from file.
 
         Parameters
@@ -5108,7 +5124,7 @@ class mol3D:
             print(("chargefile does not exist.", chargefile))
 
     def get_mol_graph_det(self, oct=True, useBOMat=False):
-        """ 
+        """
         Get molecular graph determinant.
 
         Parameters
@@ -5517,7 +5533,7 @@ class mol3D:
         return results
 
     def getMLBondLengths(self):
-        """ 
+        """
         Outputs the metal-ligand bond lengths in the complex.
 
         Returns
@@ -5544,7 +5560,7 @@ class mol3D:
 
     @deprecated('Using this function might lead to inconsistent behavior.')
     def setAtoms(self, atoms):
-        """ 
+        """
         Set atoms of a mol3D class to atoms.
 
         Parameters
@@ -5556,7 +5572,7 @@ class mol3D:
         self.natoms = len(atoms)
 
     def setLoc(self, loc):
-        """ 
+        """
         Sets the conformation of an amino acid in the chain of a protein.
 
         Parameters

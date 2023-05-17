@@ -8,7 +8,10 @@
 import re
 
 import numpy
-import openbabel
+try:
+    from openbabel import openbabel  # version 3 style import
+except ImportError:
+    import openbabel  # fallback to version 2
 import copy
 from math import sqrt, pi
 from molSimplify.Classes.globalvars import globalvars
@@ -224,7 +227,7 @@ def get_basis_coefficients(point, basis):
     # for an arbitrary point in a given (complete)
     # basis set
     coefficients = numpy.linalg.solve(
-        numpy.transpose(numpy.asmatrix(basis)), point)
+        numpy.transpose(numpy.asarray(basis)), point)
     return coefficients
 ###################################
 

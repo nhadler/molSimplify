@@ -208,7 +208,7 @@ def startgen(argv, flag, gui, inputfile_str=None, write_files=True):
             args.gui = gui
             args.core = cc
             if (args.lig or args.coord or args.lignum or args.ligocc):  # constraints given?
-                args, emsg = constrgen(rundir, args, globs)
+                args, emsg = constrgen(rundir, args)
                 if emsg:
                     del args
                     return emsg
@@ -252,7 +252,7 @@ def startgen(argv, flag, gui, inputfile_str=None, write_files=True):
             print('building an equilibrium complex')
         for cc in corests:
             args.core = cc
-            emsg = multigenruns(rundir, args, globs, write_files=write_files)
+            emsg = multigenruns(rundir, args, write_files=write_files)
             if emsg:
                 print(emsg)
                 del args

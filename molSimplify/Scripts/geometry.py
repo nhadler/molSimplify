@@ -318,7 +318,7 @@ def dihedral(mol, idx1, idx2, idx3, idx4):
 
 
 def kabsch(mol0, mol1):
-    """Aligns (translates and rotates) two molecules to minimize RMSD using the Kabsch algorithm. 
+    """Aligns (translates and rotates) two molecules to minimize RMSD using the Kabsch algorithm.
 
         Parameters
         ----------
@@ -1210,7 +1210,7 @@ def best_fit_plane(coordinates):
             The vector perpendicular to the best fitting plane.
 
     """
-    # Solution from stack exchange    
+    # Solution from stack exchange
 
     # subtract out the centroid and take the SVD
     svd = np.linalg.svd(coordinates - np.mean(coordinates, axis=1, keepdims=True))

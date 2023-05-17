@@ -13,11 +13,14 @@ dependencies:
     - pytest
 
   # Optional
-  # GUI
+  # GUI / plotting
   - pyqt
   - qt
+  - matplotlib
   # Database
   - pymongo
+  # PDB interaction
+  - beautifulsoup4
   # Machine learning
   #- pytorch::pytorch
   #- hyperopt
@@ -25,3 +28,5 @@ dependencies:
   - theochem::iodata
   - xtb
   #- psi4::psi4
+  # molscontrol
+  - scikit-image

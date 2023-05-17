@@ -35,7 +35,7 @@ def checkinput(args, calctype="base"):
             args.core = ['fe']
         # convert full element name to symbol for cores:
         if args.core[0].lower() in list(metals_conv.keys()):
-            print(('swithcing core from ' + str(args.core) +
+            print(('switching core from ' + str(args.core) +
                    ' to ' + str(metals_conv[args.core[0].lower()])))
             args.core = [metals_conv[args.core[0].lower()]]
         if (args.core[0][0].upper()+args.core[0][1:].lower() in elementsbynum):
@@ -1111,8 +1111,8 @@ def parseinputs_basic(*p):
     parser.add_argument("-oxstate", help="oxidation state of the metal")
     parser.add_argument(
         "-coord", help="coordination such as 4,5,6", action="store_true")
-    parser.add_argument("-geometry", help="geometry", action="store_true")
-    parser.add_argument("-geo", help="geometry", action="store_true")
+    parser.add_argument("-geometry", help=f"geometry; currently available ones are {', '.join(getgeoms()[2])} which correspond to {', '.join(getgeoms()[1])}", action="store_true")
+    parser.add_argument("-geo", help=f"geometry; currently available ones are {', '.join(getgeoms()[2])} which correspond to {', '.join(getgeoms()[1])}", action="store_true")
     parser.add_argument("-lig", help="ligands to be included in complex; ligands.dict options display with command `molsimplify -h liganddict`")
     parser.add_argument(
         "-ligocc", help="number of corresponding ligands", action="store_true")  # e.g. 1,2,1
@@ -1420,7 +1420,7 @@ def parseinputs_inputgen(*p):
     parser.add_argument(
         "-ndfunc", help="NDFUNC option for diffuse functions in GAMESS e.g. 1", action="store_true")
     parser.add_argument(
-        "-sysoption", action="store_true", 
+        "-sysoption", action="store_true",
         help="extra arguments for $SYSTEM GAMESS block in syntax keyword value, e.g. MWORDS 20")
     parser.add_argument(
         "-ctrloption", action="store_true",
