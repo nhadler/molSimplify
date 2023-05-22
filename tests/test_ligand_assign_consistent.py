@@ -12,7 +12,7 @@ def test_six_monodentate():
     mol = mol3D()
     mol.readfromxyz(xyz_file)
 
-    liglist, ligdents, ligcons = ligand_breakdown(mol)
+    liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True)
     (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list,
      ax_con_int_list, eq_con_int_list, ax_con_list, eq_con_list,
      built_ligand_list) = ligand_assign_consistent(mol, liglist, ligdents,
@@ -44,7 +44,7 @@ def test_triple_bidentate():
     mol = mol3D()
     mol.readfromxyz(xyz_file)
 
-    liglist, ligdents, ligcons = ligand_breakdown(mol)
+    liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True)
     (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list,
      ax_con_int_list, eq_con_int_list, ax_con_list, eq_con_list,
      built_ligand_list) = ligand_assign_consistent(mol, liglist, ligdents,

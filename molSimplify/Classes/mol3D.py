@@ -3898,8 +3898,7 @@ class mol3D:
         return dict_catoms_shape, catoms_arr
 
     def match_lig_list(self, init_mol, catoms_arr=None,
-                       flag_loose=False, BondedOct=False,
-                       flag_lbd=True, debug=False, depth=3,
+                       BondedOct=False, flag_lbd=True, debug=False, depth=3,
                        check_whole=False, angle_ref=False):
         """
         Match the ligands of mol and init_mol by calling ligand_breakdown
@@ -3911,8 +3910,6 @@ class mol3D:
             catoms_arr : Nonetype, optional
                 Uses the catoms of the mol3D by default. User and overwrite this connection atom array by explicit input.
                 Default is Nonetype.
-            flag_loose : bool, optional
-                Flag for using loose cutoffs. Only used in Oct_inspection, not in geo_check. Default is False.
             BondedOct : bool, optional
                 Flag for bonding. Only used in Oct_inspection, not in geo_check. Default is False.
             flag_lbd : bool, optional
@@ -3958,8 +3955,8 @@ class mol3D:
                 self.init_mol_trunc.writexyz("init_trunc.xyz")
             # print("graph: ", self.init_mol_trunc.graph)
             liglist_init, ligdents_init, ligcons_init = ligand_breakdown(
-                self.init_mol_trunc)
-            liglist, ligdents, ligcons = ligand_breakdown(self.my_mol_trunc)
+                self.init_mol_trunc, BondedOct=BondedOct)
+            liglist, ligdents, ligcons = ligand_breakdown(self.my_mol_trunc, BondedOct=BondedOct)
             liglist_atom = [[self.my_mol_trunc.getAtom(x).symbol() for x in ele]
                             for ele in liglist]
             liglist_init_atom = [[self.init_mol_trunc.getAtom(x).symbol() for x in ele]
@@ -3974,7 +3971,6 @@ class mol3D:
             if debug:
                 print('Just inherit the ligand list from init structure.')
             liglist_init, ligdents_init, ligcons_init = ligand_breakdown(init_mol,
-                                                                         flag_loose=flag_loose,
                                                                          BondedOct=BondedOct)
             liglist, ligdents, ligcons = liglist_init[:
                                                       ], ligdents_init[:], ligcons_init[:]
@@ -4047,8 +4043,7 @@ class mol3D:
         return liglist_shifted, liglist_init, flag_match
 
     def ligand_comp_org(self, init_mol, catoms_arr=None,
-                        flag_deleteH=True, flag_loose=False,
-                        flag_lbd=True, debug=False, depth=3,
+                        flag_deleteH=True, flag_lbd=True, debug=False, depth=3,
                         BondedOct=False, angle_ref=False):
         """
         Get the ligand distortion by comparing each individual ligands in init_mol and opt_mol.
@@ -4062,8 +4057,6 @@ class mol3D:
                 Default is Nonetype.
             flag_deleteH : bool, optional,
                 Flag to delete Hs in ligand comparison. Default is True.
-            flag_loose : bool, optional
-                Flag for using loose cutoffs. Only used in Oct_inspection, not in geo_check. Default is False.
             BondedOct : bool, optional
                 Flag for bonding. Only used in Oct_inspection, not in geo_check. Default is False.
             flag_lbd : bool, optional
@@ -4086,7 +4079,6 @@ class mol3D:
         from molSimplify.Scripts.oct_check_mols import readfromtxt
         _, _, flag_match = self.match_lig_list(init_mol,
                                                catoms_arr=catoms_arr,
-                                               flag_loose=flag_loose,
                                                BondedOct=BondedOct,
                                                flag_lbd=flag_lbd,
                                                debug=debug,
@@ -4096,7 +4088,6 @@ class mol3D:
         # print("====whole molecule check finishes====")
         liglist, liglist_init, _ = self.match_lig_list(init_mol,
                                                        catoms_arr=catoms_arr,
-                                                       flag_loose=flag_loose,
                                                        BondedOct=BondedOct,
                                                        flag_lbd=flag_lbd,
                                                        debug=debug,
@@ -4377,7 +4368,7 @@ class mol3D:
     def IsOct(self, init_mol=None, dict_check=False,
               angle_ref=False, flag_catoms=False,
               catoms_arr=None, debug=False,
-              flag_loose=True, flag_lbd=True, BondedOct=True,
+              flag_lbd=True, BondedOct=True,
               skip=False, flag_deleteH=True,
               silent=False, use_atom_specific_cutoffs=True):
         """
@@ -4398,8 +4389,6 @@ class mol3D:
                 Default is Nonetype.
             debug : bool, optional
                 Flag for extra printout. Default is False.
-            flag_loose : bool, optional
-                Flag for using loose cutoffs. Only used in Oct_inspection, not in geo_check. Default is False.
             flag_lbd : bool, optional
                 Flag for using ligand breakdown on the optimized geometry. If False, assuming equivalent index to initial geo.
                 Default is True.
@@ -4466,7 +4455,6 @@ class mol3D:
                         init_mol.copymol3D(self)
                     if 'lig_distort' not in skip:
                         self.ligand_comp_org(init_mol=init_mol,
-                                             flag_loose=flag_loose,
                                              flag_lbd=flag_lbd,
                                              debug=debug,
                                              BondedOct=BondedOct,
@@ -4628,7 +4616,7 @@ class mol3D:
             return flag_oct, flag_list, dict_oct_info, catoms_arr
 
     def Oct_inspection(self, init_mol=None, catoms_arr=None, dict_check=False,
-                       std_not_use=[], angle_ref=False, flag_loose=True, flag_lbd=False,
+                       std_not_use=[], angle_ref=False, flag_lbd=False,
                        dict_check_loose=False, BondedOct=True, debug=False):
         """
         Used to track down the changing geo_check metrics in a DFT geometry optimization.
@@ -4647,8 +4635,6 @@ class mol3D:
                 Geometry checks to skip. Default is False.
             angle_ref : bool, optional
                 Reference list of list for the expected angles (A-metal-B) of each connection atom.
-            flag_loose : bool, optional
-                Flag for using loose cutoffs. Only used in Oct_inspection, not in geo_check. Default is False.
             flag_lbd : bool, optional
                 Flag for using ligand breakdown on the optimized geometry. If False, assuming equivalent index to initial geo.
                 Default is True.
@@ -4709,7 +4695,6 @@ class mol3D:
                     raise ValueError(
                         "initial and current geometry does not match in atom ordering!")
                 dict_lig_distort = self.ligand_comp_org(init_mol=init_mol,
-                                                        flag_loose=flag_loose,
                                                         flag_lbd=flag_lbd,
                                                         catoms_arr=catoms_arr,
                                                         debug=debug,
@@ -4739,7 +4724,7 @@ class mol3D:
         return flag_oct, flag_list, dict_oct_info, flag_oct_loose, flag_list_loose
 
     def Structure_inspection(self, init_mol=None, catoms_arr=None, num_coord=5, dict_check=False,
-                             std_not_use=[], angle_ref=False, flag_loose=True, flag_lbd=False,
+                             std_not_use=[], angle_ref=False, flag_lbd=False,
                              dict_check_loose=False, BondedOct=True, debug=False):
         """
         Used to track down the changing geo_check metrics in a DFT geometry optimization. Specifically
@@ -4760,8 +4745,6 @@ class mol3D:
                 Geometry checks to skip. Default is False.
             angle_ref : bool, optional
                 Reference list of list for the expected angles (A-metal-B) of each connection atom.
-            flag_loose : bool, optional
-                Flag for using loose cutoffs. Only used in Oct_inspection, not in geo_check. Default is False.
             flag_lbd : bool, optional
                 Flag for using ligand breakdown on the optimized geometry. If False, assuming equivalent index to initial geo.
                 Default is True.
@@ -4822,7 +4805,6 @@ class mol3D:
                     raise ValueError(
                         "initial and current geometry does not match in atom ordering!")
                 dict_lig_distort = self.ligand_comp_org(init_mol=init_mol,
-                                                        flag_loose=flag_loose,
                                                         flag_lbd=flag_lbd,
                                                         catoms_arr=catoms_arr,
                                                         debug=debug,
@@ -5191,7 +5173,7 @@ class mol3D:
             safedet = str(det)[0:12]
         return safedet
 
-    def get_symmetry_denticity(self, return_eq_catoms=False):
+    def get_symmetry_denticity(self, return_eq_catoms=False, BondedOct=False):
         """
         Get symmetry class of molecule.
 
@@ -5199,6 +5181,8 @@ class mol3D:
         ----------
             return_eq_catoms : bool, optional
                 Flag for if equatorial atoms should be returned. Default is False.
+            BondedOct : bool, optional
+                Flag for bonding. Only used in Oct_inspection, not in geo_check. Default is False.
 
         Returns
         -------
@@ -5219,7 +5203,7 @@ class mol3D:
 
         # self.writexyz("test.xyz")
         from molSimplify.Classes.ligand import ligand_breakdown, ligand_assign_consistent, get_lig_symmetry
-        liglist, ligdents, ligcons = ligand_breakdown(self)
+        liglist, ligdents, ligcons = ligand_breakdown(self, BondedOct=BondedOct)
         flat_eq_ligcons = []
         try:
             _, _, _, _, _, _, _, eq_con_list, _ = ligand_assign_consistent(
