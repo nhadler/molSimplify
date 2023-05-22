@@ -4616,7 +4616,7 @@ class mol3D:
             return flag_oct, flag_list, dict_oct_info, catoms_arr
 
     def Oct_inspection(self, init_mol=None, catoms_arr=None, dict_check=False,
-                       angle_ref=False, flag_lbd=False, dict_check_loose=False, 
+                       angle_ref=False, flag_lbd=False, dict_check_loose=False,
                        BondedOct=True, debug=False):
         """
         Used to track down the changing geo_check metrics in a DFT geometry optimization.
