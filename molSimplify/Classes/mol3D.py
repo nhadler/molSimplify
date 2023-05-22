@@ -4616,8 +4616,8 @@ class mol3D:
             return flag_oct, flag_list, dict_oct_info, catoms_arr
 
     def Oct_inspection(self, init_mol=None, catoms_arr=None, dict_check=False,
-                       std_not_use=[], angle_ref=False, flag_lbd=False,
-                       dict_check_loose=False, BondedOct=True, debug=False):
+                       angle_ref=False, flag_lbd=False, dict_check_loose=False, 
+                       BondedOct=True, debug=False):
         """
         Used to track down the changing geo_check metrics in a DFT geometry optimization.
         Catoms_arr always specified.
@@ -4631,8 +4631,6 @@ class mol3D:
                 Default is Nonetype.
             dict_check : dict, optional
                 The cutoffs of each geo_check metrics we have. Default is False
-            std_not_use : list, optional
-                Geometry checks to skip. Default is False.
             angle_ref : bool, optional
                 Reference list of list for the expected angles (A-metal-B) of each connection atom.
             flag_lbd : bool, optional
@@ -4724,8 +4722,7 @@ class mol3D:
         return flag_oct, flag_list, dict_oct_info, flag_oct_loose, flag_list_loose
 
     def Structure_inspection(self, init_mol=None, catoms_arr=None, num_coord=5, dict_check=False,
-                             std_not_use=[], angle_ref=False, flag_lbd=False,
-                             dict_check_loose=False, BondedOct=True, debug=False):
+                             angle_ref=False, flag_lbd=False, dict_check_loose=False, BondedOct=True, debug=False):
         """
         Used to track down the changing geo_check metrics in a DFT geometry optimization. Specifically
         for a square pyramidal structure. Catoms_arr always specified.
@@ -4741,8 +4738,6 @@ class mol3D:
                 The metal coordination number.
             dict_check : dict, optional
                 The cutoffs of each geo_check metrics we have. Default is False
-            std_not_use : list, optional
-                Geometry checks to skip. Default is False.
             angle_ref : bool, optional
                 Reference list of list for the expected angles (A-metal-B) of each connection atom.
             flag_lbd : bool, optional
