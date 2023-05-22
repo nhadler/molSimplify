@@ -361,7 +361,7 @@ def prep_ligand_breakdown(outfile_path, dissociated_ligand_charges={}, dissociat
     mol = mol3D()
     mol.readfromxyz(os.path.join(base, 'scr', 'optimized.xyz'))
 
-    ligand_idxs, _, _ = ligand_breakdown(mol, silent=True)
+    ligand_idxs, _, _ = ligand_breakdown(mol, silent=True, BondedOct=True) # Complex is assumed to be octahedral
 
     ligand_syms = []
     for ii in ligand_idxs:

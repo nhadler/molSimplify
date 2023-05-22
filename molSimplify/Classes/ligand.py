@@ -261,15 +261,13 @@ class ligand:
         return percent_buried
 
 
-def ligand_breakdown(mol, flag_loose=False, BondedOct=False, silent=True, transition_metals_only=True):
+def ligand_breakdown(mol, BondedOct=False, silent=True, transition_metals_only=True):
     """Extract axial and equatorial components of a octahedral complex.
 
     Parameters
     ----------
         mol : mol3D
             mol3D class instance for the complex.
-        flag_loose : bool, optional
-            Use loose flags to determine bonding. Default is False.
         BondedOct : bool, optional
             Enforce octahedral bonding. Default is False.
         silent : bool, optional
@@ -288,7 +286,7 @@ def ligand_breakdown(mol, flag_loose=False, BondedOct=False, silent=True, transi
     # this function takes an octahedral
     # complex and returns ligands
     metal_index = mol.findMetal(transition_metals_only=transition_metals_only)[0]
-    bondedatoms = mol.getBondedAtomsSmart(metal_index, oct=True)
+    bondedatoms = mol.getBondedAtomsSmart(metal_index, oct=BondedOct)
     # print('!!!!!boundatoms', bondedatoms)
     # print('from get oct' + str(bondedatoms))
     # print('***\n')
@@ -1971,7 +1969,7 @@ def get_lig_symmetry(mol, loud=False, htol=3):
             ligand symmetry plane
 
     """
-    liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True, flag_loose=True)
+    liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True)
     ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, \
         ax_con_int_list, eq_con_int_list, ax_con_list, \
         eq_con_list, built_ligand_list = ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=loud)

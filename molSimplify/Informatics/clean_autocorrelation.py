@@ -399,7 +399,7 @@ def find_ligand_autocorrelations_oct(mol, prop, loud, depth, name=False,
     # with types: eq/ax_ligand_list list of mol3D
     #             eq/ax_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
     if not custom_ligand_dict:
-        liglist, ligdents, ligcons = ligand_breakdown(mol)
+        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=oct)
         (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list,
          eq_con_int_list, ax_con_list, eq_con_list, built_ligand_list) = ligand_assign(
             mol, liglist, ligdents, ligcons, loud, name=False)
@@ -459,7 +459,7 @@ def find_ligand_deltametrics_oct(mol, prop, loud, depth, name=False, oct=True, c
     # and returns deltametrics for
     # the axial an equatorial ligands
     if not custom_ligand_dict:
-        liglist, ligdents, ligcons = ligand_breakdown(mol)
+        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=oct)
         (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list,
          eq_con_int_list, ax_con_list, eq_con_list, built_ligand_list) = ligand_assign(
             mol, liglist, ligdents, ligcons, loud, name=False)
@@ -496,7 +496,7 @@ def find_mc_eq_ax_deltametrics_oct(mol, prop, loud, depth, name=False, oct=True,
                                    func=deltametric_catoms):
     # For octahedral complexes only.
     # Calculate mc/ax, mc/eq deltametrics.
-    liglist, ligdents, ligcons = ligand_breakdown(mol)
+    liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=oct)
     (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list,
      eq_con_int_list, ax_con_list, eq_con_list, built_ligand_list) = ligand_assign(
         mol, liglist, ligdents, ligcons, loud, name=False)
@@ -514,7 +514,7 @@ def find_mc_eq_ax_autocorrelation_oct(mol, prop, loud, depth, name=False, oct=Tr
                                       func=autocorrelation_catoms, modifier=False):
     # For octahedral complexes only.
     # Calculate mc/ax, mc/eq deltametrics.
-    liglist, ligdents, ligcons = ligand_breakdown(mol)
+    liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=oct)
     (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list,
      eq_con_int_list, ax_con_list, eq_con_list, built_ligand_list) = ligand_assign(
         mol, liglist, ligdents, ligcons, loud, name=False)
