@@ -841,8 +841,10 @@ def compute_adj_matrix(distance_mat,allatomtypes,wiggle_room=1,handle_overlap=Fa
                 print(f"Atomic overlap involving atom {i} and {i+j+1}! Zero-indexed.")
                 print(f"dist is {dist} and the cutoff is {min(COVALENT_RADII[e1] , COVALENT_RADII[e2])}")
                 if handle_overlap:
-                    overlap_atoms.append(i+j+1) # The atom with index i+j+1 overlapped with another atom.
-                    # Currently, code does not consider whether atom i is already in overlap_atoms and will be removed.
+                    # Check whether atom i is already in overlap_atoms and will be removed.
+                    # If so, no need to remove an atom that overlaps with atom i.
+                    if i not in overlap_atoms:
+                        overlap_atoms.append(i+j+1) # The atom with index i+j+1 overlapped with another atom.
                 else:
                     print('Overlapping atoms! Error')
                     raise NotImplementedError # Exit the function.
@@ -1196,7 +1198,7 @@ def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
     # Assuming that the cif does not have graph information of the structure.
     distance_mat = compute_distance_matrix3(cell_v,cart_coords)
     try:
-        adj_matrix, overlap_atoms = compute_adj_matrix(distance_mat, allatomtypes, wiggle_room=wiggle_room, handle_overlap=False)
+        adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes, wiggle_room=wiggle_room, handle_overlap=False)
     except NotImplementedError:
         raise Exception("Failed due to atomic overlap")
 
