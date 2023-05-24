@@ -843,7 +843,7 @@ def compute_adj_matrix(distance_mat,allatomtypes,wiggle_room=1,handle_overlap=Fa
                 if handle_overlap:
                     # Check whether atom i is already in overlap_atoms and will be removed.
                     # If so, no need to remove an atom that overlaps with atom i.
-                    if i not in overlap_atoms: 
+                    if i not in overlap_atoms:
                         overlap_atoms.append(i+j+1) # The atom with index i+j+1 overlapped with another atom.
                 else:
                     print('Overlapping atoms! Error')
