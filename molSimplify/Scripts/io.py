@@ -718,6 +718,8 @@ def lig_load(userligand: str, licores: Optional[dict] = None) -> Tuple[Any, str]
             lig.OBMol = lig.getOBMol(flig, 'xyzf')
             # Set charge to last entry in ligands.dict
             lig.OBMol.SetTotalCharge(int(dbentry[-1][0]))
+        elif ('.mol2' in flig):
+            lig.OBMol = lig.getOBMol(flig, 'mol2f')
         elif ('.mol' in flig):
             lig.OBMol = lig.getOBMol(flig, 'molf')
         elif ('.smi' in flig):

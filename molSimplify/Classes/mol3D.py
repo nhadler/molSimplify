@@ -699,7 +699,7 @@ class mol3D:
             obConversion.SetOutFormat('mol2')
             ss = obConversion.WriteString(OBMol)
             # Update atom types from OBMol.
-            if "UNITY_ATOM_ATTR" in ss: # If this section is present, it will be before the @<TRIPOS>BOND section.
+            if "UNITY_ATOM_ATTR" in ss:  # If this section is present, it will be before the @<TRIPOS>BOND section.
                 lines = ss.split('ATOM\n')[1].split(
                     '@<TRIPOS>UNITY_ATOM_ATTR')[0].split('\n')[:-1]
             else:
