@@ -402,7 +402,7 @@ class mol3D:
 
     def count_specific_atoms(self, atom_types=['x', 'X']):
         """
-        Count the number of atoms, excluding certain atoms.
+        Count the number of atoms, including only certain atoms.
 
         Parameters
         ----------
