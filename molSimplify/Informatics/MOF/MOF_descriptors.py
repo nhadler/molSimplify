@@ -832,11 +832,9 @@ def detect_1D_rod(SBU_list, molcif, allatomtypes, cell, logpath, name):
     is_1d_rod = False
     for i in range(n_components):
         component_indices = np.where(labels_components == i)[0]
-        # print(f'component_indices is {component_indices}')
         component_cart_coords = cart_coords_sbus_with_shifts[component_indices]
 
         pairwise_atom_distances = dist_mat_comp(component_cart_coords)
-        # print(f'np.max(pairwise_atom_distances) is {np.max(pairwise_atom_distances)}')
         if np.max(pairwise_atom_distances) > min_vec_len:
             # In this case, an SBU likely stretches out longer than a unit cell
             is_1d_rod = True
@@ -912,7 +910,6 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
     Simultaneously prepare mol3D class for MOF for future RAC featurization (molcif).
     """""""""
     cpar, allatomtypes, fcoords = readcif(data)
-    print(f'cpar is {cpar}')
     cell = mkcell(cpar)
     cart_coords = fractional2cart(fcoords, cell)
     name = os.path.basename(data).replace(".cif", "")
