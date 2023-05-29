@@ -1,6 +1,7 @@
 import os
 import re
 import copy
+import itertools
 from scipy import sparse
 import numpy as np
 import pandas as pd
@@ -23,6 +24,7 @@ from molSimplify.Informatics.MOF.PBC_functions import (
     compute_adj_matrix,
     compute_distance_matrix3,
     compute_image_flag,
+    frac_coord,
     fractional2cart,
     get_closed_subgraph,
     include_extra_shells,
@@ -513,7 +515,340 @@ def failure_response(path, failure_str):
     write2file(path,"/FailedStructures.log",failure_str)
     return full_names, full_descriptors
 
-def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=False, wiggle_room=1, max_num_atoms=2000, get_sbu_linker_bond_info=False):
+def bond_information_write(linker_list, linkeranchors_superlist, adj_matrix, molcif, cell, path):
+    """
+    Attains and writes bond information about the bonds between SBUs and linkers.
+
+    Parameters
+    ----------
+    linker_list : list of lists of ints
+        Each inner list is its own separate linker. The ints are the atom indices of that linker. Length is # of linkers.
+    linkeranchors_superlist : list of set
+        Coordinating atoms of linkers. Number of sets is the number of linkers.
+    adj_matrix : scipy.sparse.csr.csr_matrix
+        1 represents a bond, 0 represents no bond. Shape is (number of atoms, number of atoms).
+    molcif : molSimplify.Classes.mol3D.mol3D
+        The cell of the cif file being analyzed.
+    cell : numpy.ndarray
+        The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
+    path : str
+        The parent path to which output will be written.
+
+    Returns
+    -------
+    None
+
+    """
+
+    bond_length_list = []
+    scaled_bond_length_list = []
+    for linker_idx, linker_atoms_list in enumerate(linker_list): # Iterate over all linkers
+        # Getting the connection points of the linker
+        for anchor_super_idx in range(len(linkeranchors_superlist)):
+            if list(linkeranchors_superlist[anchor_super_idx])[0] in linker_atoms_list: # Any anchor index in the current entry of linkeranchors_superlist is in the current linker's indices
+                linker_connection_points = list(linkeranchors_superlist[anchor_super_idx]) # Indices of the connection points in the linker
+        for con_point in linker_connection_points:
+            connected_atoms = adj_matrix.todense()[con_point,:]
+            connected_atoms = np.ravel(connected_atoms)
+
+            connected_atoms = np.nonzero(connected_atoms)[0] # The indices of atoms connected to atom with index con_point.
+
+            for con_atom in connected_atoms:
+                con_atom3D = molcif.getAtom(con_atom) # atom3D of an atom connected to the connection point
+                con_point3D = molcif.getAtom(con_point) # atom3D of the connection point on the linker
+                # Check if the atom is a metal
+                if con_atom3D.ismetal(transition_metals_only=False):
+                    # Finding the optimal unit cell shift
+                    molcif_cart_coords = np.array([atom.coords() for atom in molcif.atoms])
+                    fcoords=frac_coord(molcif_cart_coords,cell) # fractional coordinates
+                    fcoords[con_atom]+=compute_image_flag(cell,fcoords[con_point],fcoords[con_atom]) # Shifting the connected metal
+                    ccoords = fractional2cart(fcoords, cell)
+                    shifted_con_atom3D = atom3D(Sym=con_atom3D.symbol(), xyz=list(ccoords[con_atom,:]))
+
+                    bond_len = shifted_con_atom3D.distance(con_point3D)
+                    con_atom_radius = COVALENT_RADII[shifted_con_atom3D.symbol()]
+                    con_point_radius = COVALENT_RADII[con_point3D.symbol()]
+                    relative_bond_len = bond_len / (con_atom_radius + con_point_radius)
+
+                    bond_length_list.append(bond_len)
+                    scaled_bond_length_list.append(relative_bond_len)
+
+    mean_bond_len = np.mean(bond_length_list) # Average over all SBU-linker atom to atom connections
+    mean_scaled_bond_len = np.mean(scaled_bond_length_list) # Average over all SBU-linker atom to atom connections
+    std_bond_len = np.std(bond_length_list)
+    std_scaled_bond_len = np.std(scaled_bond_length_list)
+
+    with open(f"{path}/sbu_linker_bondlengths.txt", "w") as f:
+        f.write(f'Mean bond length: {mean_bond_len}\n')
+        f.write(f'Mean scaled bond length: {mean_scaled_bond_len}\n')
+        f.write(f'Stdev bond length: {std_bond_len}\n')
+        f.write(f'Stdev scaled bond length: {std_scaled_bond_len}')    
+
+def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell, allatomtypes, name):
+    """
+    Writes XYZ files for all SBUs provided, with each SBU surrounded by all linkers coordinated to it. 
+
+    Parameters
+    ----------
+    SBU_list : list of lists of ints
+        Each inner list is its own separate SBU. The ints are the atom indices of that SBU. Length is # of SBUs.
+    linker_list : list of lists of ints
+        Each inner list is its own separate linker. The ints are the atom indices of that linker. Length is # of linkers.
+    sbupath : str
+        The path to which SBU information is written.
+    molcif : molSimplify.Classes.mol3D.mol3D
+        The cell of the cif file being analyzed.
+    adj_matrix : scipy.sparse.csr.csr_matrix
+        1 represents a bond, 0 represents no bond. Shape is (number of atoms, number of atoms).
+    cell : numpy.ndarray
+        The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
+    allatomtypes : list of str
+        The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms.
+    name : str
+        The name of the cif being analyzed.
+
+    Returns
+    -------
+    None
+
+    """
+    
+    for SBU_idx, atoms_sbu in enumerate(SBU_list):
+        # atoms_sbu are the indices of atoms in the SBU with index SBU_idx
+
+        connection_atoms = [] # List of the coordinating atoms of each of the connected linkers. Length is # of connected linkers.
+        atoms_connected_linkers = [] # List of the atoms of each of the connected linkers. Length is # of connected linkers
+        for atoms_linker in linker_list: 
+            atoms_in_common = list(set(atoms_sbu).intersection(set(atoms_linker)))
+            if len(atoms_in_common) != 0:
+                connection_atoms.append(atoms_in_common)
+                atoms_connected_linkers.append(atoms_linker)
+
+        # Generating an XYZ of the SBU surrounded by linkers.
+        xyz_path = f'{sbupath}/{name}_sbu_{SBU_idx}_with_linkers.xyz'                
+        # For each atom index in an inner list in connection_atoms, build out the corresponding linker (inner list) in atoms_connected_linkers
+        
+        ### Start with the atoms of the SBU
+        surrounded_sbu = mol3D() # SBU surrounded by linkers
+        starting_atom_idx = atoms_sbu[0]
+        added_idx = [starting_atom_idx] # This list will contain the SBU indices that no longer need to be considered for branching.
+        starting_atom3D = molcif.getAtom(starting_atom_idx)
+        surrounded_sbu.addAtom(starting_atom3D)
+        atom3D_dict = {starting_atom_idx: starting_atom3D} # atom3D objects of the SBU
+
+        dense_adj_mat = np.array(adj_matrix.todense())    
+
+        # Dictionary. Keys are ints (indices of atoms), values are lists of indices of atoms
+        # The key is the atom relative to which the new atom must be positioned.
+        atoms_connected_to_start = list(np.nonzero(dense_adj_mat[starting_atom_idx])[0])
+        atoms_connected_to_start = [i for i in atoms_connected_to_start if i in atoms_sbu]
+        sbu_atoms_to_branch_from = {starting_atom_idx: atoms_connected_to_start}
+        sbu_atoms_to_branch_from_keys = [starting_atom_idx]
+
+
+        while len(sbu_atoms_to_branch_from_keys) != 0:
+
+            # Take from the first key, i.e. [0], of the dictionary
+            my_key = sbu_atoms_to_branch_from_keys[0]
+            neighbor_idx = sbu_atoms_to_branch_from[my_key][0] # Grabbing a neighbor to calculate its position.
+
+            # Remove that index from further consideration
+            sbu_atoms_to_branch_from[my_key].remove(neighbor_idx)
+
+            # If the list associated with a key is now empty, remove the key.
+            if len(sbu_atoms_to_branch_from[my_key]) == 0:
+                sbu_atoms_to_branch_from_keys.remove(my_key) # sbu_atoms_to_branch_from_keys = [i for i in sbu_atoms_to_branch_from_keys if i != my_key]
+                sbu_atoms_to_branch_from.pop(my_key)
+            
+            if neighbor_idx in added_idx:
+                continue # Skip this index if it has already been added
+
+            # Getting the optimal position of the neighbor, relative to my_key
+            fcoords_my_key = frac_coord(atom3D_dict[my_key].coords(), cell)
+
+            fcoords_neighbor_initial = frac_coord(molcif.getAtom(neighbor_idx).coords(), cell)
+            fcoords_neighbor = fcoords_neighbor_initial + compute_image_flag(cell, fcoords_my_key, fcoords_neighbor_initial)
+            coords_neighbor = fractional2cart(fcoords_neighbor, cell)
+            symbol_neighbor = allatomtypes[neighbor_idx] # Element
+            new_atom3D = atom3D(Sym=symbol_neighbor, xyz=coords_neighbor)
+            surrounded_sbu.addAtom(new_atom3D)
+
+            atom3D_dict[neighbor_idx] = new_atom3D
+            added_idx.append(neighbor_idx)
+            atoms_connected_to_neighbor = list(np.nonzero(dense_adj_mat[neighbor_idx])[0])
+            atoms_connected_to_neighbor_to_check = [i for i in atoms_connected_to_neighbor if i not in added_idx and i in atoms_sbu]
+            if len(atoms_connected_to_neighbor_to_check) > 0:
+                sbu_atoms_to_branch_from[neighbor_idx] = atoms_connected_to_neighbor_to_check
+                sbu_atoms_to_branch_from_keys.append(neighbor_idx)
+        
+
+        ### Next, add each of the linkers
+        # Using atom3D_dict, connection_atoms, and atoms_connected_linkers
+        for linker_idx in range(len(connection_atoms)):
+            # For each linker, build out the linker in surrounded_sbu object
+
+            linker_indices = atoms_connected_linkers[linker_idx]
+
+            for starting_atom_idx in connection_atoms[linker_idx]:
+                atom3D_dict_copy = atom3D_dict.copy()
+                added_idx = [starting_atom_idx]
+                starting_atom3D = atom3D_dict_copy[starting_atom_idx] # Position of the starting atom in the SBU, which has been built by this point in the code.
+
+                atoms_connected_to_start = list(np.nonzero(dense_adj_mat[starting_atom_idx])[0])
+                atoms_connected_to_start = [i for i in atoms_connected_to_start if i in linker_indices]
+                linker_atoms_to_branch_from = {starting_atom_idx: atoms_connected_to_start}
+                linker_atoms_to_branch_from_keys = [starting_atom_idx]
+
+                while len(linker_atoms_to_branch_from_keys) != 0:
+
+                    # Take from the first key, i.e. [0], of the dictionary
+                    my_key = linker_atoms_to_branch_from_keys[0]
+                    neighbor_idx = linker_atoms_to_branch_from[my_key][0] # Grabbing a neighbor to calculate its position.
+
+                    # Remove that index from further consideration
+                    linker_atoms_to_branch_from[my_key].remove(neighbor_idx)
+
+                    # If the list associated with a key is now empty, remove the key.
+                    if len(linker_atoms_to_branch_from[my_key]) == 0:
+                        linker_atoms_to_branch_from_keys.remove(my_key) 
+                        linker_atoms_to_branch_from.pop(my_key)
+                    
+                    if neighbor_idx in added_idx:
+                        continue # Skip this index if it has already been added
+
+                    # Getting the optimal position of the neighbor, relative to my_key
+                    fcoords_my_key = frac_coord(atom3D_dict_copy[my_key].coords(), cell)
+
+                    fcoords_neighbor_initial = frac_coord(molcif.getAtom(neighbor_idx).coords(), cell)
+                    fcoords_neighbor = fcoords_neighbor_initial + compute_image_flag(cell, fcoords_my_key, fcoords_neighbor_initial)
+                    coords_neighbor = fractional2cart(fcoords_neighbor, cell)
+                    symbol_neighbor = allatomtypes[neighbor_idx] # Element
+                    new_atom3D = atom3D(Sym=symbol_neighbor, xyz=coords_neighbor)
+
+                    # Only add the new atom if it does not overlap with an atom that is already in surrounded sbu
+                    # If there is overlap, then the atom was already added in the SBU
+                    min_dist = 100 # Starting from a big number that will be replaced in the subsequent lines
+                    num_atoms = surrounded_sbu.getNumAtoms()
+                    for i in range(num_atoms):
+                        pair_dist = new_atom3D.distance(surrounded_sbu.getAtom(i))
+                        if pair_dist < min_dist:
+                            min_dist = pair_dist
+                    if min_dist > 0.1:
+                        surrounded_sbu.addAtom(new_atom3D)
+
+                    atom3D_dict_copy[neighbor_idx] = new_atom3D
+                    added_idx.append(neighbor_idx)
+                    atoms_connected_to_neighbor = list(np.nonzero(dense_adj_mat[neighbor_idx])[0])
+                    atoms_connected_to_neighbor_to_check = [i for i in atoms_connected_to_neighbor if i not in added_idx and i in linker_indices]
+                    if len(atoms_connected_to_neighbor_to_check) > 0:
+                        linker_atoms_to_branch_from[neighbor_idx] = atoms_connected_to_neighbor_to_check
+                        linker_atoms_to_branch_from_keys.append(neighbor_idx)
+
+
+        surrounded_sbu.writexyz(xyz_path)    
+
+def dist_mat_comp(X):
+    """
+    Computes the pairwise distances between the rows of the coordinate information X.
+
+    Parameters
+    ----------
+    X : numpy.ndarray
+        Cartesian coordinate information for atoms. Shape is (number of atoms, 3).
+
+    Returns
+    -------
+    dist_mat : numpy.ndarray
+        Pairwise distances between all atoms. Shape is (number of atoms, number of atoms).
+
+    """
+
+    # Assumes X is an np array of shape (number of atoms, 3). The Cartesian coordinates of atoms.
+    # Does not do any unit cell shifts
+    # Makes use of numpy vectorization to speed things up versus a for loop approach.
+    X1 = np.expand_dims(X, axis=1)
+    X2 = np.expand_dims(X, axis=0)
+    Z = X1 - X2
+    dist_mat = np.sqrt(np.sum(np.square(Z), axis=-1)) # The pairwise distance matrix. Distances between all atoms.
+    return dist_mat
+
+def detect_1D_rod(SBU_list, molcif, allatomtypes, cell, logpath, name):
+    """
+    Writes XYZ files for all SBUs provided, with each SBU surrounded by all linkers coordinated to it. 
+
+    Parameters
+    ----------
+    SBU_list : list of lists of ints
+        Each inner list is its own separate SBU. The ints are the atom indices of that SBU. Length is # of SBUs.
+    molcif : molSimplify.Classes.mol3D.mol3D
+        The cell of the cif file being analyzed.
+    allatomtypes : list of str
+        The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms.
+    cell : numpy.ndarray
+        The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
+    logpath : str
+        The path to which log files are written.
+    name : str
+        The name of the cif being analyzed.
+
+    Returns
+    -------
+    None
+
+    """
+
+    sbu_atom_indices = []
+    for i in SBU_list:
+        # i is the indices in a given SBU
+        sbu_atom_indices.extend(i)
+    sbu_atom_indices.sort()
+
+    # allatomtypes_sbus_initial = [i for idx, i in enumerate(allatomtypes) if idx in sbu_atom_indices]
+    cart_coords_sbus_initial = [molcif.getAtom(i).coords() for i in sbu_atom_indices]
+    allatomtypes_sbus_with_shifts = [] # Will contain the symbols of all SBU atoms, across the 8 unit cell shifts
+    cart_coords_sbus_with_shifts = [] # Will contain the cartesian coordinates of all SBU atoms, across the 8 unit cell shifts
+
+    # Applying all possible unit cell shifts in 0, 1, for all SBU atoms
+    for idx, i in enumerate(sbu_atom_indices):
+        supercells = np.array(list(itertools.product((0, 1), repeat=3)))
+        fractional_coords = frac_coord(cart_coords_sbus_initial[idx], cell)
+        fractional_coords_shifts = fractional_coords + supercells # 8 versions of fractional_coords, shifted some cells over in different directions
+        for j in fractional_coords_shifts:
+            allatomtypes_sbus_with_shifts.append(allatomtypes[i])
+            cart_coords_sbus_with_shifts.append(fractional2cart(j, cell))
+
+    cart_coords_sbus_with_shifts = np.array(cart_coords_sbus_with_shifts) # Converting nested list to a numpy array
+
+    distance_mat = dist_mat_comp(cart_coords_sbus_with_shifts)
+    adj_matrix, _ = compute_adj_matrix(distance_mat,allatomtypes_sbus_with_shifts, handle_overlap=True) # Ignoring overlap
+
+    # For each connected component, see how long it is
+    adj_matrix = sparse.csr_matrix(adj_matrix)
+    n_components, labels_components = sparse.csgraph.connected_components(csgraph=adj_matrix, directed=False, return_labels=True)
+
+    # What is the shortest cell vector?
+    min_vec_len = np.min(np.linalg.norm(cell, axis=1)) # Equivalent to min(cpar[:3])
+
+    is_1d_rod = False
+    for i in range(n_components):
+        component_indices = np.where(labels_components == i)[0]
+        # print(f'component_indices is {component_indices}')
+        component_cart_coords = cart_coords_sbus_with_shifts[component_indices]
+
+        pairwise_atom_distances = dist_mat_comp(component_cart_coords)
+        # print(f'np.max(pairwise_atom_distances) is {np.max(pairwise_atom_distances)}')
+        if np.max(pairwise_atom_distances) > min_vec_len:
+            # In this case, an SBU likely stretches out longer than a unit cell
+            is_1d_rod = True
+            break
+
+    if is_1d_rod:
+        print(f'Likely 1D rod')
+        tmpstr = "MOF SBU is likely a 1D rod"
+        write2file(logpath,"/%s.log"%name,tmpstr)        
+
+def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=False, wiggle_room=1, 
+    max_num_atoms=2000, get_sbu_linker_bond_info=False, surrounded_sbu_file_generation=False, detect_1D_rod_sbu=False):
     """
     Generates RAC descriptors on a MOF.
     Writes three files: sbu_descriptors.csv, linker_descriptors.csv, and lc_descriptors.csv
@@ -526,7 +861,7 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
     depth : int
         The depth of the RACs that are generated. See https://doi.org/10.1021/acs.jpca.7b08750 for more information.
     path : str
-        The path to which output will be written.
+        The parent path to which output will be written.
         This output includes three csv files.
         This output also includes three folders called ligands, linkers, and sbus.
             These folders contain net and xyz files of the components of the MOF.
@@ -543,6 +878,10 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
         The maximum number of atoms in the unit cell for which analysis is conducted.
     get_sbu_linker_bond_info : bool
         Whether or not a TXT file is written with information on the bonds between SBUs and linkers.
+    surrounded_sbu_file_generation : bool
+        Whether or not an XYZ file for each SBU, surrounded by its connected linkers, will be generated.
+    detect_1D_rod_sbu : bool
+        Whether or not to check if SBU is a 1D rod.
 
     Returns
     -------
@@ -573,8 +912,9 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
     Simultaneously prepare mol3D class for MOF for future RAC featurization (molcif).
     """""""""
     cpar, allatomtypes, fcoords = readcif(data)
-    cell_v = mkcell(cpar)
-    cart_coords = fractional2cart(fcoords, cell_v)
+    print(f'cpar is {cpar}')
+    cell = mkcell(cpar)
+    cart_coords = fractional2cart(fcoords, cell)
     name = os.path.basename(data).replace(".cif", "")
     if len(cart_coords) > max_num_atoms: # Don't deal with large cifs because of computational resources required for their treatment.
         print("Too large cif file, skipping it for now...")
@@ -586,7 +926,7 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
     Getting the adjacency matrix.
     """""""""
     if not graph_provided: # Make the adjacency matrix.
-        distance_mat = compute_distance_matrix3(cell_v,cart_coords)
+        distance_mat = compute_distance_matrix3(cell,cart_coords)
         try:
             adj_matrix, _ = compute_adj_matrix(distance_mat,allatomtypes,wiggle_room)
         except NotImplementedError:
@@ -616,7 +956,7 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
             adj_matrix[row[1],row[0]] = 1
     adj_matrix = sparse.csr_matrix(adj_matrix)
 
-    writeXYZandGraph(xyzpath, allatomtypes, cell_v, fcoords, adj_matrix.todense())
+    writeXYZandGraph(xyzpath, allatomtypes, cell, fcoords, adj_matrix.todense())
     molcif,_,_,_,_ = import_from_cif(data, True) # molcif is a mol3D class of a single unit cell (or the cell of the cif file)
     molcif.graph = adj_matrix.todense()
 
@@ -751,14 +1091,14 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
                 linker_cart_coords = np.array([
                     at.coords() for at in [molcif.getAtom(val) for val in atoms_list]]) # Cartesian coordinates of the atoms in the linker
                 linker_adjmat = np.array(linker_subgraphlist[ii].todense())
-                pr_image_organic = ligand_detect(cell_v,linker_cart_coords,linker_adjmat,linkeranchors_list) # Periodic images for the organic component
+                pr_image_organic = ligand_detect(cell,linker_cart_coords,linker_adjmat,linkeranchors_list) # Periodic images for the organic component
                 sbu_temp = linkeranchors_atoms.copy()
                 sbu_temp.update({val for val in initial_SBU_list[list(sbu_connect_list)[0]]}) # Adding atoms. Not sure why the [0] is there? TODO
                 sbu_temp = list(sbu_temp)
                 sbu_cart_coords = np.array([
                     at.coords() for at in [molcif.getAtom(val) for val in sbu_temp]])
                 sbu_adjmat = slice_mat(adj_matrix.todense(),sbu_temp)
-                pr_image_sbu = ligand_detect(cell_v,sbu_cart_coords,sbu_adjmat,set(range(len(linkeranchors_list)))) # Periodic images for the SBU
+                pr_image_sbu = ligand_detect(cell,sbu_cart_coords,sbu_adjmat,set(range(len(linkeranchors_list)))) # Periodic images for the SBU
                 if not (len(np.unique(pr_image_sbu, axis=0))==1 and len(np.unique(pr_image_organic, axis=0))==1): # linker. More than one periodic image for sbu or organic component
                     max_min_linker_length = max(min_length,max_min_linker_length)
                     min_max_linker_length = min(max_length,min_max_linker_length)
@@ -835,8 +1175,8 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
     """""""""
     if len(linker_subgraphlist)>=1: # Featurize cases that did not fail.
         # try:
-            descriptor_names, descriptors, lc_descriptor_names, lc_descriptors = make_MOF_SBU_RACs(SBU_list, SBU_subgraphlist, molcif, depth, name, cell_v, anc_atoms, sbupath, linkeranchors_superlist, connections_list, connections_subgraphlist)
-            lig_descriptor_names, lig_descriptors = make_MOF_linker_RACs(linker_list, linker_subgraphlist, molcif, depth, name, cell_v, linkerpath, linkeranchors_superlist)
+            descriptor_names, descriptors, lc_descriptor_names, lc_descriptors = make_MOF_SBU_RACs(SBU_list, SBU_subgraphlist, molcif, depth, name, cell, anc_atoms, sbupath, linkeranchors_superlist, connections_list, connections_subgraphlist)
+            lig_descriptor_names, lig_descriptors = make_MOF_linker_RACs(linker_list, linker_subgraphlist, molcif, depth, name, cell, linkerpath, linkeranchors_superlist)
             full_names = descriptor_names+lig_descriptor_names+lc_descriptor_names #+ ECFP_names
             full_descriptors = list(descriptors)+list(lig_descriptors)+list(lc_descriptors)
             print(len(full_names),len(full_descriptors))
@@ -859,49 +1199,18 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
 
     # Getting bond information if requested, and writing it to a TXT file.
     if get_sbu_linker_bond_info:
-        bond_length_list = []
-        scaled_bond_length_list = []
-        for linker_idx, linker_atoms_list in enumerate(linker_list): # Iterate over all linkers
-            # Getting the connection points of the linker
-            for anchor_super_idx in range(len(linkeranchors_superlist)):
-                if list(linkeranchors_superlist[anchor_super_idx])[0] in linker_atoms_list: # Any anchor index in the current entry of linkeranchors_superlist is in the current linker's indices
-                    linker_connection_points = list(linkeranchors_superlist[anchor_super_idx]) # Indices of the connection points in the linker
-            for con_point in linker_connection_points:
-                connected_atoms = adj_matrix.todense()[con_point,:]
-                connected_atoms = np.ravel(connected_atoms)
+        bond_information_write(linker_list, linkeranchors_superlist, adj_matrix, molcif, cell, path)
 
-                connected_atoms = np.nonzero(connected_atoms)[0] # The indices of atoms connected to atom with index con_point.
+    # Generating XYZ files of SBUs surrounded by linkers.
+    if surrounded_sbu_file_generation:
+        try:
+            surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell, allatomtypes, name)
+        except:
+            tmpstr = "Failed to generate surrounded SBU"
+            write2file(logpath,"/%s.log"%name,tmpstr)
 
-                for con_atom in connected_atoms:
-                    con_atom3D = molcif.getAtom(con_atom) # atom3D of an atom connected to the connection point
-                    con_point3D = molcif.getAtom(con_point) # atom3D of the connection point on the linker
-                    # Check if the atom is a metal
-                    if con_atom3D.ismetal(transition_metals_only=False):
-                        # Finding the optimal unit cell shift
-                        molcif_cart_coords = np.array([atom.coords() for atom in molcif.atoms])
-                        invcell=np.linalg.inv(cell_v)
-                        fcoords=np.dot(molcif_cart_coords,invcell) # fractional coordinates
-                        fcoords[con_atom]+=compute_image_flag(cell_v,fcoords[con_point],fcoords[con_atom]) # Shifting the connected metal
-                        ccoords = fractional2cart(fcoords, cell_v)
-                        shifted_con_atom3D = atom3D(Sym=con_atom3D.symbol(), xyz=list(ccoords[con_atom,:]))
-
-                        bond_len = shifted_con_atom3D.distance(con_point3D)
-                        con_atom_radius = COVALENT_RADII[shifted_con_atom3D.symbol()]
-                        con_point_radius = COVALENT_RADII[con_point3D.symbol()]
-                        relative_bond_len = bond_len / (con_atom_radius + con_point_radius)
-
-                        bond_length_list.append(bond_len)
-                        scaled_bond_length_list.append(relative_bond_len)
-        mean_bond_len = np.mean(bond_length_list) # Average over all SBU-linker atom to atom connections
-        mean_scaled_bond_len = np.mean(scaled_bond_length_list) # Average over all SBU-linker atom to atom connections
-        std_bond_len = np.std(bond_length_list)
-        std_scaled_bond_len = np.std(scaled_bond_length_list)
-
-        with open(f"{path}/sbu_linker_bondlengths.txt", "w") as f:
-            f.write(f'Mean bond length: {mean_bond_len}\n')
-            f.write(f'Mean scaled bond length: {mean_scaled_bond_len}\n')
-            f.write(f'Stdev bond length: {std_bond_len}\n')
-            f.write(f'Stdev scaled bond length: {std_scaled_bond_len}')
+    if detect_1D_rod_sbu:
+        detect_1D_rod(SBU_list, molcif, allatomtypes, cell, logpath, name)
 
     return full_names, full_descriptors
 
