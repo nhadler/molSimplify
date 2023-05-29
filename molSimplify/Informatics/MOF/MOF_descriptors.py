@@ -582,11 +582,11 @@ def bond_information_write(linker_list, linkeranchors_superlist, adj_matrix, mol
         f.write(f'Mean bond length: {mean_bond_len}\n')
         f.write(f'Mean scaled bond length: {mean_scaled_bond_len}\n')
         f.write(f'Stdev bond length: {std_bond_len}\n')
-        f.write(f'Stdev scaled bond length: {std_scaled_bond_len}')    
+        f.write(f'Stdev scaled bond length: {std_scaled_bond_len}')
 
 def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_v, allatomtypes, name):
     """
-    Writes XYZ files for all SBUs provided, with each SBU surrounded by all linkers coordinated to it. 
+    Writes XYZ files for all SBUs provided, with each SBU surrounded by all linkers coordinated to it.
 
     Parameters
     ----------
@@ -612,22 +612,22 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
     None
 
     """
-    
+
     for SBU_idx, atoms_sbu in enumerate(SBU_list):
         # atoms_sbu are the indices of atoms in the SBU with index SBU_idx
 
         connection_atoms = [] # List of the coordinating atoms of each of the connected linkers. Length is # of connected linkers.
         atoms_connected_linkers = [] # List of the atoms of each of the connected linkers. Length is # of connected linkers
-        for atoms_linker in linker_list: 
+        for atoms_linker in linker_list:
             atoms_in_common = list(set(atoms_sbu).intersection(set(atoms_linker)))
             if len(atoms_in_common) != 0:
                 connection_atoms.append(atoms_in_common)
                 atoms_connected_linkers.append(atoms_linker)
 
         # Generating an XYZ of the SBU surrounded by linkers.
-        xyz_path = f'{sbupath}/{name}_sbu_{SBU_idx}_with_linkers.xyz'                
+        xyz_path = f'{sbupath}/{name}_sbu_{SBU_idx}_with_linkers.xyz'
         # For each atom index in an inner list in connection_atoms, build out the corresponding linker (inner list) in atoms_connected_linkers
-        
+
         ### Start with the atoms of the SBU
         surrounded_sbu = mol3D() # SBU surrounded by linkers
         starting_atom_idx = atoms_sbu[0]
@@ -636,7 +636,7 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
         surrounded_sbu.addAtom(starting_atom3D)
         atom3D_dict = {starting_atom_idx: starting_atom3D} # atom3D objects of the SBU
 
-        dense_adj_mat = np.array(adj_matrix.todense())    
+        dense_adj_mat = np.array(adj_matrix.todense())
 
         # Dictionary. Keys are ints (indices of atoms), values are lists of indices of atoms
         # The key is the atom relative to which the new atom must be positioned.
@@ -659,7 +659,7 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
             if len(sbu_atoms_to_branch_from[my_key]) == 0:
                 sbu_atoms_to_branch_from_keys.remove(my_key) # sbu_atoms_to_branch_from_keys = [i for i in sbu_atoms_to_branch_from_keys if i != my_key]
                 sbu_atoms_to_branch_from.pop(my_key)
-            
+
             if neighbor_idx in added_idx:
                 continue # Skip this index if it has already been added
 
@@ -680,7 +680,7 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
             if len(atoms_connected_to_neighbor_to_check) > 0:
                 sbu_atoms_to_branch_from[neighbor_idx] = atoms_connected_to_neighbor_to_check
                 sbu_atoms_to_branch_from_keys.append(neighbor_idx)
-        
+
 
         ### Next, add each of the linkers
         # Using atom3D_dict, connection_atoms, and atoms_connected_linkers
@@ -710,9 +710,9 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
 
                     # If the list associated with a key is now empty, remove the key.
                     if len(linker_atoms_to_branch_from[my_key]) == 0:
-                        linker_atoms_to_branch_from_keys.remove(my_key) 
+                        linker_atoms_to_branch_from_keys.remove(my_key)
                         linker_atoms_to_branch_from.pop(my_key)
-                    
+
                     if neighbor_idx in added_idx:
                         continue # Skip this index if it has already been added
 
@@ -745,7 +745,7 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
                         linker_atoms_to_branch_from_keys.append(neighbor_idx)
 
 
-        surrounded_sbu.writexyz(xyz_path)    
+        surrounded_sbu.writexyz(xyz_path)
 
 def dist_mat_comp(X):
     """
@@ -774,7 +774,7 @@ def dist_mat_comp(X):
 
 def detect_1D_rod(SBU_list, molcif, allatomtypes, cell_v, logpath, name):
     """
-    Writes XYZ files for all SBUs provided, with each SBU surrounded by all linkers coordinated to it. 
+    Writes XYZ files for all SBUs provided, with each SBU surrounded by all linkers coordinated to it.
 
     Parameters
     ----------
@@ -843,9 +843,9 @@ def detect_1D_rod(SBU_list, molcif, allatomtypes, cell_v, logpath, name):
     if is_1d_rod:
         print(f'Likely 1D rod')
         tmpstr = "MOF SBU is likely a 1D rod"
-        write2file(logpath,"/%s.log"%name,tmpstr)        
+        write2file(logpath,"/%s.log"%name,tmpstr)
 
-def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=False, wiggle_room=1, 
+def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=False, wiggle_room=1,
     max_num_atoms=2000, get_sbu_linker_bond_info=False, surrounded_sbu_file_generation=False, detect_1D_rod_sbu=False):
     """
     Generates RAC descriptors on a MOF.
