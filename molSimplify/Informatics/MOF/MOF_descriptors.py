@@ -774,7 +774,7 @@ def dist_mat_comp(X):
 
 def detect_1D_rod(SBU_list, molcif, allatomtypes, cell_v, logpath, name):
     """
-    Writes XYZ files for all SBUs provided, with each SBU surrounded by all linkers coordinated to it.
+    Writes to the log file if the MOF is likely to contain a 1D rod.
 
     Parameters
     ----------
