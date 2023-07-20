@@ -174,7 +174,7 @@ def make_MOF_SBU_RACs(SBUlist, SBU_subgraph, molcif, depth, name, cell_v, anchor
     anchoring_atoms : set
         Linker atoms that are bonded to a metal.
     sbupath : str
-        Path of the folder to make a csv file in.
+        Path of the folder to make a csv file in and TXT files containing connection index information.
     linkeranchors_superlist : list of set
         Coordinating atoms of linkers. Number of sets is the number of linkers.
     connections_list : list of lists of int
@@ -344,7 +344,7 @@ def make_MOF_linker_RACs(linkerlist, linker_subgraphlist, molcif, depth, name, c
     cell_v : numpy.ndarray
         The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
     linkerpath : str
-        Path of the folder to make a csv file in.
+        Path of the folder to make a csv file in and TXT files containing connection index information.
     linkeranchors_superlist : list of set
         Coordinating atoms of linkers. Number of sets is the number of linkers.
 
@@ -561,11 +561,11 @@ def bond_information_write(linker_list, linkeranchors_superlist, adj_matrix, mol
                     # Finding the optimal unit cell shift
                     molcif_cart_coords = np.array([atom.coords() for atom in molcif.atoms])
                     fcoords=frac_coord(molcif_cart_coords,cell_v) # fractional coordinates
-                    fcoords[con_atom]+=compute_image_flag(cell_v,fcoords[con_point],fcoords[con_atom]) # Shifting the connected metal
+                    fcoords[con_atom]+=compute_image_flag(cell_v,fcoords[con_point],fcoords[con_atom]) # Shifting the connected metal to get it close to the connection point
                     ccoords = fractional2cart(fcoords, cell_v)
                     shifted_con_atom3D = atom3D(Sym=con_atom3D.symbol(), xyz=list(ccoords[con_atom,:]))
 
-                    bond_len = shifted_con_atom3D.distance(con_point3D)
+                    bond_len = shifted_con_atom3D.distance(con_point3D) # Bond length between the connected metal and the connection point.
                     con_atom_radius = COVALENT_RADII[shifted_con_atom3D.symbol()]
                     con_point_radius = COVALENT_RADII[con_point3D.symbol()]
                     relative_bond_len = bond_len / (con_atom_radius + con_point_radius)
@@ -820,7 +820,7 @@ def detect_1D_rod(SBU_list, molcif, allatomtypes, cell_v, logpath, name):
     cart_coords_sbus_with_shifts = np.array(cart_coords_sbus_with_shifts) # Converting nested list to a numpy array
 
     distance_mat = dist_mat_comp(cart_coords_sbus_with_shifts)
-    adj_matrix, _ = compute_adj_matrix(distance_mat,allatomtypes_sbus_with_shifts, handle_overlap=True) # Ignoring overlap
+    adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes_sbus_with_shifts, handle_overlap=True) # Ignoring overlap
 
     # For each connected component, see how long it is
     adj_matrix = sparse.csr_matrix(adj_matrix)

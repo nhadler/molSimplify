@@ -1,20 +1,48 @@
-from molSimplify.Scripts.cellbuilder_tools import *
 from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Classes.atom3D import atom3D
-from molSimplify.Informatics.autocorrelation import *
-from molSimplify.Informatics.misc_descriptors import *
-from molSimplify.Informatics.graph_analyze import *
-from molSimplify.Informatics.RACassemble import *
-import os
+from molSimplify.Informatics.MOF.PBC_functions import (
+    compute_adj_matrix,
+    compute_distance_matrix3,
+    fractional2cart,
+    get_closed_subgraph,
+    include_extra_shells,
+    ligand_detect,
+    linker_length,
+    mkcell,
+    readcif,
+    returnXYZandGraph,
+    slice_mat,
+    write2file,
+    writeXYZandGraph,
+    XYZ_connected,
+    )
+from molSimplify.Scripts.cellbuilder_tools import import_from_cif
 import numpy as np
-import itertools
 from scipy import sparse
-from molSimplify.Informatics.MOF.PBC_functions import *
 import networkx as nx
+import copy
+import itertools
+import os
 
 
-def periodic_checker(graph, coords, atoms):
-    # This function checks if a graph is periodic or not.
+def periodic_checker(graph, coords):
+    """
+    This function checks if a graph is periodic or not.
+    This is a more lightweight (and less accurate) way to check for 1D rods than molSimplify.Informatics.MOF.MOF_descriptors.detect_1D_rod
+
+    Parameters
+    ----------
+    graph : numpy.matrix
+        Adjacency matrix. Shape is (number of atoms, number of atoms).
+    coords : list of list of float
+        Cartesian coordinates of atoms. Length of the outer list is the number of atoms, while each inner list is length 3.
+
+    Returns
+    -------
+    periodic : bool
+        Whether or not a graph is periodic.
+
+    """
     from scipy.sparse import csgraph
     csg = csgraph.csgraph_from_dense(graph)
     x,y = csg.nonzero()
@@ -32,8 +60,29 @@ def periodic_checker(graph, coords, atoms):
 
 
 def branch(molcif, main_paths, atoms_in_sbu, new_atoms=None):
-    # This function climbs out from a given atom and adds the atoms that are in the branch.
-    # This is important for getting all atoms in a branched functional group of a linker.
+    """
+    This function climbs out from a given atom and adds the atoms that are in the branch.
+    This is important for getting all atoms in a branched functional group of a linker.
+
+    Parameters
+    ----------
+    molcif : molSimplify.Classes.mol3D.mol3D
+        The cell of the cif file being analyzed.
+    main_paths : list of int
+        Indices of main path atoms (atoms that are part of a linker).
+    atoms_in_sbu : list of numpy.int64
+        Indices of atoms in the SBU.        
+    new_atoms : list of numpy.int64
+        Indices of new atoms to be included.
+
+    Returns
+    -------
+    new_atoms : list of numpy.int64
+        Indices of new atoms to be included.
+    atoms_in_sbu : list of numpy.int64
+        Indices of atoms in the SBU.
+
+    """
     if new_atoms is None:
         new_atoms = []
     original_atoms = atoms_in_sbu.copy()
@@ -52,8 +101,27 @@ def branch(molcif, main_paths, atoms_in_sbu, new_atoms=None):
         return new_atoms, atoms_in_sbu
 
 def identify_main_chain(temp_mol, link_list):
-    # This function identifies the atom that are directly present from one
-    # connecting point to another. Identifies cases that can be functional groups.
+    """
+    This function identifies the atom that are directly present from one
+    connecting point to another. Identifies cases that can be functional groups.
+
+    Parameters
+    ----------
+    temp_mol : molSimplify.Classes.mol3D.mol3D
+        TODO
+    link_list : list of int
+        TODO
+
+    Returns
+    -------
+    main : list of int
+        TODO
+    shortest : int
+        TODO
+    longest : int
+        TODO
+
+    """
     G = nx.from_numpy_matrix(temp_mol.graph)
     pairs = []
     shortest = 0
@@ -86,12 +154,27 @@ def identify_main_chain(temp_mol, link_list):
                         paths_copy += set(i)
                         min_cycles_copy.remove(i)
 
-        main = paths
+        main = paths  
         return main, shortest, longest
 
 
 def get_molcif_cycles_no_metal(molcif):
-    # make the graph and get all cycles in the graph
+    """
+    This function makes the graph and get all cycles in the graph.
+
+    Parameters
+    ----------
+    molcif : molSimplify.Classes.mol3D.mol3D
+        The cell of the cif file being analyzed.
+
+    Returns
+    -------
+    subcycle_list : TODO
+        TODO
+    flat_subcycle_list : TODO
+        TODO
+
+    """
     G=nx.from_numpy_matrix(molcif.graph)
     cycles = nx.minimum_cycle_basis(G) # gets all closed rings in graph
     subcycle_list = []
@@ -109,7 +192,40 @@ def get_molcif_cycles_no_metal(molcif):
     flat_subcycle_list = [item for sublist in subcycle_list for item in sublist]
     return subcycle_list, flat_subcycle_list
 
-def breakdown_MOF(SBUlist, SBU_subgraph, molcif, depth, name,cell,anchoring_atoms, sbupath=False, connections_list=False, connections_subgraphlist=False, linkerpath=False):
+def breakdown_MOF(SBUlist, SBU_subgraph, molcif, depth, name, cell, anchoring_atoms, sbupath=False, connections_list=False, connections_subgraphlist=False, linkerpath=False):
+    """
+    TODO
+
+    Parameters
+    ----------
+    SBUlist : list of list of numpy.int64
+        Each inner list is its own separate SBU. The ints are the atom indices of that SBU. Length is # of SBUs.
+    SBU_subgraph : list of scipy.sparse.csr.csr_matrix
+        The atom connections in the SBU subgraph. Length is # of SBUs.
+    molcif : molSimplify.Classes.mol3D.mol3D
+        The cell of the cif file being analyzed.
+    depth : int
+        TODO
+    name : str
+        The name of the cif being analyzed.
+    cell : numpy.ndarray
+        TODO
+    anchoring_atoms : set of numpy.int64
+        TODO
+    sbupath : str
+        TODO
+    connections_list : list of list of int
+        TODO
+    connections_subgraphlist : list of numpy.matrix
+        TODO
+    linkerpath : str
+        TODO
+                        
+    Returns
+    -------
+    None
+
+    """
     n_sbu = len(SBUlist)
     all_SBU_atoms = []
     all_SBU_X_atoms = []
@@ -123,7 +239,7 @@ def breakdown_MOF(SBUlist, SBU_subgraph, molcif, depth, name,cell,anchoring_atom
     Loop over all SBUs as identified by subgraphs. Then create the mol3Ds for each SBU.
     '''
     for i, SBU in enumerate(SBUlist):
-        # For a given SBU, make a list of main paths. this contains atoms that are part of the linker.
+        # For a given SBU, make a list of main paths. This contains atoms that are part of the linker.
         main_paths = []
         linker_length_dict = {}
         current_longest = 0
@@ -205,7 +321,7 @@ def breakdown_MOF(SBUlist, SBU_subgraph, molcif, depth, name,cell,anchoring_atom
                                 SBU_added.append(cycle_val)
                         bonded_atoms_to_cycle.append(temp_bonded_list)
             # Check how many atoms are branched
-            additional_branched_atoms,_ = branch(molcif,  main_paths, SBU_added.copy(),[val])
+            additional_branched_atoms,_ = branch(molcif, main_paths, SBU_added.copy(),[val])
             for branched_atom in additional_branched_atoms:
                 if branched_atom not in SBU_added:
                     SBU_mol.addAtom(molcif.getAtom(branched_atom))
@@ -275,7 +391,7 @@ def breakdown_MOF(SBUlist, SBU_subgraph, molcif, depth, name,cell,anchoring_atom
         for val in tuple_list_sbu:
             SBU_mol.BCM(val[0],inv_SBU_dict[val[1]],0.75)
         new_coords = [[float(val2) for val2 in val.split()[1:]] for val in SBU_mol.coords().split('\n')[2:-1]]
-        is_periodic = periodic_checker(tempgraph, new_coords, SBU_mol_atom_labels)
+        is_periodic = periodic_checker(tempgraph, new_coords)
         # if is_periodic is true, the SBU is periodic in nature --> 1D rod.
 
         ###### WRITE THE SBU MOL TO THE PLACE
@@ -378,12 +494,38 @@ def breakdown_MOF(SBUlist, SBU_subgraph, molcif, depth, name,cell,anchoring_atom
     return None
 
 def prepare_initial_SBU(molcif, allatomtypes, metal_list, logpath, name):
+    """
+    TODO
+
+    Parameters
+    ----------
+    molcif : molSimplify.Classes.mol3D.mol3D
+        The cell of the cif file being analyzed.
+    allatomtypes : list of str
+        The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms.
+    metal_list : set of int
+        The indices of metal atoms in the mol3D.
+    logpath : str
+        The path to which log files are written.
+    name : str
+        The name of the cif being analyzed.
+
+    Returns
+    -------
+    molcif : molSimplify.Classes.mol3D.mol3D
+        The cell of the cif file being analyzed.
+    removelist : set of int
+        The indices of atoms to remove.
+    SBUlist : set of numpy.int64
+        The indices of atoms in SBUs. removelist + 1st coordination shell of the metals
+
+    """
     SBUlist = set()
     metal_list = set([at for at in molcif.findMetal(transition_metals_only=False)])
-    [SBUlist.update(set([metal])) for metal in molcif.findMetal(transition_metals_only=False)] #Remove all metals as part of the SBU
+    [SBUlist.update(set([metal])) for metal in molcif.findMetal(transition_metals_only=False)] # Remove all metals as part of the SBU
     [SBUlist.update(set(molcif.getBondedAtomsSmart(metal))) for metal in molcif.findMetal(transition_metals_only=False)]
     removelist = set()
-    [removelist.update(set([metal])) for metal in molcif.findMetal(transition_metals_only=False)] #Remove all metals as part of the SBU
+    [removelist.update(set([metal])) for metal in molcif.findMetal(transition_metals_only=False)] # Remove all metals as part of the SBU
     for metal in removelist:
         bonded_atoms = set(molcif.getBondedAtomsSmart(metal))
         bonded_atoms_types = set([str(allatomtypes[at]) for at in set(molcif.getBondedAtomsSmart(metal))])
@@ -402,6 +544,36 @@ def prepare_initial_SBU(molcif, allatomtypes, metal_list, logpath, name):
     return molcif, removelist, SBUlist
 
 def identify_lc_atoms(molcif, removelist, metal_list):
+    """
+    TODO
+
+    Parameters
+    ----------
+    molcif : molSimplify.Classes.mol3D.mol3D
+        The cell of the cif file being analyzed.
+    removelist : set of int
+        The indices of atoms to remove, i.e. the SBU atoms.
+    metal_list : set of int
+        The indices of metal atoms in the mol3D.
+
+    Returns
+    -------
+    anc_atoms : set of numpy.int64
+        The indices of the anchoring atoms of the linkers.
+    linkers : set of int
+        The indices of linkers.
+    linker_list : list of list of int
+        Each inner list is its own separate linker. The ints are the atom indices of that linker. Length is # of linkers.
+    linker_subgraphlist : list of numpy.matrix
+        The atom connections in the linker subgraph. Length is # of linkers.
+    allatoms : set of int
+        The indices of all of the atoms in the MOF.
+    connections_list : list of list of int
+        Each inner list is its own separate linker. The ints are the atom indices of that linker. Length is # of linkers.
+    connections_subgraphlist : list of numpy.matrix
+        The atom connections in the linker subgraph. Length is # of linkers.
+
+    """
     allatoms = set(range(0, molcif.graph.shape[0]))
     linkers = allatoms - removelist # Anything that is in the remove list (SBU) is removed, leaving linkers
     # Use the atoms for linkers and the remove list, along with the original full unit cell graph to make the linker subgraphs
@@ -418,17 +590,65 @@ def identify_lc_atoms(molcif, removelist, metal_list):
     for linker in linker_list:
         for atom_linker in linker:
             # We check from the graph if the anchor atom is bonded to a metal. If it is then it is an anchoring atom
-            bonded2atom  = np.nonzero(molcif.graph[atom_linker,:])[1]
+            bonded2atom = np.nonzero(molcif.graph[atom_linker,:])[1]
             if set(bonded2atom) & metal_list:
                 anc_atoms.add(atom_linker)
     # return the anchoring atoms, the atoms we leave as linkers
     return anc_atoms, linkers, linker_list, linker_subgraphlist, allatoms, connections_list, connections_subgraphlist
 
-def identify_short_linkers(molcif, initial_SBU_list, initial_SBU_subgraphlist,removelist, linkers, linker_list, linker_subgraphlist, adj_matrix, SBUlist, logpath, linkerpath, name, cell_v):
+def identify_short_linkers(molcif, initial_SBU_list, initial_SBU_subgraphlist, removelist, linkers, linker_list, linker_subgraphlist, adj_matrix, SBUlist, logpath, linkerpath, name, cell_v):
+    """
+    TODO
+
+    Parameters
+    ----------
+    molcif : molSimplify.Classes.mol3D.mol3D
+        The cell of the cif file being analyzed.
+    initial_SBU_list : list of list of numpy.int32
+        Each inner list is its own separate SBU. The ints are the atom indices of that SBU. Length is # of SBUs.
+    initial_SBU_subgraphlist : list of scipy.sparse.csr.csr_matrix
+        The atom connections in the SBU subgraph. Length is # of SBUs.
+    removelist : set of int
+        The indices of atoms to remove.
+    linkers : set of int
+        The indices of linkers.
+    linker_list : list of list of int
+        Each inner list is its own separate linker. The ints are the atom indices of that linker. Length is # of linkers.
+    linker_subgraphlist : list of numpy.matrix
+        The atom connections in the linker subgraph. Length is # of linkers.
+    adj_matrix : scipy.sparse.csr.csr_matrix
+        Adjacency matrix. 1 represents a bond, 0 represents no bond. Shape is (number of atoms, number of atoms).
+    SBUlist : set of numpy.int64
+        The indices of atoms in SBUs. removelist + 1st coordination shell of the metals
+    logpath : str
+        The path to which log files are written.
+    linkerpath : str
+        Path of the folder to make TXT files in.
+    name : str
+        The name of the cif being analyzed.
+    cell_v : numpy.ndarray
+        The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
+
+    Returns
+    -------
+    min_max_linker_length : int
+        The longest path length between two anchors in a linker.
+    long_ligands : bool
+        Indicates whether the linkers are short.
+    SBUlist : set of numpy.int64
+        The indices of atoms in SBUs. removelist + 1st coordination shell of the metals
+    removelist : set of int
+        The indices of atoms to remove.
+    linker_list : list of list of int
+        Each inner list is its own separate linker. The ints are the atom indices of that linker. Length is # of linkers.
+    linker_subgraphlist : list of numpy.matrix
+        The atom connections in the linker subgraph. Length is # of linkers.
+
+    """
     templist = linker_list[:]
     tempgraphlist = linker_subgraphlist[:]
     long_ligands = False
-    max_min_linker_length , min_max_linker_length = (0,100)
+    max_min_linker_length , min_max_linker_length = (0,100) # The maximum value of the minimum linker length, and the minimum value of the maximum linker length. Updated later.
     for ii, atoms_list in reversed(list(enumerate(linker_list))): #Loop over all linker subgraphs
         linkeranchors_list = set()
         linkeranchors_atoms = set()
@@ -511,6 +731,26 @@ def identify_short_linkers(molcif, initial_SBU_list, initial_SBU_subgraphlist,re
     return min_max_linker_length, long_ligands, SBUlist, removelist, linker_list, linker_subgraphlist
 
 def make_MOF_fragments(data, depth, path=False, xyzpath = False):
+    """
+    TODO
+
+    Parameters
+    ----------
+    data : TODO
+        TODO
+    depth : TODO
+        TODO
+    path : TODO
+        TODO
+    xyzpath : TODO
+        TODO
+
+    Returns
+    -------
+    return_code : TODO
+        TODO
+
+    """
     if not path:
         print('Need a directory to place all of the linker and SBU objects. Exiting now.')
         raise ValueError('Base path must be specified in order to write descriptors.')
@@ -543,7 +783,7 @@ def make_MOF_fragments(data, depth, path=False, xyzpath = False):
         tmpstr = "Failed to featurize %s: large primitive cell\n"%(name)
         write2file(path,"/FailedStructures.log",tmpstr)
         return None, None
-    distance_mat = compute_distance_matrix2(cell_v,cart_coords)
+    distance_mat = compute_distance_matrix3(cell_v,cart_coords)
     try:
         adj_matrix, _ = compute_adj_matrix(distance_mat,allatomtypes)
     except NotImplementedError:
@@ -596,7 +836,7 @@ def make_MOF_fragments(data, depth, path=False, xyzpath = False):
 
     step 2: organic part
         removelist = linkers are all atoms - the removelist (assuming no bond between
-        organiclinkers)
+        organic linkers)
     '''
     anc_atoms, linkers, linker_list, linker_subgraphlist, allatoms, connections_list, connections_subgraphlist = identify_lc_atoms(molcif, removelist, metal_list)
 
@@ -610,7 +850,7 @@ def make_MOF_fragments(data, depth, path=False, xyzpath = False):
         else -> ligand
     '''
     initial_SBU_list, initial_SBU_subgraphlist = get_closed_subgraph(removelist.copy(), linkers.copy(), adj_matrix)
-    min_max_linker_length, long_ligands, SBUlist, removelist, linker_list, linker_subgraphlist = identify_short_linkers(molcif, initial_SBU_list, initial_SBU_subgraphlist,removelist, linkers, linker_list, linker_subgraphlist, adj_matrix, SBUlist, logpath, linkerpath, name, cell_v)
+    min_max_linker_length, long_ligands, SBUlist, removelist, linker_list, linker_subgraphlist = identify_short_linkers(molcif, initial_SBU_list, initial_SBU_subgraphlist, removelist, linkers, linker_list, linker_subgraphlist, adj_matrix, SBUlist, logpath, linkerpath, name, cell_v)
 
     '''
     In the case of long linkers, add second coordination shell without further checks. In the case of short linkers, start from metal
