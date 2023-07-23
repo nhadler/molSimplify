@@ -72,7 +72,7 @@ def branch(molcif, main_paths, atoms_in_sbu, new_atoms=None):
     main_paths : list of int
         Indices of main path atoms (atoms that are part of a linker).
     atoms_in_sbu : list of numpy.int64
-        Indices of atoms in the SBU.        
+        Indices of atoms in the SBU.
     new_atoms : list of numpy.int64
         Indices of new atoms to be included.
 
@@ -157,7 +157,7 @@ def identify_main_chain(temp_mol, link_list):
                         paths_copy += set(i)
                         min_cycles_copy.remove(i)
 
-        main = paths  
+        main = paths
         return main, shortest, longest
 
 
@@ -226,7 +226,7 @@ def breakdown_MOF(SBUlist, SBU_subgraph, molcif, name, cell, anchoring_atoms, sb
         The atom connections in the linker subgraph. Length is # of linkers.
     linkerpath : str
         The path to which the linker XYZ files will be written.
-                        
+
     Returns
     -------
     None
@@ -740,7 +740,7 @@ def make_MOF_fragments(data, path=False, xyzpath=False):
 
     Output codes are as follows:
     2: There exist short (i.e. 2 atom) and longer linkers. We could not split the MOF apart consistently.
-    3: The MOF consists only of very short 2 atom linkers. 
+    3: The MOF consists only of very short 2 atom linkers.
     4: The MOF contains a 1D rod, which cannot be easily reassembled into a new MOF.
     None: The MOF was split correctly
 
