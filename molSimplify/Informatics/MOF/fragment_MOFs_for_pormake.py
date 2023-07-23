@@ -28,7 +28,7 @@ import os
 def periodic_checker(graph, coords):
     """
     Checks if a graph is periodic or not.
-    This function is a more lightweight (and less accurate) way to check for 1D rods than molSimplify.Informatics.MOF.MOF_descriptors.detect_1D_rod
+    This does the same task as molSimplify.Informatics.MOF.MOF_descriptors.detect_1D_rod, but in a different way.
 
     Parameters
     ----------
@@ -54,6 +54,7 @@ def periodic_checker(graph, coords):
         dist = np.linalg.norm(a-b)
         if dist > maxdist:
             maxdist = dist
+    # If any connected atoms are more than four angstroms apart, they are very likely to be offset by a cell vector. Periodic.
     if maxdist > 4:
         periodic = True
     return periodic
