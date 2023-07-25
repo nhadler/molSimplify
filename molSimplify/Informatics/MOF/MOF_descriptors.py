@@ -616,8 +616,8 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
     for SBU_idx, atoms_sbu in enumerate(SBU_list):
         # atoms_sbu are the indices of atoms in the SBU with index SBU_idx
 
-        connection_atoms = [] # List of the coordinating atoms of each of the connected linkers. Length is # of connected linkers.
-        atoms_connected_linkers = [] # List of the atoms of each of the connected linkers. Length is # of connected linkers
+        connection_atoms = [] # List of lists of the coordinating atoms of each of the connected linkers. Length is # of connected linkers.
+        atoms_connected_linkers = [] # List of lists of the atoms of each of the connected linkers. Length is # of connected linkers.
         for atoms_linker in linker_list:
             atoms_in_common = list(set(atoms_sbu).intersection(set(atoms_linker)))
             if len(atoms_in_common) != 0:
@@ -626,13 +626,14 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
 
         # Generating an XYZ of the SBU surrounded by linkers.
         xyz_path = f'{sbupath}/{name}_sbu_{SBU_idx}_with_linkers.xyz'
-        # For each atom index in an inner list in connection_atoms, build out the corresponding linker (inner list) in atoms_connected_linkers
+        # For each atom index in an inner list in connection_atoms, build out the corresponding linker (inner list) in atoms_connected_linkers.
 
         ### Start with the atoms of the SBU
         surrounded_sbu = mol3D() # SBU surrounded by linkers
         starting_atom_idx = atoms_sbu[0]
         added_idx = [starting_atom_idx] # This list will contain the SBU indices that no longer need to be considered for branching.
         starting_atom3D = molcif.getAtom(starting_atom_idx)
+        # The mol3D object starts out with a single atom. Atoms will be added branching out from this initial atom.
         surrounded_sbu.addAtom(starting_atom3D)
         atom3D_dict = {starting_atom_idx: starting_atom3D} # atom3D objects of the SBU
 
@@ -681,11 +682,12 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
                 sbu_atoms_to_branch_from[neighbor_idx] = atoms_connected_to_neighbor_to_check
                 sbu_atoms_to_branch_from_keys.append(neighbor_idx)
 
+        # At this point in the code, all SBU atoms have been added to the mol3D object surrounded_sbu.
 
-        ### Next, add each of the linkers
-        # Using atom3D_dict, connection_atoms, and atoms_connected_linkers
+        ### Next, add each of the linkers.
+        # Using atom3D_dict, connection_atoms, and atoms_connected_linkers.
         for linker_idx in range(len(connection_atoms)):
-            # For each linker, build out the linker in surrounded_sbu object
+            # For each linker, build out the linker in surrounded_sbu object.
 
             linker_indices = atoms_connected_linkers[linker_idx]
 
@@ -725,9 +727,9 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
                     symbol_neighbor = allatomtypes[neighbor_idx] # Element
                     new_atom3D = atom3D(Sym=symbol_neighbor, xyz=coords_neighbor)
 
-                    # Only add the new atom if it does not overlap with an atom that is already in surrounded sbu
-                    # If there is overlap, then the atom was already added in the SBU
-                    min_dist = 100 # Starting from a big number that will be replaced in the subsequent lines
+                    # Only add the new atom if it does not overlap with an atom that is already in surrounded sbu.
+                    # If there is overlap, then the atom was already added in the SBU.
+                    min_dist = 100 # Starting from a big number that will be replaced in the subsequent lines.
                     num_atoms = surrounded_sbu.getNumAtoms()
                     for i in range(num_atoms):
                         pair_dist = new_atom3D.distance(surrounded_sbu.getAtom(i))
