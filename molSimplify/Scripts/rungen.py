@@ -12,7 +12,9 @@ import shutil
 import sys
 from collections import Counter
 import glob
+from typing import List, Union
 
+from argparse import Namespace
 from molSimplify.Classes.globalvars import globalvars
 from molSimplify.Scripts.isomers import generateisomers
 from molSimplify.Scripts.jobgen import (sgejobgen,
@@ -302,14 +304,14 @@ def multigenruns(rundir, args, write_files=True):
 #  @return Ligand list, connecting atoms, multiple ligand flag
 
 
-def checkmultilig(ligs):
+def checkmultilig(ligs: List[str]):
     mligs = []
     tcats = []
     multidx = -1
     # loop over ligands
 
     for i, lig in enumerate(ligs):
-        connatoms = []
+        connatoms: List[Union[str, bool]] = []
         if '.smi' in lig:
             if '~' in lig:
                 lig = lig.replace('~', os.path.expanduser("~"))
@@ -387,6 +389,7 @@ def draw_supervisor(args, rundir):
 
 
 def rungen(rundir, args, chspfname=None, write_files=True):
+    # (rundir, args: Namespace, chspfname=None, write_files: bool = True)
     emsg = ''
     globs = globalvars()
     globs.nosmiles = 0  # reset smiles ligands for each run
@@ -464,7 +467,7 @@ def rungen(rundir, args, chspfname=None, write_files=True):
             print(('fname is ' + str(fname)))
         rootdir = fname
         # check for charges/spin
-        rootcheck = False
+        rootcheck = ""
         if chspfname is not None:
             rootcheck = rootdir
             rootdir = rootdir + '/' + chspfname
@@ -560,14 +563,14 @@ def rungen(rundir, args, chspfname=None, write_files=True):
                 args.ffoption = 'ba'
                 args.MLbonds = False
                 strfiles, emsg, this_diag = structgen(
-                    args, rootdir, ligands, ligocc, globs, mcount, write_files=write_files)
+                    args, rootdir, ligands, ligocc, mcount, write_files=write_files)
                 for strf in strfiles:
                     tstrfiles.append(strf+'FFML')
                     os.rename(strf+'.xyz', strf+'FFML.xyz')
                 # generate xyz with FF and covalent
                 args.MLbonds = ['c' for i in range(0, len(args.lig))]
                 strfiles, emsg, this_diag = structgen(
-                    args, rootdir, ligands, ligocc, globs, mcount, write_files=write_files)
+                    args, rootdir, ligands, ligocc, mcount, write_files=write_files)
                 for strf in strfiles:
                     tstrfiles.append(strf+'FFc')
                     os.rename(strf+'.xyz', strf+'FFc.xyz')
@@ -576,14 +579,14 @@ def rungen(rundir, args, chspfname=None, write_files=True):
                 args.MLbonds = False
                 # generate xyz without FF and trained ML
                 strfiles, emsg, this_diag = structgen(
-                    args, rootdir, ligands, ligocc, globs, mcount, write_files=write_files)
+                    args, rootdir, ligands, ligocc, mcount, write_files=write_files)
                 for strf in strfiles:
                     tstrfiles.append(strf+'ML')
                     os.rename(strf+'.xyz', strf+'ML.xyz')
                 args.MLbonds = ['c' for i in range(0, len(args.lig))]
                 # generate xyz without FF and covalent ML
                 strfiles, emsg, this_diag = structgen(
-                    args, rootdir, ligands, ligocc, globs, mcount, write_files=write_files)
+                    args, rootdir, ligands, ligocc, mcount, write_files=write_files)
                 for strf in strfiles:
                     tstrfiles.append(strf+'c')
                     os.rename(strf+'.xyz', strf+'c.xyz')
@@ -591,7 +594,7 @@ def rungen(rundir, args, chspfname=None, write_files=True):
             else:
                 # generate xyz files
                 strfiles, emsg, this_diag = structgen(
-                    args, rootdir, ligands, ligocc, globs, mcount, write_files=write_files)
+                    args, rootdir, ligands, ligocc, mcount, write_files=write_files)
             # generate QC input files
             if args.qccode and (not emsg) and write_files:
                 if args.charge and (isinstance(args.charge, list)):

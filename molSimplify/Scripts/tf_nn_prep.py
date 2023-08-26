@@ -93,7 +93,7 @@ def invoke_ANNs_from_mol3d(mol: mol3D, oxidation_state: int,
 
 
 def tf_check_ligands(ligs: List[str], batslist: List[List[int]],
-                     dents: List[int], tcats: List[str],
+                     dents: List[int], tcats: List[List[Union[int, str]]],
                      occs: List[int], debug: bool):
     # tests if ligand combination
     # is compatible with the ANN
@@ -121,8 +121,8 @@ def tf_check_ligands(ligs: List[str], batslist: List[List[int]],
     equatorial_ligs = []
     ax_dent = 0
     eq_dent = 0
-    eq_tcat = ''
-    ax_tcat = ''
+    eq_tcat = []
+    ax_tcat = []
     pentadentate = False
     ax_occs = []
     eq_occs = []
@@ -274,7 +274,7 @@ def check_metal(metal: str, oxidation_state: str) -> Tuple[bool, str]:
 
 
 def tf_ANN_preproc(metal: str, oxstate, spin, ligs: List[str], occs: List[int], dents: List[int],
-                   batslist: List[List[int]], tcats: List[str],
+                   batslist: List[List[int]], tcats: List[List[Union[int, str]]],
                    licores: dict, decoration, decoration_index, exchange, geometry: str = "oct",
                    debug: bool = False) -> Tuple[bool, str, dict, bool]:
     # prepares and runs ANN calculation
