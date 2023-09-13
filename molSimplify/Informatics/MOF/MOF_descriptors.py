@@ -417,7 +417,7 @@ def make_MOF_linker_RACs(linkerlist, linker_subgraphlist, molcif, depth, name, c
             lig_full.append(ligand_ac_full)
 
         # Some formatting
-        lig_full = [item for sublist in lig_full for item in sublist] #flatten lists
+        lig_full = [item for sublist in lig_full for item in sublist] # flatten lists
         colnames = [item for sublist in colnames for item in sublist]
         colnames += ['name']
         lig_full += [name]
@@ -916,7 +916,7 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
     cart_coords = fractional2cart(fcoords, cell_v)
     name = os.path.basename(data).replace(".cif", "")
     if len(cart_coords) > max_num_atoms: # Don't deal with large cifs because of computational resources required for their treatment.
-        print("Too large cif file, skipping it for now...")
+        print("cif file is too large, skipping it for now...")
         failure_str = f"Failed to featurize {name}: large primitive cell\n {len(cart_coords)} atoms"
         full_names, full_descriptors = failure_response(path, failure_str)
         return full_names, full_descriptors
@@ -1183,18 +1183,18 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
         #     full_names = [0]
         #     full_descriptors = [0]
     elif len(linker_subgraphlist) == 1: # Only one linker identified.
-        print('Suspicious featurization')
+        print(f'Suspicious featurization for {name}: Only one linker identified.')
         full_names = [1]
         full_descriptors = [1]
     else: # Means len(linker_subgraphlist) is zero.
-        print('Failed to featurize this MOF; no linkers were identified.')
-        full_names = [0]
-        full_descriptors = [0]
+        failure_str = f'Failed to featurize {name}: No linkers were identified.\n'
+        full_names, full_descriptors = failure_response(path, failure_str)
+        return full_names, full_descriptors
     if (len(full_names) <= 1) and (len(full_descriptors) <= 1):
         print(f'full_names is {full_names} and full_descriptors is {full_descriptors}')
-        tmpstr = "Failed to featurize %s: Only zero or one total linkers identified.\n"%(name)
-        write2file(path,"/FailedStructures.log",tmpstr)
-
+        failure_str = f'Failed to featurize {name}: Only zero or one total linkers identified.\n'       
+        full_names, full_descriptors = failure_response(path, failure_str)
+        return full_names, full_descriptors
 
     # Getting bond information if requested, and writing it to a TXT file.
     if get_sbu_linker_bond_info:

@@ -787,7 +787,7 @@ def make_MOF_fragments(data, path=False, xyzpath=False):
     cart_coords = fractional2cart(fcoords, cell_v)
     name = os.path.basename(data).strip(".cif")
     if len(cart_coords) > 2000:
-        print("Too large cif file, skipping it for now...")
+        print("cif file is too large, skipping it for now...")
         tmpstr = "Failed to featurize %s: large primitive cell\n"%(name)
         write2file(path,"/FailedStructures.log", tmpstr)
         return None, None
