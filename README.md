@@ -82,6 +82,6 @@ year = {2018},
 }
 ```
 
-If you use any machine learning (ML) models in molSimplify that results in a publication, please cite the corresponding reference in [this MLmodel reference page](https://github.com/hjkgrp/molSimplify/blob/master/MLmodel-reference.md).
+If you use any machine learning (ML) models in molSimplify that results in a publication, please cite the corresponding reference in [this ML model reference page](https://github.com/hjkgrp/molSimplify/blob/master/MLmodel-reference.md).
 
 **Note that we have disabled developers' supports for Python 2.7 and will only release conda builds on Python 3.**
