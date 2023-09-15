@@ -44,7 +44,7 @@ For line by line instructions on an installation via docker, please visit [molSi
 
 ## Tutorials
 
-A set of tutorials covering common use cases is available at the [Kulik group webpage](http://hjkgrp.mit.edu/molSimplify-tutorials).
+A set of tutorials covering common use cases is available at the [Kulik group webpage](http://hjkgrp.mit.edu/molSimplify-tutorials). Note that the GUI is no longer supported, so users are encouraged to generate structures through the command line or using the Python command [startgen_pythonic](molSimplify/Scripts/generator.py).
 
 ## Documentation
 
