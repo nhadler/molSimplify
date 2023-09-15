@@ -7,7 +7,7 @@ molSimplify is an open source toolkit for the automated, first-principles screen
 
 ## Installation
 
-### via conda
+### via conda, from GitHub
 We currently recommend installation via the [Conda](https://conda.io/docs/) package management system.
 1. Prerequisite: have [Anaconda or miniconda](https://www.anaconda.com/distribution/) installed on your system. **For M1 Macs, please use [Miniforge](https://github.com/conda-forge/miniforge) for Mac OSX arm64.** (We do not recommend simultaneously installing Anaconda and Miniforge - only install Miniforge.)
 
@@ -36,6 +36,9 @@ We currently recommend installation via the [Conda](https://conda.io/docs/) pack
    ```bash
    pytest
    ```
+
+### via conda, from Anaconda
+Releases of molSimplify are also available on Anaconda on the [conda-forge channel](https://anaconda.org/conda-forge/molsimplify) and the [hjkgroup channel](https://anaconda.org/hjkgroup/molsimplify).
 
 ### via docker
 We also maintain an active [docker image on dockerhub](https://hub.docker.com/repository/docker/hjkgroup/molsimplify) for plug-and-play use.
