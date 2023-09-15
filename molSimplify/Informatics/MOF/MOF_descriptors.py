@@ -387,6 +387,7 @@ def make_MOF_linker_RACs(linkerlist, linker_subgraphlist, molcif, depth, name, c
         if not os.path.exists(xyz_path):
             linker_mol_fcoords_connected = XYZ_connected(cell_v, linker_mol_cart_coords, linker_mol_adj_mat)
             writeXYZandGraph(xyz_path, linker_mol_atom_labels, cell_v, linker_mol_fcoords_connected, linker_mol_adj_mat)
+
         # Write TXT file indicating the connecting atoms
         linker_index_connection_indices = []
         for item in global_connection_indices:
@@ -1192,7 +1193,7 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
         return full_names, full_descriptors
     if (len(full_names) <= 1) and (len(full_descriptors) <= 1):
         print(f'full_names is {full_names} and full_descriptors is {full_descriptors}')
-        failure_str = f'Failed to featurize {name}: Only zero or one total linkers identified.\n'       
+        failure_str = f'Failed to featurize {name}: Only zero or one total linkers identified.\n'
         full_names, full_descriptors = failure_response(path, failure_str)
         return full_names, full_descriptors
 
