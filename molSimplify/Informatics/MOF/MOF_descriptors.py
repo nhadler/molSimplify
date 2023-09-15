@@ -387,6 +387,7 @@ def make_MOF_linker_RACs(linkerlist, linker_subgraphlist, molcif, depth, name, c
         if not os.path.exists(xyz_path):
             linker_mol_fcoords_connected = XYZ_connected(cell_v, linker_mol_cart_coords, linker_mol_adj_mat)
             writeXYZandGraph(xyz_path, linker_mol_atom_labels, cell_v, linker_mol_fcoords_connected, linker_mol_adj_mat)
+
         # Write TXT file indicating the connecting atoms
         linker_index_connection_indices = []
         for item in global_connection_indices:
