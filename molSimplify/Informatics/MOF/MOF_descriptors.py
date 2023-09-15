@@ -1193,7 +1193,7 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
         return full_names, full_descriptors
     if (len(full_names) <= 1) and (len(full_descriptors) <= 1):
         print(f'full_names is {full_names} and full_descriptors is {full_descriptors}')
-        failure_str = f'Failed to featurize {name}: Only zero or one total linkers identified.\n'       
+        failure_str = f'Failed to featurize {name}: Only zero or one total linkers identified.\n'
         full_names, full_descriptors = failure_response(path, failure_str)
         return full_names, full_descriptors
 
