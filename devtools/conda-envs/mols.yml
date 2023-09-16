@@ -14,8 +14,8 @@ dependencies:
 
   # Optional
   # GUI / plotting
-  - pyqt
-  - qt
+  # - pyqt
+  # - qt
   - matplotlib
   # Database
   - pymongo
