@@ -851,7 +851,7 @@ def detect_1D_rod(SBU_list, molcif, allatomtypes, cell_v, logpath, name):
 def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=False, wiggle_room=1,
     max_num_atoms=2000, get_sbu_linker_bond_info=False, surrounded_sbu_file_generation=False, detect_1D_rod_sbu=False):
     """
-    Generates RAC descriptors on a MOF.
+    Generates RAC descriptors on a MOF, assuming it has P1 symmetry.
     Writes three files: sbu_descriptors.csv, linker_descriptors.csv, and lc_descriptors.csv
     These files contain the RAC descriptors of the MOF.
 
@@ -926,9 +926,9 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
     Getting the adjacency matrix.
     """""""""
     if not graph_provided: # Make the adjacency matrix.
-        distance_mat = compute_distance_matrix3(cell_v,cart_coords)
+        distance_mat = compute_distance_matrix3(cell_v, cart_coords)
         try:
-            adj_matrix, _ = compute_adj_matrix(distance_mat,allatomtypes,wiggle_room)
+            adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes, wiggle_room)
         except NotImplementedError:
             failure_str = f"Failed to featurize {name}: atomic overlap\n"
             full_names, full_descriptors = failure_response(path, failure_str)

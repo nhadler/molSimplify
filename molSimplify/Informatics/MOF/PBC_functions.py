@@ -1122,7 +1122,7 @@ def remove_undesired_atoms(undesired_indices, allatomtypes, fcoords):
     return allatomtypes_trim, fcoords_trim
 
 
-def overlap_removal(cif_path, new_cif_path, wiggle_room=1):
+def overlap_removal(cif_path, new_cif_path):
     """
     Reads a cif file, removes overlapping atoms, and writes the cif to the provided path.
     For a new CIF, recommended to remove symmetry (either with Vesta or with get_primitive), then run overlap_removal, then run solvent_removal.
@@ -1133,9 +1133,6 @@ def overlap_removal(cif_path, new_cif_path, wiggle_room=1):
         The path of the cif file to be read.
     new_cif_path : str
         The path to which the modified cif file will be written.
-    wiggle_room : float
-        A multiplier that allows for more or less strict bond distance cutoffs.
-        Useful for some trouble CIFs with long bonds.
 
     Returns
     -------
@@ -1155,7 +1152,7 @@ def overlap_removal(cif_path, new_cif_path, wiggle_room=1):
 
     # Assuming that the cif does not have graph information of the structure.
     distance_mat = compute_distance_matrix3(cell_v,cart_coords)
-    adj_matrix, overlap_atoms = compute_adj_matrix(distance_mat, allatomtypes, wiggle_room=wiggle_room, handle_overlap=True)
+    adj_matrix, overlap_atoms = compute_adj_matrix(distance_mat, allatomtypes, handle_overlap=True)
 
     # Dealing with the case of overlapping atoms.
     if len(overlap_atoms) != 0:
