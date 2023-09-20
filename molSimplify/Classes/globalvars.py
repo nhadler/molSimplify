@@ -458,13 +458,12 @@ def mybash(cmd):
     """
     p = subprocess.Popen(
         cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    stdout = []
-    while True:
-        line = p.stdout.readline()
-        stdout.append(line)
-        if line == '' and p.poll() is not None:
-            break
-    return ''.join(stdout)
+    stdout, stderr = p.communicate()
+    lines = stdout.decode('utf-8').splitlines()
+    lines = [line+"\n" for line in lines if line !=""]
+    #print(cmd)
+    #print(''.join(lines)) 
+    return ''.join(lines)
 
 
 # Defines global variables used throughout the code

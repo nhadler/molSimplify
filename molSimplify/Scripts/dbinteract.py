@@ -162,13 +162,13 @@ def getsimilar(smi, nmols, dbselect, finger, squery, args):
     print(('database set up :' + str(dbsdf) + ' || ' + str(dbfs)))
     print(('Finding results similar, comparing to ' + smi))
 
-    obab = 'babel'
+    obab = 'obabel' # babel -> obabel
     if dbfs and args.dbfs:
         com = obab + ' ' + dbfs + ' ' + 'simres.smi -d -xf' + \
             finger + ' -s"' + smi + '" -al' + nmols
     else:
         mybash(obab + ' -isdf ' + dbsdf + ' -osdf -O tmp.sdf -d')
-        com = obab + ' tmp.sdf simres.smi -xf' + finger + ' -s"' + smi + '"'
+        com = obab + ' tmp.sdf -O simres.smi -xf' + finger + ' -s"' + smi + '"' # babel -> obabel
     # perform search using bash commandline
     print('Performing substructure search:')
     print(('running:  ' + str(com)))
@@ -306,7 +306,7 @@ def checkels(fname, allowedels):
 #  @param outf Filename containing SMILES strings to be processed
 #  @param n Number of dissimilar molecules required
 def dissim(outf, n):
-    obab = 'babel'
+    obab = 'obabel' # babel -> obabel
 
     # clone hitlist file
     hit_list_path = "hitlist.smi"
@@ -317,7 +317,7 @@ def dissim(outf, n):
         f.writelines(smiles_list)
 
     # generate fs of original hit list
-    mybash(obab + ' -ismi ' + hit_list_path + ' -osdf tmp.sdf')
+    mybash(obab + ' -ismi ' + hit_list_path + ' -osdf -O tmp.sdf') # babel -> obabel
     mybash(obab + ' tmp.sdf -ofs')
     # number of hits
     numcpds = mybash('obabel tmp.sdf -onul')
@@ -553,6 +553,8 @@ def dbsearch(rundir, args, globs):
             shutil.copy('simres.smi', outf)
         except FileNotFoundError:
             pass
+        except shutil.SameFileError: # babel -> obabel
+            pass # babel -> obabel
 
     if args.debug:
         print(('after similarity search, outf is ' + str(outputf)))
