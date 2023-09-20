@@ -462,7 +462,7 @@ def mybash(cmd):
     lines = stdout.decode('utf-8').splitlines()
     lines = [line+"\n" for line in lines if line !=""]
     #print(cmd)
-    #print(''.join(lines)) 
+    #print(''.join(lines))
     return ''.join(lines)
 
 
