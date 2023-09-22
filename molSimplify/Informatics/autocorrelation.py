@@ -368,8 +368,8 @@ def deltametric_catoms(mol, prop_vec, orig, d, oct=True, catoms=None):
     return (result_vector)
 
 
-def full_autocorrelation(mol, prop, d, oct=oct, modifier=False, use_dist=False):
-    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
+def full_autocorrelation(mol, prop, d, oct=oct, modifier=False, use_dist=False, transition_metals_only=True):
+    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, transition_metals_only=transition_metals_only)
     index_set = list(range(0, mol.natoms))
     autocorrelation_vector = np.zeros(d + 1)
     for centers in index_set:
@@ -632,7 +632,7 @@ def layer_density_in_3D(mol, prop_vec, orig, d, oct=True):
     return result_vector
 
 
-def construct_property_vector(mol: mol3D, prop: str, oct=True, modifier=False):
+def construct_property_vector(mol: mol3D, prop: str, oct=True, modifier=False, transition_metals_only=True):
     # # assigns the value of property
     # # for atom i (zero index) in mol
     # # to position i in returned vector
@@ -727,7 +727,7 @@ def construct_property_vector(mol: mol3D, prop: str, oct=True, modifier=False):
         done = True
     elif prop == 'num_bonds':
         for i, atom in enumerate(mol.getAtoms()):
-            if not atom.ismetal():
+            if not atom.ismetal(transition_metals_only):
                 w[i] = globs.bondsdict()[atom.symbol()]
             else:
                 w[i] = len(mol.getBondedAtomsSmart(i, oct=oct))
@@ -1751,7 +1751,7 @@ def generate_full_complex_autocorrelations(mol, loud,
 def generate_full_complex_coulomb_autocorrelations(mol, loud,
                                                    depth=3, oct=True,
                                                    flag_name=False, modifier=False,
-                                                   use_dist=False):
+                                                   use_dist=False, transition_metals_only=True):
     result = list()
     colnames = []
     # allowed_strings = ['ident', 'topology', 'bondvalence', 'valenceelectron', 'bondvalence_devi', 'bodavrg', 'bodstd',
@@ -1762,7 +1762,8 @@ def generate_full_complex_coulomb_autocorrelations(mol, loud,
     for ii, properties in enumerate(allowed_strings):
         metal_ac = full_autocorrelation(mol, properties, depth,
                                         oct=oct, modifier=modifier,
-                                        use_dist=use_dist)
+                                        use_dist=use_dist,
+                                        transition_metals_only=transition_metals_only)
         this_colnames = []
         for i in range(0, depth + 1):
             this_colnames.append(labels_strings[ii] + '-' + str(i))
