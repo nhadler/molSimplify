@@ -461,8 +461,6 @@ def mybash(cmd):
     stdout, stderr = p.communicate()
     lines = stdout.decode('utf-8').splitlines()
     lines = [line+"\n" for line in lines if line !=""]
-    #print(cmd)
-    #print(''.join(lines))
     return ''.join(lines)
 
 
