@@ -29,15 +29,8 @@ jobmanager = "molSimplify.job_manager.resub:main"
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+include-package-data = true
+
 [tool.setuptools.packages.find]
 where = ["molSimplify"]
-
-[tool.setuptools.package-data]
-"molSimplify.Data" = ["*.dat"]
-"molSimplify.Bind" = ["*.dat"]
-"molSimplify.Ligands" = ["*.dict"]
-"molSimplify.icons" = ["*.png"]
-"molSimplify.python_nn" = ["*.csv"]
-"molSimplify.python_krr" = ["*.csv"]
-"molSimplify.tf_nn" = ["*/*"]
-"molSimplify.molscontrol" = ["*/*"]
