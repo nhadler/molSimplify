@@ -9,3 +9,10 @@ dependencies:
      - scikit-learn
      - beautifulsoup4
      - networkx
+     - pip:
+       - recommonmark
+       - readthedocs-sphinx-ext
+     - mock
+     - pillow
+     - sphinx
+     - sphinx_rtd_theme
