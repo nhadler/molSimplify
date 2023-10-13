@@ -1,0 +1,45 @@
+[project]
+name = "molSimplify"
+version = "v1.7.3"
+license = {file = "LICENSE"}
+readme = "README.md"
+dependencies = [
+    "numpy",
+    "scipy",
+    "scikit-learn",
+    "keras",
+    "tensorflow",
+    "pyyaml",
+]
+
+[project.optional-dependencies]
+dev = ["pre-commit"]
+
+[project.urls]
+Homepage = "https://molsimplify.mit.edu/"
+Documentation = "http://hjkgrp.mit.edu/molsimplify-tutorials/"
+Repository = "https://github.com/hjkgrp/molSimplify"
+
+[project.scripts]
+molsimplify = "molSimplify.__main__:main"
+molscontrol = "molSimplify.molscontrol.molscontrol:main"
+jobmanager = "molSimplify.job_manager.resub:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["molSimplify"]
+
+[tool.setuptools.package-data]
+molSimplify = [
+    "Data/*.dat",
+    "Bind/*.dat",
+    "Ligands/*.dict",
+    "icons/*.png",
+    "python_nn/*.csv",
+    "python_krr/*.csv",
+    "tf_nn/*/*",
+    "molscontrol/*/*",
+]
