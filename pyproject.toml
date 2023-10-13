@@ -26,10 +26,7 @@ molscontrol = "molSimplify.molscontrol.molscontrol:main"
 jobmanager = "molSimplify.job_manager.resub:main"
 
 [build-system]
-requires = [
-    "setuptools>=61.0",
-    "setuptools-scm>=8.0",
-]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]

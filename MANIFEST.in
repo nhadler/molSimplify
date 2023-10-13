@@ -1,5 +1,7 @@
-include molSimplify/Data/*
-include molSimplify/Ligands/*
+include molSimplify/Data/*.dat
+include molSimplify/Ligands/*.dict
+include molSimplify/Ligands/*.mol
+include molSimplify/Ligands/*.xyz
 include molSimplify/Bind/*
 include molSimplify/Cores/*
 include molSimplify/python_nn/*
