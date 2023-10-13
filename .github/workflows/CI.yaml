@@ -82,7 +82,7 @@ jobs:
     - name: Run doctest
       # For now still excluding several subfolders and files
       run: |
-        pytest --doctest-modules --ignore=molSimplify/job_manager --ignore=molSimplify/Informatics/MOF --ignore=molSimplify/Informatics/protein --ignore=molSimplify/Scripts/in_b3lyp_usetc.py --ignore=molSimplify/Informatics/jupyter_vis.py --ignore=molSimplify/Informatics/macrocycle_synthesis.py --ignore=molSimplify/Informatics/organic_fingerprints.py molSimplify
+        pytest --doctest-modules --ignore=molSimplify/Informatics/MOF --ignore=molSimplify/Informatics/protein --ignore=molSimplify/Scripts/in_b3lyp_usetc.py --ignore=molSimplify/Informatics/jupyter_vis.py --ignore=molSimplify/Informatics/macrocycle_synthesis.py --ignore=molSimplify/Informatics/organic_fingerprints.py molSimplify
 
     - name: Upload coverage report to codecov
       uses: codecov/codecov-action@v3

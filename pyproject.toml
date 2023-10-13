@@ -23,7 +23,6 @@ Repository = "https://github.com/hjkgrp/molSimplify"
 [project.scripts]
 molsimplify = "molSimplify.__main__:main"
 molscontrol = "molSimplify.molscontrol.molscontrol:main"
-jobmanager = "molSimplify.job_manager.resub:main"
 
 [build-system]
 requires = ["setuptools>=61.0"]
