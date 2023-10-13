@@ -6,6 +6,8 @@ readme = "README.md"
 dependencies = [
     "numpy",
     "scipy",
+    "pandas",
+    "networkx",
     "scikit-learn",
     "keras",
     "tensorflow",
@@ -15,14 +17,10 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pre-commit"]
 docs = [
-    "openbabel",
-    "pyyaml",
-    "pandas",
     "beautifulsoup4",
-    "networkx",
     "sphinx",
+    "readthedocs-sphinx-ext",
     "sphinx_rtd_theme",
-    "readthedocs-sphinx-ext"
 ]
 
 [project.urls]
