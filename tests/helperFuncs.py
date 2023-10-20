@@ -9,7 +9,6 @@ from molSimplify.Scripts.generator import startgen
 from molSimplify.Classes.globalvars import (dict_oneempty_check_st,
                                             oneempty_angle_ref)
 from molSimplify.Classes.mol3D import mol3D
-from pkg_resources import resource_filename, Requirement
 from typing import Dict
 from contextlib import contextmanager
 from pathlib import Path
@@ -163,12 +162,13 @@ def compareOG(xyz1, xyz2, thresh: float) -> bool:
     return passOG
 
 
-def runtest_num_atoms_in_xyz(tmpdir, xyzfile):
+def runtest_num_atoms_in_xyz(tmpdir, resource_path_root, xyzfile):
+    file_path = resource_path_root / "refs" / f"{xyzfile}.xyz"
     xyz_file1 = mol3D()
-    xyz_file1.readfromxyz('tests/refs/' + xyzfile + '.xyz')
+    xyz_file1.readfromxyz(file_path)
     xyz_file1.getNumAtoms()
 
-    with open('tests/refs/' + xyzfile + '.xyz', 'r') as f:
+    with open(file_path, 'r') as f:
         xyz_file2 = f.readlines()
     num_atoms = int(xyz_file2[0])
 
@@ -396,12 +396,11 @@ def compare_qc_input(inp, inp_ref):
     return passQcInputCheck
 
 
-def runtest(tmpdir, name, threshMLBL, threshLG, threshOG, seed=31415):
+def runtest(tmpdir, resource_path_root, name, threshMLBL, threshLG, threshOG, seed=31415):
     # Set seeds to eliminate randomness from test results
     random.seed(seed)
     np.random.seed(seed)
-    infile = resource_filename(Requirement.parse(
-        "molSimplify"), f"tests/inputs/{name}.in")
+    infile = resource_path_root / "inputs" / f"{name}.in"
     newinfile, myjobdir = parse4test(infile, tmpdir)
     args = ['main.py', '-i', newinfile]
     with working_directory(tmpdir):
@@ -418,12 +417,9 @@ def runtest(tmpdir, name, threshMLBL, threshLG, threshOG, seed=31415):
     if 'molcas' in molsim_data.lower():
         output_qcin = myjobdir + '/molcas.input'
 
-    ref_xyz = resource_filename(Requirement.parse(
-        "molSimplify"), f"tests/refs/{name}.xyz")
-    ref_report = resource_filename(Requirement.parse(
-        "molSimplify"), f"tests/refs/{name}.report")
-    ref_qcin = resource_filename(Requirement.parse(
-        "molSimplify"), f"tests/refs/{name}.qcin")
+    ref_xyz = resource_path_root / "refs" / f"{name}.xyz"
+    ref_report = resource_path_root / "refs" / f"{name}.report"
+    ref_qcin = resource_path_root / "refs" / f"{name}.qcin"
 
     print("Test input file: ", newinfile)
     print("Test output files are generated in ", myjobdir)
@@ -443,7 +439,7 @@ def runtest(tmpdir, name, threshMLBL, threshLG, threshOG, seed=31415):
     return [passNumAtoms, passMLBL, passLG, passOG, pass_report, pass_qcin]
 
 
-def runtest_slab(tmpdir, name, threshOG, extra_files=None):
+def runtest_slab(tmpdir, resource_path_root, name, threshOG, extra_files=None):
     """
     Performs test for slab builder.
 
@@ -456,20 +452,17 @@ def runtest_slab(tmpdir, name, threshOG, extra_files=None):
         axis : threshOG
                 tolerance for RMSD comparison of overall geometries.
     """
-    infile = resource_filename(Requirement.parse(
-        "molSimplify"), f"tests/inputs/{name}.in")
+    infile = resource_path_root / "inputs" / f"{name}.in"
     newinfile, _ = parse4test(infile, tmpdir)
     if extra_files is not None:
         for file_name in extra_files:
-            file_path = resource_filename(Requirement.parse(
-                "molSimplify"), f"tests/inputs/{file_name}")
+            file_path = resource_path_root / "inputs" / f"{file_name}"
             shutil.copyfile(file_path, tmpdir / file_name)
     args = ['main.py', '-i', newinfile]
     with working_directory(tmpdir):
         startgen(args, False, False)
-    output_xyz = str(tmpdir / 'slab' / 'super332.xyz')
-    ref_xyz = resource_filename(Requirement.parse(
-        "molSimplify"), f"tests/refs/{name}.xyz")
+    output_xyz = tmpdir / 'slab' / 'super332.xyz'
+    ref_xyz = resource_path_root / "refs" / f"{name}.xyz"
     print("Output xyz file: ", output_xyz)
     pass_xyz = compareGeo(output_xyz, ref_xyz, threshMLBL=0, threshLG=0,
                           threshOG=threshOG, slab=True)
@@ -477,7 +470,7 @@ def runtest_slab(tmpdir, name, threshOG, extra_files=None):
     return [passNumAtoms, passOG]
 
 
-def runtest_molecule_on_slab(tmpdir, name, threshOG, extra_files=None):
+def runtest_molecule_on_slab(tmpdir, resource_path_root, name, threshOG, extra_files=None):
     """
     Performs test for slab builder with a CO molecule adsorbed.
 
@@ -490,21 +483,18 @@ def runtest_molecule_on_slab(tmpdir, name, threshOG, extra_files=None):
         axis : threshOG
                 tolerance for RMSD comparison of overall geometries.
     """
-    infile = resource_filename(Requirement.parse(
-        "molSimplify"), f"tests/inputs/{name}.in")
+    infile = resource_path_root / "inputs" / f"{name}.in"
     newinfile, _ = parse4test(infile, tmpdir, extra_args={
         '-unit_cell': 'slab.xyz', '-target_molecule': 'co.xyz'})
     if extra_files is not None:
         for file_name in extra_files:
-            file_path = resource_filename(Requirement.parse(
-                "molSimplify"), f"tests/inputs/{file_name}")
+            file_path = resource_path_root / "inputs" / f"{file_name}"
             shutil.copyfile(file_path, tmpdir / file_name)
     args = ['main.py', '-i', newinfile]
     with working_directory(tmpdir):
         startgen(args, False, False)
-    output_xyz = str(tmpdir / 'loaded_slab' / 'loaded.xyz')
-    ref_xyz = resource_filename(Requirement.parse(
-        "molSimplify"), f"tests/refs/{name}.xyz")
+    output_xyz = tmpdir / 'loaded_slab' / 'loaded.xyz'
+    ref_xyz = resource_path_root / "refs" / f"{name}.xyz"
     print("Output xyz file: ", output_xyz)
     pass_xyz = compareGeo(output_xyz, ref_xyz, threshMLBL=0, threshLG=0,
                           threshOG=threshOG, slab=True)
@@ -512,13 +502,10 @@ def runtest_molecule_on_slab(tmpdir, name, threshOG, extra_files=None):
     return [passNumAtoms, passOG]
 
 
-def runtestgeo(tmpdir, name, thresh, deleteH=True, geo_type="oct"):
-    initgeo = resource_filename(Requirement.parse(
-        "molSimplify"), f"tests/inputs/geocheck/{name}/init.xyz")
-    optgeo = resource_filename(Requirement.parse(
-        "molSimplify"), f"tests/inputs/geocheck/{name}/opt.xyz")
-    refjson = resource_filename(Requirement.parse(
-        "molSimplify"), f"tests/refs/geocheck/{name}/ref.json")
+def runtestgeo(tmpdir, resource_path_root, name, thresh, deleteH=True, geo_type="oct"):
+    initgeo = resource_path_root / "inputs" / "geocheck" / name / "init.xyz"
+    optgeo = resource_path_root / "inputs" / "geocheck" / name / "opt.xyz"
+    refjson = resource_path_root / "refs" / "geocheck" / name / "ref.json"
     mymol = mol3D()
     mymol.readfromxyz(optgeo)
     init_mol = mol3D()
@@ -543,11 +530,9 @@ def runtestgeo(tmpdir, name, thresh, deleteH=True, geo_type="oct"):
     return passGeo
 
 
-def runtestgeo_optonly(tmpdir, name, thresh, deleteH=True, geo_type="oct"):
-    optgeo = resource_filename(Requirement.parse(
-        "molSimplify"), f"tests/inputs/geocheck/{name}/opt.xyz")
-    refjson = resource_filename(Requirement.parse(
-        "molSimplify"), f"tests/refs/geocheck/{name}/ref.json")
+def runtestgeo_optonly(tmpdir, resource_path_root, name, thresh, deleteH=True, geo_type="oct"):
+    optgeo = resource_path_root / "inputs" / "geocheck" / name / "opt.xyz"
+    refjson = resource_path_root / "refs" / "geocheck" / name / "ref.json"
     mymol = mol3D()
     mymol.readfromxyz(optgeo)
     if geo_type == "oct":
@@ -561,9 +546,8 @@ def runtestgeo_optonly(tmpdir, name, thresh, deleteH=True, geo_type="oct"):
         raise NotImplementedError('Only octahedral geometries supported for now')
 
 
-def runtestNoFF(tmpdir, name, threshMLBL, threshLG, threshOG):
-    infile = resource_filename(Requirement.parse(
-        "molSimplify"), f"tests/inputs/{name}.in")
+def runtestNoFF(tmpdir, resource_path_root, name, threshMLBL, threshLG, threshOG):
+    infile = resource_path_root / "inputs" / f"{name}.in"
     newinfile, myjobdir = parse4testNoFF(infile, tmpdir)
     [passNumAtoms, passMLBL, passLG, passOG, pass_report,
      pass_qcin] = [True, True, True, True, True, True]
@@ -581,12 +565,9 @@ def runtestNoFF(tmpdir, name, threshMLBL, threshLG, threshOG):
             output_qcin = myjobdir + '/orca.in'
         if 'molcas' in molsim_data.lower():
             output_qcin = myjobdir + '/molcas.input'
-        ref_xyz = resource_filename(Requirement.parse(
-            "molSimplify"), f"tests/refs/{newname}.xyz")
-        ref_report = resource_filename(Requirement.parse(
-            "molSimplify"), f"tests/refs/{newname}.report")
-        ref_qcin = resource_filename(Requirement.parse(
-            "molSimplify"), f"tests/refs/{name}.qcin")
+        ref_xyz = resource_path_root / "refs" / f"{newname}.xyz"
+        ref_report = resource_path_root / "refs" / f"{newname}.report"
+        ref_qcin = resource_path_root / "refs" / f"{name}.qcin"
         print("Test input file: ", newinfile)
         print("Test output files are generated in ", myjobdir)
         print("Output xyz file: ", output_xyz)
@@ -606,12 +587,11 @@ def runtestNoFF(tmpdir, name, threshMLBL, threshLG, threshOG):
     return [passNumAtoms, passMLBL, passLG, passOG, pass_report, pass_qcin]
 
 
-def runtest_reportonly(tmpdir, name, seed=31415):
+def runtest_reportonly(tmpdir, resource_path_root, name, seed=31415):
     # Set seeds to eliminate randomness from test results
     random.seed(seed)
     np.random.seed(seed)
-    infile = resource_filename(Requirement.parse(
-        "molSimplify"), f"tests/inputs/{name}.in")
+    infile = resource_path_root / "inputs" / f"{name}.in"
     # Copy the input file to the temporary folder
     shutil.copy(infile, tmpdir/f'{name}_reportonly.in')
     # Add the report only flag
@@ -624,8 +604,7 @@ def runtest_reportonly(tmpdir, name, seed=31415):
     with working_directory(tmpdir):
         startgen(args, False, False)
     output_report = myjobdir + '/' + name + '_reportonly.report'
-    ref_report = resource_filename(Requirement.parse(
-        "molSimplify"), f"tests/refs/{name}.report")
+    ref_report = resource_path_root / "refs" / f"{name}.report"
     # Copy the reference report to the temporary folder
     shutil.copy(ref_report, tmpdir/f'{name}_ref.report')
     with open(tmpdir/f'{name}_ref.report', 'r') as f:
@@ -643,17 +622,15 @@ def runtest_reportonly(tmpdir, name, seed=31415):
     return pass_report
 
 
-def runtestMulti(tmpdir, name, threshMLBL, threshLG, threshOG):
-    infile = resource_filename(Requirement.parse(
-        "molSimplify"), f"tests/inputs/{name}.in")
+def runtestMulti(tmpdir, resource_path_root, name, threshMLBL, threshLG, threshOG):
+    infile = resource_path_root / "inputs" / f"{name}.in"
     newinfile, myjobdir = parse4test(infile, tmpdir, True)
     args = ['main.py', '-i', newinfile]
     with working_directory(tmpdir):
         startgen(args, False, False)
     print("Test input file: ", newinfile)
     print("Test output files are generated in ", myjobdir)
-    refdir = resource_filename(Requirement.parse(
-        "molSimplify"), f"tests/refs/{name}")
+    refdir = resource_path_root / "refs" / name
     [passMultiFileCheck, myfiles] = checkMultiFileGen(myjobdir, refdir)
     pass_structures = []
     if not passMultiFileCheck:

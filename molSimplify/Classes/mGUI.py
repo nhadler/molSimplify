@@ -39,7 +39,7 @@ import unicodedata
 import glob
 import tempfile
 import re
-from pkg_resources import resource_filename, Requirement
+from importlib_resources import files as resource_files
 import xml.etree.ElementTree as ET
 
 try:
@@ -142,8 +142,7 @@ class mGUI():
         helpAction.triggered.connect(self.qshowhelp)
         menu2.addAction(helpAction)
         # ## place title top ###
-        f = resource_filename(Requirement.parse(
-            "molSimplify"), "molSimplify/icons/logo.png")
+        f = resource_files("molSimplify").joinpath("icons/logo.png")
         clogo = mQPixmap(f)
         self.grid.addWidget(clogo, 2, 8, 1, 10)
         self.txtdev = mQLabel('Developed by Kulik group @ MIT', '', 'c', 16)
@@ -363,8 +362,7 @@ class mGUI():
         if globs.custom_path:
             f = globs.custom_path + "/Ligands/ligands.dict"
         else:
-            f = resource_filename(Requirement.parse(
-                "molSimplify"), "molSimplify/Ligands/ligands.dict")
+            f = str(resource_files("molSimplify").joinpath("Ligands/ligands.dict"))
         qcav0 = getligroups(readdict(f))
         qcav = [_f for _f in qcav0.split(' ') if _f]
         self.etliggrp = mQComboBox(qcav, ctip, 12)
@@ -613,8 +611,7 @@ class mGUI():
         self.qctWindow.setPalette(p)  # set background color
         self.qctWindow.setLayout(self.qctgrid)  # set layout
 
-        f = resource_filename(Requirement.parse(
-            "molSimplify"), "molSimplify/icons/petachem.png")
+        f = resource_files("molSimplify").joinpath("icons/petachem.png")
         c0 = mQPixmap(f)
         self.qctgrid.addWidget(c0, 0, 2, 1, 1)
         # top text
@@ -876,10 +873,8 @@ class mGUI():
         self.sgrid.addWidget(self.jWindow)  # add to stacked grid
         self.jWindow.setPalette(p)  # set background color
         self.jWindow.setLayout(self.jgrid)  # set layout
-        f1 = resource_filename(Requirement.parse(
-            "molSimplify"), "molSimplify/icons/sge.png")
-        f2 = resource_filename(Requirement.parse(
-            "molSimplify"), "molSimplify/icons/slurm.png")
+        f1 = resource_files("molSimplify").joinpath("icons/sge.png")
+        f2 = resource_files("molSimplify").joinpath("icons/slurm.png")
         c1 = mQPixmap(f1)
         c2 = mQPixmap(f2)
         self.jgrid.addWidget(c1, 1, 2, 1, 1)
@@ -1181,8 +1176,7 @@ class mGUI():
         self.etcDBmw1 = mQLineEdit('', ctip, 'l', 14)
         self.cDBgrid.addWidget(self.etcDBmw1, 11, 8, 1, 1)
         # aspirin icon
-        f = resource_filename(Requirement.parse(
-            "molSimplify"), "molSimplify/icons/chemdb.png")
+        f = resource_files("molSimplify").joinpath("icons/chemdb.png")
         c = mQPixmap(f)
         relresize(c, c, 0.4)
         self.cDBgrid.addWidget(c, 7, 0, 4, 2)
@@ -1271,8 +1265,7 @@ class mGUI():
         self.butpret.clicked.connect(self.qretmain)
         self.pgrid.addWidget(self.butpret, 7, 3, 1, 2)
         # c1p = mPic(self.pWindow,globs.installdir+'/icons/wft1.png',0.04,0.7,0.2)
-        f = resource_filename(Requirement.parse(
-            "molSimplify"), "molSimplify/icons/wft3.png")
+        f = resource_files("molSimplify").joinpath("icons/wft3.png")
         c3p = mQPixmap(f)
         self.pgrid.addWidget(c3p, 3, 0, 4, 1)
         # c2p = mPic(self.pWindow,globs.installdir+'/icons/wft2.png',0.04,0.035,0.2)
@@ -1746,8 +1739,7 @@ class mGUI():
             if globs.custom_path:
                 f = globs.custom_path + "/Data/coordinations.dict"
             else:
-                f = resource_filename(Requirement.parse(
-                    "molSimplify"), "molSimplify/Data/coordinations.dict")
+                f = str(resource_files("molSimplify").joinpath("Data/coordinations.dict"))
             with open(f, 'r') as fl:
                 s = fl.read().splitlines()
             if gname.lower() in s:
@@ -1790,8 +1782,7 @@ class mGUI():
                 fl.write(xyzl)
             # write png file
             if glob.glob(cfile):
-                f = resource_filename(Requirement.parse(
-                    "molSimplify"), "molSimplify/icons/geoms/")
+                f = str(resource_files("molSimplify").joinpath("icons/geoms/"))
                 shutil.copy2(cfile, f+gshort+'.png')
             choice = QMessageBox.information(
                 self.geWindow, 'Add', 'Successfully added to the database!')
@@ -1827,8 +1818,7 @@ class mGUI():
             if globs.custom_path:
                 f = globs.custom_path + "/Data/coordinations.dict"
             else:
-                f = resource_filename(Requirement.parse(
-                    "molSimplify"), "molSimplify/Data/coordinations.dict")
+                f = str(resource_files("molSimplify").joinpath("Data/coordinations.dict"))
             with open(f, 'r') as fl:
                 s = fl.read()
             if gname.lower() not in s and gshort.lower() not in s:
@@ -1847,8 +1837,7 @@ class mGUI():
             if globs.custom_path:
                 f = globs.custom_path + "/Data/coordinations.dict"
             else:
-                f = resource_filename(Requirement.parse(
-                    "molSimplify"), "molSimplify/Data/coordinations.dict")
+                f = str(resource_files("molSimplify").joinpath("Data/coordinations.dict"))
             with open(f, 'w') as fl:
                 fl.write(snew)
             # remove file
@@ -2076,8 +2065,7 @@ class mGUI():
     def viewgeom(self):
         # get geometry
         geom = self.dcoordg.currentText()
-        gfname = resource_filename(Requirement.parse(
-            "molSimplify"), "molSimplify/icons/geoms/" + geom + ".png")
+        gfname = str(resource_files("molSimplify").joinpath(f"icons/geoms/{geom}.png"))
         if glob.glob(gfname):
             rows = self.lgrid.rowCount()
             # Clear existing widgets in layout
@@ -2268,8 +2256,7 @@ class mGUI():
         # add to box
         for i, t in enumerate(qc):
             # File f is never actually used? RM 2022/02/17
-            f = resource_filename(Requirement.parse(  # noqa F841
-                "molSimplify"), "molSimplify/icons/geoms/" + t + ".png")
+            f = str(resource_files("molSimplify").joinpath(f"icons/geoms/{t}.png"))  # noqa F841
             self.dcoordg.addItem(QIcon(t), t)
         self.dcoordg.setIconSize(QSize(60, 60))
         # set default geometry

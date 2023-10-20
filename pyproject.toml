@@ -12,10 +12,11 @@ dependencies = [
     "keras",
     "tensorflow",
     "pyyaml",
+    "importlib-resources",
 ]
 
 [project.optional-dependencies]
-dev = ["pre-commit"]
+dev = ["pytest", "pytest-resource-path", "pre-commit"]
 docs = [
     "beautifulsoup4",
     "sphinx",

@@ -1,14 +1,10 @@
 import numpy as np
 from molSimplify.Classes.mol3D import mol3D
-from pkg_resources import resource_filename, Requirement
 from molSimplify.Informatics.coulomb_analyze import create_coulomb_matrix
 
 
-def test_create_coulomb_matrix():
-    xyz_file = resource_filename(
-        Requirement.parse("molSimplify"),
-        "tests/inputs/cr3_f6_optimization.xyz"
-    )
+def test_create_coulomb_matrix(resource_path_root):
+    xyz_file = resource_path_root / "inputs" / "cr3_f6_optimization.xyz"
     mol = mol3D()
     mol.readfromxyz(xyz_file)
     cm = create_coulomb_matrix(mol)
