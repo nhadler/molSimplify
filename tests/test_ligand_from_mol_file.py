@@ -1,23 +1,18 @@
 import pytest
 from molSimplify.Scripts.generator import startgen
 from helperFuncs import working_directory, compareGeo, compare_report_new
-from pkg_resources import resource_filename, Requirement
 import shutil
 
 
 @pytest.mark.skip("Loading multidentate ligands from files is currently not supported")
-def test_ligand_from_mol_file(tmpdir):
-    input_file = resource_filename(Requirement.parse(
-            "molSimplify"), "tests/inputs/ligand_from_mol_file.in")
+def test_ligand_from_mol_file(tmpdir, resource_path_root):
+    input_file = resource_path_root / "inputs" / "ligand_from_mol_file.in"
     shutil.copyfile(input_file, tmpdir / "ligand_from_mol_file.in")
-    mol_file = resource_filename(Requirement.parse(
-            "molSimplify"), "tests/inputs/pdp.mol")
+    mol_file = resource_path_root / "inputs" / "pdp.mol"
     shutil.copyfile(mol_file, tmpdir / "pdp.mol")
 
-    ref_xyz = resource_filename(Requirement.parse(
-        "molSimplify"), "tests/refs/ligand_from_mol_file.xyz")
-    ref_report = resource_filename(Requirement.parse(
-        "molSimplify"), "tests/refs/ligand_from_mol_file.report")
+    ref_xyz = resource_path_root / "refs" / "ligand_from_mol_file.xyz"
+    ref_report = resource_path_root / "refs" / "ligand_from_mol_file.report"
 
     threshMLBL = 0.1
     threshLG = 0.1

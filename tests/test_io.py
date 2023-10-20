@@ -1,12 +1,9 @@
 import numpy as np
 from molSimplify.Scripts.io import lig_load
-from pkg_resources import resource_filename, Requirement
 
 
-def test_lig_load():
-    lig_file = resource_filename(
-        Requirement.parse('molSimplify'),
-        'tests/inputs/io/acac.mol2')
+def test_lig_load(resource_path_root):
+    lig_file = str(resource_path_root / "inputs" / "io" / "acac.mol2")
     mol, emsg = lig_load(lig_file)
     # Assert that the error message is empty
     assert not emsg

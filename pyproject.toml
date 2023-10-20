@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pre-commit"]
+dev = ["pytest", "pytest-resource-path", "pre-commit"]
 docs = [
     "beautifulsoup4",
     "sphinx",

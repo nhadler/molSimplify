@@ -2693,8 +2693,7 @@ class mol3D:
         amassdict = globs.amass()
         self.graph = []
         self.xyzfile = filename
-        fname = filename.split('.xyz')[0]
-        with open(fname + '.xyz', 'r') as f:
+        with open(filename, 'r') as f:
             s = f.read().splitlines()
         try:
             atom_count = int(s[0])

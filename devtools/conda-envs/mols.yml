@@ -12,6 +12,7 @@ dependencies:
   - pip
   - pip:
     - pytest
+    - pytest-resource-path
 
   # Optional
   # GUI / plotting
