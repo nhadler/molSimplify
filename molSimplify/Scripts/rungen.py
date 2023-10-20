@@ -234,7 +234,7 @@ def multigenruns(rundir, args, write_files=True):
                 emsg = rungen(rundir, args, fname, write_files=write_files)
                 if emsg:
                     return emsg
-                
+
     elif (multch):
         for ch in charges:
             args.charge = ch
@@ -564,7 +564,7 @@ def rungen(rundir, args, chspfname=None, write_files=True):
             ####################################
             ############ GENERATION ############
             ####################################
-        
+
         if not skip:
             # check for generate all
             if args.genall:
