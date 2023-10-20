@@ -66,7 +66,7 @@ CHEMBL467186
   1  2  1  0
   3 30  1  0
 M  END
->  <chembl_id>  (1) 
+>  <chembl_id>  (1)
 CHEMBL467186
 
 $$$$
@@ -121,7 +121,7 @@ CHEMBL115625
  22 20  2  0
  13 19  1  0
 M  END
->  <chembl_id>  (2) 
+>  <chembl_id>  (2)
 CHEMBL115625
 
 $$$$
@@ -185,7 +185,7 @@ CHEMBL4999188
  22 23  1  0
  25 26  1  0
 M  END
->  <chembl_id>  (3) 
+>  <chembl_id>  (3)
 CHEMBL4999188
 
 $$$$
@@ -242,7 +242,7 @@ CHEMBL1193286
  21 23  1  0
  22 23  1  0
 M  END
->  <chembl_id>  (4) 
+>  <chembl_id>  (4)
 CHEMBL1193286
 
 $$$$
@@ -296,7 +296,7 @@ CHEMBL316048
   2  4  1  0
  12 15  1  0
 M  END
->  <chembl_id>  (5) 
+>  <chembl_id>  (5)
 CHEMBL316048
 
 $$$$
@@ -389,7 +389,7 @@ CHEMBL4778269
  36 39  1  0
  35 40  1  0
 M  END
->  <chembl_id>  (6) 
+>  <chembl_id>  (6)
 CHEMBL4778269
 
 $$$$
@@ -431,7 +431,7 @@ CHEMBL4519962
  16  2  1  0
  13  9  2  0
 M  END
->  <chembl_id>  (7) 
+>  <chembl_id>  (7)
 CHEMBL4519962
 
 $$$$
@@ -510,7 +510,7 @@ CHEMBL4107000
  32  3  1  0
  32 33  1  6
 M  END
->  <chembl_id>  (8) 
+>  <chembl_id>  (8)
 CHEMBL4107000
 
 $$$$
@@ -574,7 +574,7 @@ CHEMBL362656
  16 10  2  0
   8 12  1  0
 M  END
->  <chembl_id>  (9) 
+>  <chembl_id>  (9)
 CHEMBL362656
 
 $$$$
@@ -677,7 +677,7 @@ CHEMBL2387759
  44 40  1  0
  43 45  1  0
 M  END
->  <chembl_id>  (10) 
+>  <chembl_id>  (10)
 CHEMBL2387759
 
 $$$$
@@ -722,7 +722,7 @@ CHEMBL145581
  17 15  1  0
   9 13  2  0
 M  END
->  <chembl_id>  (11) 
+>  <chembl_id>  (11)
 CHEMBL145581
 
 $$$$
@@ -789,7 +789,7 @@ CHEMBL3321762
  26 27  1  0
   8 28  1  0
 M  END
->  <chembl_id>  (12) 
+>  <chembl_id>  (12)
 CHEMBL3321762
 
 $$$$
@@ -845,7 +845,7 @@ CHEMBL387983
  21 22  2  0
  22 17  1  0
 M  END
->  <chembl_id>  (13) 
+>  <chembl_id>  (13)
 CHEMBL387983
 
 $$$$
@@ -910,7 +910,7 @@ CHEMBL1222424
  12 13  2  0
  26 27  1  0
 M  END
->  <chembl_id>  (14) 
+>  <chembl_id>  (14)
 CHEMBL1222424
 
 $$$$
@@ -988,7 +988,7 @@ CHEMBL586394
  31 32  2  0
  22 33  2  0
 M  END
->  <chembl_id>  (15) 
+>  <chembl_id>  (15)
 CHEMBL586394
 
 $$$$
@@ -1081,7 +1081,7 @@ CHEMBL3758554
  38 39  1  0
  39 40  1  0
 M  END
->  <chembl_id>  (16) 
+>  <chembl_id>  (16)
 CHEMBL3758554
 
 $$$$
@@ -1142,7 +1142,7 @@ CHEMBL122806
  21 25  2  0
  17 18  2  0
 M  END
->  <chembl_id>  (17) 
+>  <chembl_id>  (17)
 CHEMBL122806
 
 $$$$
@@ -1244,7 +1244,7 @@ CHEMBL4280431
  43 44  3  0
  23 43  1  0
 M  END
->  <chembl_id>  (18) 
+>  <chembl_id>  (18)
 CHEMBL4280431
 
 $$$$
@@ -1297,7 +1297,7 @@ CHEMBL4896813
  17 20  1  0
  19 21  2  0
 M  END
->  <chembl_id>  (19) 
+>  <chembl_id>  (19)
 CHEMBL4896813
 
 $$$$
@@ -1346,7 +1346,7 @@ CHEMBL4093796
  18 19  1  0
   2 20  1  0
 M  END
->  <chembl_id>  (20) 
+>  <chembl_id>  (20)
 CHEMBL4093796
 
 $$$$
@@ -1417,7 +1417,7 @@ CHEMBL2407398
  28 29  1  0
  24 30  1  0
 M  END
->  <chembl_id>  (21) 
+>  <chembl_id>  (21)
 CHEMBL2407398
 
 $$$$
@@ -1508,7 +1508,7 @@ CHEMBL510190
  32 39  1  0
  32 40  1  0
 M  END
->  <chembl_id>  (22) 
+>  <chembl_id>  (22)
 CHEMBL510190
 
 $$$$
@@ -1552,7 +1552,7 @@ CHEMBL3212859
  13 15  1  0
  16 17  2  0
 M  END
->  <chembl_id>  (23) 
+>  <chembl_id>  (23)
 CHEMBL3212859
 
 $$$$
@@ -1626,7 +1626,7 @@ CHEMBL5009192
  20 21  2  0
  27 29  1  0
 M  END
->  <chembl_id>  (24) 
+>  <chembl_id>  (24)
 CHEMBL5009192
 
 $$$$
@@ -1691,7 +1691,7 @@ CHEMBL29942
  27 24  2  0
   9 15  1  0
 M  END
->  <chembl_id>  (25) 
+>  <chembl_id>  (25)
 CHEMBL29942
 
 $$$$
@@ -1830,7 +1830,7 @@ CHEMBL4646003
  61 57  1  0
  15 62  1  0
 M  END
->  <chembl_id>  (26) 
+>  <chembl_id>  (26)
 CHEMBL4646003
 
 $$$$
@@ -1896,7 +1896,7 @@ CHEMBL2385923
  24 26  1  0
  26 27  1  0
 M  END
->  <chembl_id>  (27) 
+>  <chembl_id>  (27)
 CHEMBL2385923
 
 $$$$
@@ -1959,7 +1959,7 @@ CHEMBL1613370
  24 25  2  0
  24 26  1  0
 M  END
->  <chembl_id>  (28) 
+>  <chembl_id>  (28)
 CHEMBL1613370
 
 $$$$
@@ -2040,7 +2040,7 @@ CHEMBL1362986
  32 34  2  0
  33 34  1  0
 M  END
->  <chembl_id>  (29) 
+>  <chembl_id>  (29)
 CHEMBL1362986
 
 $$$$
@@ -2130,7 +2130,7 @@ CHEMBL1852180
  18  1  1  0
 M  CHG  2   3   1   4   1
 M  END
->  <chembl_id>  (30) 
+>  <chembl_id>  (30)
 CHEMBL1852180
 
 $$$$
@@ -2324,7 +2324,7 @@ CHEMBL5195752
  89 90  2  0
  90 85  1  0
 M  END
->  <chembl_id>  (31) 
+>  <chembl_id>  (31)
 CHEMBL5195752
 
 $$$$
@@ -2376,7 +2376,7 @@ CHEMBL1594841
  18 21  1  0
  20 21  1  0
 M  END
->  <chembl_id>  (32) 
+>  <chembl_id>  (32)
 CHEMBL1594841
 
 $$$$
@@ -2450,7 +2450,7 @@ CHEMBL1204001
  31 32  2  0
  32 27  1  0
 M  END
->  <chembl_id>  (33) 
+>  <chembl_id>  (33)
 CHEMBL1204001
 
 $$$$
@@ -2527,7 +2527,7 @@ CHEMBL4514482
  30 32  2  0
 M  CHG  2  30   1  31  -1
 M  END
->  <chembl_id>  (34) 
+>  <chembl_id>  (34)
 CHEMBL4514482
 
 $$$$
@@ -2562,7 +2562,7 @@ CHEMBL1973203
  11 13  1  0
  12 13  1  0
 M  END
->  <chembl_id>  (35) 
+>  <chembl_id>  (35)
 CHEMBL1973203
 
 $$$$
@@ -2597,7 +2597,7 @@ CHEMBL404205
   6  1  1  0
  11 13  1  0
 M  END
->  <chembl_id>  (36) 
+>  <chembl_id>  (36)
 CHEMBL404205
 
 $$$$
@@ -2665,7 +2665,7 @@ CHEMBL1707967
  24 26  2  0
  25 26  1  0
 M  END
->  <chembl_id>  (37) 
+>  <chembl_id>  (37)
 CHEMBL1707967
 
 $$$$
@@ -2746,7 +2746,7 @@ CHEMBL1625053
  30 33  2  0
  32 33  1  0
 M  END
->  <chembl_id>  (38) 
+>  <chembl_id>  (38)
 CHEMBL1625053
 
 $$$$
@@ -2790,7 +2790,7 @@ CHEMBL4980198
   4  6  1  0
  15 16  1  0
 M  END
->  <chembl_id>  (39) 
+>  <chembl_id>  (39)
 CHEMBL4980198
 
 $$$$
@@ -2850,7 +2850,7 @@ CHEMBL193086
  16 17  2  0
  24 21  2  0
 M  END
->  <chembl_id>  (40) 
+>  <chembl_id>  (40)
 CHEMBL193086
 
 $$$$
@@ -2905,7 +2905,7 @@ CHEMBL3440289
  21 22  2  0
  22 10  1  0
 M  END
->  <chembl_id>  (41) 
+>  <chembl_id>  (41)
 CHEMBL3440289
 
 $$$$
@@ -3024,7 +3024,7 @@ CHEMBL3983590
  52  9  1  0
  52 35  1  0
 M  END
->  <chembl_id>  (42) 
+>  <chembl_id>  (42)
 CHEMBL3983590
 
 $$$$
@@ -3105,7 +3105,7 @@ CHEMBL521008
  16 17  1  0
   6 35  1  6
 M  END
->  <chembl_id>  (43) 
+>  <chembl_id>  (43)
 CHEMBL521008
 
 $$$$
@@ -3178,7 +3178,7 @@ CHEMBL1966796
  28 30  1  0
  30 31  1  0
 M  END
->  <chembl_id>  (44) 
+>  <chembl_id>  (44)
 CHEMBL1966796
 
 $$$$
@@ -3216,7 +3216,7 @@ CHEMBL326321
   2  9  1  0
  10 12  2  0
 M  END
->  <chembl_id>  (45) 
+>  <chembl_id>  (45)
 CHEMBL326321
 
 $$$$
@@ -3284,7 +3284,7 @@ CHEMBL4163761
  15 26  1  0
  14 27  1  0
 M  END
->  <chembl_id>  (46) 
+>  <chembl_id>  (46)
 CHEMBL4163761
 
 $$$$
@@ -3335,7 +3335,7 @@ CHEMBL1409173
  14 18  1  0
  19 20  2  0
 M  END
->  <chembl_id>  (47) 
+>  <chembl_id>  (47)
 CHEMBL1409173
 
 $$$$
@@ -3415,7 +3415,7 @@ CHEMBL1890695
  31 32  1  0
  33 34  1  0
 M  END
->  <chembl_id>  (48) 
+>  <chembl_id>  (48)
 CHEMBL1890695
 
 $$$$
@@ -3476,7 +3476,7 @@ CHEMBL1095289
   4  5  1  0
  22 25  1  0
 M  END
->  <chembl_id>  (49) 
+>  <chembl_id>  (49)
 CHEMBL1095289
 
 $$$$
@@ -3544,7 +3544,7 @@ CHEMBL289849
  10  8  1  0
  22 16  2  0
 M  END
->  <chembl_id>  (50) 
+>  <chembl_id>  (50)
 CHEMBL289849
 
 $$$$
@@ -3589,7 +3589,7 @@ CHEMBL202656
   3  4  1  0
  15 17  1  6
 M  END
->  <chembl_id>  (51) 
+>  <chembl_id>  (51)
 CHEMBL202656
 
 $$$$
@@ -3653,7 +3653,7 @@ CHEMBL432131
  26 19  2  0
  25 20  2  0
 M  END
->  <chembl_id>  (52) 
+>  <chembl_id>  (52)
 CHEMBL432131
 
 $$$$
@@ -3827,7 +3827,7 @@ CHEMBL5089144
  80 81  1  0
  81 71  1  0
 M  END
->  <chembl_id>  (53) 
+>  <chembl_id>  (53)
 CHEMBL5089144
 
 $$$$
@@ -3905,7 +3905,7 @@ CHEMBL331008
  11 13  1  0
  24 19  2  0
 M  END
->  <chembl_id>  (54) 
+>  <chembl_id>  (54)
 CHEMBL331008
 
 $$$$
@@ -3954,7 +3954,7 @@ CHEMBL1084637
   8  9  2  0
  17 19  1  0
 M  END
->  <chembl_id>  (55) 
+>  <chembl_id>  (55)
 CHEMBL1084637
 
 $$$$
@@ -4018,7 +4018,7 @@ CHEMBL422617
  25 17  2  0
  19 21  2  0
 M  END
->  <chembl_id>  (56) 
+>  <chembl_id>  (56)
 CHEMBL422617
 
 $$$$
@@ -4057,7 +4057,7 @@ CHEMBL1972674
  13 14  1  0
  14 15  1  0
 M  END
->  <chembl_id>  (57) 
+>  <chembl_id>  (57)
 CHEMBL1972674
 
 $$$$
@@ -4101,7 +4101,7 @@ CHEMBL1373449
  15 17  2  0
  16 17  1  0
 M  END
->  <chembl_id>  (58) 
+>  <chembl_id>  (58)
 CHEMBL1373449
 
 $$$$
@@ -4195,7 +4195,7 @@ CHEMBL3298745
  15 25  1  0
   9 20  1  0
 M  END
->  <chembl_id>  (59) 
+>  <chembl_id>  (59)
 CHEMBL3298745
 
 $$$$
@@ -4310,7 +4310,7 @@ CHEMBL1904601
  48 50  2  0
  49 50  1  0
 M  END
->  <chembl_id>  (60) 
+>  <chembl_id>  (60)
 CHEMBL1904601
 
 $$$$
@@ -4361,7 +4361,7 @@ CHEMBL4649391
  17 20  1  0
  16 20  1  0
 M  END
->  <chembl_id>  (61) 
+>  <chembl_id>  (61)
 CHEMBL4649391
 
 $$$$
@@ -4440,7 +4440,7 @@ CHEMBL579272
  31 32  2  0
  31 33  1  0
 M  END
->  <chembl_id>  (62) 
+>  <chembl_id>  (62)
 CHEMBL579272
 
 $$$$
@@ -4506,7 +4506,7 @@ CHEMBL1708247
  24 25  1  0
  26 27  2  0
 M  END
->  <chembl_id>  (63) 
+>  <chembl_id>  (63)
 CHEMBL1708247
 
 $$$$
@@ -4557,7 +4557,7 @@ CHEMBL5180569
  14 19  1  0
  19 20  1  0
 M  END
->  <chembl_id>  (64) 
+>  <chembl_id>  (64)
 CHEMBL5180569
 
 $$$$
@@ -4607,7 +4607,7 @@ CHEMBL1322486
  18 19  1  0
  19 20  1  0
 M  END
->  <chembl_id>  (65) 
+>  <chembl_id>  (65)
 CHEMBL1322486
 
 $$$$
@@ -4667,7 +4667,7 @@ CHEMBL3337524
  23 18  1  0
   1 24  1  0
 M  END
->  <chembl_id>  (66) 
+>  <chembl_id>  (66)
 CHEMBL3337524
 
 $$$$
@@ -4752,7 +4752,7 @@ CHEMBL4757546
  34 35  1  0
  34 36  1  0
 M  END
->  <chembl_id>  (67) 
+>  <chembl_id>  (67)
 CHEMBL4757546
 
 $$$$
@@ -4824,7 +4824,7 @@ CHEMBL3959137
  29 24  2  0
  29 30  1  0
 M  END
->  <chembl_id>  (68) 
+>  <chembl_id>  (68)
 CHEMBL3959137
 
 $$$$
@@ -4879,7 +4879,7 @@ CHEMBL1325114
  17 20  1  0
  18 20  2  0
 M  END
->  <chembl_id>  (69) 
+>  <chembl_id>  (69)
 CHEMBL1325114
 
 $$$$
@@ -4922,7 +4922,7 @@ CHEMBL578810
  15 16  1  0
 M  CHG  2   3   1   6  -1
 M  END
->  <chembl_id>  (70) 
+>  <chembl_id>  (70)
 CHEMBL578810
 
 $$$$
@@ -5002,7 +5002,7 @@ CHEMBL3394410
  31 32  1  0
  32 33  2  0
 M  END
->  <chembl_id>  (71) 
+>  <chembl_id>  (71)
 CHEMBL3394410
 
 $$$$
@@ -5077,7 +5077,7 @@ CHEMBL1962653
  32  4  1  0
 M  CHG  1  26   1
 M  END
->  <chembl_id>  (72) 
+>  <chembl_id>  (72)
 CHEMBL1962653
 
 $$$$
@@ -5142,7 +5142,7 @@ CHEMBL4991803
  20 21  1  0
  24 25  1  0
 M  END
->  <chembl_id>  (73) 
+>  <chembl_id>  (73)
 CHEMBL4991803
 
 $$$$
@@ -5200,7 +5200,7 @@ CHEMBL4227694
  22 23  1  0
  23 24  1  0
 M  END
->  <chembl_id>  (74) 
+>  <chembl_id>  (74)
 CHEMBL4227694
 
 $$$$
@@ -5547,7 +5547,7 @@ CHEMBL268347
  75 50  1  0
 137128  1  0
 M  END
->  <chembl_id>  (75) 
+>  <chembl_id>  (75)
 CHEMBL268347
 
 $$$$
@@ -5614,7 +5614,7 @@ CHEMBL1519166
  26 27  1  0
  26 28  1  0
 M  END
->  <chembl_id>  (76) 
+>  <chembl_id>  (76)
 CHEMBL1519166
 
 $$$$
@@ -5730,7 +5730,7 @@ CHEMBL236456
   2 46  1  0
  45 51  1  6
 M  END
->  <chembl_id>  (77) 
+>  <chembl_id>  (77)
 CHEMBL236456
 
 $$$$
@@ -6059,7 +6059,7 @@ CHEMBL5081573
 156157  2  0
 156158  1  0
 M  END
->  <chembl_id>  (78) 
+>  <chembl_id>  (78)
 CHEMBL5081573
 
 $$$$
@@ -6093,7 +6093,7 @@ CHEMBL147602
  12 10  1  0
  13 12  1  0
 M  END
->  <chembl_id>  (79) 
+>  <chembl_id>  (79)
 CHEMBL147602
 
 $$$$
@@ -6161,7 +6161,7 @@ CHEMBL1490354
  26 28  2  0
  27 28  1  0
 M  END
->  <chembl_id>  (80) 
+>  <chembl_id>  (80)
 CHEMBL1490354
 
 $$$$
@@ -6226,7 +6226,7 @@ CHEMBL2219422
  24 26  1  0
   3  4  1  0
 M  END
->  <chembl_id>  (81) 
+>  <chembl_id>  (81)
 CHEMBL2219422
 
 $$$$
@@ -6283,7 +6283,7 @@ CHEMBL1328955
  19 20  2  0
  19 23  1  0
 M  END
->  <chembl_id>  (82) 
+>  <chembl_id>  (82)
 CHEMBL1328955
 
 $$$$
@@ -6320,7 +6320,7 @@ CHEMBL277580
   2 14  1  0
 M  CHG  2   5  -1  11   1
 M  END
->  <chembl_id>  (83) 
+>  <chembl_id>  (83)
 CHEMBL277580
 
 $$$$
@@ -6401,7 +6401,7 @@ CHEMBL1181162
  36 21  1  0
 M  CHG  1   3   1
 M  END
->  <chembl_id>  (84) 
+>  <chembl_id>  (84)
 CHEMBL1181162
 
 $$$$
@@ -6453,7 +6453,7 @@ CHEMBL1492981
  18 20  1  0
  19 20  1  0
 M  END
->  <chembl_id>  (85) 
+>  <chembl_id>  (85)
 CHEMBL1492981
 
 $$$$
@@ -6556,7 +6556,7 @@ CHEMBL1180734
  35 17  1  0
 M  CHG  1  17   1
 M  END
->  <chembl_id>  (86) 
+>  <chembl_id>  (86)
 CHEMBL1180734
 
 $$$$
@@ -6615,7 +6615,7 @@ CHEMBL3655615
  21 23  1  0
  23 24  3  0
 M  END
->  <chembl_id>  (87) 
+>  <chembl_id>  (87)
 CHEMBL3655615
 
 $$$$
@@ -6709,7 +6709,7 @@ CHEMBL2087545
   9  8  1  0
   8 40  1  6
 M  END
->  <chembl_id>  (88) 
+>  <chembl_id>  (88)
 CHEMBL2087545
 
 $$$$
@@ -6773,7 +6773,7 @@ CHEMBL3440132
  25 26  2  0
  26 21  1  0
 M  END
->  <chembl_id>  (89) 
+>  <chembl_id>  (89)
 CHEMBL3440132
 
 $$$$
@@ -6853,7 +6853,7 @@ CHEMBL556827
  27 34  1  0
  31 34  1  0
 M  END
->  <chembl_id>  (90) 
+>  <chembl_id>  (90)
 CHEMBL556827
 
 $$$$
@@ -6903,7 +6903,7 @@ CHEMBL1332735
  12 16  2  0
  17 18  2  0
 M  END
->  <chembl_id>  (91) 
+>  <chembl_id>  (91)
 CHEMBL1332735
 
 $$$$
@@ -6978,7 +6978,7 @@ CHEMBL546195
  30 31  1  0
  30 32  1  0
 M  END
->  <chembl_id>  (92) 
+>  <chembl_id>  (92)
 CHEMBL546195
 
 $$$$
@@ -7038,7 +7038,7 @@ CHEMBL1876148
  22 24  1  0
 M  CHG  2   4  -1  11   1
 M  END
->  <chembl_id>  (93) 
+>  <chembl_id>  (93)
 CHEMBL1876148
 
 $$$$
@@ -7095,7 +7095,7 @@ CHEMBL4276991
  21 22  1  0
   8 23  1  0
 M  END
->  <chembl_id>  (94) 
+>  <chembl_id>  (94)
 CHEMBL4276991
 
 $$$$
@@ -7159,7 +7159,7 @@ CHEMBL4072188
  25 26  1  0
 M  CHG  4  14   1  16  -1  17   1  19  -1
 M  END
->  <chembl_id>  (95) 
+>  <chembl_id>  (95)
 CHEMBL4072188
 
 $$$$
@@ -7210,7 +7210,7 @@ CHEMBL4974914
  13 16  1  0
  14 15  2  0
 M  END
->  <chembl_id>  (96) 
+>  <chembl_id>  (96)
 CHEMBL4974914
 
 $$$$
@@ -7256,7 +7256,7 @@ CHEMBL2272806
   1 17  1  0
  17 18  1  0
 M  END
->  <chembl_id>  (97) 
+>  <chembl_id>  (97)
 CHEMBL2272806
 
 $$$$
@@ -7323,7 +7323,7 @@ CHEMBL2064445
  25 28  1  0
   4 22  1  0
 M  END
->  <chembl_id>  (98) 
+>  <chembl_id>  (98)
 CHEMBL2064445
 
 $$$$
@@ -7376,7 +7376,7 @@ CHEMBL1732711
  18 20  1  0
  19 21  1  0
 M  END
->  <chembl_id>  (99) 
+>  <chembl_id>  (99)
 CHEMBL1732711
 
 $$$$
@@ -7491,7 +7491,7 @@ CHEMBL5201539
  47 50  1  0
  31 51  1  1
 M  END
->  <chembl_id>  (100) 
+>  <chembl_id>  (100)
 CHEMBL5201539
 
 $$$$
@@ -7536,7 +7536,7 @@ CHEMBL4558143
  16 18  2  0
  18  2  1  0
 M  END
->  <chembl_id>  (101) 
+>  <chembl_id>  (101)
 CHEMBL4558143
 
 $$$$
@@ -7637,7 +7637,7 @@ CHEMBL3727894
  42 43  1  0
  42 44  2  0
 M  END
->  <chembl_id>  (102) 
+>  <chembl_id>  (102)
 CHEMBL3727894
 
 $$$$
@@ -7698,7 +7698,7 @@ CHEMBL3667829
  23 25  2  0
  25 16  1  0
 M  END
->  <chembl_id>  (103) 
+>  <chembl_id>  (103)
 CHEMBL3667829
 
 $$$$
@@ -7795,7 +7795,7 @@ CHEMBL375167
  10  8  1  6
  40 43  1  0
 M  END
->  <chembl_id>  (104) 
+>  <chembl_id>  (104)
 CHEMBL375167
 
 $$$$
@@ -7850,7 +7850,7 @@ CHEMBL206573
  21 22  2  0
  22 17  1  0
 M  END
->  <chembl_id>  (105) 
+>  <chembl_id>  (105)
 CHEMBL206573
 
 $$$$
@@ -7915,7 +7915,7 @@ CHEMBL466373
  11 12  1  1
   7 26  2  0
 M  END
->  <chembl_id>  (106) 
+>  <chembl_id>  (106)
 CHEMBL466373
 
 $$$$
@@ -7991,7 +7991,7 @@ CHEMBL4578221
  31 32  1  0
  30 33  1  0
 M  END
->  <chembl_id>  (107) 
+>  <chembl_id>  (107)
 CHEMBL4578221
 
 $$$$
@@ -8037,7 +8037,7 @@ CHEMBL4593747
  11  7  1  0
  18 13  1  0
 M  END
->  <chembl_id>  (108) 
+>  <chembl_id>  (108)
 CHEMBL4593747
 
 $$$$
@@ -8092,7 +8092,7 @@ CHEMBL2392785
  21 22  2  0
  22 18  1  0
 M  END
->  <chembl_id>  (109) 
+>  <chembl_id>  (109)
 CHEMBL2392785
 
 $$$$
@@ -8140,7 +8140,7 @@ CHEMBL261459
   3  4  1  0
   2 19  1  6
 M  END
->  <chembl_id>  (110) 
+>  <chembl_id>  (110)
 CHEMBL261459
 
 $$$$
@@ -8209,7 +8209,7 @@ CHEMBL2024533
  13 14  1  0
  28 29  1  0
 M  END
->  <chembl_id>  (111) 
+>  <chembl_id>  (111)
 CHEMBL2024533
 
 $$$$
@@ -8259,7 +8259,7 @@ CHEMBL1964843
  16 18  2  0
  17 18  1  0
 M  END
->  <chembl_id>  (112) 
+>  <chembl_id>  (112)
 CHEMBL1964843
 
 $$$$
@@ -8320,7 +8320,7 @@ CHEMBL3478748
  25 16  1  0
  25 19  1  0
 M  END
->  <chembl_id>  (113) 
+>  <chembl_id>  (113)
 CHEMBL3478748
 
 $$$$
@@ -8399,7 +8399,7 @@ CHEMBL3937214
  19 33  1  0
  33 16  2  0
 M  END
->  <chembl_id>  (114) 
+>  <chembl_id>  (114)
 CHEMBL3937214
 
 $$$$
@@ -8471,7 +8471,7 @@ CHEMBL1365940
  28 29  1  0
  28 30  1  0
 M  END
->  <chembl_id>  (115) 
+>  <chembl_id>  (115)
 CHEMBL1365940
 
 $$$$
@@ -8542,7 +8542,7 @@ CHEMBL4163361
  19 28  1  0
  16 29  1  0
 M  END
->  <chembl_id>  (116) 
+>  <chembl_id>  (116)
 CHEMBL4163361
 
 $$$$
@@ -8618,7 +8618,7 @@ CHEMBL54821
  11  7  2  0
  32 30  2  0
 M  END
->  <chembl_id>  (117) 
+>  <chembl_id>  (117)
 CHEMBL54821
 
 $$$$
@@ -8673,7 +8673,7 @@ CHEMBL483149
   7 12  1  0
  18 22  1  0
 M  END
->  <chembl_id>  (118) 
+>  <chembl_id>  (118)
 CHEMBL483149
 
 $$$$
@@ -8753,7 +8753,7 @@ CHEMBL4064165
  32 33  1  0
  33 34  1  0
 M  END
->  <chembl_id>  (119) 
+>  <chembl_id>  (119)
 CHEMBL4064165
 
 $$$$
@@ -8800,7 +8800,7 @@ CHEMBL4982475
  17 19  3  0
  12 14  1  0
 M  END
->  <chembl_id>  (120) 
+>  <chembl_id>  (120)
 CHEMBL4982475
 
 $$$$
@@ -8867,7 +8867,7 @@ CHEMBL1611951
  24 25  1  0
  26 27  1  0
 M  END
->  <chembl_id>  (121) 
+>  <chembl_id>  (121)
 CHEMBL1611951
 
 $$$$
@@ -8967,7 +8967,7 @@ CHEMBL1240967
   5  6  1  0
  40 43  1  0
 M  END
->  <chembl_id>  (122) 
+>  <chembl_id>  (122)
 CHEMBL1240967
 
 $$$$
@@ -9049,7 +9049,7 @@ CHEMBL5207969
  33 34  1  0
  33 32  1  0
 M  END
->  <chembl_id>  (123) 
+>  <chembl_id>  (123)
 CHEMBL5207969
 
 $$$$
@@ -9128,7 +9128,7 @@ CHEMBL3121939
   7 31  1  0
 M  CHG  2  31   1  33  -1
 M  END
->  <chembl_id>  (124) 
+>  <chembl_id>  (124)
 CHEMBL3121939
 
 $$$$
@@ -9199,7 +9199,7 @@ CHEMBL579263
  13 14  1  0
  28 30  3  0
 M  END
->  <chembl_id>  (125) 
+>  <chembl_id>  (125)
 CHEMBL579263
 
 $$$$
@@ -9313,7 +9313,7 @@ CHEMBL3306388
  49 50  1  0
 M  CHG  2   3   1  39   1
 M  END
->  <chembl_id>  (126) 
+>  <chembl_id>  (126)
 CHEMBL3306388
 
 $$$$
@@ -9393,7 +9393,7 @@ CHEMBL16511
   6  9  2  0
  34 33  1  0
 M  END
->  <chembl_id>  (127) 
+>  <chembl_id>  (127)
 CHEMBL16511
 
 $$$$
@@ -9446,7 +9446,7 @@ CHEMBL4979872
  14 15  1  0
  20 21  1  0
 M  END
->  <chembl_id>  (128) 
+>  <chembl_id>  (128)
 CHEMBL4979872
 
 $$$$
@@ -9525,7 +9525,7 @@ CHEMBL3662761
  31 32  1  0
  31 33  1  0
 M  END
->  <chembl_id>  (129) 
+>  <chembl_id>  (129)
 CHEMBL3662761
 
 $$$$
@@ -9622,7 +9622,7 @@ CHEMBL4790170
  41 42  3  0
  38 41  1  0
 M  END
->  <chembl_id>  (130) 
+>  <chembl_id>  (130)
 CHEMBL4790170
 
 $$$$
@@ -9665,7 +9665,7 @@ CHEMBL3780315
  15 16  1  0
  15 17  2  3
 M  END
->  <chembl_id>  (131) 
+>  <chembl_id>  (131)
 CHEMBL3780315
 
 $$$$
@@ -9730,7 +9730,7 @@ CHEMBL452565
  25 27  2  0
  22 25  1  0
 M  END
->  <chembl_id>  (132) 
+>  <chembl_id>  (132)
 CHEMBL452565
 
 $$$$
@@ -9801,7 +9801,7 @@ CHEMBL1419464
  24 26  1  0
  29 30  1  0
 M  END
->  <chembl_id>  (133) 
+>  <chembl_id>  (133)
 CHEMBL1419464
 
 $$$$
@@ -9856,7 +9856,7 @@ CHEMBL3780303
  17 22  1  0
   1 12  1  0
 M  END
->  <chembl_id>  (134) 
+>  <chembl_id>  (134)
 CHEMBL3780303
 
 $$$$
@@ -9891,7 +9891,7 @@ CHEMBL4899095
  12 13  1  0
   5  7  1  0
 M  END
->  <chembl_id>  (135) 
+>  <chembl_id>  (135)
 CHEMBL4899095
 
 $$$$
@@ -9957,7 +9957,7 @@ CHEMBL572112
   8 13  1  0
  27 28  1  0
 M  END
->  <chembl_id>  (136) 
+>  <chembl_id>  (136)
 CHEMBL572112
 
 $$$$
@@ -10027,7 +10027,7 @@ CHEMBL1940123
  28 29  1  0
  29 25  1  0
 M  END
->  <chembl_id>  (137) 
+>  <chembl_id>  (137)
 CHEMBL1940123
 
 $$$$
@@ -10090,7 +10090,7 @@ CHEMBL4595592
  25 26  2  0
  21 26  1  0
 M  END
->  <chembl_id>  (138) 
+>  <chembl_id>  (138)
 CHEMBL4595592
 
 $$$$
@@ -10181,7 +10181,7 @@ CHEMBL4072741
  37 39  1  0
  37 40  1  0
 M  END
->  <chembl_id>  (139) 
+>  <chembl_id>  (139)
 CHEMBL4072741
 
 $$$$
@@ -10222,7 +10222,7 @@ CHEMBL3965869
  10 13  1  0
   2  7  1  0
 M  END
->  <chembl_id>  (140) 
+>  <chembl_id>  (140)
 CHEMBL3965869
 
 $$$$
@@ -10865,7 +10865,7 @@ CHEMBL3347317
 313314  1  0
 313315  2  0
 M  END
->  <chembl_id>  (141) 
+>  <chembl_id>  (141)
 CHEMBL3347317
 
 $$$$
@@ -10933,7 +10933,7 @@ CHEMBL1517306
  23 26  1  0
  25 26  1  0
 M  END
->  <chembl_id>  (142) 
+>  <chembl_id>  (142)
 CHEMBL1517306
 
 $$$$
@@ -11003,7 +11003,7 @@ CHEMBL3628059
  25 29  1  0
 M  CHG  2   1  -1   7   1
 M  END
->  <chembl_id>  (143) 
+>  <chembl_id>  (143)
 CHEMBL3628059
 
 $$$$
@@ -11098,7 +11098,7 @@ CHEMBL92317
  24 30  1  0
  42 41  1  0
 M  END
->  <chembl_id>  (144) 
+>  <chembl_id>  (144)
 CHEMBL92317
 
 $$$$
@@ -11141,7 +11141,7 @@ CHEMBL471724
  10 16  1  0
  10 17  1  0
 M  END
->  <chembl_id>  (145) 
+>  <chembl_id>  (145)
 CHEMBL471724
 
 $$$$
@@ -11177,7 +11177,7 @@ CHEMBL1734098
  11 13  1  0
  12 13  2  0
 M  END
->  <chembl_id>  (146) 
+>  <chembl_id>  (146)
 CHEMBL1734098
 
 $$$$
@@ -11237,7 +11237,7 @@ CHEMBL1483863
  20 21  1  0
  22 25  1  0
 M  END
->  <chembl_id>  (147) 
+>  <chembl_id>  (147)
 CHEMBL1483863
 
 $$$$
@@ -11281,7 +11281,7 @@ CHEMBL1334571
  14 15  1  0
  16 17  1  0
 M  END
->  <chembl_id>  (148) 
+>  <chembl_id>  (148)
 CHEMBL1334571
 
 $$$$
@@ -11371,7 +11371,7 @@ CHEMBL4454088
  31 24  1  0
  17 38  1  1
 M  END
->  <chembl_id>  (149) 
+>  <chembl_id>  (149)
 CHEMBL4454088
 
 $$$$
@@ -11424,7 +11424,7 @@ CHEMBL4920392
  17 19  2  0
  20 21  1  0
 M  END
->  <chembl_id>  (150) 
+>  <chembl_id>  (150)
 CHEMBL4920392
 
 $$$$
@@ -11470,7 +11470,7 @@ CHEMBL4470603
  17 12  1  0
  15 18  1  0
 M  END
->  <chembl_id>  (151) 
+>  <chembl_id>  (151)
 CHEMBL4470603
 
 $$$$
@@ -11557,7 +11557,7 @@ CHEMBL4474743
  34 36  1  0
  34 37  1  0
 M  END
->  <chembl_id>  (152) 
+>  <chembl_id>  (152)
 CHEMBL4474743
 
 $$$$
@@ -11606,7 +11606,7 @@ CHEMBL3556968
  19  4  1  0
  19 14  1  0
 M  END
->  <chembl_id>  (153) 
+>  <chembl_id>  (153)
 CHEMBL3556968
 
 $$$$
@@ -11673,7 +11673,7 @@ CHEMBL289043
  23 27  2  0
 M  CHG  2   1   1   7  -1
 M  END
->  <chembl_id>  (154) 
+>  <chembl_id>  (154)
 CHEMBL289043
 
 $$$$
@@ -11740,7 +11740,7 @@ CHEMBL3970115
  26 27  1  0
  26 28  1  0
 M  END
->  <chembl_id>  (155) 
+>  <chembl_id>  (155)
 CHEMBL3970115
 
 $$$$
@@ -11839,7 +11839,7 @@ CHEMBL525885
  40 41  2  0
  40 42  2  0
 M  END
->  <chembl_id>  (156) 
+>  <chembl_id>  (156)
 CHEMBL525885
 
 $$$$
@@ -11923,7 +11923,7 @@ CHEMBL1807003
  16 17  1  1
  33 35  1  0
 M  END
->  <chembl_id>  (157) 
+>  <chembl_id>  (157)
 CHEMBL1807003
 
 $$$$
@@ -11994,7 +11994,7 @@ CHEMBL3546243
  27 20  1  0
  28 30  1  0
 M  END
->  <chembl_id>  (158) 
+>  <chembl_id>  (158)
 CHEMBL3546243
 
 $$$$
@@ -12056,7 +12056,7 @@ CHEMBL4173956
  24 25  2  0
  25 20  1  0
 M  END
->  <chembl_id>  (159) 
+>  <chembl_id>  (159)
 CHEMBL4173956
 
 $$$$
@@ -12116,7 +12116,7 @@ CHEMBL4746326
  23 24  2  0
  24  1  1  0
 M  END
->  <chembl_id>  (160) 
+>  <chembl_id>  (160)
 CHEMBL4746326
 
 $$$$
@@ -12182,7 +12182,7 @@ CHEMBL4977057
  22 23  1  0
  25 27  1  0
 M  END
->  <chembl_id>  (161) 
+>  <chembl_id>  (161)
 CHEMBL4977057
 
 $$$$
@@ -12253,7 +12253,7 @@ CHEMBL3947147
  29 30  2  0
  30 25  1  0
 M  END
->  <chembl_id>  (162) 
+>  <chembl_id>  (162)
 CHEMBL3947147
 
 $$$$
@@ -12321,7 +12321,7 @@ CHEMBL2432019
  26 27  1  0
  24 28  2  0
 M  END
->  <chembl_id>  (163) 
+>  <chembl_id>  (163)
 CHEMBL2432019
 
 $$$$
@@ -12381,7 +12381,7 @@ CHEMBL1197720
   8 24  1  0
 M  CHG  1   8   1
 M  END
->  <chembl_id>  (164) 
+>  <chembl_id>  (164)
 CHEMBL1197720
 
 $$$$
@@ -12794,7 +12794,7 @@ CHEMBL4072436
 200201  1  0
 201197  1  0
 M  END
->  <chembl_id>  (165) 
+>  <chembl_id>  (165)
 CHEMBL4072436
 
 $$$$
@@ -12840,7 +12840,7 @@ CHEMBL1179008
   5  7  2  0
 M  CHG  1   1   1
 M  END
->  <chembl_id>  (166) 
+>  <chembl_id>  (166)
 CHEMBL1179008
 
 $$$$
@@ -12911,7 +12911,7 @@ CHEMBL1458519
  25 26  1  0
  27 30  1  0
 M  END
->  <chembl_id>  (167) 
+>  <chembl_id>  (167)
 CHEMBL1458519
 
 $$$$
@@ -12950,7 +12950,7 @@ CHEMBL2208202
  13 14  2  0
  14 15  1  0
 M  END
->  <chembl_id>  (168) 
+>  <chembl_id>  (168)
 CHEMBL2208202
 
 $$$$
@@ -13024,7 +13024,7 @@ CHEMBL1888031
  29 31  2  0
  30 31  1  0
 M  END
->  <chembl_id>  (169) 
+>  <chembl_id>  (169)
 CHEMBL1888031
 
 $$$$
@@ -13124,7 +13124,7 @@ CHEMBL2261657
  40 43  2  0
  40 44  2  0
 M  END
->  <chembl_id>  (170) 
+>  <chembl_id>  (170)
 CHEMBL2261657
 
 $$$$
@@ -13231,7 +13231,7 @@ CHEMBL3899980
  44 46  1  0
  46 41  1  0
 M  END
->  <chembl_id>  (171) 
+>  <chembl_id>  (171)
 CHEMBL3899980
 
 $$$$
@@ -13286,7 +13286,7 @@ CHEMBL3247837
  19 22  1  0
   6 23  1  0
 M  END
->  <chembl_id>  (172) 
+>  <chembl_id>  (172)
 CHEMBL3247837
 
 $$$$
@@ -13380,7 +13380,7 @@ CHEMBL507458
   5  4  1  0
  39 40  1  0
 M  END
->  <chembl_id>  (173) 
+>  <chembl_id>  (173)
 CHEMBL507458
 
 $$$$
@@ -13430,7 +13430,7 @@ CHEMBL4935258
   8  9  1  0
  13 15  1  0
 M  END
->  <chembl_id>  (174) 
+>  <chembl_id>  (174)
 CHEMBL4935258
 
 $$$$
@@ -13489,7 +13489,7 @@ CHEMBL124315
  12 16  2  0
  23 20  2  0
 M  END
->  <chembl_id>  (175) 
+>  <chembl_id>  (175)
 CHEMBL124315
 
 $$$$
@@ -13516,7 +13516,7 @@ CHEMBL507
   4  8  1  0
   6  9  1  0
 M  END
->  <chembl_id>  (176) 
+>  <chembl_id>  (176)
 CHEMBL507
 
 $$$$
@@ -13581,7 +13581,7 @@ CHEMBL1588262
  25 27  1  0
  26 27  1  0
 M  END
->  <chembl_id>  (177) 
+>  <chembl_id>  (177)
 CHEMBL1588262
 
 $$$$
@@ -13643,7 +13643,7 @@ CHEMBL99738
  25 21  2  0
  14 18  1  0
 M  END
->  <chembl_id>  (178) 
+>  <chembl_id>  (178)
 CHEMBL99738
 
 $$$$
@@ -13731,7 +13731,7 @@ CHEMBL4128014
  37 38  1  0
  38 39  1  0
 M  END
->  <chembl_id>  (179) 
+>  <chembl_id>  (179)
 CHEMBL4128014
 
 $$$$
@@ -13808,7 +13808,7 @@ CHEMBL5079484
  31  1  1  0
   4 32  1  0
 M  END
->  <chembl_id>  (180) 
+>  <chembl_id>  (180)
 CHEMBL5079484
 
 $$$$
@@ -13886,7 +13886,7 @@ CHEMBL5202049
  27 32  1  0
  30 33  1  0
 M  END
->  <chembl_id>  (181) 
+>  <chembl_id>  (181)
 CHEMBL5202049
 
 $$$$
@@ -13974,7 +13974,7 @@ CHEMBL34952
   6 10  1  0
  15 14  2  0
 M  END
->  <chembl_id>  (182) 
+>  <chembl_id>  (182)
 CHEMBL34952
 
 $$$$
@@ -13996,7 +13996,7 @@ CHEMBL295666
   6  2  1  0
   7  6  1  0
 M  END
->  <chembl_id>  (183) 
+>  <chembl_id>  (183)
 CHEMBL295666
 
 $$$$
@@ -14072,7 +14072,7 @@ CHEMBL247704
  14 15  1  0
   2 32  1  0
 M  END
->  <chembl_id>  (184) 
+>  <chembl_id>  (184)
 CHEMBL247704
 
 $$$$
@@ -14135,7 +14135,7 @@ CHEMBL322242
  27 25  1  0
  27 26  2  0
 M  END
->  <chembl_id>  (185) 
+>  <chembl_id>  (185)
 CHEMBL322242
 
 $$$$
@@ -14224,7 +14224,7 @@ CHEMBL280146
  30 37  1  0
   5  7  1  0
 M  END
->  <chembl_id>  (186) 
+>  <chembl_id>  (186)
 CHEMBL280146
 
 $$$$
@@ -14295,7 +14295,7 @@ CHEMBL144312
  17 26  2  0
  28 30  2  0
 M  END
->  <chembl_id>  (187) 
+>  <chembl_id>  (187)
 CHEMBL144312
 
 $$$$
@@ -14362,7 +14362,7 @@ CHEMBL1567541
  23 26  1  0
  25 26  2  0
 M  END
->  <chembl_id>  (188) 
+>  <chembl_id>  (188)
 CHEMBL1567541
 
 $$$$
@@ -14417,7 +14417,7 @@ CHEMBL296222
  10  9  1  0
  11 13  2  0
 M  END
->  <chembl_id>  (189) 
+>  <chembl_id>  (189)
 CHEMBL296222
 
 $$$$
@@ -14472,7 +14472,7 @@ CHEMBL3818542
  20 23  1  0
   4 20  1  0
 M  END
->  <chembl_id>  (190) 
+>  <chembl_id>  (190)
 CHEMBL3818542
 
 $$$$
@@ -14531,7 +14531,7 @@ CHEMBL4916828
  16 19  1  0
  23 24  1  0
 M  END
->  <chembl_id>  (191) 
+>  <chembl_id>  (191)
 CHEMBL4916828
 
 $$$$
@@ -14592,7 +14592,7 @@ CHEMBL5010828
  16 18  1  0
  24 25  1  0
 M  END
->  <chembl_id>  (192) 
+>  <chembl_id>  (192)
 CHEMBL5010828
 
 $$$$
@@ -14652,7 +14652,7 @@ CHEMBL3585775
  24 25  1  0
   6 24  1  0
 M  END
->  <chembl_id>  (193) 
+>  <chembl_id>  (193)
 CHEMBL3585775
 
 $$$$
@@ -14725,7 +14725,7 @@ CHEMBL5189320
  29 30  1  0
  13 30  1  0
 M  END
->  <chembl_id>  (194) 
+>  <chembl_id>  (194)
 CHEMBL5189320
 
 $$$$
@@ -14775,7 +14775,7 @@ CHEMBL4071071
  18 19  1  0
  19 20  1  0
 M  END
->  <chembl_id>  (195) 
+>  <chembl_id>  (195)
 CHEMBL4071071
 
 $$$$
@@ -14880,7 +14880,7 @@ CHEMBL1163221
  21 22  1  0
  23 46  1  0
 M  END
->  <chembl_id>  (196) 
+>  <chembl_id>  (196)
 CHEMBL1163221
 
 $$$$
@@ -14931,7 +14931,7 @@ CHEMBL3444722
  19 20  2  0
  20 15  1  0
 M  END
->  <chembl_id>  (197) 
+>  <chembl_id>  (197)
 CHEMBL3444722
 
 $$$$
@@ -14995,7 +14995,7 @@ CHEMBL4924330
  14 16  1  0
  24 25  1  0
 M  END
->  <chembl_id>  (198) 
+>  <chembl_id>  (198)
 CHEMBL4924330
 
 $$$$
@@ -15052,7 +15052,7 @@ CHEMBL3493671
  22 23  1  0
  23  3  1  0
 M  END
->  <chembl_id>  (199) 
+>  <chembl_id>  (199)
 CHEMBL3493671
 
 $$$$
@@ -15088,7 +15088,7 @@ CHEMBL2181352
   2 12  1  0
   3 13  1  0
 M  END
->  <chembl_id>  (200) 
+>  <chembl_id>  (200)
 CHEMBL2181352
 
 $$$$
@@ -15164,7 +15164,7 @@ CHEMBL1870563
  31 32  1  0
 M  CHG  6   3  -1   5  -1   6  -1  10   1  11   1  14   1
 M  END
->  <chembl_id>  (201) 
+>  <chembl_id>  (201)
 CHEMBL1870563
 
 $$$$
@@ -15251,7 +15251,7 @@ CHEMBL398279
  36 30  1  0
  36 37  1  0
 M  END
->  <chembl_id>  (202) 
+>  <chembl_id>  (202)
 CHEMBL398279
 
 $$$$
@@ -15320,7 +15320,7 @@ CHEMBL399959
   4  5  2  0
  26 29  1  0
 M  END
->  <chembl_id>  (203) 
+>  <chembl_id>  (203)
 CHEMBL399959
 
 $$$$
@@ -15379,7 +15379,7 @@ CHEMBL2237701
  23 24  2  0
  24 19  1  0
 M  END
->  <chembl_id>  (204) 
+>  <chembl_id>  (204)
 CHEMBL2237701
 
 $$$$
@@ -15489,7 +15489,7 @@ CHEMBL1779410
   5  6  1  0
  45 48  1  0
 M  END
->  <chembl_id>  (205) 
+>  <chembl_id>  (205)
 CHEMBL1779410
 
 $$$$
@@ -15563,7 +15563,7 @@ CHEMBL2426120
  22 30  1  0
   4 31  1  0
 M  END
->  <chembl_id>  (206) 
+>  <chembl_id>  (206)
 CHEMBL2426120
 
 $$$$
@@ -15649,7 +15649,7 @@ CHEMBL2312586
  35 36  1  0
   9 35  1  0
 M  END
->  <chembl_id>  (207) 
+>  <chembl_id>  (207)
 CHEMBL2312586
 
 $$$$
@@ -15710,7 +15710,7 @@ CHEMBL3473790
  24 19  1  0
  24 25  1  0
 M  END
->  <chembl_id>  (208) 
+>  <chembl_id>  (208)
 CHEMBL3473790
 
 $$$$
@@ -15762,7 +15762,7 @@ CHEMBL232087
   8  9  1  0
  19 21  2  0
 M  END
->  <chembl_id>  (209) 
+>  <chembl_id>  (209)
 CHEMBL232087
 
 $$$$
@@ -15828,7 +15828,7 @@ CHEMBL413539
  12 17  2  0
  20 15  1  0
 M  END
->  <chembl_id>  (210) 
+>  <chembl_id>  (210)
 CHEMBL413539
 
 $$$$
@@ -15894,7 +15894,7 @@ CHEMBL253895
   3  4  1  0
  22 27  1  0
 M  END
->  <chembl_id>  (211) 
+>  <chembl_id>  (211)
 CHEMBL253895
 
 $$$$
@@ -15992,7 +15992,7 @@ CHEMBL2142317
  40 42  1  0
  41 43  2  0
 M  END
->  <chembl_id>  (212) 
+>  <chembl_id>  (212)
 CHEMBL2142317
 
 $$$$
@@ -16069,7 +16069,7 @@ CHEMBL1583534
  30 32  2  0
  32 33  1  0
 M  END
->  <chembl_id>  (213) 
+>  <chembl_id>  (213)
 CHEMBL1583534
 
 $$$$
@@ -16193,7 +16193,7 @@ CHEMBL455821
  13 11  1  0
  48 56  1  0
 M  END
->  <chembl_id>  (214) 
+>  <chembl_id>  (214)
 CHEMBL455821
 
 $$$$
@@ -16240,7 +16240,7 @@ CHEMBL4933834
  18 19  1  0
   7 10  1  0
 M  END
->  <chembl_id>  (215) 
+>  <chembl_id>  (215)
 CHEMBL4933834
 
 $$$$
@@ -16296,7 +16296,7 @@ CHEMBL4803341
  21 22  1  0
  18 23  1  0
 M  END
->  <chembl_id>  (216) 
+>  <chembl_id>  (216)
 CHEMBL4803341
 
 $$$$
@@ -16355,7 +16355,7 @@ CHEMBL1088984
   1  2  1  0
  22 24  2  0
 M  END
->  <chembl_id>  (217) 
+>  <chembl_id>  (217)
 CHEMBL1088984
 
 $$$$
@@ -16424,7 +16424,7 @@ CHEMBL3982834
  28 29  2  0
  29 24  1  0
 M  END
->  <chembl_id>  (218) 
+>  <chembl_id>  (218)
 CHEMBL3982834
 
 $$$$
@@ -16500,7 +16500,7 @@ CHEMBL3233903
   2 31  1  0
  31 32  1  0
 M  END
->  <chembl_id>  (219) 
+>  <chembl_id>  (219)
 CHEMBL3233903
 
 $$$$
@@ -16559,7 +16559,7 @@ CHEMBL4778085
  23 24  2  0
  24 19  1  0
 M  END
->  <chembl_id>  (220) 
+>  <chembl_id>  (220)
 CHEMBL4778085
 
 $$$$
@@ -16618,7 +16618,7 @@ CHEMBL2402292
  17 23  1  0
  14 24  1  1
 M  END
->  <chembl_id>  (221) 
+>  <chembl_id>  (221)
 CHEMBL2402292
 
 $$$$
@@ -16675,7 +16675,7 @@ CHEMBL4855922
  22 23  1  0
  23 19  1  0
 M  END
->  <chembl_id>  (222) 
+>  <chembl_id>  (222)
 CHEMBL4855922
 
 $$$$
@@ -16726,7 +16726,7 @@ CHEMBL1288980
  17 19  1  0
  17 20  1  0
 M  END
->  <chembl_id>  (223) 
+>  <chembl_id>  (223)
 CHEMBL1288980
 
 $$$$
@@ -16807,7 +16807,7 @@ CHEMBL3425580
  25 28  1  0
  31 34  1  0
 M  END
->  <chembl_id>  (224) 
+>  <chembl_id>  (224)
 CHEMBL3425580
 
 $$$$
@@ -16860,7 +16860,7 @@ CHEMBL4937878
  11 14  1  0
  19 20  1  0
 M  END
->  <chembl_id>  (225) 
+>  <chembl_id>  (225)
 CHEMBL4937878
 
 $$$$
@@ -16919,7 +16919,7 @@ CHEMBL314045
  19 10  2  0
 M  CHG  2   2   1  13  -1
 M  END
->  <chembl_id>  (226) 
+>  <chembl_id>  (226)
 CHEMBL314045
 
 $$$$
@@ -16995,7 +16995,7 @@ CHEMBL3137903
   4  2  1  0
   8 15  1  1
 M  END
->  <chembl_id>  (227) 
+>  <chembl_id>  (227)
 CHEMBL3137903
 
 $$$$
@@ -17048,7 +17048,7 @@ CHEMBL4173293
  19 20  2  0
  19 21  1  0
 M  END
->  <chembl_id>  (228) 
+>  <chembl_id>  (228)
 CHEMBL4173293
 
 $$$$
@@ -17146,7 +17146,7 @@ CHEMBL405427
  41 42  2  0
  25 24  2  0
 M  END
->  <chembl_id>  (229) 
+>  <chembl_id>  (229)
 CHEMBL405427
 
 $$$$
@@ -17212,7 +17212,7 @@ CHEMBL219591
   1  2  1  0
  25 28  1  0
 M  END
->  <chembl_id>  (230) 
+>  <chembl_id>  (230)
 CHEMBL219591
 
 $$$$
@@ -17286,7 +17286,7 @@ CHEMBL4090164
  29 30  1  0
  29 31  1  0
 M  END
->  <chembl_id>  (231) 
+>  <chembl_id>  (231)
 CHEMBL4090164
 
 $$$$
@@ -17387,7 +17387,7 @@ CHEMBL69243
  44 41  2  0
  45 43  2  0
 M  END
->  <chembl_id>  (232) 
+>  <chembl_id>  (232)
 CHEMBL69243
 
 $$$$
@@ -17452,7 +17452,7 @@ CHEMBL390077
  12 13  2  0
   2 27  1  0
 M  END
->  <chembl_id>  (233) 
+>  <chembl_id>  (233)
 CHEMBL390077
 
 $$$$
@@ -17546,7 +17546,7 @@ CHEMBL4958564
  36 37  2  0
  39 40  1  0
 M  END
->  <chembl_id>  (234) 
+>  <chembl_id>  (234)
 CHEMBL4958564
 
 $$$$
@@ -17623,7 +17623,7 @@ CHEMBL4748113
   3 32  1  0
  21 33  1  0
 M  END
->  <chembl_id>  (235) 
+>  <chembl_id>  (235)
 CHEMBL4748113
 
 $$$$
@@ -17827,7 +17827,7 @@ CHEMBL2181032
  94 95  2  0
  95 90  1  0
 M  END
->  <chembl_id>  (236) 
+>  <chembl_id>  (236)
 CHEMBL2181032
 
 $$$$
@@ -17891,7 +17891,7 @@ CHEMBL3586374
  24 26  1  0
  26 27  1  0
 M  END
->  <chembl_id>  (237) 
+>  <chembl_id>  (237)
 CHEMBL3586374
 
 $$$$
@@ -17964,7 +17964,7 @@ CHEMBL3601121
  28 30  1  0
  28 31  1  0
 M  END
->  <chembl_id>  (238) 
+>  <chembl_id>  (238)
 CHEMBL3601121
 
 $$$$
@@ -18004,7 +18004,7 @@ CHEMBL1181494
   5 11  2  0
 M  CHG  1   1   1
 M  END
->  <chembl_id>  (239) 
+>  <chembl_id>  (239)
 CHEMBL1181494
 
 $$$$
@@ -18055,7 +18055,7 @@ CHEMBL2219949
  12 19  1  0
  13 20  1  0
 M  END
->  <chembl_id>  (240) 
+>  <chembl_id>  (240)
 CHEMBL2219949
 
 $$$$
@@ -18121,7 +18121,7 @@ CHEMBL245851
   9 11  1  0
   4 27  1  0
 M  END
->  <chembl_id>  (241) 
+>  <chembl_id>  (241)
 CHEMBL245851
 
 $$$$
@@ -18220,7 +18220,7 @@ CHEMBL4746244
   8 44  1  6
   8 45  1  0
 M  END
->  <chembl_id>  (242) 
+>  <chembl_id>  (242)
 CHEMBL4746244
 
 $$$$
@@ -18290,7 +18290,7 @@ CHEMBL1967310
  28 29  1  0
 M  CHG  2   5  -1  10   1
 M  END
->  <chembl_id>  (243) 
+>  <chembl_id>  (243)
 CHEMBL1967310
 
 $$$$
@@ -18385,7 +18385,7 @@ CHEMBL1163421
   6 41  1  0
  41 42  1  0
 M  END
->  <chembl_id>  (244) 
+>  <chembl_id>  (244)
 CHEMBL1163421
 
 $$$$
@@ -18438,7 +18438,7 @@ CHEMBL2064767
  19 20  1  0
  20 21  1  0
 M  END
->  <chembl_id>  (245) 
+>  <chembl_id>  (245)
 CHEMBL2064767
 
 $$$$
@@ -18510,7 +18510,7 @@ CHEMBL1333526
  22 23  1  0
  29 30  1  0
 M  END
->  <chembl_id>  (246) 
+>  <chembl_id>  (246)
 CHEMBL1333526
 
 $$$$
@@ -18601,7 +18601,7 @@ CHEMBL3260744
  20 38  1  0
  28 39  1  0
 M  END
->  <chembl_id>  (247) 
+>  <chembl_id>  (247)
 CHEMBL3260744
 
 $$$$
@@ -18679,7 +18679,7 @@ CHEMBL1384757
  32 33  1  0
 M  CHG  2   6  -1  10   1
 M  END
->  <chembl_id>  (248) 
+>  <chembl_id>  (248)
 CHEMBL1384757
 
 $$$$
@@ -18761,7 +18761,7 @@ CHEMBL2403528
  27 34  1  0
  34 35  1  0
 M  END
->  <chembl_id>  (249) 
+>  <chembl_id>  (249)
 CHEMBL2403528
 
 $$$$
@@ -18929,7 +18929,7 @@ CHEMBL4209654
  77 72  1  0
  69 72  1  0
 M  END
->  <chembl_id>  (250) 
+>  <chembl_id>  (250)
 CHEMBL4209654
 
 $$$$
@@ -19022,7 +19022,7 @@ CHEMBL3622644
  38 40  1  0
   4 38  1  0
 M  END
->  <chembl_id>  (251) 
+>  <chembl_id>  (251)
 CHEMBL3622644
 
 $$$$
@@ -19094,7 +19094,7 @@ CHEMBL4583111
   2 29  2  0
   4 30  2  0
 M  END
->  <chembl_id>  (252) 
+>  <chembl_id>  (252)
 CHEMBL4583111
 
 $$$$
@@ -19170,7 +19170,7 @@ CHEMBL4867068
  31 32  2  0
  32 27  1  0
 M  END
->  <chembl_id>  (253) 
+>  <chembl_id>  (253)
 CHEMBL4867068
 
 $$$$
@@ -19238,7 +19238,7 @@ CHEMBL1418961
  27 29  2  0
  28 29  1  0
 M  END
->  <chembl_id>  (254) 
+>  <chembl_id>  (254)
 CHEMBL1418961
 
 $$$$
@@ -19308,7 +19308,7 @@ CHEMBL5194850
  25 28  1  0
   3 29  2  0
 M  END
->  <chembl_id>  (255) 
+>  <chembl_id>  (255)
 CHEMBL5194850
 
 $$$$
@@ -19390,7 +19390,7 @@ CHEMBL247580
  15 16  1  0
  29 34  1  0
 M  END
->  <chembl_id>  (256) 
+>  <chembl_id>  (256)
 CHEMBL247580
 
 $$$$
@@ -19675,7 +19675,7 @@ CHEMBL4082234
 122135  1  0
 122136  1  0
 M  END
->  <chembl_id>  (257) 
+>  <chembl_id>  (257)
 CHEMBL4082234
 
 $$$$
@@ -19747,7 +19747,7 @@ CHEMBL4456627
  31 17  2  0
  13 31  1  0
 M  END
->  <chembl_id>  (258) 
+>  <chembl_id>  (258)
 CHEMBL4456627
 
 $$$$
@@ -19829,7 +19829,7 @@ CHEMBL1476028
  32 34  2  0
  33 34  1  0
 M  END
->  <chembl_id>  (259) 
+>  <chembl_id>  (259)
 CHEMBL1476028
 
 $$$$
@@ -19909,7 +19909,7 @@ CHEMBL4454738
  19 32  1  0
 M  CHG  2  32   1  34  -1
 M  END
->  <chembl_id>  (260) 
+>  <chembl_id>  (260)
 CHEMBL4454738
 
 $$$$
@@ -19973,7 +19973,7 @@ CHEMBL4524252
   1 25  1  0
  25 26  1  0
 M  END
->  <chembl_id>  (261) 
+>  <chembl_id>  (261)
 CHEMBL4524252
 
 $$$$
@@ -20060,7 +20060,7 @@ CHEMBL3503265
  36 38  1  0
  36 39  1  0
 M  END
->  <chembl_id>  (262) 
+>  <chembl_id>  (262)
 CHEMBL3503265
 
 $$$$
@@ -20125,7 +20125,7 @@ CHEMBL3653455
  25 26  1  0
  25 27  1  0
 M  END
->  <chembl_id>  (263) 
+>  <chembl_id>  (263)
 CHEMBL3653455
 
 $$$$
@@ -20214,7 +20214,7 @@ CHEMBL3975933
  36 37  1  0
  36 38  1  0
 M  END
->  <chembl_id>  (264) 
+>  <chembl_id>  (264)
 CHEMBL3975933
 
 $$$$
@@ -20272,7 +20272,7 @@ CHEMBL583043
   2  3  1  0
  14 23  1  1
 M  END
->  <chembl_id>  (265) 
+>  <chembl_id>  (265)
 CHEMBL583043
 
 $$$$
@@ -20342,7 +20342,7 @@ CHEMBL2112800
   8  4  1  0
  15 16  1  0
 M  END
->  <chembl_id>  (266) 
+>  <chembl_id>  (266)
 CHEMBL2112800
 
 $$$$
@@ -20397,7 +20397,7 @@ CHEMBL3794052
  21 22  2  0
  22 17  1  0
 M  END
->  <chembl_id>  (267) 
+>  <chembl_id>  (267)
 CHEMBL3794052
 
 $$$$
@@ -20511,7 +20511,7 @@ CHEMBL332992
  30 42  2  0
  50 45  2  0
 M  END
->  <chembl_id>  (268) 
+>  <chembl_id>  (268)
 CHEMBL332992
 
 $$$$
@@ -20641,7 +20641,7 @@ CHEMBL4854383
  56 57  3  0
  38 56  1  0
 M  END
->  <chembl_id>  (269) 
+>  <chembl_id>  (269)
 CHEMBL4854383
 
 $$$$
@@ -20715,7 +20715,7 @@ CHEMBL287353
  12 18  1  0
  31 30  2  0
 M  END
->  <chembl_id>  (270) 
+>  <chembl_id>  (270)
 CHEMBL287353
 
 $$$$
@@ -20779,7 +20779,7 @@ CHEMBL4462503
  25 26  1  0
 M  CHG  1   3   1
 M  END
->  <chembl_id>  (271) 
+>  <chembl_id>  (271)
 CHEMBL4462503
 
 $$$$
@@ -20839,7 +20839,7 @@ CHEMBL4957680
  11 14  1  0
  16 18  1  0
 M  END
->  <chembl_id>  (272) 
+>  <chembl_id>  (272)
 CHEMBL4957680
 
 $$$$
@@ -20900,7 +20900,7 @@ CHEMBL2140902
  23 24  2  0
  23 25  1  0
 M  END
->  <chembl_id>  (273) 
+>  <chembl_id>  (273)
 CHEMBL2140902
 
 $$$$
@@ -21010,7 +21010,7 @@ CHEMBL506152
  46 48  2  0
  43 46  1  0
 M  END
->  <chembl_id>  (274) 
+>  <chembl_id>  (274)
 CHEMBL506152
 
 $$$$
@@ -21063,7 +21063,7 @@ CHEMBL4929656
  16 17  1  0
  19 21  1  0
 M  END
->  <chembl_id>  (275) 
+>  <chembl_id>  (275)
 CHEMBL4929656
 
 $$$$
@@ -21097,7 +21097,7 @@ CHEMBL178527
  11 12  1  0
  12  8  2  0
 M  END
->  <chembl_id>  (276) 
+>  <chembl_id>  (276)
 CHEMBL178527
 
 $$$$
@@ -21184,7 +21184,7 @@ CHEMBL3342106
  35 37  2  0
 M  CHG  4   1   1  30  -1  36  -1  38   1
 M  END
->  <chembl_id>  (277) 
+>  <chembl_id>  (277)
 CHEMBL3342106
 
 $$$$
@@ -21274,7 +21274,7 @@ CHEMBL2376992
  24 32  1  0
  35 38  1  0
 M  END
->  <chembl_id>  (278) 
+>  <chembl_id>  (278)
 CHEMBL2376992
 
 $$$$
@@ -21322,7 +21322,7 @@ CHEMBL4295046
   5 19  1  0
  18 12  1  0
 M  END
->  <chembl_id>  (279) 
+>  <chembl_id>  (279)
 CHEMBL4295046
 
 $$$$
@@ -21392,7 +21392,7 @@ CHEMBL3921238
  28 29  2  0
  29  5  1  0
 M  END
->  <chembl_id>  (280) 
+>  <chembl_id>  (280)
 CHEMBL3921238
 
 $$$$
@@ -21443,7 +21443,7 @@ CHEMBL1506510
  18 19  2  0
  18 20  1  0
 M  END
->  <chembl_id>  (281) 
+>  <chembl_id>  (281)
 CHEMBL1506510
 
 $$$$
@@ -21500,7 +21500,7 @@ CHEMBL4967851
  21 24  1  0
  13 14  1  0
 M  END
->  <chembl_id>  (282) 
+>  <chembl_id>  (282)
 CHEMBL4967851
 
 $$$$
@@ -21558,7 +21558,7 @@ CHEMBL4911425
  18 20  1  0
  19 23  2  0
 M  END
->  <chembl_id>  (283) 
+>  <chembl_id>  (283)
 CHEMBL4911425
 
 $$$$
@@ -21615,7 +21615,7 @@ CHEMBL1476553
  18 22  1  0
  19 20  1  0
 M  END
->  <chembl_id>  (284) 
+>  <chembl_id>  (284)
 CHEMBL1476553
 
 $$$$
@@ -21668,7 +21668,7 @@ CHEMBL1334594
  19 21  2  0
  20 21  1  0
 M  END
->  <chembl_id>  (285) 
+>  <chembl_id>  (285)
 CHEMBL1334594
 
 $$$$
@@ -21757,7 +21757,7 @@ CHEMBL1270781
  35 37  1  0
  35 38  1  0
 M  END
->  <chembl_id>  (286) 
+>  <chembl_id>  (286)
 CHEMBL1270781
 
 $$$$
@@ -21828,7 +21828,7 @@ CHEMBL2097969
   4 29  1  0
  29 30  2  0
 M  END
->  <chembl_id>  (287) 
+>  <chembl_id>  (287)
 CHEMBL2097969
 
 $$$$
@@ -21908,7 +21908,7 @@ CHEMBL4541532
  33 34  2  0
  34 29  1  0
 M  END
->  <chembl_id>  (288) 
+>  <chembl_id>  (288)
 CHEMBL4541532
 
 $$$$
@@ -22027,7 +22027,7 @@ CHEMBL5218534
  52 41  1  0
  15 37  1  0
 M  END
->  <chembl_id>  (289) 
+>  <chembl_id>  (289)
 CHEMBL5218534
 
 $$$$
@@ -22137,7 +22137,7 @@ CHEMBL3290935
  45 48  1  0
   5 42  1  0
 M  END
->  <chembl_id>  (290) 
+>  <chembl_id>  (290)
 CHEMBL3290935
 
 $$$$
@@ -22196,7 +22196,7 @@ CHEMBL1506438
  19 20  2  0
  19 21  1  0
 M  END
->  <chembl_id>  (291) 
+>  <chembl_id>  (291)
 CHEMBL1506438
 
 $$$$
@@ -22263,7 +22263,7 @@ CHEMBL302374
   5 16  1  0
  20 17  2  0
 M  END
->  <chembl_id>  (292) 
+>  <chembl_id>  (292)
 CHEMBL302374
 
 $$$$
@@ -22321,7 +22321,7 @@ CHEMBL42487
   8 15  1  0
  19 18  2  0
 M  END
->  <chembl_id>  (293) 
+>  <chembl_id>  (293)
 CHEMBL42487
 
 $$$$
@@ -22378,7 +22378,7 @@ CHEMBL3408789
  19 22  1  0
  16 23  1  0
 M  END
->  <chembl_id>  (294) 
+>  <chembl_id>  (294)
 CHEMBL3408789
 
 $$$$
@@ -22431,7 +22431,7 @@ CHEMBL4293672
  13 14  1  0
   8 12  1  0
 M  END
->  <chembl_id>  (295) 
+>  <chembl_id>  (295)
 CHEMBL4293672
 
 $$$$
@@ -22475,7 +22475,7 @@ CHEMBL419617
   2  4  1  0
   9  7  2  0
 M  END
->  <chembl_id>  (296) 
+>  <chembl_id>  (296)
 CHEMBL419617
 
 $$$$
@@ -22583,7 +22583,7 @@ CHEMBL307427
   4 18  1  0
  31 39  1  0
 M  END
->  <chembl_id>  (297) 
+>  <chembl_id>  (297)
 CHEMBL307427
 
 $$$$
@@ -22647,7 +22647,7 @@ CHEMBL4064045
   1 25  1  0
  25 26  1  0
 M  END
->  <chembl_id>  (298) 
+>  <chembl_id>  (298)
 CHEMBL4064045
 
 $$$$
@@ -22730,7 +22730,7 @@ CHEMBL5095595
  34 33  1  0
  34 30  2  0
 M  END
->  <chembl_id>  (299) 
+>  <chembl_id>  (299)
 CHEMBL5095595
 
 $$$$
@@ -22783,7 +22783,7 @@ CHEMBL3764754
  19 21  1  0
  21 11  1  0
 M  END
->  <chembl_id>  (300) 
+>  <chembl_id>  (300)
 CHEMBL3764754
 
 $$$$
@@ -22832,7 +22832,7 @@ CHEMBL4977536
  13 14  1  0
  17 18  1  0
 M  END
->  <chembl_id>  (301) 
+>  <chembl_id>  (301)
 CHEMBL4977536
 
 $$$$
@@ -22906,7 +22906,7 @@ CHEMBL1822390
  13 14  1  0
  30 31  1  0
 M  END
->  <chembl_id>  (302) 
+>  <chembl_id>  (302)
 CHEMBL1822390
 
 $$$$
@@ -22935,7 +22935,7 @@ CHEMBL1650234
   4  5  1  0
   6 10  1  0
 M  END
->  <chembl_id>  (303) 
+>  <chembl_id>  (303)
 CHEMBL1650234
 
 $$$$
@@ -23000,7 +23000,7 @@ CHEMBL286619
  22 27  2  0
  24 19  2  0
 M  END
->  <chembl_id>  (304) 
+>  <chembl_id>  (304)
 CHEMBL286619
 
 $$$$
@@ -23050,7 +23050,7 @@ CHEMBL4929590
   7  8  1  0
  17 18  2  0
 M  END
->  <chembl_id>  (305) 
+>  <chembl_id>  (305)
 CHEMBL4929590
 
 $$$$
@@ -23119,7 +23119,7 @@ CHEMBL1898466
  25 27  1  0
  28 29  1  0
 M  END
->  <chembl_id>  (306) 
+>  <chembl_id>  (306)
 CHEMBL1898466
 
 $$$$
@@ -23174,7 +23174,7 @@ CHEMBL5022820
  14 15  1  0
  21 22  1  0
 M  END
->  <chembl_id>  (307) 
+>  <chembl_id>  (307)
 CHEMBL5022820
 
 $$$$
@@ -23222,7 +23222,7 @@ CHEMBL1814425
   9 10  1  0
  10 19  1  0
 M  END
->  <chembl_id>  (308) 
+>  <chembl_id>  (308)
 CHEMBL1814425
 
 $$$$
@@ -23275,7 +23275,7 @@ CHEMBL2253280
   1 20  1  0
   3 21  1  0
 M  END
->  <chembl_id>  (309) 
+>  <chembl_id>  (309)
 CHEMBL2253280
 
 $$$$
@@ -23326,7 +23326,7 @@ CHEMBL4078981
   3 13  1  0
   6 20  1  0
 M  END
->  <chembl_id>  (310) 
+>  <chembl_id>  (310)
 CHEMBL4078981
 
 $$$$
@@ -23372,7 +23372,7 @@ CHEMBL1432572
  14 15  1  0
  16 17  1  0
 M  END
->  <chembl_id>  (311) 
+>  <chembl_id>  (311)
 CHEMBL1432572
 
 $$$$
@@ -23464,7 +23464,7 @@ CHEMBL3934692
  36 38  1  0
  36 39  1  0
 M  END
->  <chembl_id>  (312) 
+>  <chembl_id>  (312)
 CHEMBL3934692
 
 $$$$
@@ -23511,7 +23511,7 @@ CHEMBL37022
  19 18  1  0
   9  3  2  0
 M  END
->  <chembl_id>  (313) 
+>  <chembl_id>  (313)
 CHEMBL37022
 
 $$$$
@@ -23568,7 +23568,7 @@ CHEMBL4210916
  18 22  1  0
  11 23  1  0
 M  END
->  <chembl_id>  (314) 
+>  <chembl_id>  (314)
 CHEMBL4210916
 
 $$$$
@@ -23612,7 +23612,7 @@ CHEMBL1430014
  14 16  2  0
  15 16  1  0
 M  END
->  <chembl_id>  (315) 
+>  <chembl_id>  (315)
 CHEMBL1430014
 
 $$$$
@@ -23682,7 +23682,7 @@ CHEMBL435136
  28 29  2  0
  29 24  1  0
 M  END
->  <chembl_id>  (316) 
+>  <chembl_id>  (316)
 CHEMBL435136
 
 $$$$
@@ -23747,7 +23747,7 @@ CHEMBL1823889
   3 13  1  0
  24 27  1  0
 M  END
->  <chembl_id>  (317) 
+>  <chembl_id>  (317)
 CHEMBL1823889
 
 $$$$
@@ -23817,7 +23817,7 @@ CHEMBL1332181
  25 26  1  0
  27 28  1  0
 M  END
->  <chembl_id>  (318) 
+>  <chembl_id>  (318)
 CHEMBL1332181
 
 $$$$
@@ -23883,7 +23883,7 @@ CHEMBL484922
   8  9  2  0
   4 27  1  0
 M  END
->  <chembl_id>  (319) 
+>  <chembl_id>  (319)
 CHEMBL484922
 
 $$$$
@@ -23962,7 +23962,7 @@ CHEMBL457817
   9 14  1  0
  14 15  1  1
 M  END
->  <chembl_id>  (320) 
+>  <chembl_id>  (320)
 CHEMBL457817
 
 $$$$
@@ -24004,7 +24004,7 @@ CHEMBL4163166
  14 15  1  0
  15 16  1  0
 M  END
->  <chembl_id>  (321) 
+>  <chembl_id>  (321)
 CHEMBL4163166
 
 $$$$
@@ -24086,7 +24086,7 @@ CHEMBL575197
  33 34  1  0
  34 30  2  0
 M  END
->  <chembl_id>  (322) 
+>  <chembl_id>  (322)
 CHEMBL575197
 
 $$$$
@@ -24168,7 +24168,7 @@ CHEMBL4995713
  26 30  1  0
  33 35  1  0
 M  END
->  <chembl_id>  (323) 
+>  <chembl_id>  (323)
 CHEMBL4995713
 
 $$$$
@@ -24252,7 +24252,7 @@ CHEMBL1375805
  33 35  1  0
  34 35  1  0
 M  END
->  <chembl_id>  (324) 
+>  <chembl_id>  (324)
 CHEMBL1375805
 
 $$$$
@@ -24349,7 +24349,7 @@ CHEMBL1223104
  40 35  1  0
  38 41  1  0
 M  END
->  <chembl_id>  (325) 
+>  <chembl_id>  (325)
 CHEMBL1223104
 
 $$$$
@@ -24434,7 +24434,7 @@ CHEMBL1525972
  32 36  2  0
  35 36  1  0
 M  END
->  <chembl_id>  (326) 
+>  <chembl_id>  (326)
 CHEMBL1525972
 
 $$$$
@@ -24552,7 +24552,7 @@ CHEMBL1179570
  33 52  2  0
  34 53  2  0
 M  END
->  <chembl_id>  (327) 
+>  <chembl_id>  (327)
 CHEMBL1179570
 
 $$$$
@@ -24606,7 +24606,7 @@ CHEMBL1329284
  16 19  2  0
  21 22  1  0
 M  END
->  <chembl_id>  (328) 
+>  <chembl_id>  (328)
 CHEMBL1329284
 
 $$$$
@@ -24679,7 +24679,7 @@ CHEMBL3770184
  30 10  1  0
  30 31  1  0
 M  END
->  <chembl_id>  (329) 
+>  <chembl_id>  (329)
 CHEMBL3770184
 
 $$$$
@@ -24736,7 +24736,7 @@ CHEMBL3628018
  21 22  1  0
  22 23  1  0
 M  END
->  <chembl_id>  (330) 
+>  <chembl_id>  (330)
 CHEMBL3628018
 
 $$$$
@@ -24774,7 +24774,7 @@ CHEMBL1364965
  11 13  2  0
  12 13  1  0
 M  END
->  <chembl_id>  (331) 
+>  <chembl_id>  (331)
 CHEMBL1364965
 
 $$$$
@@ -24823,7 +24823,7 @@ CHEMBL220176
   5 10  2  0
  17 20  1  0
 M  END
->  <chembl_id>  (332) 
+>  <chembl_id>  (332)
 CHEMBL220176
 
 $$$$
@@ -24887,7 +24887,7 @@ CHEMBL383828
  25 26  2  0
  26 21  1  0
 M  END
->  <chembl_id>  (333) 
+>  <chembl_id>  (333)
 CHEMBL383828
 
 $$$$
@@ -24949,7 +24949,7 @@ CHEMBL2425514
  23 24  1  0
  18 25  1  0
 M  END
->  <chembl_id>  (334) 
+>  <chembl_id>  (334)
 CHEMBL2425514
 
 $$$$
@@ -25018,7 +25018,7 @@ CHEMBL5006230
  20 21  1  0
  28 29  1  0
 M  END
->  <chembl_id>  (335) 
+>  <chembl_id>  (335)
 CHEMBL5006230
 
 $$$$
@@ -25087,7 +25087,7 @@ CHEMBL194776
   5  7  1  0
  28 27  2  0
 M  END
->  <chembl_id>  (336) 
+>  <chembl_id>  (336)
 CHEMBL194776
 
 $$$$
@@ -25138,7 +25138,7 @@ CHEMBL18003
   9 10  1  0
  11 13  2  0
 M  END
->  <chembl_id>  (337) 
+>  <chembl_id>  (337)
 CHEMBL18003
 
 $$$$
@@ -25206,7 +25206,7 @@ CHEMBL1574593
  26 28  2  0
  27 28  1  0
 M  END
->  <chembl_id>  (338) 
+>  <chembl_id>  (338)
 CHEMBL1574593
 
 $$$$
@@ -25295,7 +25295,7 @@ CHEMBL534222
  36 38  1  0
  36 39  1  0
 M  END
->  <chembl_id>  (339) 
+>  <chembl_id>  (339)
 CHEMBL534222
 
 $$$$
@@ -25363,7 +25363,7 @@ CHEMBL4974712
  24 26  1  0
  27 28  1  0
 M  END
->  <chembl_id>  (340) 
+>  <chembl_id>  (340)
 CHEMBL4974712
 
 $$$$
@@ -25441,7 +25441,7 @@ CHEMBL4596767
  26 32  1  0
 M  CHG  2  11   1  26   1
 M  END
->  <chembl_id>  (341) 
+>  <chembl_id>  (341)
 CHEMBL4596767
 
 $$$$
@@ -25510,7 +25510,7 @@ CHEMBL3140180
  12 13  3  0
 M  CHG  1   5   1
 M  END
->  <chembl_id>  (342) 
+>  <chembl_id>  (342)
 CHEMBL3140180
 
 $$$$
@@ -25593,7 +25593,7 @@ CHEMBL4168758
  34 35  3  0
  33 34  1  0
 M  END
->  <chembl_id>  (343) 
+>  <chembl_id>  (343)
 CHEMBL4168758
 
 $$$$
@@ -25682,7 +25682,7 @@ CHEMBL2436483
  36 37  1  0
   4 38  1  0
 M  END
->  <chembl_id>  (344) 
+>  <chembl_id>  (344)
 CHEMBL2436483
 
 $$$$
@@ -25769,7 +25769,7 @@ CHEMBL4279814
  17  2  1  0
   2 37  1  0
 M  END
->  <chembl_id>  (345) 
+>  <chembl_id>  (345)
 CHEMBL4279814
 
 $$$$
@@ -25783,7 +25783,7 @@ CHEMBL45211
   2  1  3  0
   2  3  1  0
 M  END
->  <chembl_id>  (346) 
+>  <chembl_id>  (346)
 CHEMBL45211
 
 $$$$
@@ -25856,7 +25856,7 @@ CHEMBL473076
   2  3  2  0
  30 31  1  0
 M  END
->  <chembl_id>  (347) 
+>  <chembl_id>  (347)
 CHEMBL473076
 
 $$$$
@@ -25897,7 +25897,7 @@ CHEMBL312550
  16 13  1  0
  15 16  1  0
 M  END
->  <chembl_id>  (348) 
+>  <chembl_id>  (348)
 CHEMBL312550
 
 $$$$
@@ -25956,7 +25956,7 @@ CHEMBL564420
  22 23  1  0
  23 24  1  0
 M  END
->  <chembl_id>  (349) 
+>  <chembl_id>  (349)
 CHEMBL564420
 
 $$$$
@@ -26017,7 +26017,7 @@ CHEMBL4107622
  24 25  2  0
  25 20  1  0
 M  END
->  <chembl_id>  (350) 
+>  <chembl_id>  (350)
 CHEMBL4107622
 
 $$$$
@@ -26094,7 +26094,7 @@ CHEMBL162345
  11 18  1  0
  15 20  1  0
 M  END
->  <chembl_id>  (351) 
+>  <chembl_id>  (351)
 CHEMBL162345
 
 $$$$
@@ -26153,7 +26153,7 @@ CHEMBL1898417
  18 20  2  3
  19 21  2  0
 M  END
->  <chembl_id>  (352) 
+>  <chembl_id>  (352)
 CHEMBL1898417
 
 $$$$
@@ -26190,7 +26190,7 @@ CHEMBL4161835
   4 13  1  0
   1 14  1  0
 M  END
->  <chembl_id>  (353) 
+>  <chembl_id>  (353)
 CHEMBL4161835
 
 $$$$
@@ -26249,7 +26249,7 @@ CHEMBL4635176
  21 23  1  0
  20 24  2  0
 M  END
->  <chembl_id>  (354) 
+>  <chembl_id>  (354)
 CHEMBL4635176
 
 $$$$
@@ -26322,7 +26322,7 @@ CHEMBL2296319
  26 29  1  0
  26 30  1  0
 M  END
->  <chembl_id>  (355) 
+>  <chembl_id>  (355)
 CHEMBL2296319
 
 $$$$
@@ -26394,7 +26394,7 @@ CHEMBL4536222
  22 28  1  0
 M  CHG  4  25   1  27  -1  28   1  30  -1
 M  END
->  <chembl_id>  (356) 
+>  <chembl_id>  (356)
 CHEMBL4536222
 
 $$$$
@@ -26456,7 +26456,7 @@ CHEMBL186390
   2  5  1  0
  15 24  2  0
 M  END
->  <chembl_id>  (357) 
+>  <chembl_id>  (357)
 CHEMBL186390
 
 $$$$
@@ -26502,7 +26502,7 @@ CHEMBL1489078
  16 18  1  0
  17 18  1  0
 M  END
->  <chembl_id>  (358) 
+>  <chembl_id>  (358)
 CHEMBL1489078
 
 $$$$
@@ -26544,7 +26544,7 @@ CHEMBL1881156
  13 16  2  0
  14 16  1  0
 M  END
->  <chembl_id>  (359) 
+>  <chembl_id>  (359)
 CHEMBL1881156
 
 $$$$
@@ -26606,7 +26606,7 @@ CHEMBL177380
  25 23  2  0
  21 22  2  0
 M  END
->  <chembl_id>  (360) 
+>  <chembl_id>  (360)
 CHEMBL177380
 
 $$$$
@@ -26902,7 +26902,7 @@ CHEMBL1644436
 141137  1  0
 139 11  1  0
 M  END
->  <chembl_id>  (361) 
+>  <chembl_id>  (361)
 CHEMBL1644436
 
 $$$$
@@ -27057,7 +27057,7 @@ CHEMBL5176799
  68 70  1  0
   1 70  1  0
 M  END
->  <chembl_id>  (362) 
+>  <chembl_id>  (362)
 CHEMBL5176799
 
 $$$$
@@ -27116,7 +27116,7 @@ CHEMBL4941655
  16 18  1  0
  22 23  1  0
 M  END
->  <chembl_id>  (363) 
+>  <chembl_id>  (363)
 CHEMBL4941655
 
 $$$$
@@ -27171,7 +27171,7 @@ CHEMBL4520406
  21 12  2  0
  20 22  1  0
 M  END
->  <chembl_id>  (364) 
+>  <chembl_id>  (364)
 CHEMBL4520406
 
 $$$$
@@ -27310,7 +27310,7 @@ CHEMBL1630577
  10 20  1  0
  21 26  1  0
 M  END
->  <chembl_id>  (365) 
+>  <chembl_id>  (365)
 CHEMBL1630577
 
 $$$$
@@ -27385,7 +27385,7 @@ CHEMBL4202879
  12 30  1  0
  28 31  1  0
 M  END
->  <chembl_id>  (366) 
+>  <chembl_id>  (366)
 CHEMBL4202879
 
 $$$$
@@ -27457,7 +27457,7 @@ CHEMBL2159193
  28 29  1  0
  29 30  1  0
 M  END
->  <chembl_id>  (367) 
+>  <chembl_id>  (367)
 CHEMBL2159193
 
 $$$$
@@ -27538,7 +27538,7 @@ CHEMBL4643654
  25 35  1  0
 M  ISO  6  30   2  31   2  32   2  33   2  34   2  35   2
 M  END
->  <chembl_id>  (368) 
+>  <chembl_id>  (368)
 CHEMBL4643654
 
 $$$$
@@ -27578,7 +27578,7 @@ CHEMBL4960939
   8 10  2  0
  14 15  1  0
 M  END
->  <chembl_id>  (369) 
+>  <chembl_id>  (369)
 CHEMBL4960939
 
 $$$$
@@ -27644,7 +27644,7 @@ CHEMBL587503
  13 26  1  0
  26 27  1  0
 M  END
->  <chembl_id>  (370) 
+>  <chembl_id>  (370)
 CHEMBL587503
 
 $$$$
@@ -27734,7 +27734,7 @@ CHEMBL1817964
   2  3  1  0
  35 40  1  6
 M  END
->  <chembl_id>  (371) 
+>  <chembl_id>  (371)
 CHEMBL1817964
 
 $$$$
@@ -27808,7 +27808,7 @@ CHEMBL2337400
  31 26  1  0
 M  CHG  2  10   1  11  -1
 M  END
->  <chembl_id>  (372) 
+>  <chembl_id>  (372)
 CHEMBL2337400
 
 $$$$
@@ -27865,7 +27865,7 @@ CHEMBL117031
  24 22  1  0
  24 23  2  0
 M  END
->  <chembl_id>  (373) 
+>  <chembl_id>  (373)
 CHEMBL117031
 
 $$$$
@@ -27924,7 +27924,7 @@ CHEMBL1085269
   2  3  1  0
  11 24  1  0
 M  END
->  <chembl_id>  (374) 
+>  <chembl_id>  (374)
 CHEMBL1085269
 
 $$$$
@@ -27998,7 +27998,7 @@ CHEMBL1556185
  28 31  2  0
  29 31  1  0
 M  END
->  <chembl_id>  (375) 
+>  <chembl_id>  (375)
 CHEMBL1556185
 
 $$$$
@@ -28073,7 +28073,7 @@ CHEMBL3353969
  30 31  1  0
  31 32  1  0
 M  END
->  <chembl_id>  (376) 
+>  <chembl_id>  (376)
 CHEMBL3353969
 
 $$$$
@@ -28143,7 +28143,7 @@ CHEMBL1964282
  26 28  1  0
 M  CHG  2   6  -1   7   1
 M  END
->  <chembl_id>  (377) 
+>  <chembl_id>  (377)
 CHEMBL1964282
 
 $$$$
@@ -28213,7 +28213,7 @@ CHEMBL1326425
  26 28  1  0
  27 28  2  0
 M  END
->  <chembl_id>  (378) 
+>  <chembl_id>  (378)
 CHEMBL1326425
 
 $$$$
@@ -28287,7 +28287,7 @@ CHEMBL4592337
  29 30  1  0
  27 31  1  0
 M  END
->  <chembl_id>  (379) 
+>  <chembl_id>  (379)
 CHEMBL4592337
 
 $$$$
@@ -28320,7 +28320,7 @@ CHEMBL458643
   5  6  1  0
  11 12  1  0
 M  END
->  <chembl_id>  (380) 
+>  <chembl_id>  (380)
 CHEMBL458643
 
 $$$$
@@ -28392,7 +28392,7 @@ CHEMBL1979016
  26 28  1  0
  27 29  1  0
 M  END
->  <chembl_id>  (381) 
+>  <chembl_id>  (381)
 CHEMBL1979016
 
 $$$$
@@ -28434,7 +28434,7 @@ CHEMBL173323
  16 11  2  0
 M  CHG  2   1   1   7  -1
 M  END
->  <chembl_id>  (382) 
+>  <chembl_id>  (382)
 CHEMBL173323
 
 $$$$
@@ -28483,7 +28483,7 @@ CHEMBL3461870
  19  2  1  0
  19 13  1  0
 M  END
->  <chembl_id>  (383) 
+>  <chembl_id>  (383)
 CHEMBL3461870
 
 $$$$
@@ -28539,7 +28539,7 @@ CHEMBL270339
  21 22  2  0
  22 13  1  0
 M  END
->  <chembl_id>  (384) 
+>  <chembl_id>  (384)
 CHEMBL270339
 
 $$$$
@@ -28587,7 +28587,7 @@ CHEMBL1097764
   9 10  1  0
  15 13  1  0
 M  END
->  <chembl_id>  (385) 
+>  <chembl_id>  (385)
 CHEMBL1097764
 
 $$$$
@@ -28631,7 +28631,7 @@ CHEMBL3415371
  15 17  1  0
  15 18  1  0
 M  END
->  <chembl_id>  (386) 
+>  <chembl_id>  (386)
 CHEMBL3415371
 
 $$$$
@@ -28717,7 +28717,7 @@ CHEMBL1643058
  16 17  1  0
  26 37  1  0
 M  END
->  <chembl_id>  (387) 
+>  <chembl_id>  (387)
 CHEMBL1643058
 
 $$$$
@@ -28781,7 +28781,7 @@ CHEMBL1469775
  23 25  1  0
  23 26  1  0
 M  END
->  <chembl_id>  (388) 
+>  <chembl_id>  (388)
 CHEMBL1469775
 
 $$$$
@@ -28870,7 +28870,7 @@ CHEMBL592402
  17 18  1  0
 M  CHG  4   1   1  31  -1  32  -1  39   1
 M  END
->  <chembl_id>  (389) 
+>  <chembl_id>  (389)
 CHEMBL592402
 
 $$$$
@@ -28962,7 +28962,7 @@ CHEMBL251324
  19 20  1  0
 M  CHG  2  39   1  40  -1
 M  END
->  <chembl_id>  (390) 
+>  <chembl_id>  (390)
 CHEMBL251324
 
 $$$$
@@ -28997,7 +28997,7 @@ CHEMBL112154
  13  2  1  0
   7  6  2  0
 M  END
->  <chembl_id>  (391) 
+>  <chembl_id>  (391)
 CHEMBL112154
 
 $$$$
@@ -29083,7 +29083,7 @@ CHEMBL1851778
  34 36  2  0
 M  CHG  1   6   1
 M  END
->  <chembl_id>  (392) 
+>  <chembl_id>  (392)
 CHEMBL1851778
 
 $$$$
@@ -29131,7 +29131,7 @@ CHEMBL2204412
  18 19  1  0
  19 20  1  0
 M  END
->  <chembl_id>  (393) 
+>  <chembl_id>  (393)
 CHEMBL2204412
 
 $$$$
@@ -29200,7 +29200,7 @@ CHEMBL1553069
  26 27  2  0
  27 28  1  0
 M  END
->  <chembl_id>  (394) 
+>  <chembl_id>  (394)
 CHEMBL1553069
 
 $$$$
@@ -29272,7 +29272,7 @@ CHEMBL1376204
  29 30  1  0
  29 31  1  0
 M  END
->  <chembl_id>  (395) 
+>  <chembl_id>  (395)
 CHEMBL1376204
 
 $$$$
@@ -29335,7 +29335,7 @@ CHEMBL289534
  20 17  1  0
  26 24  2  0
 M  END
->  <chembl_id>  (396) 
+>  <chembl_id>  (396)
 CHEMBL289534
 
 $$$$
@@ -29414,7 +29414,7 @@ CHEMBL5011541
  28 29  2  0
  30 31  1  0
 M  END
->  <chembl_id>  (397) 
+>  <chembl_id>  (397)
 CHEMBL5011541
 
 $$$$
@@ -29484,7 +29484,7 @@ CHEMBL1718848
  23 25  2  0
  28 29  1  0
 M  END
->  <chembl_id>  (398) 
+>  <chembl_id>  (398)
 CHEMBL1718848
 
 $$$$
@@ -29567,7 +29567,7 @@ CHEMBL3735944
  29 35  1  0
  25 36  1  0
 M  END
->  <chembl_id>  (399) 
+>  <chembl_id>  (399)
 CHEMBL3735944
 
 $$$$
@@ -29599,7 +29599,7 @@ CHEMBL2105982
  12  5  1  0
 M  CHG  2   1  -1   2   1
 M  END
->  <chembl_id>  (400) 
+>  <chembl_id>  (400)
 CHEMBL2105982
 
 $$$$
@@ -29682,7 +29682,7 @@ CHEMBL3982719
  33 35  1  0
  35 36  1  0
 M  END
->  <chembl_id>  (401) 
+>  <chembl_id>  (401)
 CHEMBL3982719
 
 $$$$
@@ -29737,7 +29737,7 @@ CHEMBL1555878
  20 22  1  0
 M  CHG  2   4  -1   7   1
 M  END
->  <chembl_id>  (402) 
+>  <chembl_id>  (402)
 CHEMBL1555878
 
 $$$$
@@ -29816,7 +29816,7 @@ CHEMBL127955
   8 19  1  0
  22 30  2  0
 M  END
->  <chembl_id>  (403) 
+>  <chembl_id>  (403)
 CHEMBL127955
 
 $$$$
@@ -29898,7 +29898,7 @@ CHEMBL483461
   6  7  1  1
  34 35  1  0
 M  END
->  <chembl_id>  (404) 
+>  <chembl_id>  (404)
 CHEMBL483461
 
 $$$$
@@ -29953,7 +29953,7 @@ CHEMBL1316108
  19 20  2  0
  19 21  1  0
 M  END
->  <chembl_id>  (405) 
+>  <chembl_id>  (405)
 CHEMBL1316108
 
 $$$$
@@ -30037,7 +30037,7 @@ CHEMBL4789087
  26 35  1  0
  11 36  1  0
 M  END
->  <chembl_id>  (406) 
+>  <chembl_id>  (406)
 CHEMBL4789087
 
 $$$$
@@ -30102,7 +30102,7 @@ CHEMBL1326022
  25 27  1  0
  26 27  2  0
 M  END
->  <chembl_id>  (407) 
+>  <chembl_id>  (407)
 CHEMBL1326022
 
 $$$$
@@ -30150,7 +30150,7 @@ CHEMBL172076
   6  4  1  0
  19 18  2  0
 M  END
->  <chembl_id>  (408) 
+>  <chembl_id>  (408)
 CHEMBL172076
 
 $$$$
@@ -30229,7 +30229,7 @@ CHEMBL458851
  33 34  2  0
  34 29  1  0
 M  END
->  <chembl_id>  (409) 
+>  <chembl_id>  (409)
 CHEMBL458851
 
 $$$$
@@ -30290,7 +30290,7 @@ CHEMBL3125000
  20  1  1  0
   1 25  1  0
 M  END
->  <chembl_id>  (410) 
+>  <chembl_id>  (410)
 CHEMBL3125000
 
 $$$$
@@ -30366,7 +30366,7 @@ CHEMBL1618464
  20 31  1  0
 M  CHG  2  20   1  26   1
 M  END
->  <chembl_id>  (411) 
+>  <chembl_id>  (411)
 CHEMBL1618464
 
 $$$$
@@ -30426,7 +30426,7 @@ CHEMBL1474810
  20 22  2  0
  21 22  1  0
 M  END
->  <chembl_id>  (412) 
+>  <chembl_id>  (412)
 CHEMBL1474810
 
 $$$$
@@ -30523,7 +30523,7 @@ CHEMBL3120539
  22 41  1  0
   7 21  1  6
 M  END
->  <chembl_id>  (413) 
+>  <chembl_id>  (413)
 CHEMBL3120539
 
 $$$$
@@ -30606,7 +30606,7 @@ CHEMBL3765407
  26 33  1  0
 M  CHG  2  33   1  35  -1
 M  END
->  <chembl_id>  (414) 
+>  <chembl_id>  (414)
 CHEMBL3765407
 
 $$$$
@@ -30688,7 +30688,7 @@ CHEMBL484437
   7 10  1  0
  33 35  2  0
 M  END
->  <chembl_id>  (415) 
+>  <chembl_id>  (415)
 CHEMBL484437
 
 $$$$
@@ -30750,7 +30750,7 @@ CHEMBL2022633
   3 24  2  0
  13 25  2  3
 M  END
->  <chembl_id>  (416) 
+>  <chembl_id>  (416)
 CHEMBL2022633
 
 $$$$
@@ -30829,7 +30829,7 @@ CHEMBL4862860
  32 33  1  0
  32 34  2  0
 M  END
->  <chembl_id>  (417) 
+>  <chembl_id>  (417)
 CHEMBL4862860
 
 $$$$
@@ -30888,7 +30888,7 @@ CHEMBL1365914
  21 24  2  0
  22 24  1  0
 M  END
->  <chembl_id>  (418) 
+>  <chembl_id>  (418)
 CHEMBL1365914
 
 $$$$
@@ -30936,7 +30936,7 @@ CHEMBL196818
  17 19  2  0
  11 17  1  0
 M  END
->  <chembl_id>  (419) 
+>  <chembl_id>  (419)
 CHEMBL196818
 
 $$$$
@@ -31004,7 +31004,7 @@ CHEMBL3115594
   7 25  1  0
 M  CHG  2  25   1  27  -1
 M  END
->  <chembl_id>  (420) 
+>  <chembl_id>  (420)
 CHEMBL3115594
 
 $$$$
@@ -31087,7 +31087,7 @@ CHEMBL10055
  15 17  1  0
  35 34  2  0
 M  END
->  <chembl_id>  (421) 
+>  <chembl_id>  (421)
 CHEMBL10055
 
 $$$$
@@ -31164,7 +31164,7 @@ CHEMBL3890521
  29 32  2  0
  32 25  1  0
 M  END
->  <chembl_id>  (422) 
+>  <chembl_id>  (422)
 CHEMBL3890521
 
 $$$$
@@ -31228,7 +31228,7 @@ CHEMBL3989109
  17  3  1  0
  26 20  1  0
 M  END
->  <chembl_id>  (423) 
+>  <chembl_id>  (423)
 CHEMBL3989109
 
 $$$$
@@ -31307,7 +31307,7 @@ CHEMBL4891654
  25 27  1  0
  32 33  1  0
 M  END
->  <chembl_id>  (424) 
+>  <chembl_id>  (424)
 CHEMBL4891654
 
 $$$$
@@ -31363,7 +31363,7 @@ CHEMBL1880552
  18 22  1  0
  22 23  1  0
 M  END
->  <chembl_id>  (425) 
+>  <chembl_id>  (425)
 CHEMBL1880552
 
 $$$$
@@ -31421,7 +31421,7 @@ CHEMBL2238199
  22 17  1  0
  18 23  1  0
 M  END
->  <chembl_id>  (426) 
+>  <chembl_id>  (426)
 CHEMBL2238199
 
 $$$$
@@ -31504,7 +31504,7 @@ CHEMBL291334
  13 14  2  0
 M  CHG  4   1   1  18  -1  19  -1  36   1
 M  END
->  <chembl_id>  (427) 
+>  <chembl_id>  (427)
 CHEMBL291334
 
 $$$$
@@ -31533,7 +31533,7 @@ CHEMBL1567276
   7  9  1  0
   8 10  1  0
 M  END
->  <chembl_id>  (428) 
+>  <chembl_id>  (428)
 CHEMBL1567276
 
 $$$$
@@ -31593,7 +31593,7 @@ CHEMBL1478535
  21 23  1  0
  21 24  1  0
 M  END
->  <chembl_id>  (429) 
+>  <chembl_id>  (429)
 CHEMBL1478535
 
 $$$$
@@ -31652,7 +31652,7 @@ CHEMBL519510
  10 11  1  0
  20 23  1  0
 M  END
->  <chembl_id>  (430) 
+>  <chembl_id>  (430)
 CHEMBL519510
 
 $$$$
@@ -31728,7 +31728,7 @@ CHEMBL1468437
  30 31  2  0
  30 32  1  0
 M  END
->  <chembl_id>  (431) 
+>  <chembl_id>  (431)
 CHEMBL1468437
 
 $$$$
@@ -31821,7 +31821,7 @@ CHEMBL3780005
  32 39  2  0
  32 40  2  0
 M  END
->  <chembl_id>  (432) 
+>  <chembl_id>  (432)
 CHEMBL3780005
 
 $$$$
@@ -31904,7 +31904,7 @@ CHEMBL1446547
  32 33  1  0
  34 35  1  0
 M  END
->  <chembl_id>  (433) 
+>  <chembl_id>  (433)
 CHEMBL1446547
 
 $$$$
@@ -32045,7 +32045,7 @@ CHEMBL2314532
  60 61  2  0
  60 62  1  0
 M  END
->  <chembl_id>  (434) 
+>  <chembl_id>  (434)
 CHEMBL2314532
 
 $$$$
@@ -32106,7 +32106,7 @@ CHEMBL1565625
  24 25  1  0
 M  CHG  2   4  -1   9   1
 M  END
->  <chembl_id>  (435) 
+>  <chembl_id>  (435)
 CHEMBL1565625
 
 $$$$
@@ -32168,7 +32168,7 @@ CHEMBL2142190
  20 24  1  0
  21 23  2  0
 M  END
->  <chembl_id>  (436) 
+>  <chembl_id>  (436)
 CHEMBL2142190
 
 $$$$
@@ -32214,7 +32214,7 @@ CHEMBL1400657
  15 18  2  0
  16 17  2  0
 M  END
->  <chembl_id>  (437) 
+>  <chembl_id>  (437)
 CHEMBL1400657
 
 $$$$
@@ -32295,7 +32295,7 @@ CHEMBL4161688
  32 34  1  0
  32 35  1  0
 M  END
->  <chembl_id>  (438) 
+>  <chembl_id>  (438)
 CHEMBL4161688
 
 $$$$
@@ -32378,7 +32378,7 @@ CHEMBL528963
  33 35  1  0
  33 36  1  0
 M  END
->  <chembl_id>  (439) 
+>  <chembl_id>  (439)
 CHEMBL528963
 
 $$$$
@@ -32420,7 +32420,7 @@ CHEMBL4889790
   7  8  1  0
  15 16  1  0
 M  END
->  <chembl_id>  (440) 
+>  <chembl_id>  (440)
 CHEMBL4889790
 
 $$$$
@@ -32486,7 +32486,7 @@ CHEMBL2418331
  26 27  2  0
  27 22  1  0
 M  END
->  <chembl_id>  (441) 
+>  <chembl_id>  (441)
 CHEMBL2418331
 
 $$$$
@@ -32539,7 +32539,7 @@ CHEMBL1973436
  18 19  1  0
  19 21  1  0
 M  END
->  <chembl_id>  (442) 
+>  <chembl_id>  (442)
 CHEMBL1973436
 
 $$$$
@@ -32620,7 +32620,7 @@ CHEMBL3358727
  31 33  1  0
  31 34  1  0
 M  END
->  <chembl_id>  (443) 
+>  <chembl_id>  (443)
 CHEMBL3358727
 
 $$$$
@@ -32670,7 +32670,7 @@ CHEMBL1462741
  15 18  1  0
  19 20  1  0
 M  END
->  <chembl_id>  (444) 
+>  <chembl_id>  (444)
 CHEMBL1462741
 
 $$$$
@@ -32727,7 +32727,7 @@ CHEMBL2159545
   5  6  2  0
   6  1  1  0
 M  END
->  <chembl_id>  (445) 
+>  <chembl_id>  (445)
 CHEMBL2159545
 
 $$$$
@@ -32808,7 +32808,7 @@ CHEMBL4099660
  33 34  1  0
  33 35  1  0
 M  END
->  <chembl_id>  (446) 
+>  <chembl_id>  (446)
 CHEMBL4099660
 
 $$$$
@@ -32929,7 +32929,7 @@ CHEMBL592632
  12  5  1  0
  30 51  1  0
 M  END
->  <chembl_id>  (447) 
+>  <chembl_id>  (447)
 CHEMBL592632
 
 $$$$
@@ -33005,7 +33005,7 @@ CHEMBL1452176
  29 31  1  0
  30 32  1  0
 M  END
->  <chembl_id>  (448) 
+>  <chembl_id>  (448)
 CHEMBL1452176
 
 $$$$
@@ -33056,7 +33056,7 @@ CHEMBL5026769
   9 12  1  0
  19 20  2  0
 M  END
->  <chembl_id>  (449) 
+>  <chembl_id>  (449)
 CHEMBL5026769
 
 $$$$
@@ -33124,7 +33124,7 @@ CHEMBL1173292
  12 13  1  0
  27 28  1  0
 M  END
->  <chembl_id>  (450) 
+>  <chembl_id>  (450)
 CHEMBL1173292
 
 $$$$
@@ -33227,7 +33227,7 @@ CHEMBL2236560
  38 43  1  0
  42 44  1  0
 M  END
->  <chembl_id>  (451) 
+>  <chembl_id>  (451)
 CHEMBL2236560
 
 $$$$
@@ -33308,7 +33308,7 @@ CHEMBL1531635
  32 34  1  0
  33 34  2  0
 M  END
->  <chembl_id>  (452) 
+>  <chembl_id>  (452)
 CHEMBL1531635
 
 $$$$
@@ -33367,7 +33367,7 @@ CHEMBL3458491
  14 24  1  0
  24 10  1  0
 M  END
->  <chembl_id>  (453) 
+>  <chembl_id>  (453)
 CHEMBL3458491
 
 $$$$
@@ -33427,7 +33427,7 @@ CHEMBL3221031
  24 19  1  0
  17 19  1  0
 M  END
->  <chembl_id>  (454) 
+>  <chembl_id>  (454)
 CHEMBL3221031
 
 $$$$
@@ -33491,7 +33491,7 @@ CHEMBL3216215
  26 27  1  0
  27  2  1  0
 M  END
->  <chembl_id>  (455) 
+>  <chembl_id>  (455)
 CHEMBL3216215
 
 $$$$
@@ -33566,7 +33566,7 @@ CHEMBL5185829
  31 10  2  0
   6 31  1  0
 M  END
->  <chembl_id>  (456) 
+>  <chembl_id>  (456)
 CHEMBL5185829
 
 $$$$
@@ -33608,7 +33608,7 @@ CHEMBL3741444
  12 15  1  0
   2 16  1  0
 M  END
->  <chembl_id>  (457) 
+>  <chembl_id>  (457)
 CHEMBL3741444
 
 $$$$
@@ -33662,7 +33662,7 @@ CHEMBL3489293
   5 21  1  0
  21  2  2  0
 M  END
->  <chembl_id>  (458) 
+>  <chembl_id>  (458)
 CHEMBL3489293
 
 $$$$
@@ -33732,7 +33732,7 @@ CHEMBL603418
  27 28  1  0
  28 29  1  0
 M  END
->  <chembl_id>  (459) 
+>  <chembl_id>  (459)
 CHEMBL603418
 
 $$$$
@@ -33799,7 +33799,7 @@ CHEMBL358254
   5 10  2  0
  15 16  2  0
 M  END
->  <chembl_id>  (460) 
+>  <chembl_id>  (460)
 CHEMBL358254
 
 $$$$
@@ -33868,7 +33868,7 @@ CHEMBL1389741
  25 27  2  0
  26 27  1  0
 M  END
->  <chembl_id>  (461) 
+>  <chembl_id>  (461)
 CHEMBL1389741
 
 $$$$
@@ -33965,7 +33965,7 @@ CHEMBL3794300
  40 42  1  0
 M  CHG  2  30   1  32  -1
 M  END
->  <chembl_id>  (462) 
+>  <chembl_id>  (462)
 CHEMBL3794300
 
 $$$$
@@ -34019,7 +34019,7 @@ CHEMBL1607385
  18 20  1  0
  21 22  1  0
 M  END
->  <chembl_id>  (463) 
+>  <chembl_id>  (463)
 CHEMBL1607385
 
 $$$$
@@ -34098,7 +34098,7 @@ CHEMBL392051
  31 32  1  0
  32 33  1  0
 M  END
->  <chembl_id>  (464) 
+>  <chembl_id>  (464)
 CHEMBL392051
 
 $$$$
@@ -34163,7 +34163,7 @@ CHEMBL4956281
  16 19  1  0
  20 21  1  0
 M  END
->  <chembl_id>  (465) 
+>  <chembl_id>  (465)
 CHEMBL4956281
 
 $$$$
@@ -34228,7 +34228,7 @@ CHEMBL1445917
  24 25  2  0
  24 26  1  0
 M  END
->  <chembl_id>  (466) 
+>  <chembl_id>  (466)
 CHEMBL1445917
 
 $$$$
@@ -34274,7 +34274,7 @@ CHEMBL57738
   6  8  1  0
  15 18  2  0
 M  END
->  <chembl_id>  (467) 
+>  <chembl_id>  (467)
 CHEMBL57738
 
 $$$$
@@ -34337,7 +34337,7 @@ CHEMBL1169685
  21 26  1  0
   3 20  1  0
 M  END
->  <chembl_id>  (468) 
+>  <chembl_id>  (468)
 CHEMBL1169685
 
 $$$$
@@ -34429,7 +34429,7 @@ CHEMBL565059
  11 39  1  0
  13 40  1  0
 M  END
->  <chembl_id>  (469) 
+>  <chembl_id>  (469)
 CHEMBL565059
 
 $$$$
@@ -34512,7 +34512,7 @@ CHEMBL114838
  34 30  2  0
   7 20  2  0
 M  END
->  <chembl_id>  (470) 
+>  <chembl_id>  (470)
 CHEMBL114838
 
 $$$$
@@ -34561,7 +34561,7 @@ CHEMBL202623
   6 10  1  0
  16 20  1  0
 M  END
->  <chembl_id>  (471) 
+>  <chembl_id>  (471)
 CHEMBL202623
 
 $$$$
@@ -34616,7 +34616,7 @@ CHEMBL525890
  20 21  1  0
  21 22  1  0
 M  END
->  <chembl_id>  (472) 
+>  <chembl_id>  (472)
 CHEMBL525890
 
 $$$$
@@ -34676,7 +34676,7 @@ CHEMBL3494612
  24  2  1  0
  24 19  1  0
 M  END
->  <chembl_id>  (473) 
+>  <chembl_id>  (473)
 CHEMBL3494612
 
 $$$$
@@ -34752,7 +34752,7 @@ CHEMBL304218
  19 21  2  0
  32 28  2  0
 M  END
->  <chembl_id>  (474) 
+>  <chembl_id>  (474)
 CHEMBL304218
 
 $$$$
@@ -34827,7 +34827,7 @@ CHEMBL3277360
  15 29  1  0
 M  CHG  2  29   1  31  -1
 M  END
->  <chembl_id>  (475) 
+>  <chembl_id>  (475)
 CHEMBL3277360
 
 $$$$
@@ -34918,7 +34918,7 @@ CHEMBL2373849
  32 34  2  0
  33 34  1  0
 M  END
->  <chembl_id>  (476) 
+>  <chembl_id>  (476)
 CHEMBL2373849
 
 $$$$
@@ -34990,7 +34990,7 @@ CHEMBL4888829
  20 22  1  0
  27 29  1  0
 M  END
->  <chembl_id>  (477) 
+>  <chembl_id>  (477)
 CHEMBL4888829
 
 $$$$
@@ -35029,7 +35029,7 @@ CHEMBL1997102
  13 14  1  0
 M  CHG  2   2  -1   5   1
 M  END
->  <chembl_id>  (478) 
+>  <chembl_id>  (478)
 CHEMBL1997102
 
 $$$$
@@ -35097,7 +35097,7 @@ CHEMBL3671202
  27 13  1  0
  27 28  2  0
 M  END
->  <chembl_id>  (479) 
+>  <chembl_id>  (479)
 CHEMBL3671202
 
 $$$$
@@ -35131,7 +35131,7 @@ CHEMBL2103881
   5 11  1  0
   8 12  1  0
 M  END
->  <chembl_id>  (480) 
+>  <chembl_id>  (480)
 CHEMBL2103881
 
 $$$$
@@ -35190,7 +35190,7 @@ CHEMBL1301873
  21 24  1  0
  22 24  1  0
 M  END
->  <chembl_id>  (481) 
+>  <chembl_id>  (481)
 CHEMBL1301873
 
 $$$$
@@ -35229,7 +35229,7 @@ CHEMBL4582360
  13 14  1  0
  14 15  2  0
 M  END
->  <chembl_id>  (482) 
+>  <chembl_id>  (482)
 CHEMBL4582360
 
 $$$$
@@ -35291,7 +35291,7 @@ CHEMBL27085
   7  4  1  0
  23 25  2  0
 M  END
->  <chembl_id>  (483) 
+>  <chembl_id>  (483)
 CHEMBL27085
 
 $$$$
@@ -35364,7 +35364,7 @@ CHEMBL453893
  29 30  1  0
  30 26  1  0
 M  END
->  <chembl_id>  (484) 
+>  <chembl_id>  (484)
 CHEMBL453893
 
 $$$$
@@ -35421,7 +35421,7 @@ CHEMBL2440522
  22 17  1  0
  22 23  1  0
 M  END
->  <chembl_id>  (485) 
+>  <chembl_id>  (485)
 CHEMBL2440522
 
 $$$$
@@ -35480,7 +35480,7 @@ CHEMBL3554729
  24  7  1  0
  24 10  1  0
 M  END
->  <chembl_id>  (486) 
+>  <chembl_id>  (486)
 CHEMBL3554729
 
 $$$$
@@ -35559,7 +35559,7 @@ CHEMBL4782385
  12 33  1  0
   4  8  1  0
 M  END
->  <chembl_id>  (487) 
+>  <chembl_id>  (487)
 CHEMBL4782385
 
 $$$$
@@ -35639,7 +35639,7 @@ CHEMBL3901386
  18 34  2  0
  34 14  1  0
 M  END
->  <chembl_id>  (488) 
+>  <chembl_id>  (488)
 CHEMBL3901386
 
 $$$$
@@ -35691,7 +35691,7 @@ CHEMBL3460110
  20 14  1  0
  20 21  1  0
 M  END
->  <chembl_id>  (489) 
+>  <chembl_id>  (489)
 CHEMBL3460110
 
 $$$$
@@ -35764,7 +35764,7 @@ CHEMBL217091
  13 14  1  0
  29 30  1  0
 M  END
->  <chembl_id>  (490) 
+>  <chembl_id>  (490)
 CHEMBL217091
 
 $$$$
@@ -35960,7 +35960,7 @@ CHEMBL4177501
  87 89  1  0
 M  CHG  2   1   1  78  -1
 M  END
->  <chembl_id>  (491) 
+>  <chembl_id>  (491)
 CHEMBL4177501
 
 $$$$
@@ -36006,7 +36006,7 @@ CHEMBL1309110
  16 18  2  0
  17 18  1  0
 M  END
->  <chembl_id>  (492) 
+>  <chembl_id>  (492)
 CHEMBL1309110
 
 $$$$
@@ -36070,7 +36070,7 @@ CHEMBL513668
   6  7  2  0
  24 26  2  0
 M  END
->  <chembl_id>  (493) 
+>  <chembl_id>  (493)
 CHEMBL513668
 
 $$$$
@@ -36133,7 +36133,7 @@ CHEMBL3274252
  24 25  1  0
  24 26  1  0
 M  END
->  <chembl_id>  (494) 
+>  <chembl_id>  (494)
 CHEMBL3274252
 
 $$$$
@@ -36206,7 +36206,7 @@ CHEMBL536728
  19 31  1  0
  17 32  1  0
 M  END
->  <chembl_id>  (495) 
+>  <chembl_id>  (495)
 CHEMBL536728
 
 $$$$
@@ -36260,7 +36260,7 @@ CHEMBL3456498
  21 16  1  0
  21 22  1  0
 M  END
->  <chembl_id>  (496) 
+>  <chembl_id>  (496)
 CHEMBL3456498
 
 $$$$
@@ -36331,7 +36331,7 @@ CHEMBL3976364
  29 21  2  0
  29 30  1  0
 M  END
->  <chembl_id>  (497) 
+>  <chembl_id>  (497)
 CHEMBL3976364
 
 $$$$
@@ -36422,7 +36422,7 @@ CHEMBL4202909
  35 38  1  0
  34 39  1  0
 M  END
->  <chembl_id>  (498) 
+>  <chembl_id>  (498)
 CHEMBL4202909
 
 $$$$
@@ -36494,7 +36494,7 @@ CHEMBL1500486
  23 26  2  0
  27 30  1  0
 M  END
->  <chembl_id>  (499) 
+>  <chembl_id>  (499)
 CHEMBL1500486
 
 $$$$
@@ -36532,7 +36532,7 @@ CHEMBL3140232
  11 14  1  0
 M  CHG  1  11   1
 M  END
->  <chembl_id>  (500) 
+>  <chembl_id>  (500)
 CHEMBL3140232
 
 $$$$
@@ -36620,7 +36620,7 @@ CHEMBL3728620
  36 37  2  0
  37 32  1  0
 M  END
->  <chembl_id>  (501) 
+>  <chembl_id>  (501)
 CHEMBL3728620
 
 $$$$
@@ -36707,7 +36707,7 @@ CHEMBL3041050
  35 36  1  0
 M  CHG  1  19   1
 M  END
->  <chembl_id>  (502) 
+>  <chembl_id>  (502)
 CHEMBL3041050
 
 $$$$
@@ -36789,7 +36789,7 @@ CHEMBL4100816
  33 34  1  0
  34 19  1  0
 M  END
->  <chembl_id>  (503) 
+>  <chembl_id>  (503)
 CHEMBL4100816
 
 $$$$
@@ -36847,7 +36847,7 @@ CHEMBL3197187
  19 22  1  0
  23 24  1  0
 M  END
->  <chembl_id>  (504) 
+>  <chembl_id>  (504)
 CHEMBL3197187
 
 $$$$
@@ -36908,7 +36908,7 @@ CHEMBL4592426
  23 24  1  0
  17 25  1  0
 M  END
->  <chembl_id>  (505) 
+>  <chembl_id>  (505)
 CHEMBL4592426
 
 $$$$
@@ -36972,7 +36972,7 @@ CHEMBL3495681
   5 26  1  0
  26  2  2  0
 M  END
->  <chembl_id>  (506) 
+>  <chembl_id>  (506)
 CHEMBL3495681
 
 $$$$
@@ -37065,7 +37065,7 @@ CHEMBL3235276
  37 40  1  0
   4 34  1  0
 M  END
->  <chembl_id>  (507) 
+>  <chembl_id>  (507)
 CHEMBL3235276
 
 $$$$
@@ -37111,7 +37111,7 @@ CHEMBL4970722
   8 10  1  0
  17 18  1  0
 M  END
->  <chembl_id>  (508) 
+>  <chembl_id>  (508)
 CHEMBL4970722
 
 $$$$
@@ -37163,7 +37163,7 @@ CHEMBL1357722
  19 20  1  0
  19 21  1  0
 M  END
->  <chembl_id>  (509) 
+>  <chembl_id>  (509)
 CHEMBL1357722
 
 $$$$
@@ -37218,7 +37218,7 @@ CHEMBL5004892
  18 20  2  0
  21 22  1  0
 M  END
->  <chembl_id>  (510) 
+>  <chembl_id>  (510)
 CHEMBL5004892
 
 $$$$
@@ -37315,7 +37315,7 @@ CHEMBL3932751
   7 41  1  0
  41 42  3  0
 M  END
->  <chembl_id>  (511) 
+>  <chembl_id>  (511)
 CHEMBL3932751
 
 $$$$
@@ -37372,7 +37372,7 @@ CHEMBL3577685
   2 23  1  0
  23 24  2  0
 M  END
->  <chembl_id>  (512) 
+>  <chembl_id>  (512)
 CHEMBL3577685
 
 $$$$
@@ -37447,7 +37447,7 @@ CHEMBL1334383
  28 29  1  0
  29 32  1  0
 M  END
->  <chembl_id>  (513) 
+>  <chembl_id>  (513)
 CHEMBL1334383
 
 $$$$
@@ -37505,7 +37505,7 @@ CHEMBL5003643
  19 22  1  0
  23 24  1  0
 M  END
->  <chembl_id>  (514) 
+>  <chembl_id>  (514)
 CHEMBL5003643
 
 $$$$
@@ -37641,7 +37641,7 @@ CHEMBL3144554
  44 39  1  0
  60 62  2  0
 M  END
->  <chembl_id>  (515) 
+>  <chembl_id>  (515)
 CHEMBL3144554
 
 $$$$
@@ -37748,7 +37748,7 @@ CHEMBL4470064
  46 41  1  0
 M  CHG  2   1  -1   4   1
 M  END
->  <chembl_id>  (516) 
+>  <chembl_id>  (516)
 CHEMBL4470064
 
 $$$$
@@ -37810,7 +37810,7 @@ CHEMBL1380954
  21 23  1  0
  22 23  2  0
 M  END
->  <chembl_id>  (517) 
+>  <chembl_id>  (517)
 CHEMBL1380954
 
 $$$$
@@ -37863,7 +37863,7 @@ CHEMBL170957
   8  6  1  0
  20 21  2  0
 M  END
->  <chembl_id>  (518) 
+>  <chembl_id>  (518)
 CHEMBL170957
 
 $$$$
@@ -38005,7 +38005,7 @@ CHEMBL1256054
  63 64  1  0
  64 65  1  0
 M  END
->  <chembl_id>  (519) 
+>  <chembl_id>  (519)
 CHEMBL1256054
 
 $$$$
@@ -38094,7 +38094,7 @@ CHEMBL1600420
  35 38  2  0
  37 38  1  0
 M  END
->  <chembl_id>  (520) 
+>  <chembl_id>  (520)
 CHEMBL1600420
 
 $$$$
@@ -38164,7 +38164,7 @@ CHEMBL1539630
  25 27  1  0
  28 29  1  0
 M  END
->  <chembl_id>  (521) 
+>  <chembl_id>  (521)
 CHEMBL1539630
 
 $$$$
@@ -38244,7 +38244,7 @@ CHEMBL4088244
   2 33  1  0
  33 34  1  0
 M  END
->  <chembl_id>  (522) 
+>  <chembl_id>  (522)
 CHEMBL4088244
 
 $$$$
@@ -38287,7 +38287,7 @@ CHEMBL336126
  11  6  1  0
  14 15  2  0
 M  END
->  <chembl_id>  (523) 
+>  <chembl_id>  (523)
 CHEMBL336126
 
 $$$$
@@ -38334,7 +38334,7 @@ CHEMBL4556930
  10 19  1  0
  19  6  1  0
 M  END
->  <chembl_id>  (524) 
+>  <chembl_id>  (524)
 CHEMBL4556930
 
 $$$$
@@ -38373,7 +38373,7 @@ CHEMBL4640322
   7 12  1  0
 M  CHG  2  12   1  14  -1
 M  END
->  <chembl_id>  (525) 
+>  <chembl_id>  (525)
 CHEMBL4640322
 
 $$$$
@@ -38524,7 +38524,7 @@ CHEMBL1213989
  56 50  1  0
  36 29  2  0
 M  END
->  <chembl_id>  (526) 
+>  <chembl_id>  (526)
 CHEMBL1213989
 
 $$$$
@@ -38600,7 +38600,7 @@ CHEMBL1996336
  29 30  1  0
 M  CHG  2   2  -1   7   1
 M  END
->  <chembl_id>  (527) 
+>  <chembl_id>  (527)
 CHEMBL1996336
 
 $$$$
@@ -38679,7 +38679,7 @@ CHEMBL4578301
   4 27  1  0
  12 33  1  0
 M  END
->  <chembl_id>  (528) 
+>  <chembl_id>  (528)
 CHEMBL4578301
 
 $$$$
@@ -38746,7 +38746,7 @@ CHEMBL5187033
  24 27  1  0
  23 28  1  0
 M  END
->  <chembl_id>  (529) 
+>  <chembl_id>  (529)
 CHEMBL5187033
 
 $$$$
@@ -38875,7 +38875,7 @@ CHEMBL4460607
  24 57  2  0
  31 58  1  0
 M  END
->  <chembl_id>  (530) 
+>  <chembl_id>  (530)
 CHEMBL4460607
 
 $$$$
@@ -38958,7 +38958,7 @@ CHEMBL2361013
  33 35  2  0
  34 35  1  0
 M  END
->  <chembl_id>  (531) 
+>  <chembl_id>  (531)
 CHEMBL2361013
 
 $$$$
@@ -39096,7 +39096,7 @@ CHEMBL2315327
  58 60  1  0
  59 61  1  0
 M  END
->  <chembl_id>  (532) 
+>  <chembl_id>  (532)
 CHEMBL2315327
 
 $$$$
@@ -39151,7 +39151,7 @@ CHEMBL1558183
  19 21  1  0
  20 22  1  0
 M  END
->  <chembl_id>  (533) 
+>  <chembl_id>  (533)
 CHEMBL1558183
 
 $$$$
@@ -39193,7 +39193,7 @@ CHEMBL4076795
  13 16  1  0
   9 13  1  0
 M  END
->  <chembl_id>  (534) 
+>  <chembl_id>  (534)
 CHEMBL4076795
 
 $$$$
@@ -39250,7 +39250,7 @@ CHEMBL3454476
  23 15  1  0
  23 18  1  0
 M  END
->  <chembl_id>  (535) 
+>  <chembl_id>  (535)
 CHEMBL3454476
 
 $$$$
@@ -39308,7 +39308,7 @@ CHEMBL2362073
  22 24  1  0
  23 24  1  0
 M  END
->  <chembl_id>  (536) 
+>  <chembl_id>  (536)
 CHEMBL2362073
 
 $$$$
@@ -39387,7 +39387,7 @@ CHEMBL4458452
  32 28  1  0
  27 33  2  0
 M  END
->  <chembl_id>  (537) 
+>  <chembl_id>  (537)
 CHEMBL4458452
 
 $$$$
@@ -39449,7 +39449,7 @@ CHEMBL3551942
  25  7  1  0
  25 21  1  0
 M  END
->  <chembl_id>  (538) 
+>  <chembl_id>  (538)
 CHEMBL3551942
 
 $$$$
@@ -39500,7 +39500,7 @@ CHEMBL2415028
  19 20  1  0
  20 18  1  0
 M  END
->  <chembl_id>  (539) 
+>  <chembl_id>  (539)
 CHEMBL2415028
 
 $$$$
@@ -39541,7 +39541,7 @@ CHEMBL2007027
  13 14  2  0
 M  CHG  2   1  -1   3   1
 M  END
->  <chembl_id>  (540) 
+>  <chembl_id>  (540)
 CHEMBL2007027
 
 $$$$
@@ -39592,7 +39592,7 @@ CHEMBL92417
  11 10  2  0
  18 20  2  0
 M  END
->  <chembl_id>  (541) 
+>  <chembl_id>  (541)
 CHEMBL92417
 
 $$$$
@@ -39663,7 +39663,7 @@ CHEMBL1976589
  23 25  2  0
  24 25  1  0
 M  END
->  <chembl_id>  (542) 
+>  <chembl_id>  (542)
 CHEMBL1976589
 
 $$$$
@@ -39740,7 +39740,7 @@ CHEMBL3502269
  32 33  1  0
  33 18  1  0
 M  END
->  <chembl_id>  (543) 
+>  <chembl_id>  (543)
 CHEMBL3502269
 
 $$$$
@@ -39800,7 +39800,7 @@ CHEMBL28882
   5 13  1  6
   5  4  1  0
 M  END
->  <chembl_id>  (544) 
+>  <chembl_id>  (544)
 CHEMBL28882
 
 $$$$
@@ -39877,7 +39877,7 @@ CHEMBL1668978
  32 33  1  0
  33  7  1  0
 M  END
->  <chembl_id>  (545) 
+>  <chembl_id>  (545)
 CHEMBL1668978
 
 $$$$
@@ -39953,7 +39953,7 @@ CHEMBL1429170
  29 31  1  0
  30 31  1  0
 M  END
->  <chembl_id>  (546) 
+>  <chembl_id>  (546)
 CHEMBL1429170
 
 $$$$
@@ -40004,7 +40004,7 @@ CHEMBL2031678
  13 11  2  0
   6 20  1  1
 M  END
->  <chembl_id>  (547) 
+>  <chembl_id>  (547)
 CHEMBL2031678
 
 $$$$
@@ -40138,7 +40138,7 @@ CHEMBL2377008
  59 60  1  0
 M  CHG  2   1  -1  37   1
 M  END
->  <chembl_id>  (548) 
+>  <chembl_id>  (548)
 CHEMBL2377008
 
 $$$$
@@ -40176,7 +40176,7 @@ CHEMBL4064952
  10 13  1  0
  13 14  1  0
 M  END
->  <chembl_id>  (549) 
+>  <chembl_id>  (549)
 CHEMBL4064952
 
 $$$$
@@ -40362,7 +40362,7 @@ CHEMBL4105105
  70 33  1  0
  41 80  1  0
 M  END
->  <chembl_id>  (550) 
+>  <chembl_id>  (550)
 CHEMBL4105105
 
 $$$$
@@ -40445,7 +40445,7 @@ CHEMBL87304
  27 13  1  0
  18 31  1  0
 M  END
->  <chembl_id>  (551) 
+>  <chembl_id>  (551)
 CHEMBL87304
 
 $$$$
@@ -40505,7 +40505,7 @@ CHEMBL3629902
  22 23  1  0
  23 24  1  0
 M  END
->  <chembl_id>  (552) 
+>  <chembl_id>  (552)
 CHEMBL3629902
 
 $$$$
@@ -40591,7 +40591,7 @@ CHEMBL1224200
   5 15  1  0
   9 35  1  1
 M  END
->  <chembl_id>  (553) 
+>  <chembl_id>  (553)
 CHEMBL1224200
 
 $$$$
@@ -40692,7 +40692,7 @@ CHEMBL1256036
  20 17  1  0
  43 44  1  0
 M  END
->  <chembl_id>  (554) 
+>  <chembl_id>  (554)
 CHEMBL1256036
 
 $$$$
@@ -40755,7 +40755,7 @@ CHEMBL3087608
  24 25  1  0
  25 26  1  0
 M  END
->  <chembl_id>  (555) 
+>  <chembl_id>  (555)
 CHEMBL3087608
 
 $$$$
@@ -40815,7 +40815,7 @@ CHEMBL3586639
  21 24  1  0
  19 21  1  0
 M  END
->  <chembl_id>  (556) 
+>  <chembl_id>  (556)
 CHEMBL3586639
 
 $$$$
@@ -40889,7 +40889,7 @@ CHEMBL4303029
  11 12  1  0
   9 10  1  0
 M  END
->  <chembl_id>  (557) 
+>  <chembl_id>  (557)
 CHEMBL4303029
 
 $$$$
@@ -40971,7 +40971,7 @@ CHEMBL1999773
  29 30  1  0
  31 35  1  0
 M  END
->  <chembl_id>  (558) 
+>  <chembl_id>  (558)
 CHEMBL1999773
 
 $$$$
@@ -41036,7 +41036,7 @@ CHEMBL1598762
  20 22  2  0
  21 23  2  0
 M  END
->  <chembl_id>  (559) 
+>  <chembl_id>  (559)
 CHEMBL1598762
 
 $$$$
@@ -41095,7 +41095,7 @@ CHEMBL2133601
  21 23  2  0
  22 24  2  0
 M  END
->  <chembl_id>  (560) 
+>  <chembl_id>  (560)
 CHEMBL2133601
 
 $$$$
@@ -41195,7 +41195,7 @@ CHEMBL590039
  42 43  1  0
  43 44  1  0
 M  END
->  <chembl_id>  (561) 
+>  <chembl_id>  (561)
 CHEMBL590039
 
 $$$$
@@ -41259,7 +41259,7 @@ CHEMBL3471125
  25 26  1  0
  26 10  1  0
 M  END
->  <chembl_id>  (562) 
+>  <chembl_id>  (562)
 CHEMBL3471125
 
 $$$$
@@ -41342,7 +41342,7 @@ CHEMBL4537723
  30 34  1  1
  27 35  2  0
 M  END
->  <chembl_id>  (563) 
+>  <chembl_id>  (563)
 CHEMBL4537723
 
 $$$$
@@ -41415,7 +41415,7 @@ CHEMBL3957990
  28 30  2  0
  30 23  1  0
 M  END
->  <chembl_id>  (564) 
+>  <chembl_id>  (564)
 CHEMBL3957990
 
 $$$$
@@ -41450,7 +41450,7 @@ CHEMBL124281
  13  9  1  0
   6  7  2  0
 M  END
->  <chembl_id>  (565) 
+>  <chembl_id>  (565)
 CHEMBL124281
 
 $$$$
@@ -41511,7 +41511,7 @@ CHEMBL2063277
   6  7  2  0
  22 25  1  0
 M  END
->  <chembl_id>  (566) 
+>  <chembl_id>  (566)
 CHEMBL2063277
 
 $$$$
@@ -41595,7 +41595,7 @@ CHEMBL4283401
  35 36  2  0
  36 31  1  0
 M  END
->  <chembl_id>  (567) 
+>  <chembl_id>  (567)
 CHEMBL4283401
 
 $$$$
@@ -41669,7 +41669,7 @@ CHEMBL127477
   6  7  1  0
  31 30  2  0
 M  END
->  <chembl_id>  (568) 
+>  <chembl_id>  (568)
 CHEMBL127477
 
 $$$$
@@ -41784,7 +41784,7 @@ CHEMBL359622
  11  9  1  0
  51 49  2  0
 M  END
->  <chembl_id>  (569) 
+>  <chembl_id>  (569)
 CHEMBL359622
 
 $$$$
@@ -41826,7 +41826,7 @@ CHEMBL2296109
   2 15  1  0
  12 16  1  0
 M  END
->  <chembl_id>  (570) 
+>  <chembl_id>  (570)
 CHEMBL2296109
 
 $$$$
@@ -41874,7 +41874,7 @@ CHEMBL4551555
   7  2  1  0
  18 13  1  0
 M  END
->  <chembl_id>  (571) 
+>  <chembl_id>  (571)
 CHEMBL4551555
 
 $$$$
@@ -41946,7 +41946,7 @@ CHEMBL3403939
  19 24  1  0
  26 30  1  0
 M  END
->  <chembl_id>  (572) 
+>  <chembl_id>  (572)
 CHEMBL3403939
 
 $$$$
@@ -42059,7 +42059,7 @@ CHEMBL4797826
  47 48  1  0
 M  CHG  2  12  -1  29   1
 M  END
->  <chembl_id>  (573) 
+>  <chembl_id>  (573)
 CHEMBL4797826
 
 $$$$
@@ -42136,7 +42136,7 @@ CHEMBL217126
  14 15  1  0
   4 26  1  0
 M  END
->  <chembl_id>  (574) 
+>  <chembl_id>  (574)
 CHEMBL217126
 
 $$$$
@@ -42202,7 +42202,7 @@ CHEMBL1315125
  24 26  2  0
  25 26  1  0
 M  END
->  <chembl_id>  (575) 
+>  <chembl_id>  (575)
 CHEMBL1315125
 
 $$$$
@@ -42343,7 +42343,7 @@ CHEMBL1979067
  61 63  2  0
  62 63  1  0
 M  END
->  <chembl_id>  (576) 
+>  <chembl_id>  (576)
 CHEMBL1979067
 
 $$$$
@@ -42403,7 +42403,7 @@ CHEMBL1547970
  23 24  2  0
  23 25  1  0
 M  END
->  <chembl_id>  (577) 
+>  <chembl_id>  (577)
 CHEMBL1547970
 
 $$$$
@@ -42500,7 +42500,7 @@ CHEMBL5181818
  40 42  1  0
 M  CHG  1   8   1
 M  END
->  <chembl_id>  (578) 
+>  <chembl_id>  (578)
 CHEMBL5181818
 
 $$$$
@@ -42551,7 +42551,7 @@ CHEMBL3274138
  14 20  2  0
  19 21  1  0
 M  END
->  <chembl_id>  (579) 
+>  <chembl_id>  (579)
 CHEMBL3274138
 
 $$$$
@@ -42622,7 +42622,7 @@ CHEMBL1562147
  27 29  2  0
  28 29  1  0
 M  END
->  <chembl_id>  (580) 
+>  <chembl_id>  (580)
 CHEMBL1562147
 
 $$$$
@@ -42679,7 +42679,7 @@ CHEMBL1595532
  21 23  2  0
  22 23  1  0
 M  END
->  <chembl_id>  (581) 
+>  <chembl_id>  (581)
 CHEMBL1595532
 
 $$$$
@@ -42728,7 +42728,7 @@ CHEMBL1951517
   9  4  1  0
   1  3  1  0
 M  END
->  <chembl_id>  (582) 
+>  <chembl_id>  (582)
 CHEMBL1951517
 
 $$$$
@@ -42785,7 +42785,7 @@ CHEMBL1372285
  19 20  1  0
  21 22  1  0
 M  END
->  <chembl_id>  (583) 
+>  <chembl_id>  (583)
 CHEMBL1372285
 
 $$$$
@@ -42853,7 +42853,7 @@ CHEMBL2392068
  26 27  1  0
  27 28  1  0
 M  END
->  <chembl_id>  (584) 
+>  <chembl_id>  (584)
 CHEMBL2392068
 
 $$$$
@@ -42914,7 +42914,7 @@ CHEMBL1366330
  20 21  1  0
  22 23  2  0
 M  END
->  <chembl_id>  (585) 
+>  <chembl_id>  (585)
 CHEMBL1366330
 
 $$$$
@@ -43007,7 +43007,7 @@ CHEMBL342610
  42 38  1  0
  12  6  2  0
 M  END
->  <chembl_id>  (586) 
+>  <chembl_id>  (586)
 CHEMBL342610
 
 $$$$
@@ -43049,7 +43049,7 @@ CHEMBL3465260
   7 16  2  0
  16  4  1  0
 M  END
->  <chembl_id>  (587) 
+>  <chembl_id>  (587)
 CHEMBL3465260
 
 $$$$
@@ -43121,7 +43121,7 @@ CHEMBL92119
  10  7  2  0
  28 26  1  0
 M  END
->  <chembl_id>  (588) 
+>  <chembl_id>  (588)
 CHEMBL92119
 
 $$$$
@@ -43182,7 +43182,7 @@ CHEMBL3990915
  23 24  1  0
  23 25  1  0
 M  END
->  <chembl_id>  (589) 
+>  <chembl_id>  (589)
 CHEMBL3990915
 
 $$$$
@@ -43269,7 +43269,7 @@ CHEMBL4449503
  36 37  2  0
  37 31  1  0
 M  END
->  <chembl_id>  (590) 
+>  <chembl_id>  (590)
 CHEMBL4449503
 
 $$$$
@@ -43401,7 +43401,7 @@ CHEMBL1697719
  57 58  1  0
  57 59  1  0
 M  END
->  <chembl_id>  (591) 
+>  <chembl_id>  (591)
 CHEMBL1697719
 
 $$$$
@@ -43488,7 +43488,7 @@ CHEMBL5202454
  12 38  1  0
  12 39  1  0
 M  END
->  <chembl_id>  (592) 
+>  <chembl_id>  (592)
 CHEMBL5202454
 
 $$$$
@@ -43548,7 +43548,7 @@ CHEMBL287131
  24 22  2  0
  19 23  2  0
 M  END
->  <chembl_id>  (593) 
+>  <chembl_id>  (593)
 CHEMBL287131
 
 $$$$
@@ -43622,7 +43622,7 @@ CHEMBL179820
  24 23  2  0
  21 15  2  0
 M  END
->  <chembl_id>  (594) 
+>  <chembl_id>  (594)
 CHEMBL179820
 
 $$$$
@@ -43679,7 +43679,7 @@ CHEMBL141675
   6 10  1  0
  19 16  2  0
 M  END
->  <chembl_id>  (595) 
+>  <chembl_id>  (595)
 CHEMBL141675
 
 $$$$
@@ -43734,7 +43734,7 @@ CHEMBL1309612
  20 22  2  0
  21 22  1  0
 M  END
->  <chembl_id>  (596) 
+>  <chembl_id>  (596)
 CHEMBL1309612
 
 $$$$
@@ -43782,7 +43782,7 @@ CHEMBL1161807
   9  4  1  0
   2 19  2  0
 M  END
->  <chembl_id>  (597) 
+>  <chembl_id>  (597)
 CHEMBL1161807
 
 $$$$
@@ -43864,7 +43864,7 @@ CHEMBL96439
  18 16  2  0
 M  CHG  2   1   1  14  -1
 M  END
->  <chembl_id>  (598) 
+>  <chembl_id>  (598)
 CHEMBL96439
 
 $$$$
@@ -43949,7 +43949,7 @@ CHEMBL572217
  15 14  1  0
  35 36  1  0
 M  END
->  <chembl_id>  (599) 
+>  <chembl_id>  (599)
 CHEMBL572217
 
 $$$$
@@ -44001,7 +44001,7 @@ CHEMBL4917305
  16 17  1  0
  20 21  2  0
 M  END
->  <chembl_id>  (600) 
+>  <chembl_id>  (600)
 CHEMBL4917305
 
 $$$$
@@ -44062,7 +44062,7 @@ CHEMBL527306
  22 23  1  0
  22 24  2  3
 M  END
->  <chembl_id>  (601) 
+>  <chembl_id>  (601)
 CHEMBL527306
 
 $$$$
@@ -44122,7 +44122,7 @@ CHEMBL3495147
  11 25  2  0
  25  7  1  0
 M  END
->  <chembl_id>  (602) 
+>  <chembl_id>  (602)
 CHEMBL3495147
 
 $$$$
@@ -44186,7 +44186,7 @@ CHEMBL478649
  23 25  1  0
  26 25  1  0
 M  END
->  <chembl_id>  (603) 
+>  <chembl_id>  (603)
 CHEMBL478649
 
 $$$$
@@ -44259,7 +44259,7 @@ CHEMBL4287650
  29 24  1  0
  16 30  1  1
 M  END
->  <chembl_id>  (604) 
+>  <chembl_id>  (604)
 CHEMBL4287650
 
 $$$$
@@ -44308,7 +44308,7 @@ CHEMBL1186099
   3  4  1  0
  18 19  3  0
 M  END
->  <chembl_id>  (605) 
+>  <chembl_id>  (605)
 CHEMBL1186099
 
 $$$$
@@ -44345,7 +44345,7 @@ CHEMBL3453325
  13 14  1  0
  14 10  1  0
 M  END
->  <chembl_id>  (606) 
+>  <chembl_id>  (606)
 CHEMBL3453325
 
 $$$$
@@ -44390,7 +44390,7 @@ CHEMBL4951107
  16 18  1  0
  16 17  2  0
 M  END
->  <chembl_id>  (607) 
+>  <chembl_id>  (607)
 CHEMBL4951107
 
 $$$$
@@ -44459,7 +44459,7 @@ CHEMBL1898235
  24 25  1  0
  24 29  1  0
 M  END
->  <chembl_id>  (608) 
+>  <chembl_id>  (608)
 CHEMBL1898235
 
 $$$$
@@ -44518,7 +44518,7 @@ CHEMBL4752271
  21 23  1  0
  23 24  1  0
 M  END
->  <chembl_id>  (609) 
+>  <chembl_id>  (609)
 CHEMBL4752271
 
 $$$$
@@ -44600,7 +44600,7 @@ CHEMBL1241688
  31 35  1  0
 M  CHG  2  17   1  19  -1
 M  END
->  <chembl_id>  (610) 
+>  <chembl_id>  (610)
 CHEMBL1241688
 
 $$$$
@@ -44680,7 +44680,7 @@ CHEMBL4743365
  31 34  1  0
 M  CHG  2  26   1  27  -1
 M  END
->  <chembl_id>  (611) 
+>  <chembl_id>  (611)
 CHEMBL4743365
 
 $$$$
@@ -44734,7 +44734,7 @@ CHEMBL1463830
  17 19  1  0
  18 19  1  0
 M  END
->  <chembl_id>  (612) 
+>  <chembl_id>  (612)
 CHEMBL1463830
 
 $$$$
@@ -44810,7 +44810,7 @@ CHEMBL457231
  30 31  1  0
  31 32  1  0
 M  END
->  <chembl_id>  (613) 
+>  <chembl_id>  (613)
 CHEMBL457231
 
 $$$$
@@ -44898,7 +44898,7 @@ CHEMBL119751
  34 38  2  0
  11 17  2  0
 M  END
->  <chembl_id>  (614) 
+>  <chembl_id>  (614)
 CHEMBL119751
 
 $$$$
@@ -44978,7 +44978,7 @@ CHEMBL1463028
  31 32  2  0
  31 33  1  0
 M  END
->  <chembl_id>  (615) 
+>  <chembl_id>  (615)
 CHEMBL1463028
 
 $$$$
@@ -45056,7 +45056,7 @@ CHEMBL1935731
   7  8  1  0
  33 34  1  0
 M  END
->  <chembl_id>  (616) 
+>  <chembl_id>  (616)
 CHEMBL1935731
 
 $$$$
@@ -45098,7 +45098,7 @@ CHEMBL2115505
   8 13  1  0
  15 14  1  0
 M  END
->  <chembl_id>  (617) 
+>  <chembl_id>  (617)
 CHEMBL2115505
 
 $$$$
@@ -45163,7 +45163,7 @@ CHEMBL1162879
  12 13  2  0
  24 27  1  0
 M  END
->  <chembl_id>  (618) 
+>  <chembl_id>  (618)
 CHEMBL1162879
 
 $$$$
@@ -45240,7 +45240,7 @@ CHEMBL318454
  30 28  2  0
   8 13  1  0
 M  END
->  <chembl_id>  (619) 
+>  <chembl_id>  (619)
 CHEMBL318454
 
 $$$$
@@ -45311,7 +45311,7 @@ CHEMBL1304370
  25 28  1  0
  25 30  1  0
 M  END
->  <chembl_id>  (620) 
+>  <chembl_id>  (620)
 CHEMBL1304370
 
 $$$$
@@ -45404,7 +45404,7 @@ CHEMBL3391851
  33 39  1  0
 M  CHG  4   1  -1   2  -1   6   1   7   1
 M  END
->  <chembl_id>  (621) 
+>  <chembl_id>  (621)
 CHEMBL3391851
 
 $$$$
@@ -45487,7 +45487,7 @@ CHEMBL1465362
  30 36  1  0
 M  CHG  2   5  -1  12   1
 M  END
->  <chembl_id>  (622) 
+>  <chembl_id>  (622)
 CHEMBL1465362
 
 $$$$
@@ -45545,7 +45545,7 @@ CHEMBL511523
  13 15  2  0
  21 24  1  0
 M  END
->  <chembl_id>  (623) 
+>  <chembl_id>  (623)
 CHEMBL511523
 
 $$$$
@@ -45620,7 +45620,7 @@ CHEMBL183034
  30 10  1  0
  28  9  1  0
 M  END
->  <chembl_id>  (624) 
+>  <chembl_id>  (624)
 CHEMBL183034
 
 $$$$
@@ -45665,7 +45665,7 @@ CHEMBL1720716
  16 17  3  0
  17 18  1  0
 M  END
->  <chembl_id>  (625) 
+>  <chembl_id>  (625)
 CHEMBL1720716
 
 $$$$
@@ -45769,7 +45769,7 @@ CHEMBL3973659
  44 45  1  0
  45 43  1  0
 M  END
->  <chembl_id>  (626) 
+>  <chembl_id>  (626)
 CHEMBL3973659
 
 $$$$
@@ -45826,7 +45826,7 @@ CHEMBL2287580
  21 22  1  0
  21 23  1  0
 M  END
->  <chembl_id>  (627) 
+>  <chembl_id>  (627)
 CHEMBL2287580
 
 $$$$
@@ -45904,7 +45904,7 @@ CHEMBL1922597
  14 15  1  0
  30 33  1  0
 M  END
->  <chembl_id>  (628) 
+>  <chembl_id>  (628)
 CHEMBL1922597
 
 $$$$
@@ -45998,7 +45998,7 @@ CHEMBL288320
  14 10  2  0
 M  CHG  2   8   1  17  -1
 M  END
->  <chembl_id>  (629) 
+>  <chembl_id>  (629)
 CHEMBL288320
 
 $$$$
@@ -46062,7 +46062,7 @@ CHEMBL3758691
  24 25  1  0
  25 26  1  0
 M  END
->  <chembl_id>  (630) 
+>  <chembl_id>  (630)
 CHEMBL3758691
 
 $$$$
@@ -46165,7 +46165,7 @@ CHEMBL1436441
  43 45  2  0
  44 45  1  0
 M  END
->  <chembl_id>  (631) 
+>  <chembl_id>  (631)
 CHEMBL1436441
 
 $$$$
@@ -46249,7 +46249,7 @@ CHEMBL58642
   5 15  1  0
  14  8  2  0
 M  END
->  <chembl_id>  (632) 
+>  <chembl_id>  (632)
 CHEMBL58642
 
 $$$$
@@ -46321,7 +46321,7 @@ CHEMBL2407261
  22 29  1  0
  22 30  1  0
 M  END
->  <chembl_id>  (633) 
+>  <chembl_id>  (633)
 CHEMBL2407261
 
 $$$$
@@ -46397,7 +46397,7 @@ CHEMBL3655348
  32 12  1  0
  32 16  1  0
 M  END
->  <chembl_id>  (634) 
+>  <chembl_id>  (634)
 CHEMBL3655348
 
 $$$$
@@ -46436,7 +46436,7 @@ CHEMBL439758
  15 14  1  0
   7  3  1  0
 M  END
->  <chembl_id>  (635) 
+>  <chembl_id>  (635)
 CHEMBL439758
 
 $$$$
@@ -46497,7 +46497,7 @@ CHEMBL3109799
  24 25  1  0
  12 23  1  0
 M  END
->  <chembl_id>  (636) 
+>  <chembl_id>  (636)
 CHEMBL3109799
 
 $$$$
@@ -46558,7 +46558,7 @@ CHEMBL1878316
  21 24  2  0
  22 24  1  0
 M  END
->  <chembl_id>  (637) 
+>  <chembl_id>  (637)
 CHEMBL1878316
 
 $$$$
@@ -46625,7 +46625,7 @@ CHEMBL3422219
  25 27  1  0
  27 28  1  0
 M  END
->  <chembl_id>  (638) 
+>  <chembl_id>  (638)
 CHEMBL3422219
 
 $$$$
@@ -46677,7 +46677,7 @@ CHEMBL569282
   6  8  1  0
 M  CHG  6   1   1   9  -1  13  -1  20  -1  21   1  22   1
 M  END
->  <chembl_id>  (639) 
+>  <chembl_id>  (639)
 CHEMBL569282
 
 $$$$
@@ -46740,7 +46740,7 @@ CHEMBL3122221
  25 20  1  0
  24 26  1  0
 M  END
->  <chembl_id>  (640) 
+>  <chembl_id>  (640)
 CHEMBL3122221
 
 $$$$
@@ -46808,7 +46808,7 @@ CHEMBL4781766
  27 17  1  0
  25 28  1  0
 M  END
->  <chembl_id>  (641) 
+>  <chembl_id>  (641)
 CHEMBL4781766
 
 $$$$
@@ -46890,7 +46890,7 @@ CHEMBL3934242
  33 34  1  0
  34 31  1  0
 M  END
->  <chembl_id>  (642) 
+>  <chembl_id>  (642)
 CHEMBL3934242
 
 $$$$
@@ -46938,7 +46938,7 @@ CHEMBL4992011
   5  6  2  0
  15 16  1  0
 M  END
->  <chembl_id>  (643) 
+>  <chembl_id>  (643)
 CHEMBL4992011
 
 $$$$
@@ -46988,7 +46988,7 @@ CHEMBL4061660
  18 19  1  0
  18 20  1  0
 M  END
->  <chembl_id>  (644) 
+>  <chembl_id>  (644)
 CHEMBL4061660
 
 $$$$
@@ -47058,7 +47058,7 @@ CHEMBL3617782
  28 29  2  0
  29 19  1  0
 M  END
->  <chembl_id>  (645) 
+>  <chembl_id>  (645)
 CHEMBL3617782
 
 $$$$
@@ -47120,7 +47120,7 @@ CHEMBL3452529
  24 19  1  0
  24 25  2  0
 M  END
->  <chembl_id>  (646) 
+>  <chembl_id>  (646)
 CHEMBL3452529
 
 $$$$
@@ -47210,7 +47210,7 @@ CHEMBL3114448
  35 38  1  0
  34 39  1  0
 M  END
->  <chembl_id>  (647) 
+>  <chembl_id>  (647)
 CHEMBL3114448
 
 $$$$
@@ -47255,7 +47255,7 @@ CHEMBL4989670
  15 18  1  0
   7 10  1  0
 M  END
->  <chembl_id>  (648) 
+>  <chembl_id>  (648)
 CHEMBL4989670
 
 $$$$
@@ -47309,7 +47309,7 @@ CHEMBL1530047
  16 19  2  0
  18 19  1  0
 M  END
->  <chembl_id>  (649) 
+>  <chembl_id>  (649)
 CHEMBL1530047
 
 $$$$
@@ -47366,7 +47366,7 @@ CHEMBL4930433
   8 10  2  0
  19 20  2  0
 M  END
->  <chembl_id>  (650) 
+>  <chembl_id>  (650)
 CHEMBL4930433
 
 $$$$
@@ -47452,7 +47452,7 @@ CHEMBL364268
  20 21  2  0
 M  CHG  2   4   1  22  -1
 M  END
->  <chembl_id>  (651) 
+>  <chembl_id>  (651)
 CHEMBL364268
 
 $$$$
@@ -47515,7 +47515,7 @@ CHEMBL1373900
  24 25  2  0
  24 26  1  0
 M  END
->  <chembl_id>  (652) 
+>  <chembl_id>  (652)
 CHEMBL1373900
 
 $$$$
@@ -47584,7 +47584,7 @@ CHEMBL3251075
  28 29  1  0
  29 30  1  0
 M  END
->  <chembl_id>  (653) 
+>  <chembl_id>  (653)
 CHEMBL3251075
 
 $$$$
@@ -47640,7 +47640,7 @@ CHEMBL4925137
  12 14  2  0
  20 21  1  0
 M  END
->  <chembl_id>  (654) 
+>  <chembl_id>  (654)
 CHEMBL4925137
 
 $$$$
@@ -47703,7 +47703,7 @@ CHEMBL3451134
  26 12  1  0
  26 16  1  0
 M  END
->  <chembl_id>  (655) 
+>  <chembl_id>  (655)
 CHEMBL3451134
 
 $$$$
@@ -47745,7 +47745,7 @@ CHEMBL1967453
  14 15  1  0
  14 16  1  0
 M  END
->  <chembl_id>  (656) 
+>  <chembl_id>  (656)
 CHEMBL1967453
 
 $$$$
@@ -47812,7 +47812,7 @@ CHEMBL1597887
  22 25  1  0
  23 26  2  0
 M  END
->  <chembl_id>  (657) 
+>  <chembl_id>  (657)
 CHEMBL1597887
 
 $$$$
@@ -47848,7 +47848,7 @@ CHEMBL131181
   9  8  1  0
   5  4  1  0
 M  END
->  <chembl_id>  (658) 
+>  <chembl_id>  (658)
 CHEMBL131181
 
 $$$$
@@ -47940,7 +47940,7 @@ CHEMBL3684430
  39 22  1  0
  39 25  1  0
 M  END
->  <chembl_id>  (659) 
+>  <chembl_id>  (659)
 CHEMBL3684430
 
 $$$$
@@ -48003,7 +48003,7 @@ CHEMBL1555251
  21 24  2  0
  22 24  1  0
 M  END
->  <chembl_id>  (660) 
+>  <chembl_id>  (660)
 CHEMBL1555251
 
 $$$$
@@ -48050,7 +48050,7 @@ CHEMBL4796843
   3 11  1  0
   9 18  1  0
 M  END
->  <chembl_id>  (661) 
+>  <chembl_id>  (661)
 CHEMBL4796843
 
 $$$$
@@ -48108,7 +48108,7 @@ CHEMBL3637920
  14 23  1  0
  18 23  1  0
 M  END
->  <chembl_id>  (662) 
+>  <chembl_id>  (662)
 CHEMBL3637920
 
 $$$$
@@ -48174,7 +48174,7 @@ CHEMBL5095731
  24 27  1  0
  10 21  1  0
 M  END
->  <chembl_id>  (663) 
+>  <chembl_id>  (663)
 CHEMBL5095731
 
 $$$$
@@ -48227,7 +48227,7 @@ CHEMBL1669703
  18 20  1  0
   2 21  1  0
 M  END
->  <chembl_id>  (664) 
+>  <chembl_id>  (664)
 CHEMBL1669703
 
 $$$$
@@ -48286,7 +48286,7 @@ CHEMBL4962829
  11 12  1  0
  21 22  1  0
 M  END
->  <chembl_id>  (665) 
+>  <chembl_id>  (665)
 CHEMBL4962829
 
 $$$$
@@ -48377,7 +48377,7 @@ CHEMBL1304422
  34 37  2  0
  35 37  1  0
 M  END
->  <chembl_id>  (666) 
+>  <chembl_id>  (666)
 CHEMBL1304422
 
 $$$$
@@ -48462,7 +48462,7 @@ CHEMBL5012002
  26 28  2  0
  35 36  1  0
 M  END
->  <chembl_id>  (667) 
+>  <chembl_id>  (667)
 CHEMBL5012002
 
 $$$$
@@ -48539,7 +48539,7 @@ CHEMBL1360684
  28 29  1  0
  29 32  1  0
 M  END
->  <chembl_id>  (668) 
+>  <chembl_id>  (668)
 CHEMBL1360684
 
 $$$$
@@ -48599,7 +48599,7 @@ CHEMBL4211085
  19 22  1  0
 M  CHG  2  22   1  24  -1
 M  END
->  <chembl_id>  (669) 
+>  <chembl_id>  (669)
 CHEMBL4211085
 
 $$$$
@@ -48639,7 +48639,7 @@ CHEMBL47750
  12  3  1  0
   6 14  2  0
 M  END
->  <chembl_id>  (670) 
+>  <chembl_id>  (670)
 CHEMBL47750
 
 $$$$
@@ -48711,7 +48711,7 @@ CHEMBL3907865
  29 23  1  0
  29 30  1  0
 M  END
->  <chembl_id>  (671) 
+>  <chembl_id>  (671)
 CHEMBL3907865
 
 $$$$
@@ -48791,7 +48791,7 @@ CHEMBL4803812
  31 34  1  0
   5 28  1  0
 M  END
->  <chembl_id>  (672) 
+>  <chembl_id>  (672)
 CHEMBL4803812
 
 $$$$
@@ -48852,7 +48852,7 @@ CHEMBL360909
   4 10  1  0
  21 13  1  0
 M  END
->  <chembl_id>  (673) 
+>  <chembl_id>  (673)
 CHEMBL360909
 
 $$$$
@@ -48925,7 +48925,7 @@ CHEMBL1304346
  28 29  1  0
  30 31  1  0
 M  END
->  <chembl_id>  (674) 
+>  <chembl_id>  (674)
 CHEMBL1304346
 
 $$$$
@@ -48989,7 +48989,7 @@ CHEMBL2153794
  24 25  1  0
   8 20  1  0
 M  END
->  <chembl_id>  (675) 
+>  <chembl_id>  (675)
 CHEMBL2153794
 
 $$$$
@@ -49069,7 +49069,7 @@ CHEMBL3632699
  21 33  1  0
  33 34  1  0
 M  END
->  <chembl_id>  (676) 
+>  <chembl_id>  (676)
 CHEMBL3632699
 
 $$$$
@@ -49149,7 +49149,7 @@ CHEMBL4209526
  33 28  1  0
  29 34  1  0
 M  END
->  <chembl_id>  (677) 
+>  <chembl_id>  (677)
 CHEMBL4209526
 
 $$$$
@@ -49221,7 +49221,7 @@ CHEMBL1299612
  26 29  1  0
  28 29  1  0
 M  END
->  <chembl_id>  (678) 
+>  <chembl_id>  (678)
 CHEMBL1299612
 
 $$$$
@@ -49304,7 +49304,7 @@ CHEMBL3503822
  34 36  1  0
  34 37  1  0
 M  END
->  <chembl_id>  (679) 
+>  <chembl_id>  (679)
 CHEMBL3503822
 
 $$$$
@@ -49373,7 +49373,7 @@ CHEMBL3693307
  27 15  1  0
  27 28  1  0
 M  END
->  <chembl_id>  (680) 
+>  <chembl_id>  (680)
 CHEMBL3693307
 
 $$$$
@@ -49476,7 +49476,7 @@ CHEMBL3238378
  43 44  2  0
  43 45  1  0
 M  END
->  <chembl_id>  (681) 
+>  <chembl_id>  (681)
 CHEMBL3238378
 
 $$$$
@@ -49533,7 +49533,7 @@ CHEMBL3314814
  15 23  2  0
  23 11  1  0
 M  END
->  <chembl_id>  (682) 
+>  <chembl_id>  (682)
 CHEMBL3314814
 
 $$$$
@@ -49586,7 +49586,7 @@ CHEMBL389805
  17 10  1  0
  17 21  1  0
 M  END
->  <chembl_id>  (683) 
+>  <chembl_id>  (683)
 CHEMBL389805
 
 $$$$
@@ -49680,7 +49680,7 @@ CHEMBL5204677
  32 39  1  0
  31 40  1  0
 M  END
->  <chembl_id>  (684) 
+>  <chembl_id>  (684)
 CHEMBL5204677
 
 $$$$
@@ -49739,7 +49739,7 @@ CHEMBL5200041
  16 23  1  0
  15 24  1  0
 M  END
->  <chembl_id>  (685) 
+>  <chembl_id>  (685)
 CHEMBL5200041
 
 $$$$
@@ -49803,7 +49803,7 @@ CHEMBL2132019
  24 25  1  0
  25 26  1  0
 M  END
->  <chembl_id>  (686) 
+>  <chembl_id>  (686)
 CHEMBL2132019
 
 $$$$
@@ -49860,7 +49860,7 @@ CHEMBL4925192
  12 14  1  0
  20 23  1  0
 M  END
->  <chembl_id>  (687) 
+>  <chembl_id>  (687)
 CHEMBL4925192
 
 $$$$
@@ -49939,7 +49939,7 @@ CHEMBL1437497
  31 33  2  0
  32 33  1  0
 M  END
->  <chembl_id>  (688) 
+>  <chembl_id>  (688)
 CHEMBL1437497
 
 $$$$
@@ -49990,7 +49990,7 @@ CHEMBL1894830
  17 19  1  0
  18 20  1  0
 M  END
->  <chembl_id>  (689) 
+>  <chembl_id>  (689)
 CHEMBL1894830
 
 $$$$
@@ -50041,7 +50041,7 @@ CHEMBL3494274
   5 20  1  0
  20  2  2  0
 M  END
->  <chembl_id>  (690) 
+>  <chembl_id>  (690)
 CHEMBL3494274
 
 $$$$
@@ -50150,7 +50150,7 @@ CHEMBL4128753
  47 48  2  0
  48 43  1  0
 M  END
->  <chembl_id>  (691) 
+>  <chembl_id>  (691)
 CHEMBL4128753
 
 $$$$
@@ -50207,7 +50207,7 @@ CHEMBL3964918
  23  2  1  0
  23  6  2  0
 M  END
->  <chembl_id>  (692) 
+>  <chembl_id>  (692)
 CHEMBL3964918
 
 $$$$
@@ -50275,7 +50275,7 @@ CHEMBL1623109
  26 28  2  0
  27 28  1  0
 M  END
->  <chembl_id>  (693) 
+>  <chembl_id>  (693)
 CHEMBL1623109
 
 $$$$
@@ -50347,7 +50347,7 @@ CHEMBL2441955
  28 29  1  0
  29 30  1  0
 M  END
->  <chembl_id>  (694) 
+>  <chembl_id>  (694)
 CHEMBL2441955
 
 $$$$
@@ -50410,7 +50410,7 @@ CHEMBL4172433
  24 20  1  0
  17 25  1  0
 M  END
->  <chembl_id>  (695) 
+>  <chembl_id>  (695)
 CHEMBL4172433
 
 $$$$
@@ -50475,7 +50475,7 @@ CHEMBL1556758
  23 24  1  0
  25 26  1  0
 M  END
->  <chembl_id>  (696) 
+>  <chembl_id>  (696)
 CHEMBL1556758
 
 $$$$
@@ -50574,7 +50574,7 @@ CHEMBL1684787
   6  1  1  0
  40 43  1  0
 M  END
->  <chembl_id>  (697) 
+>  <chembl_id>  (697)
 CHEMBL1684787
 
 $$$$
@@ -50610,7 +50610,7 @@ CHEMBL3303230
  11 12  2  0
  11 13  1  0
 M  END
->  <chembl_id>  (698) 
+>  <chembl_id>  (698)
 CHEMBL3303230
 
 $$$$
@@ -50673,7 +50673,7 @@ CHEMBL1341303
  24 26  2  0
  25 26  1  0
 M  END
->  <chembl_id>  (699) 
+>  <chembl_id>  (699)
 CHEMBL1341303
 
 $$$$
@@ -50734,7 +50734,7 @@ CHEMBL1435912
  22 24  2  0
  23 24  1  0
 M  END
->  <chembl_id>  (700) 
+>  <chembl_id>  (700)
 CHEMBL1435912
 
 $$$$
@@ -50828,7 +50828,7 @@ CHEMBL4944131
  31 32  2  0
  39 40  1  0
 M  END
->  <chembl_id>  (701) 
+>  <chembl_id>  (701)
 CHEMBL4944131
 
 $$$$
@@ -50901,7 +50901,7 @@ CHEMBL1088235
  22 26  1  0
  25 23  1  0
 M  END
->  <chembl_id>  (702) 
+>  <chembl_id>  (702)
 CHEMBL1088235
 
 $$$$
@@ -50971,7 +50971,7 @@ CHEMBL4529738
   5 28  1  0
   6 29  1  0
 M  END
->  <chembl_id>  (703) 
+>  <chembl_id>  (703)
 CHEMBL4529738
 
 $$$$
@@ -51026,7 +51026,7 @@ CHEMBL1098272
   1  2  1  0
  19 21  1  0
 M  END
->  <chembl_id>  (704) 
+>  <chembl_id>  (704)
 CHEMBL1098272
 
 $$$$
@@ -51100,7 +51100,7 @@ CHEMBL1490997
  28 30  2  0
  29 30  1  0
 M  END
->  <chembl_id>  (705) 
+>  <chembl_id>  (705)
 CHEMBL1490997
 
 $$$$
@@ -51151,7 +51151,7 @@ CHEMBL4548518
  19 14  1  0
  20  8  1  0
 M  END
->  <chembl_id>  (706) 
+>  <chembl_id>  (706)
 CHEMBL4548518
 
 $$$$
@@ -51230,7 +51230,7 @@ CHEMBL3983079
  33 23  1  0
  26 34  1  0
 M  END
->  <chembl_id>  (707) 
+>  <chembl_id>  (707)
 CHEMBL3983079
 
 $$$$
@@ -51304,7 +51304,7 @@ CHEMBL4861447
  26 30  1  0
  30 31  1  0
 M  END
->  <chembl_id>  (708) 
+>  <chembl_id>  (708)
 CHEMBL4861447
 
 $$$$
@@ -51390,7 +51390,7 @@ CHEMBL4870854
  35 36  1  0
  35 37  2  0
 M  END
->  <chembl_id>  (709) 
+>  <chembl_id>  (709)
 CHEMBL4870854
 
 $$$$
@@ -51436,7 +51436,7 @@ CHEMBL5196453
   4 17  1  0
   3 18  2  0
 M  END
->  <chembl_id>  (710) 
+>  <chembl_id>  (710)
 CHEMBL5196453
 
 $$$$
@@ -51516,7 +51516,7 @@ CHEMBL3613303
  33 27  1  0
  31 34  1  0
 M  END
->  <chembl_id>  (711) 
+>  <chembl_id>  (711)
 CHEMBL3613303
 
 $$$$
@@ -51570,7 +51570,7 @@ CHEMBL5004372
  12 13  1  0
  15 20  1  0
 M  END
->  <chembl_id>  (712) 
+>  <chembl_id>  (712)
 CHEMBL5004372
 
 $$$$
@@ -51653,7 +51653,7 @@ CHEMBL3915405
  34 35  1  0
  35 36  1  0
 M  END
->  <chembl_id>  (713) 
+>  <chembl_id>  (713)
 CHEMBL3915405
 
 $$$$
@@ -51711,7 +51711,7 @@ CHEMBL1384697
  21 23  1  0
  22 24  1  0
 M  END
->  <chembl_id>  (714) 
+>  <chembl_id>  (714)
 CHEMBL1384697
 
 $$$$
@@ -51785,7 +51785,7 @@ CHEMBL423614
  20 15  2  0
  22 28  1  0
 M  END
->  <chembl_id>  (715) 
+>  <chembl_id>  (715)
 CHEMBL423614
 
 $$$$
@@ -51861,7 +51861,7 @@ CHEMBL4874618
   1 31  1  0
   7 32  1  0
 M  END
->  <chembl_id>  (716) 
+>  <chembl_id>  (716)
 CHEMBL4874618
 
 $$$$
@@ -51905,7 +51905,7 @@ CHEMBL1407547
  13 15  1  0
  14 15  2  0
 M  END
->  <chembl_id>  (717) 
+>  <chembl_id>  (717)
 CHEMBL1407547
 
 $$$$
@@ -52023,7 +52023,7 @@ CHEMBL306098
  50 52  1  0
  40 26  1  0
 M  END
->  <chembl_id>  (718) 
+>  <chembl_id>  (718)
 CHEMBL306098
 
 $$$$
@@ -52087,7 +52087,7 @@ CHEMBL1900111
  25 27  2  0
  26 27  1  0
 M  END
->  <chembl_id>  (719) 
+>  <chembl_id>  (719)
 CHEMBL1900111
 
 $$$$
@@ -52140,7 +52140,7 @@ CHEMBL1077052
   5  9  2  0
  20 21  1  0
 M  END
->  <chembl_id>  (720) 
+>  <chembl_id>  (720)
 CHEMBL1077052
 
 $$$$
@@ -52205,7 +52205,7 @@ CHEMBL1432955
  25 27  2  0
  26 27  1  0
 M  END
->  <chembl_id>  (721) 
+>  <chembl_id>  (721)
 CHEMBL1432955
 
 $$$$
@@ -52273,7 +52273,7 @@ CHEMBL66018
  23 28  1  0
  27 28  1  0
 M  END
->  <chembl_id>  (722) 
+>  <chembl_id>  (722)
 CHEMBL66018
 
 $$$$
@@ -52338,7 +52338,7 @@ CHEMBL3958853
  25 27  2  0
  27 20  1  0
 M  END
->  <chembl_id>  (723) 
+>  <chembl_id>  (723)
 CHEMBL3958853
 
 $$$$
@@ -52375,7 +52375,7 @@ CHEMBL4534790
  13 14  1  0
  14  7  1  0
 M  END
->  <chembl_id>  (724) 
+>  <chembl_id>  (724)
 CHEMBL4534790
 
 $$$$
@@ -52433,7 +52433,7 @@ CHEMBL5002756
  17 18  1  0
  20 22  1  0
 M  END
->  <chembl_id>  (725) 
+>  <chembl_id>  (725)
 CHEMBL5002756
 
 $$$$
@@ -52482,7 +52482,7 @@ CHEMBL200038
   3  4  2  0
  18 19  1  0
 M  END
->  <chembl_id>  (726) 
+>  <chembl_id>  (726)
 CHEMBL200038
 
 $$$$
@@ -52543,7 +52543,7 @@ CHEMBL4451797
  24 19  1  0
  24 25  1  0
 M  END
->  <chembl_id>  (727) 
+>  <chembl_id>  (727)
 CHEMBL4451797
 
 $$$$
@@ -52631,7 +52631,7 @@ CHEMBL4126453
  37 38  2  0
  38 33  1  0
 M  END
->  <chembl_id>  (728) 
+>  <chembl_id>  (728)
 CHEMBL4126453
 
 $$$$
@@ -52724,7 +52724,7 @@ CHEMBL1396128
  36 38  1  0
  36 39  1  0
 M  END
->  <chembl_id>  (729) 
+>  <chembl_id>  (729)
 CHEMBL1396128
 
 $$$$
@@ -52797,7 +52797,7 @@ CHEMBL527679
  29 31  1  0
  29 32  1  0
 M  END
->  <chembl_id>  (730) 
+>  <chembl_id>  (730)
 CHEMBL527679
 
 $$$$
@@ -52872,7 +52872,7 @@ CHEMBL3674431
  30 31  1  0
  30 32  1  0
 M  END
->  <chembl_id>  (731) 
+>  <chembl_id>  (731)
 CHEMBL3674431
 
 $$$$
@@ -52944,7 +52944,7 @@ CHEMBL4519763
  30 25  1  0
   7 25  1  0
 M  END
->  <chembl_id>  (732) 
+>  <chembl_id>  (732)
 CHEMBL4519763
 
 $$$$
@@ -53023,7 +53023,7 @@ CHEMBL57907
  25 30  1  0
   8  5  1  0
 M  END
->  <chembl_id>  (733) 
+>  <chembl_id>  (733)
 CHEMBL57907
 
 $$$$
@@ -53080,7 +53080,7 @@ CHEMBL5023313
  13 15  1  0
  14 16  1  0
 M  END
->  <chembl_id>  (734) 
+>  <chembl_id>  (734)
 CHEMBL5023313
 
 $$$$
@@ -53130,7 +53130,7 @@ CHEMBL3463171
  19 20  1  0
  20 12  2  0
 M  END
->  <chembl_id>  (735) 
+>  <chembl_id>  (735)
 CHEMBL3463171
 
 $$$$
@@ -53191,7 +53191,7 @@ CHEMBL3487806
  24 25  1  0
  25 21  1  0
 M  END
->  <chembl_id>  (736) 
+>  <chembl_id>  (736)
 CHEMBL3487806
 
 $$$$
@@ -53247,7 +53247,7 @@ CHEMBL3192403
  21 22  2  0
  21 23  1  0
 M  END
->  <chembl_id>  (737) 
+>  <chembl_id>  (737)
 CHEMBL3192403
 
 $$$$
@@ -53383,7 +53383,7 @@ CHEMBL1479301
  59 60  1  0
  60 61  1  0
 M  END
->  <chembl_id>  (738) 
+>  <chembl_id>  (738)
 CHEMBL1479301
 
 $$$$
@@ -53469,7 +53469,7 @@ CHEMBL1090935
  35 36  1  0
  31 37  1  0
 M  END
->  <chembl_id>  (739) 
+>  <chembl_id>  (739)
 CHEMBL1090935
 
 $$$$
@@ -53568,7 +53568,7 @@ CHEMBL221731
   2  3  2  0
  38 44  1  6
 M  END
->  <chembl_id>  (740) 
+>  <chembl_id>  (740)
 CHEMBL221731
 
 $$$$
@@ -53628,7 +53628,7 @@ CHEMBL1369945
  22 23  1  0
  23 24  1  0
 M  END
->  <chembl_id>  (741) 
+>  <chembl_id>  (741)
 CHEMBL1369945
 
 $$$$
@@ -53687,7 +53687,7 @@ CHEMBL3485978
  23 24  2  0
  24 19  1  0
 M  END
->  <chembl_id>  (742) 
+>  <chembl_id>  (742)
 CHEMBL3485978
 
 $$$$
@@ -53751,7 +53751,7 @@ CHEMBL479269
  25 26  2  0
  12 13  1  0
 M  END
->  <chembl_id>  (743) 
+>  <chembl_id>  (743)
 CHEMBL479269
 
 $$$$
@@ -53789,7 +53789,7 @@ CHEMBL273170
   2  3  1  0
   1 14  1  0
 M  END
->  <chembl_id>  (744) 
+>  <chembl_id>  (744)
 CHEMBL273170
 
 $$$$
@@ -53840,7 +53840,7 @@ CHEMBL2106519
  12 16  2  0
  19 20  2  0
 M  END
->  <chembl_id>  (745) 
+>  <chembl_id>  (745)
 CHEMBL2106519
 
 $$$$
@@ -53931,7 +53931,7 @@ CHEMBL3689188
  38 24  1  0
  38 39  2  0
 M  END
->  <chembl_id>  (746) 
+>  <chembl_id>  (746)
 CHEMBL3689188
 
 $$$$
@@ -53999,7 +53999,7 @@ CHEMBL3341894
  27 23  1  0
   1 28  1  0
 M  END
->  <chembl_id>  (747) 
+>  <chembl_id>  (747)
 CHEMBL3341894
 
 $$$$
@@ -54055,7 +54055,7 @@ CHEMBL231817
   5  6  1  0
  13 23  1  0
 M  END
->  <chembl_id>  (748) 
+>  <chembl_id>  (748)
 CHEMBL231817
 
 $$$$
@@ -54132,7 +54132,7 @@ CHEMBL4642847
  31 32  1  0
  32 20  1  0
 M  END
->  <chembl_id>  (749) 
+>  <chembl_id>  (749)
 CHEMBL4642847
 
 $$$$
@@ -54198,7 +54198,7 @@ CHEMBL565621
   2  6  1  0
  24 27  1  0
 M  END
->  <chembl_id>  (750) 
+>  <chembl_id>  (750)
 CHEMBL565621
 
 $$$$
@@ -54270,7 +54270,7 @@ CHEMBL4228884
  20 23  1  0
   2 17  1  0
 M  END
->  <chembl_id>  (751) 
+>  <chembl_id>  (751)
 CHEMBL4228884
 
 $$$$
@@ -54313,7 +54313,7 @@ CHEMBL1448781
  14 15  1  0
  14 16  1  0
 M  END
->  <chembl_id>  (752) 
+>  <chembl_id>  (752)
 CHEMBL1448781
 
 $$$$
@@ -54372,7 +54372,7 @@ CHEMBL354930
   9 22  2  0
  20 13  1  0
 M  END
->  <chembl_id>  (753) 
+>  <chembl_id>  (753)
 CHEMBL354930
 
 $$$$
@@ -54437,7 +54437,7 @@ CHEMBL4936222
  18 21  1  0
  26 27  1  0
 M  END
->  <chembl_id>  (754) 
+>  <chembl_id>  (754)
 CHEMBL4936222
 
 $$$$
@@ -54497,7 +54497,7 @@ CHEMBL4529175
  24 10  1  0
  24 13  1  0
 M  END
->  <chembl_id>  (755) 
+>  <chembl_id>  (755)
 CHEMBL4529175
 
 $$$$
@@ -54575,7 +54575,7 @@ CHEMBL4177039
  31 32  1  0
  31 33  1  0
 M  END
->  <chembl_id>  (756) 
+>  <chembl_id>  (756)
 CHEMBL4177039
 
 $$$$
@@ -54615,7 +54615,7 @@ CHEMBL2355606
  12 13  1  0
  13 16  1  6
 M  END
->  <chembl_id>  (757) 
+>  <chembl_id>  (757)
 CHEMBL2355606
 
 $$$$
@@ -54687,7 +54687,7 @@ CHEMBL122846
  18 20  2  0
  30 29  2  0
 M  END
->  <chembl_id>  (758) 
+>  <chembl_id>  (758)
 CHEMBL122846
 
 $$$$
@@ -54770,7 +54770,7 @@ CHEMBL3921655
  35 13  1  0
  35 29  1  0
 M  END
->  <chembl_id>  (759) 
+>  <chembl_id>  (759)
 CHEMBL3921655
 
 $$$$
@@ -54870,7 +54870,7 @@ CHEMBL1980758
  37 41  1  0
  38 42  1  0
 M  END
->  <chembl_id>  (760) 
+>  <chembl_id>  (760)
 CHEMBL1980758
 
 $$$$
@@ -54940,7 +54940,7 @@ CHEMBL3247874
  28 29  1  0
  29 30  1  0
 M  END
->  <chembl_id>  (761) 
+>  <chembl_id>  (761)
 CHEMBL3247874
 
 $$$$
@@ -55005,7 +55005,7 @@ CHEMBL3220456
  26 27  2  0
  27 22  1  0
 M  END
->  <chembl_id>  (762) 
+>  <chembl_id>  (762)
 CHEMBL3220456
 
 $$$$
@@ -55075,7 +55075,7 @@ CHEMBL1419438
  27 29  2  0
  28 29  1  0
 M  END
->  <chembl_id>  (763) 
+>  <chembl_id>  (763)
 CHEMBL1419438
 
 $$$$
@@ -55135,7 +55135,7 @@ CHEMBL2272583
  25 21  1  0
  16 21  1  0
 M  END
->  <chembl_id>  (764) 
+>  <chembl_id>  (764)
 CHEMBL2272583
 
 $$$$
@@ -55196,7 +55196,7 @@ CHEMBL1472353
  22 23  2  0
  22 24  1  0
 M  END
->  <chembl_id>  (765) 
+>  <chembl_id>  (765)
 CHEMBL1472353
 
 $$$$
@@ -55273,7 +55273,7 @@ CHEMBL4455254
   8 32  1  0
   9 33  1  0
 M  END
->  <chembl_id>  (766) 
+>  <chembl_id>  (766)
 CHEMBL4455254
 
 $$$$
@@ -55319,7 +55319,7 @@ CHEMBL417452
  10 13  2  0
  15 18  1  0
 M  END
->  <chembl_id>  (767) 
+>  <chembl_id>  (767)
 CHEMBL417452
 
 $$$$
@@ -55573,7 +55573,7 @@ CHEMBL1197235
  89 82  2  0
  35 55  1  0
 M  END
->  <chembl_id>  (768) 
+>  <chembl_id>  (768)
 CHEMBL1197235
 
 $$$$
@@ -55797,7 +55797,7 @@ CHEMBL5180630
  74102  2  0
  75102  1  0
 M  END
->  <chembl_id>  (769) 
+>  <chembl_id>  (769)
 CHEMBL5180630
 
 $$$$
@@ -55834,7 +55834,7 @@ CHEMBL1326233
  10 12  1  0
  11 14  1  0
 M  END
->  <chembl_id>  (770) 
+>  <chembl_id>  (770)
 CHEMBL1326233
 
 $$$$
@@ -55911,7 +55911,7 @@ CHEMBL338148
  23 26  2  0
  18 19  2  0
 M  END
->  <chembl_id>  (771) 
+>  <chembl_id>  (771)
 CHEMBL338148
 
 $$$$
@@ -55946,7 +55946,7 @@ CHEMBL4589063
  11 13  2  0
   2 13  1  0
 M  END
->  <chembl_id>  (772) 
+>  <chembl_id>  (772)
 CHEMBL4589063
 
 $$$$
@@ -56001,7 +56001,7 @@ CHEMBL4921566
  16 17  1  0
  21 22  1  0
 M  END
->  <chembl_id>  (773) 
+>  <chembl_id>  (773)
 CHEMBL4921566
 
 $$$$
@@ -56072,7 +56072,7 @@ CHEMBL4762889
  28 29  1  0
  29 30  1  0
 M  END
->  <chembl_id>  (774) 
+>  <chembl_id>  (774)
 CHEMBL4762889
 
 $$$$
@@ -56126,7 +56126,7 @@ CHEMBL4160618
  17 20  1  0
 M  CHG  2  20   1  22  -1
 M  END
->  <chembl_id>  (775) 
+>  <chembl_id>  (775)
 CHEMBL4160618
 
 $$$$
@@ -56194,7 +56194,7 @@ CHEMBL4468289
  27 28  2  0
  28 23  1  0
 M  END
->  <chembl_id>  (776) 
+>  <chembl_id>  (776)
 CHEMBL4468289
 
 $$$$
@@ -56269,7 +56269,7 @@ CHEMBL570968
  10 14  1  6
  28 31  1  0
 M  END
->  <chembl_id>  (777) 
+>  <chembl_id>  (777)
 CHEMBL570968
 
 $$$$
@@ -56369,7 +56369,7 @@ CHEMBL3309837
  31 42  1  0
  24 43  1  0
 M  END
->  <chembl_id>  (778) 
+>  <chembl_id>  (778)
 CHEMBL3309837
 
 $$$$
@@ -56423,7 +56423,7 @@ CHEMBL2313089
  18 21  1  0
  12 22  1  0
 M  END
->  <chembl_id>  (779) 
+>  <chembl_id>  (779)
 CHEMBL2313089
 
 $$$$
@@ -56485,7 +56485,7 @@ CHEMBL3247636
  26 21  1  0
  11 21  1  0
 M  END
->  <chembl_id>  (780) 
+>  <chembl_id>  (780)
 CHEMBL3247636
 
 $$$$
@@ -56541,7 +56541,7 @@ CHEMBL3468717
  22 17  1  0
  22 23  2  0
 M  END
->  <chembl_id>  (781) 
+>  <chembl_id>  (781)
 CHEMBL3468717
 
 $$$$
@@ -56616,7 +56616,7 @@ CHEMBL1396735
  27 31  1  0
  28 29  1  0
 M  END
->  <chembl_id>  (782) 
+>  <chembl_id>  (782)
 CHEMBL1396735
 
 $$$$
@@ -56721,7 +56721,7 @@ CHEMBL149447
  27 26  2  0
  33 30  1  0
 M  END
->  <chembl_id>  (783) 
+>  <chembl_id>  (783)
 CHEMBL149447
 
 $$$$
@@ -56777,7 +56777,7 @@ CHEMBL485017
  21 22  1  0
  22 18  1  0
 M  END
->  <chembl_id>  (784) 
+>  <chembl_id>  (784)
 CHEMBL485017
 
 $$$$
@@ -56842,7 +56842,7 @@ CHEMBL1396608
  24 27  1  0
  25 26  1  0
 M  END
->  <chembl_id>  (785) 
+>  <chembl_id>  (785)
 CHEMBL1396608
 
 $$$$
@@ -56904,7 +56904,7 @@ CHEMBL1388126
  23 25  2  0
  24 25  1  0
 M  END
->  <chembl_id>  (786) 
+>  <chembl_id>  (786)
 CHEMBL1388126
 
 $$$$
@@ -56951,7 +56951,7 @@ CHEMBL3277717
  17 18  1  0
  18 19  1  0
 M  END
->  <chembl_id>  (787) 
+>  <chembl_id>  (787)
 CHEMBL3277717
 
 $$$$
@@ -57064,7 +57064,7 @@ CHEMBL297673
  50 49  2  0
  24 40  1  0
 M  END
->  <chembl_id>  (788) 
+>  <chembl_id>  (788)
 CHEMBL297673
 
 $$$$
@@ -57245,7 +57245,7 @@ CHEMBL557288
  70 83  2  0
   1  3  1  6
 M  END
->  <chembl_id>  (789) 
+>  <chembl_id>  (789)
 CHEMBL557288
 
 $$$$
@@ -57300,7 +57300,7 @@ CHEMBL1352097
  20 22  2  0
  21 22  1  0
 M  END
->  <chembl_id>  (790) 
+>  <chembl_id>  (790)
 CHEMBL1352097
 
 $$$$
@@ -57380,7 +57380,7 @@ CHEMBL1170183
   3  4  1  0
  31 34  1  0
 M  END
->  <chembl_id>  (791) 
+>  <chembl_id>  (791)
 CHEMBL1170183
 
 $$$$
@@ -57459,7 +57459,7 @@ CHEMBL2442666
  19 33  1  0
  28 34  1  0
 M  END
->  <chembl_id>  (792) 
+>  <chembl_id>  (792)
 CHEMBL2442666
 
 $$$$
@@ -57522,7 +57522,7 @@ CHEMBL482332
   6  1  1  0
  22 26  1  6
 M  END
->  <chembl_id>  (793) 
+>  <chembl_id>  (793)
 CHEMBL482332
 
 $$$$
@@ -57581,7 +57581,7 @@ CHEMBL4096498
   2 23  1  0
  20 24  1  0
 M  END
->  <chembl_id>  (794) 
+>  <chembl_id>  (794)
 CHEMBL4096498
 
 $$$$
@@ -57664,7 +57664,7 @@ CHEMBL107279
  28 33  1  0
   8 19  1  0
 M  END
->  <chembl_id>  (795) 
+>  <chembl_id>  (795)
 CHEMBL107279
 
 $$$$
@@ -57739,7 +57739,7 @@ CHEMBL4571829
  31 30  2  0
   1 31  1  0
 M  END
->  <chembl_id>  (796) 
+>  <chembl_id>  (796)
 CHEMBL4571829
 
 $$$$
@@ -57794,7 +57794,7 @@ CHEMBL4983316
  18 21  1  0
  20 22  1  0
 M  END
->  <chembl_id>  (797) 
+>  <chembl_id>  (797)
 CHEMBL4983316
 
 $$$$
@@ -57851,7 +57851,7 @@ CHEMBL1860921
  21 22  1  0
  11 23  1  0
 M  END
->  <chembl_id>  (798) 
+>  <chembl_id>  (798)
 CHEMBL1860921
 
 $$$$
@@ -57887,7 +57887,7 @@ CHEMBL297279
   4  7  1  0
   8  6  1  0
 M  END
->  <chembl_id>  (799) 
+>  <chembl_id>  (799)
 CHEMBL297279
 
 $$$$
@@ -57925,7 +57925,7 @@ CHEMBL253012
  12  9  1  0
  13 14  1  0
 M  END
->  <chembl_id>  (800) 
+>  <chembl_id>  (800)
 CHEMBL253012
 
 $$$$
@@ -57990,7 +57990,7 @@ CHEMBL4747911
  26 27  2  0
  27 21  1  0
 M  END
->  <chembl_id>  (801) 
+>  <chembl_id>  (801)
 CHEMBL4747911
 
 $$$$
@@ -58066,7 +58066,7 @@ CHEMBL1482910
  29 30  2  0
  29 31  1  0
 M  END
->  <chembl_id>  (802) 
+>  <chembl_id>  (802)
 CHEMBL1482910
 
 $$$$
@@ -58151,7 +58151,7 @@ CHEMBL5086457
  36 25  2  0
  36  8  1  0
 M  END
->  <chembl_id>  (803) 
+>  <chembl_id>  (803)
 CHEMBL5086457
 
 $$$$
@@ -58258,7 +58258,7 @@ CHEMBL3143452
  46 47  1  0
  48 44  2  0
 M  END
->  <chembl_id>  (804) 
+>  <chembl_id>  (804)
 CHEMBL3143452
 
 $$$$
@@ -58345,7 +58345,7 @@ CHEMBL4534592
  34 36  1  0
  34 37  1  0
 M  END
->  <chembl_id>  (805) 
+>  <chembl_id>  (805)
 CHEMBL4534592
 
 $$$$
@@ -58396,7 +58396,7 @@ CHEMBL3465618
   5 20  1  0
  20  2  2  0
 M  END
->  <chembl_id>  (806) 
+>  <chembl_id>  (806)
 CHEMBL3465618
 
 $$$$
@@ -58476,7 +58476,7 @@ CHEMBL1448403
  31 32  1  0
 M  CHG  2   7  -1  12   1
 M  END
->  <chembl_id>  (807) 
+>  <chembl_id>  (807)
 CHEMBL1448403
 
 $$$$
@@ -58556,7 +58556,7 @@ CHEMBL2142091
  30 32  1  0
  31 33  1  0
 M  END
->  <chembl_id>  (808) 
+>  <chembl_id>  (808)
 CHEMBL2142091
 
 $$$$
@@ -58610,7 +58610,7 @@ CHEMBL4997064
  16 17  1  0
  20 21  1  0
 M  END
->  <chembl_id>  (809) 
+>  <chembl_id>  (809)
 CHEMBL4997064
 
 $$$$
@@ -58685,7 +58685,7 @@ CHEMBL3649575
  30 31  2  0
  31 26  1  0
 M  END
->  <chembl_id>  (810) 
+>  <chembl_id>  (810)
 CHEMBL3649575
 
 $$$$
@@ -58733,7 +58733,7 @@ CHEMBL4087902
  12 18  1  0
   7 19  1  0
 M  END
->  <chembl_id>  (811) 
+>  <chembl_id>  (811)
 CHEMBL4087902
 
 $$$$
@@ -58811,7 +58811,7 @@ CHEMBL3686779
  32 33  2  0
  33 28  1  0
 M  END
->  <chembl_id>  (812) 
+>  <chembl_id>  (812)
 CHEMBL3686779
 
 $$$$
@@ -58864,7 +58864,7 @@ CHEMBL2269575
  19 21  1  0
 M  CHG  4   3   1   6   1  14  -1  15  -1
 M  END
->  <chembl_id>  (813) 
+>  <chembl_id>  (813)
 CHEMBL2269575
 
 $$$$
@@ -58914,7 +58914,7 @@ CHEMBL334905
   6 18  2  0
  13 20  2  0
 M  END
->  <chembl_id>  (814) 
+>  <chembl_id>  (814)
 CHEMBL334905
 
 $$$$
@@ -58982,7 +58982,7 @@ CHEMBL178656
  13  4  1  0
  25 28  2  0
 M  END
->  <chembl_id>  (815) 
+>  <chembl_id>  (815)
 CHEMBL178656
 
 $$$$
@@ -59059,7 +59059,7 @@ CHEMBL3126052
  25 30  1  0
   4 28  1  1
 M  END
->  <chembl_id>  (816) 
+>  <chembl_id>  (816)
 CHEMBL3126052
 
 $$$$
@@ -59133,7 +59133,7 @@ CHEMBL1531856
  26 28  1  0
  27 31  1  0
 M  END
->  <chembl_id>  (817) 
+>  <chembl_id>  (817)
 CHEMBL1531856
 
 $$$$
@@ -59200,7 +59200,7 @@ CHEMBL4939172
  20 21  1  0
  26 27  1  0
 M  END
->  <chembl_id>  (818) 
+>  <chembl_id>  (818)
 CHEMBL4939172
 
 $$$$
@@ -59308,7 +59308,7 @@ CHEMBL4300548
  48 43  1  0
   2 49  1  0
 M  END
->  <chembl_id>  (819) 
+>  <chembl_id>  (819)
 CHEMBL4300548
 
 $$$$
@@ -59365,7 +59365,7 @@ CHEMBL380879
   1  2  1  0
   6 23  2  0
 M  END
->  <chembl_id>  (820) 
+>  <chembl_id>  (820)
 CHEMBL380879
 
 $$$$
@@ -59448,7 +59448,7 @@ CHEMBL510873
  34 35  3  0
  27 34  1  0
 M  END
->  <chembl_id>  (821) 
+>  <chembl_id>  (821)
 CHEMBL510873
 
 $$$$
@@ -59486,7 +59486,7 @@ CHEMBL97495
  14  9  1  0
  15 13  1  0
 M  END
->  <chembl_id>  (822) 
+>  <chembl_id>  (822)
 CHEMBL97495
 
 $$$$
@@ -59532,7 +59532,7 @@ CHEMBL4986182
  11 12  1  0
  17 18  1  0
 M  END
->  <chembl_id>  (823) 
+>  <chembl_id>  (823)
 CHEMBL4986182
 
 $$$$
@@ -59618,7 +59618,7 @@ CHEMBL179961
  24 22  1  0
  37 34  1  0
 M  END
->  <chembl_id>  (824) 
+>  <chembl_id>  (824)
 CHEMBL179961
 
 $$$$
@@ -59670,7 +59670,7 @@ CHEMBL4780931
  20 21  2  0
  21 16  1  0
 M  END
->  <chembl_id>  (825) 
+>  <chembl_id>  (825)
 CHEMBL4780931
 
 $$$$
@@ -59722,7 +59722,7 @@ CHEMBL3469324
  20 21  1  0
  21 17  2  0
 M  END
->  <chembl_id>  (826) 
+>  <chembl_id>  (826)
 CHEMBL3469324
 
 $$$$
@@ -59798,7 +59798,7 @@ CHEMBL3906617
  32 22  1  0
  32 28  2  0
 M  END
->  <chembl_id>  (827) 
+>  <chembl_id>  (827)
 CHEMBL3906617
 
 $$$$
@@ -59867,7 +59867,7 @@ CHEMBL3228937
   4 28  1  0
  16 29  1  0
 M  END
->  <chembl_id>  (828) 
+>  <chembl_id>  (828)
 CHEMBL3228937
 
 $$$$
@@ -59898,7 +59898,7 @@ CHEMBL1359522
   6  8  1  0
   7  9  1  0
 M  END
->  <chembl_id>  (829) 
+>  <chembl_id>  (829)
 CHEMBL1359522
 
 $$$$
@@ -59959,7 +59959,7 @@ CHEMBL4798560
  13 24  1  0
  24 25  1  0
 M  END
->  <chembl_id>  (830) 
+>  <chembl_id>  (830)
 CHEMBL4798560
 
 $$$$
@@ -60027,7 +60027,7 @@ CHEMBL3116043
  26 27  1  0
  27 28  1  0
 M  END
->  <chembl_id>  (831) 
+>  <chembl_id>  (831)
 CHEMBL3116043
 
 $$$$
@@ -60098,7 +60098,7 @@ CHEMBL3685866
  29  2  1  0
  29 30  1  0
 M  END
->  <chembl_id>  (832) 
+>  <chembl_id>  (832)
 CHEMBL3685866
 
 $$$$
@@ -60168,7 +60168,7 @@ CHEMBL384854
  28 29  2  0
  29 24  1  0
 M  END
->  <chembl_id>  (833) 
+>  <chembl_id>  (833)
 CHEMBL384854
 
 $$$$
@@ -60218,7 +60218,7 @@ CHEMBL3465082
  18 19  2  0
  18 20  2  0
 M  END
->  <chembl_id>  (834) 
+>  <chembl_id>  (834)
 CHEMBL3465082
 
 $$$$
@@ -60293,7 +60293,7 @@ CHEMBL1713183
  26 28  1  0
  29 30  1  0
 M  END
->  <chembl_id>  (835) 
+>  <chembl_id>  (835)
 CHEMBL1713183
 
 $$$$
@@ -60341,7 +60341,7 @@ CHEMBL2325458
  15 18  1  0
  18 19  3  0
 M  END
->  <chembl_id>  (836) 
+>  <chembl_id>  (836)
 CHEMBL2325458
 
 $$$$
@@ -60398,7 +60398,7 @@ CHEMBL1577540
  19 20  1  0
  21 22  2  0
 M  END
->  <chembl_id>  (837) 
+>  <chembl_id>  (837)
 CHEMBL1577540
 
 $$$$
@@ -60459,7 +60459,7 @@ CHEMBL1532974
  23 24  2  0
  23 25  1  0
 M  END
->  <chembl_id>  (838) 
+>  <chembl_id>  (838)
 CHEMBL1532974
 
 $$$$
@@ -60536,7 +60536,7 @@ CHEMBL440857
  21 11  2  0
  15 24  1  0
 M  END
->  <chembl_id>  (839) 
+>  <chembl_id>  (839)
 CHEMBL440857
 
 $$$$
@@ -60598,7 +60598,7 @@ CHEMBL4648422
  24 25  2  0
  25 20  1  0
 M  END
->  <chembl_id>  (840) 
+>  <chembl_id>  (840)
 CHEMBL4648422
 
 $$$$
@@ -60644,7 +60644,7 @@ CHEMBL1572195
  16 17  1  0
  17 18  1  0
 M  END
->  <chembl_id>  (841) 
+>  <chembl_id>  (841)
 CHEMBL1572195
 
 $$$$
@@ -60869,7 +60869,7 @@ CHEMBL2311621
 100101  1  0
 101102  1  0
 M  END
->  <chembl_id>  (842) 
+>  <chembl_id>  (842)
 CHEMBL2311621
 
 $$$$
@@ -60966,7 +60966,7 @@ CHEMBL3691981
  41 42  2  0
  42 38  1  0
 M  END
->  <chembl_id>  (843) 
+>  <chembl_id>  (843)
 CHEMBL3691981
 
 $$$$
@@ -61111,7 +61111,7 @@ CHEMBL5091265
  64 65  1  0
  65  1  1  0
 M  END
->  <chembl_id>  (844) 
+>  <chembl_id>  (844)
 CHEMBL5091265
 
 $$$$
@@ -61149,7 +61149,7 @@ CHEMBL2107654
   3  5  2  0
  13 14  1  0
 M  END
->  <chembl_id>  (845) 
+>  <chembl_id>  (845)
 CHEMBL2107654
 
 $$$$
@@ -61215,7 +61215,7 @@ CHEMBL4173020
  17 21  1  0
  24 27  1  0
 M  END
->  <chembl_id>  (846) 
+>  <chembl_id>  (846)
 CHEMBL4173020
 
 $$$$
@@ -61318,7 +61318,7 @@ CHEMBL164607
  39 40  1  0
  44 37  1  0
 M  END
->  <chembl_id>  (847) 
+>  <chembl_id>  (847)
 CHEMBL164607
 
 $$$$
@@ -61369,7 +61369,7 @@ CHEMBL3275032
  18 20  1  0
  13 21  1  0
 M  END
->  <chembl_id>  (848) 
+>  <chembl_id>  (848)
 CHEMBL3275032
 
 $$$$
@@ -61433,7 +61433,7 @@ CHEMBL371176
  14  8  2  0
  15 22  1  0
 M  END
->  <chembl_id>  (849) 
+>  <chembl_id>  (849)
 CHEMBL371176
 
 $$$$
@@ -61485,7 +61485,7 @@ CHEMBL1497599
  19 21  2  0
  20 21  1  0
 M  END
->  <chembl_id>  (850) 
+>  <chembl_id>  (850)
 CHEMBL1497599
 
 $$$$
@@ -61536,7 +61536,7 @@ CHEMBL4943589
  13 16  1  0
  19 20  1  0
 M  END
->  <chembl_id>  (851) 
+>  <chembl_id>  (851)
 CHEMBL4943589
 
 $$$$
@@ -61590,7 +61590,7 @@ CHEMBL1522314
  18 19  1  0
  20 22  1  0
 M  END
->  <chembl_id>  (852) 
+>  <chembl_id>  (852)
 CHEMBL1522314
 
 $$$$
@@ -61665,7 +61665,7 @@ CHEMBL487281
  15 31  1  0
  31 12  1  0
 M  END
->  <chembl_id>  (853) 
+>  <chembl_id>  (853)
 CHEMBL487281
 
 $$$$
@@ -61754,7 +61754,7 @@ CHEMBL2131316
  36 37  1  0
  37 38  1  0
 M  END
->  <chembl_id>  (854) 
+>  <chembl_id>  (854)
 CHEMBL2131316
 
 $$$$
@@ -61837,7 +61837,7 @@ CHEMBL3822749
  35  2  1  0
   2 36  1  0
 M  END
->  <chembl_id>  (855) 
+>  <chembl_id>  (855)
 CHEMBL3822749
 
 $$$$
@@ -61914,7 +61914,7 @@ CHEMBL7848
  25 30  1  0
  21 15  1  0
 M  END
->  <chembl_id>  (856) 
+>  <chembl_id>  (856)
 CHEMBL7848
 
 $$$$
@@ -61990,7 +61990,7 @@ CHEMBL4075448
  30 31  1  0
  31 32  1  0
 M  END
->  <chembl_id>  (857) 
+>  <chembl_id>  (857)
 CHEMBL4075448
 
 $$$$
@@ -62075,7 +62075,7 @@ CHEMBL3401542
  36 37  2  0
  37 32  1  0
 M  END
->  <chembl_id>  (858) 
+>  <chembl_id>  (858)
 CHEMBL3401542
 
 $$$$
@@ -62221,7 +62221,7 @@ CHEMBL2371245
  66 67  2  0
  48 58  1  0
 M  END
->  <chembl_id>  (859) 
+>  <chembl_id>  (859)
 CHEMBL2371245
 
 $$$$
@@ -62283,7 +62283,7 @@ CHEMBL4451019
  19 24  1  0
  21 25  1  0
 M  END
->  <chembl_id>  (860) 
+>  <chembl_id>  (860)
 CHEMBL4451019
 
 $$$$
@@ -62357,7 +62357,7 @@ CHEMBL1093856
  30 24  1  0
  30 31  1  0
 M  END
->  <chembl_id>  (861) 
+>  <chembl_id>  (861)
 CHEMBL1093856
 
 $$$$
@@ -62432,7 +62432,7 @@ CHEMBL3898850
  30 31  1  0
  31 23  1  0
 M  END
->  <chembl_id>  (862) 
+>  <chembl_id>  (862)
 CHEMBL3898850
 
 $$$$
@@ -62511,7 +62511,7 @@ CHEMBL1905530
  31 33  2  0
  32 33  1  0
 M  END
->  <chembl_id>  (863) 
+>  <chembl_id>  (863)
 CHEMBL1905530
 
 $$$$
@@ -62598,7 +62598,7 @@ CHEMBL3645804
  36 37  2  0
  37 31  1  0
 M  END
->  <chembl_id>  (864) 
+>  <chembl_id>  (864)
 CHEMBL3645804
 
 $$$$
@@ -62644,7 +62644,7 @@ CHEMBL3140191
  15 18  1  0
 M  CHG  1  15   1
 M  END
->  <chembl_id>  (865) 
+>  <chembl_id>  (865)
 CHEMBL3140191
 
 $$$$
@@ -62706,7 +62706,7 @@ CHEMBL223961
   5  6  1  0
  24 25  1  0
 M  END
->  <chembl_id>  (866) 
+>  <chembl_id>  (866)
 CHEMBL223961
 
 $$$$
@@ -62752,7 +62752,7 @@ CHEMBL4906675
  14 15  1  0
  16 18  2  0
 M  END
->  <chembl_id>  (867) 
+>  <chembl_id>  (867)
 CHEMBL4906675
 
 $$$$
@@ -62811,7 +62811,7 @@ CHEMBL4980832
  18 21  2  0
  23 24  1  0
 M  END
->  <chembl_id>  (868) 
+>  <chembl_id>  (868)
 CHEMBL4980832
 
 $$$$
@@ -62888,7 +62888,7 @@ CHEMBL4114103
  31 32  1  0
  31 33  1  0
 M  END
->  <chembl_id>  (869) 
+>  <chembl_id>  (869)
 CHEMBL4114103
 
 $$$$
@@ -62957,7 +62957,7 @@ CHEMBL4541668
  27 28  1  0
  19 29  2  0
 M  END
->  <chembl_id>  (870) 
+>  <chembl_id>  (870)
 CHEMBL4541668
 
 $$$$
@@ -63043,7 +63043,7 @@ CHEMBL5202938
  34 36  2  0
  34 37  1  0
 M  END
->  <chembl_id>  (871) 
+>  <chembl_id>  (871)
 CHEMBL5202938
 
 $$$$
@@ -63097,7 +63097,7 @@ CHEMBL3086058
  17 20  1  0
  12 14  1  0
 M  END
->  <chembl_id>  (872) 
+>  <chembl_id>  (872)
 CHEMBL3086058
 
 $$$$
@@ -63169,7 +63169,7 @@ CHEMBL3578111
  29 30  1  0
  30 31  1  0
 M  END
->  <chembl_id>  (873) 
+>  <chembl_id>  (873)
 CHEMBL3578111
 
 $$$$
@@ -63215,7 +63215,7 @@ CHEMBL513786
   3  8  1  0
  17 18  3  0
 M  END
->  <chembl_id>  (874) 
+>  <chembl_id>  (874)
 CHEMBL513786
 
 $$$$
@@ -63321,7 +63321,7 @@ CHEMBL134821
  43 47  2  0
  39 44  2  0
 M  END
->  <chembl_id>  (875) 
+>  <chembl_id>  (875)
 CHEMBL134821
 
 $$$$
@@ -63393,7 +63393,7 @@ CHEMBL1334829
  27 30  1  0
  28 29  1  0
 M  END
->  <chembl_id>  (876) 
+>  <chembl_id>  (876)
 CHEMBL1334829
 
 $$$$
@@ -63466,7 +63466,7 @@ CHEMBL4591803
  30 25  1  0
 M  CHG  2  18   1  23  -1
 M  END
->  <chembl_id>  (877) 
+>  <chembl_id>  (877)
 CHEMBL4591803
 
 $$$$
@@ -63519,7 +63519,7 @@ CHEMBL1440407
  19 20  2  0
  19 21  1  0
 M  END
->  <chembl_id>  (878) 
+>  <chembl_id>  (878)
 CHEMBL1440407
 
 $$$$
@@ -63721,7 +63721,7 @@ CHEMBL4165598
  90 91  1  0
  90 92  1  0
 M  END
->  <chembl_id>  (879) 
+>  <chembl_id>  (879)
 CHEMBL4165598
 
 $$$$
@@ -63829,7 +63829,7 @@ CHEMBL65069
  47 45  2  0
  35 43  1  0
 M  END
->  <chembl_id>  (880) 
+>  <chembl_id>  (880)
 CHEMBL65069
 
 $$$$
@@ -63919,7 +63919,7 @@ CHEMBL4160447
  37 33  1  0
  35 38  1  0
 M  END
->  <chembl_id>  (881) 
+>  <chembl_id>  (881)
 CHEMBL4160447
 
 $$$$
@@ -63978,7 +63978,7 @@ CHEMBL2314945
  22 23  1  0
  23 24  1  0
 M  END
->  <chembl_id>  (882) 
+>  <chembl_id>  (882)
 CHEMBL2314945
 
 $$$$
@@ -64040,7 +64040,7 @@ CHEMBL396632
   4  3  1  0
  12 15  2  0
 M  END
->  <chembl_id>  (883) 
+>  <chembl_id>  (883)
 CHEMBL396632
 
 $$$$
@@ -64316,7 +64316,7 @@ CHEMBL1229044
  98129  2  0
 M  CHG  2  49   1  50   1
 M  END
->  <chembl_id>  (884) 
+>  <chembl_id>  (884)
 CHEMBL1229044
 
 $$$$
@@ -64401,7 +64401,7 @@ CHEMBL477728
   1  5  1  0
  10 38  1  0
 M  END
->  <chembl_id>  (885) 
+>  <chembl_id>  (885)
 CHEMBL477728
 
 $$$$
@@ -64461,7 +64461,7 @@ CHEMBL3402032
  23 18  2  0
  16 24  1  0
 M  END
->  <chembl_id>  (886) 
+>  <chembl_id>  (886)
 CHEMBL3402032
 
 $$$$
@@ -64509,7 +64509,7 @@ CHEMBL2069997
   5  7  1  0
  17 19  1  0
 M  END
->  <chembl_id>  (887) 
+>  <chembl_id>  (887)
 CHEMBL2069997
 
 $$$$
@@ -64945,7 +64945,7 @@ CHEMBL4583742
 208210  1  0
 152211  2  0
 M  END
->  <chembl_id>  (888) 
+>  <chembl_id>  (888)
 CHEMBL4583742
 
 $$$$
@@ -65020,7 +65020,7 @@ CHEMBL3641888
  29 31  1  0
  29 32  1  0
 M  END
->  <chembl_id>  (889) 
+>  <chembl_id>  (889)
 CHEMBL3641888
 
 $$$$
@@ -65090,7 +65090,7 @@ CHEMBL5204348
  27 29  2  0
 M  CHG  2  27   1  28  -1
 M  END
->  <chembl_id>  (890) 
+>  <chembl_id>  (890)
 CHEMBL5204348
 
 $$$$
@@ -65148,7 +65148,7 @@ CHEMBL3736490
  21 22  1  0
  22 23  1  0
 M  END
->  <chembl_id>  (891) 
+>  <chembl_id>  (891)
 CHEMBL3736490
 
 $$$$
@@ -65202,7 +65202,7 @@ CHEMBL4995751
   9 10  1  0
  21 22  1  0
 M  END
->  <chembl_id>  (892) 
+>  <chembl_id>  (892)
 CHEMBL4995751
 
 $$$$
@@ -65277,7 +65277,7 @@ CHEMBL2359381
  29 31  2  0
  30 31  1  0
 M  END
->  <chembl_id>  (893) 
+>  <chembl_id>  (893)
 CHEMBL2359381
 
 $$$$
@@ -65341,7 +65341,7 @@ CHEMBL3593906
  25 26  2  0
  26 21  1  0
 M  END
->  <chembl_id>  (894) 
+>  <chembl_id>  (894)
 CHEMBL3593906
 
 $$$$
@@ -65397,7 +65397,7 @@ CHEMBL3442101
  22  2  1  0
  22  5  2  0
 M  END
->  <chembl_id>  (895) 
+>  <chembl_id>  (895)
 CHEMBL3442101
 
 $$$$
@@ -65452,7 +65452,7 @@ CHEMBL1301459
  17 18  2  0
  18 19  1  0
 M  END
->  <chembl_id>  (896) 
+>  <chembl_id>  (896)
 CHEMBL1301459
 
 $$$$
@@ -65512,7 +65512,7 @@ CHEMBL3291138
   6 24  1  0
 M  CHG  2   6   1  24  -1
 M  END
->  <chembl_id>  (897) 
+>  <chembl_id>  (897)
 CHEMBL3291138
 
 $$$$
@@ -65635,7 +65635,7 @@ CHEMBL4167354
  46 53  1  0
  53 54  1  0
 M  END
->  <chembl_id>  (898) 
+>  <chembl_id>  (898)
 CHEMBL4167354
 
 $$$$
@@ -65688,7 +65688,7 @@ CHEMBL4636974
  20 16  2  0
  18 21  1  0
 M  END
->  <chembl_id>  (899) 
+>  <chembl_id>  (899)
 CHEMBL4636974
 
 $$$$
@@ -65724,7 +65724,7 @@ CHEMBL1999396
   8  9  1  0
  12 13  1  0
 M  END
->  <chembl_id>  (900) 
+>  <chembl_id>  (900)
 CHEMBL1999396
 
 $$$$
@@ -65772,7 +65772,7 @@ CHEMBL4873255
   1 18  1  0
  11 19  1  0
 M  END
->  <chembl_id>  (901) 
+>  <chembl_id>  (901)
 CHEMBL4873255
 
 $$$$
@@ -65833,7 +65833,7 @@ CHEMBL3787534
  24 20  2  0
  23 25  1  0
 M  END
->  <chembl_id>  (902) 
+>  <chembl_id>  (902)
 CHEMBL3787534
 
 $$$$
@@ -65903,7 +65903,7 @@ CHEMBL544719
  28 29  2  0
 M  CHG  2   4   1  13  -1
 M  END
->  <chembl_id>  (903) 
+>  <chembl_id>  (903)
 CHEMBL544719
 
 $$$$
@@ -65969,7 +65969,7 @@ CHEMBL292079
   5 12  1  0
  20 26  2  0
 M  END
->  <chembl_id>  (904) 
+>  <chembl_id>  (904)
 CHEMBL292079
 
 $$$$
@@ -66032,7 +66032,7 @@ CHEMBL1360637
  22 23  2  0
  22 24  1  0
 M  END
->  <chembl_id>  (905) 
+>  <chembl_id>  (905)
 CHEMBL1360637
 
 $$$$
@@ -66118,7 +66118,7 @@ CHEMBL2359448
  33 34  2  0
  35 36  1  0
 M  END
->  <chembl_id>  (906) 
+>  <chembl_id>  (906)
 CHEMBL2359448
 
 $$$$
@@ -66174,7 +66174,7 @@ CHEMBL1393726
  18 20  1  0
  19 21  1  0
 M  END
->  <chembl_id>  (907) 
+>  <chembl_id>  (907)
 CHEMBL1393726
 
 $$$$
@@ -66220,7 +66220,7 @@ CHEMBL3786719
  15 17  1  0
   4 18  1  0
 M  END
->  <chembl_id>  (908) 
+>  <chembl_id>  (908)
 CHEMBL3786719
 
 $$$$
@@ -66280,7 +66280,7 @@ CHEMBL1269854
  23 24  1  0
 M  CHG  2  16   1  18  -1
 M  END
->  <chembl_id>  (909) 
+>  <chembl_id>  (909)
 CHEMBL1269854
 
 $$$$
@@ -66377,7 +66377,7 @@ CHEMBL14102
  42 37  2  0
  41 40  2  0
 M  END
->  <chembl_id>  (910) 
+>  <chembl_id>  (910)
 CHEMBL14102
 
 $$$$
@@ -66412,7 +66412,7 @@ CHEMBL1381885
  11 12  1  0
  11 13  1  0
 M  END
->  <chembl_id>  (911) 
+>  <chembl_id>  (911)
 CHEMBL1381885
 
 $$$$
@@ -66489,7 +66489,7 @@ CHEMBL1421748
  26 30  1  0
  27 28  2  0
 M  END
->  <chembl_id>  (912) 
+>  <chembl_id>  (912)
 CHEMBL1421748
 
 $$$$
@@ -66558,7 +66558,7 @@ CHEMBL3656144
  27 28  1  0
  28 26  1  0
 M  END
->  <chembl_id>  (913) 
+>  <chembl_id>  (913)
 CHEMBL3656144
 
 $$$$
@@ -66631,7 +66631,7 @@ CHEMBL4571772
  29 30  1  0
  30 24  1  0
 M  END
->  <chembl_id>  (914) 
+>  <chembl_id>  (914)
 CHEMBL4571772
 
 $$$$
@@ -66686,7 +66686,7 @@ CHEMBL3196817
  20 22  1  0
 M  CHG  2   3  -1   7   1
 M  END
->  <chembl_id>  (915) 
+>  <chembl_id>  (915)
 CHEMBL3196817
 
 $$$$
@@ -66757,7 +66757,7 @@ CHEMBL4070110
  29 30  2  0
  24 30  1  0
 M  END
->  <chembl_id>  (916) 
+>  <chembl_id>  (916)
 CHEMBL4070110
 
 $$$$
@@ -66828,7 +66828,7 @@ CHEMBL3618332
  28 24  1  0
  26 29  1  6
 M  END
->  <chembl_id>  (917) 
+>  <chembl_id>  (917)
 CHEMBL3618332
 
 $$$$
@@ -66874,7 +66874,7 @@ CHEMBL1574525
  14 15  1  0
  14 18  1  0
 M  END
->  <chembl_id>  (918) 
+>  <chembl_id>  (918)
 CHEMBL1574525
 
 $$$$
@@ -66933,7 +66933,7 @@ CHEMBL1575264
  22 24  2  0
  23 24  1  0
 M  END
->  <chembl_id>  (919) 
+>  <chembl_id>  (919)
 CHEMBL1575264
 
 $$$$
@@ -67014,7 +67014,7 @@ CHEMBL4168248
  33 21  1  0
  27 34  1  0
 M  END
->  <chembl_id>  (920) 
+>  <chembl_id>  (920)
 CHEMBL4168248
 
 $$$$
@@ -67091,7 +67091,7 @@ CHEMBL4076183
  31 32  2  0
  32 27  1  0
 M  END
->  <chembl_id>  (921) 
+>  <chembl_id>  (921)
 CHEMBL4076183
 
 $$$$
@@ -67168,7 +67168,7 @@ CHEMBL1927475
   3  4  1  0
  31 33  1  0
 M  END
->  <chembl_id>  (922) 
+>  <chembl_id>  (922)
 CHEMBL1927475
 
 $$$$
@@ -67247,7 +67247,7 @@ CHEMBL3260835
   3 32  1  0
  29 33  1  0
 M  END
->  <chembl_id>  (923) 
+>  <chembl_id>  (923)
 CHEMBL3260835
 
 $$$$
@@ -67313,7 +67313,7 @@ CHEMBL1528998
  22 26  1  0
  23 24  1  0
 M  END
->  <chembl_id>  (924) 
+>  <chembl_id>  (924)
 CHEMBL1528998
 
 $$$$
@@ -67393,7 +67393,7 @@ CHEMBL4866755
  32 33  2  0
  32 34  1  0
 M  END
->  <chembl_id>  (925) 
+>  <chembl_id>  (925)
 CHEMBL4866755
 
 $$$$
@@ -67460,7 +67460,7 @@ CHEMBL1304226
  22 24  1  0
  23 24  1  0
 M  END
->  <chembl_id>  (926) 
+>  <chembl_id>  (926)
 CHEMBL1304226
 
 $$$$
@@ -67638,7 +67638,7 @@ CHEMBL2028431
  56 21  1  0
 M  CHG  2   1   1  67  -1
 M  END
->  <chembl_id>  (927) 
+>  <chembl_id>  (927)
 CHEMBL2028431
 
 $$$$
@@ -67730,7 +67730,7 @@ CHEMBL354906
  29 33  1  0
   7 18  1  0
 M  END
->  <chembl_id>  (928) 
+>  <chembl_id>  (928)
 CHEMBL354906
 
 $$$$
@@ -67811,7 +67811,7 @@ CHEMBL2334560
   2 33  2  0
  32 34  1  0
 M  END
->  <chembl_id>  (929) 
+>  <chembl_id>  (929)
 CHEMBL2334560
 
 $$$$
@@ -67882,7 +67882,7 @@ CHEMBL194018
  19 17  2  0
  28 24  2  0
 M  END
->  <chembl_id>  (930) 
+>  <chembl_id>  (930)
 CHEMBL194018
 
 $$$$
@@ -67940,7 +67940,7 @@ CHEMBL1513823
  20 21  1  0
  20 22  2  0
 M  END
->  <chembl_id>  (931) 
+>  <chembl_id>  (931)
 CHEMBL1513823
 
 $$$$
@@ -68000,7 +68000,7 @@ CHEMBL3493962
  23 24  1  0
  24 22  1  0
 M  END
->  <chembl_id>  (932) 
+>  <chembl_id>  (932)
 CHEMBL3493962
 
 $$$$
@@ -68071,7 +68071,7 @@ CHEMBL1973880
  27 29  1  0
  28 30  1  0
 M  END
->  <chembl_id>  (933) 
+>  <chembl_id>  (933)
 CHEMBL1973880
 
 $$$$
@@ -68142,7 +68142,7 @@ CHEMBL2000059
  27 29  1  0
  28 30  1  0
 M  END
->  <chembl_id>  (934) 
+>  <chembl_id>  (934)
 CHEMBL2000059
 
 $$$$
@@ -68222,7 +68222,7 @@ CHEMBL4572413
  33 34  1  0
  34 30  2  0
 M  END
->  <chembl_id>  (935) 
+>  <chembl_id>  (935)
 CHEMBL4572413
 
 $$$$
@@ -68280,7 +68280,7 @@ CHEMBL3696327
  21 23  1  0
  21 24  1  0
 M  END
->  <chembl_id>  (936) 
+>  <chembl_id>  (936)
 CHEMBL3696327
 
 $$$$
@@ -68342,7 +68342,7 @@ CHEMBL166498
   9 13  2  0
   7  5  1  0
 M  END
->  <chembl_id>  (937) 
+>  <chembl_id>  (937)
 CHEMBL166498
 
 $$$$
@@ -68391,7 +68391,7 @@ CHEMBL1795582
  18 19  2  0
   2 19  1  0
 M  END
->  <chembl_id>  (938) 
+>  <chembl_id>  (938)
 CHEMBL1795582
 
 $$$$
@@ -68532,7 +68532,7 @@ CHEMBL3650663
  62 23  1  0
 M  CHG  2  50   1  52  -1
 M  END
->  <chembl_id>  (939) 
+>  <chembl_id>  (939)
 CHEMBL3650663
 
 $$$$
@@ -68602,7 +68602,7 @@ CHEMBL1555212
  26 28  1  0
  26 29  1  0
 M  END
->  <chembl_id>  (940) 
+>  <chembl_id>  (940)
 CHEMBL1555212
 
 $$$$
@@ -68669,7 +68669,7 @@ CHEMBL423381
   5  4  1  0
   7  2  1  0
 M  END
->  <chembl_id>  (941) 
+>  <chembl_id>  (941)
 CHEMBL423381
 
 $$$$
@@ -68707,7 +68707,7 @@ CHEMBL3138919
  13 14  1  0
  13 15  2  0
 M  END
->  <chembl_id>  (942) 
+>  <chembl_id>  (942)
 CHEMBL3138919
 
 $$$$
@@ -68766,7 +68766,7 @@ CHEMBL420955
   7  4  1  0
  19 20  2  0
 M  END
->  <chembl_id>  (943) 
+>  <chembl_id>  (943)
 CHEMBL420955
 
 $$$$
@@ -68813,7 +68813,7 @@ CHEMBL3951636
  17 18  2  0
  18 12  1  0
 M  END
->  <chembl_id>  (944) 
+>  <chembl_id>  (944)
 CHEMBL3951636
 
 $$$$
@@ -68875,7 +68875,7 @@ CHEMBL3275525
   8 24  1  1
   8 25  1  0
 M  END
->  <chembl_id>  (945) 
+>  <chembl_id>  (945)
 CHEMBL3275525
 
 $$$$
@@ -68926,7 +68926,7 @@ CHEMBL72159
  14 19  1  0
  11 10  2  0
 M  END
->  <chembl_id>  (946) 
+>  <chembl_id>  (946)
 CHEMBL72159
 
 $$$$
@@ -68988,7 +68988,7 @@ CHEMBL4636927
  23 24  1  0
  23 25  1  0
 M  END
->  <chembl_id>  (947) 
+>  <chembl_id>  (947)
 CHEMBL4636927
 
 $$$$
@@ -69054,7 +69054,7 @@ CHEMBL2322769
  24 26  1  0
  24 27  1  0
 M  END
->  <chembl_id>  (948) 
+>  <chembl_id>  (948)
 CHEMBL2322769
 
 $$$$
@@ -69131,7 +69131,7 @@ CHEMBL4644403
  22 31  1  0
  20 32  1  0
 M  END
->  <chembl_id>  (949) 
+>  <chembl_id>  (949)
 CHEMBL4644403
 
 $$$$
@@ -69176,7 +69176,7 @@ CHEMBL311913
  17 16  2  0
   8  7  2  0
 M  END
->  <chembl_id>  (950) 
+>  <chembl_id>  (950)
 CHEMBL311913
 
 $$$$
@@ -69230,7 +69230,7 @@ CHEMBL3469392
  21 22  1  0
  22  2  1  0
 M  END
->  <chembl_id>  (951) 
+>  <chembl_id>  (951)
 CHEMBL3469392
 
 $$$$
@@ -69301,7 +69301,7 @@ CHEMBL1330970
  26 30  1  0
  27 30  1  0
 M  END
->  <chembl_id>  (952) 
+>  <chembl_id>  (952)
 CHEMBL1330970
 
 $$$$
@@ -69349,7 +69349,7 @@ CHEMBL1585198
  16 18  1  0
  17 18  1  0
 M  END
->  <chembl_id>  (953) 
+>  <chembl_id>  (953)
 CHEMBL1585198
 
 $$$$
@@ -69390,7 +69390,7 @@ CHEMBL2164730
  11 16  1  0
  16  4  1  0
 M  END
->  <chembl_id>  (954) 
+>  <chembl_id>  (954)
 CHEMBL2164730
 
 $$$$
@@ -69465,7 +69465,7 @@ CHEMBL335581
  10  8  1  0
  22  9  2  0
 M  END
->  <chembl_id>  (955) 
+>  <chembl_id>  (955)
 CHEMBL335581
 
 $$$$
@@ -69522,7 +69522,7 @@ CHEMBL1545247
  17 19  1  0
  21 22  1  0
 M  END
->  <chembl_id>  (956) 
+>  <chembl_id>  (956)
 CHEMBL1545247
 
 $$$$
@@ -69590,7 +69590,7 @@ CHEMBL3958817
  27 22  1  0
   6 28  1  0
 M  END
->  <chembl_id>  (957) 
+>  <chembl_id>  (957)
 CHEMBL3958817
 
 $$$$
@@ -69669,7 +69669,7 @@ CHEMBL1962800
  15 16  2  0
  31 34  1  0
 M  END
->  <chembl_id>  (958) 
+>  <chembl_id>  (958)
 CHEMBL1962800
 
 $$$$
@@ -69732,7 +69732,7 @@ CHEMBL1503962
  23 24  1  0
 M  CHG  2   4   1  26  -1
 M  END
->  <chembl_id>  (959) 
+>  <chembl_id>  (959)
 CHEMBL1503962
 
 $$$$
@@ -69802,7 +69802,7 @@ CHEMBL3673360
  28 29  1  0
  29 26  1  0
 M  END
->  <chembl_id>  (960) 
+>  <chembl_id>  (960)
 CHEMBL3673360
 
 $$$$
@@ -69845,7 +69845,7 @@ CHEMBL4089254
   7 17  1  0
 M  CHG  2   1   1  15  -1
 M  END
->  <chembl_id>  (961) 
+>  <chembl_id>  (961)
 CHEMBL4089254
 
 $$$$
@@ -69920,7 +69920,7 @@ CHEMBL161735
  17 20  1  0
  30 31  2  0
 M  END
->  <chembl_id>  (962) 
+>  <chembl_id>  (962)
 CHEMBL161735
 
 $$$$
@@ -69987,7 +69987,7 @@ CHEMBL285567
  11 21  1  0
  25 27  2  0
 M  END
->  <chembl_id>  (963) 
+>  <chembl_id>  (963)
 CHEMBL285567
 
 $$$$
@@ -70070,7 +70070,7 @@ CHEMBL1277675
  10 17  1  0
  22 35  1  0
 M  END
->  <chembl_id>  (964) 
+>  <chembl_id>  (964)
 CHEMBL1277675
 
 $$$$
@@ -70150,7 +70150,7 @@ CHEMBL1394283
  32 34  1  0
  33 34  1  0
 M  END
->  <chembl_id>  (965) 
+>  <chembl_id>  (965)
 CHEMBL1394283
 
 $$$$
@@ -70248,7 +70248,7 @@ CHEMBL305032
  35 40  1  0
  11 13  1  0
 M  END
->  <chembl_id>  (966) 
+>  <chembl_id>  (966)
 CHEMBL305032
 
 $$$$
@@ -70327,7 +70327,7 @@ CHEMBL377877
  15 10  1  0
  32 33  1  0
 M  END
->  <chembl_id>  (967) 
+>  <chembl_id>  (967)
 CHEMBL377877
 
 $$$$
@@ -70435,7 +70435,7 @@ CHEMBL3092238
  43 46  1  0
  40 47  1  0
 M  END
->  <chembl_id>  (968) 
+>  <chembl_id>  (968)
 CHEMBL3092238
 
 $$$$
@@ -70518,7 +70518,7 @@ CHEMBL418258
  30 35  2  0
  34 29  2  0
 M  END
->  <chembl_id>  (969) 
+>  <chembl_id>  (969)
 CHEMBL418258
 
 $$$$
@@ -70603,7 +70603,7 @@ CHEMBL4518040
  34 35  1  0
  35 36  3  0
 M  END
->  <chembl_id>  (970) 
+>  <chembl_id>  (970)
 CHEMBL4518040
 
 $$$$
@@ -70658,7 +70658,7 @@ CHEMBL3183873
  20 22  2  0
  21 22  1  0
 M  END
->  <chembl_id>  (971) 
+>  <chembl_id>  (971)
 CHEMBL3183873
 
 $$$$
@@ -70756,7 +70756,7 @@ CHEMBL4747579
  41 42  2  0
  42 37  1  0
 M  END
->  <chembl_id>  (972) 
+>  <chembl_id>  (972)
 CHEMBL4747579
 
 $$$$
@@ -70826,7 +70826,7 @@ CHEMBL1419757
  22 23  1  0
  27 28  2  0
 M  END
->  <chembl_id>  (973) 
+>  <chembl_id>  (973)
 CHEMBL1419757
 
 $$$$
@@ -70887,7 +70887,7 @@ CHEMBL133095
  21 25  2  0
  24 23  2  0
 M  END
->  <chembl_id>  (974) 
+>  <chembl_id>  (974)
 CHEMBL133095
 
 $$$$
@@ -70937,7 +70937,7 @@ CHEMBL202099
   4  5  2  0
  19 20  1  0
 M  END
->  <chembl_id>  (975) 
+>  <chembl_id>  (975)
 CHEMBL202099
 
 $$$$
@@ -70995,7 +70995,7 @@ CHEMBL1517702
  22 23  1  0
 M  CHG  2   3  -1   8   1
 M  END
->  <chembl_id>  (976) 
+>  <chembl_id>  (976)
 CHEMBL1517702
 
 $$$$
@@ -71068,7 +71068,7 @@ CHEMBL238179
  30 31  2  0
  31 26  1  0
 M  END
->  <chembl_id>  (977) 
+>  <chembl_id>  (977)
 CHEMBL238179
 
 $$$$
@@ -71106,7 +71106,7 @@ CHEMBL1405110
  11 12  1  0
  13 14  1  0
 M  END
->  <chembl_id>  (978) 
+>  <chembl_id>  (978)
 CHEMBL1405110
 
 $$$$
@@ -71160,7 +71160,7 @@ CHEMBL1721646
  17 18  2  0
  17 19  1  0
 M  END
->  <chembl_id>  (979) 
+>  <chembl_id>  (979)
 CHEMBL1721646
 
 $$$$
@@ -71260,7 +71260,7 @@ CHEMBL1976781
  39 40  1  0
  41 42  1  0
 M  END
->  <chembl_id>  (980) 
+>  <chembl_id>  (980)
 CHEMBL1976781
 
 $$$$
@@ -71364,7 +71364,7 @@ CHEMBL2237350
  40 44  2  0
  43 45  2  0
 M  END
->  <chembl_id>  (981) 
+>  <chembl_id>  (981)
 CHEMBL2237350
 
 $$$$
@@ -71405,7 +71405,7 @@ CHEMBL4575110
  15 16  1  0
  16 11  1  0
 M  END
->  <chembl_id>  (982) 
+>  <chembl_id>  (982)
 CHEMBL4575110
 
 $$$$
@@ -71479,7 +71479,7 @@ CHEMBL1299579
  29 31  2  0
  30 31  1  0
 M  END
->  <chembl_id>  (983) 
+>  <chembl_id>  (983)
 CHEMBL1299579
 
 $$$$
@@ -71547,7 +71547,7 @@ CHEMBL3978666
  27 28  1  0
  28 24  2  0
 M  END
->  <chembl_id>  (984) 
+>  <chembl_id>  (984)
 CHEMBL3978666
 
 $$$$
@@ -71720,7 +71720,7 @@ CHEMBL2316424
  79 80  2  0
  80 75  1  0
 M  END
->  <chembl_id>  (985) 
+>  <chembl_id>  (985)
 CHEMBL2316424
 
 $$$$
@@ -71878,7 +71878,7 @@ CHEMBL4792985
  68 69  1  0
 M  CHG  2  31   1  36  -1
 M  END
->  <chembl_id>  (986) 
+>  <chembl_id>  (986)
 CHEMBL4792985
 
 $$$$
@@ -71952,7 +71952,7 @@ CHEMBL4755273
  21 30  1  0
  30 31  1  0
 M  END
->  <chembl_id>  (987) 
+>  <chembl_id>  (987)
 CHEMBL4755273
 
 $$$$
@@ -72031,7 +72031,7 @@ CHEMBL4780239
  32 33  2  0
  33 28  1  0
 M  END
->  <chembl_id>  (988) 
+>  <chembl_id>  (988)
 CHEMBL4780239
 
 $$$$
@@ -72109,7 +72109,7 @@ CHEMBL329312
  30 32  2  0
  28 27  1  0
 M  END
->  <chembl_id>  (989) 
+>  <chembl_id>  (989)
 CHEMBL329312
 
 $$$$
@@ -72182,7 +72182,7 @@ CHEMBL1982896
  24 29  1  0
  30 31  1  0
 M  END
->  <chembl_id>  (990) 
+>  <chembl_id>  (990)
 CHEMBL1982896
 
 $$$$
@@ -72241,7 +72241,7 @@ CHEMBL1183735
  10 18  2  0
  22 24  1  0
 M  END
->  <chembl_id>  (991) 
+>  <chembl_id>  (991)
 CHEMBL1183735
 
 $$$$
@@ -72321,7 +72321,7 @@ CHEMBL3645509
  33 34  2  0
  34 27  1  0
 M  END
->  <chembl_id>  (992) 
+>  <chembl_id>  (992)
 CHEMBL3645509
 
 $$$$
@@ -72383,7 +72383,7 @@ CHEMBL4562856
  23 24  1  0
  14 25  1  0
 M  END
->  <chembl_id>  (993) 
+>  <chembl_id>  (993)
 CHEMBL4562856
 
 $$$$
@@ -72481,7 +72481,7 @@ CHEMBL5027978
  41 42  2  0
  42 31  1  0
 M  END
->  <chembl_id>  (994) 
+>  <chembl_id>  (994)
 CHEMBL5027978
 
 $$$$
@@ -72527,7 +72527,7 @@ CHEMBL3408758
  18 13  1  0
  11  1  1  0
 M  END
->  <chembl_id>  (995) 
+>  <chembl_id>  (995)
 CHEMBL3408758
 
 $$$$
@@ -72578,7 +72578,7 @@ CHEMBL1348215
  18 20  2  0
  19 20  1  0
 M  END
->  <chembl_id>  (996) 
+>  <chembl_id>  (996)
 CHEMBL1348215
 
 $$$$
@@ -72621,7 +72621,7 @@ CHEMBL3416060
  15 16  1  0
  16 17  1  0
 M  END
->  <chembl_id>  (997) 
+>  <chembl_id>  (997)
 CHEMBL3416060
 
 $$$$
@@ -72667,7 +72667,7 @@ CHEMBL4953249
   8  9  1  0
  16 17  1  0
 M  END
->  <chembl_id>  (998) 
+>  <chembl_id>  (998)
 CHEMBL4953249
 
 $$$$
@@ -72760,7 +72760,7 @@ CHEMBL42989
  41 40  2  0
  14 16  1  0
 M  END
->  <chembl_id>  (999) 
+>  <chembl_id>  (999)
 CHEMBL42989
 
 $$$$
@@ -72823,7 +72823,7 @@ CHEMBL3458511
  12 26  2  0
  26  8  1  0
 M  END
->  <chembl_id>  (1000) 
+>  <chembl_id>  (1000)
 CHEMBL3458511
 
 $$$$
@@ -72927,7 +72927,7 @@ CHEMBL5071902
  45 46  1  0
  45 47  2  0
 M  END
->  <chembl_id>  (1001) 
+>  <chembl_id>  (1001)
 CHEMBL5071902
 
 $$$$
@@ -72941,7 +72941,7 @@ CHEMBL45211
   2  1  3  0
   2  3  1  0
 M  END
->  <chembl_id>  (1002) 
+>  <chembl_id>  (1002)
 CHEMBL45211
 
 $$$$
@@ -72966,7 +72966,7 @@ CHEMBL449478
   3  4  1  0
   2  8  1  0
 M  END
->  <chembl_id>  (1003) 
+>  <chembl_id>  (1003)
 CHEMBL449478
 
 $$$$
@@ -72987,7 +72987,7 @@ CHEMBL2448948
   5  6  1  0
   6  2  1  0
 M  END
->  <chembl_id>  (1004) 
+>  <chembl_id>  (1004)
 CHEMBL2448948
 
 $$$$
@@ -73008,7 +73008,7 @@ CHEMBL99100
   6  1  1  0
   4  2  1  0
 M  END
->  <chembl_id>  (1005) 
+>  <chembl_id>  (1005)
 CHEMBL99100
 
 $$$$
@@ -73033,7 +73033,7 @@ CHEMBL58888
   3  4  1  0
   4  8  1  0
 M  END
->  <chembl_id>  (1006) 
+>  <chembl_id>  (1006)
 CHEMBL58888
 
 $$$$
@@ -73058,7 +73058,7 @@ CHEMBL191632
   6  7  1  0
   6  8  2  0
 M  END
->  <chembl_id>  (1007) 
+>  <chembl_id>  (1007)
 CHEMBL191632
 
 $$$$
@@ -73074,7 +73074,7 @@ CHEMBL1232589
   3  1  1  0
   3  4  1  0
 M  END
->  <chembl_id>  (1008) 
+>  <chembl_id>  (1008)
 CHEMBL1232589
 
 $$$$
@@ -73099,7 +73099,7 @@ CHEMBL3303788
   5  7  1  0
   7  8  2  0
 M  END
->  <chembl_id>  (1009) 
+>  <chembl_id>  (1009)
 CHEMBL3303788
 
 $$$$
@@ -73120,7 +73120,7 @@ CHEMBL122235
   6  5  1  0
   6  3  1  0
 M  END
->  <chembl_id>  (1010) 
+>  <chembl_id>  (1010)
 CHEMBL122235
 
 $$$$
@@ -73139,7 +73139,7 @@ CHEMBL540
   4  3  1  0
   4  5  2  0
 M  END
->  <chembl_id>  (1011) 
+>  <chembl_id>  (1011)
 CHEMBL540
 
 $$$$
@@ -73164,7 +73164,7 @@ CHEMBL449478
   3  4  1  0
   2  8  1  0
 M  END
->  <chembl_id>  (1012) 
+>  <chembl_id>  (1012)
 CHEMBL449478
 
 $$$$
@@ -73189,7 +73189,7 @@ CHEMBL3352956
   7  2  1  0
   1  8  3  0
 M  END
->  <chembl_id>  (1013) 
+>  <chembl_id>  (1013)
 CHEMBL3352956
 
 $$$$
@@ -73214,7 +73214,7 @@ CHEMBL3303788
   5  7  1  0
   7  8  2  0
 M  END
->  <chembl_id>  (1014) 
+>  <chembl_id>  (1014)
 CHEMBL3303788
 
 $$$$
@@ -73236,7 +73236,7 @@ CHEMBL3186090
   4  6  1  0
   5  7  1  0
 M  END
->  <chembl_id>  (1015) 
+>  <chembl_id>  (1015)
 CHEMBL3186090
 
 $$$$
@@ -73261,7 +73261,7 @@ CHEMBL1233987
   4  5  1  0
   5  6  2  0
 M  END
->  <chembl_id>  (1016) 
+>  <chembl_id>  (1016)
 CHEMBL1233987
 
 $$$$
@@ -73282,7 +73282,7 @@ CHEMBL99100
   6  1  1  0
   4  2  1  0
 M  END
->  <chembl_id>  (1017) 
+>  <chembl_id>  (1017)
 CHEMBL99100
 
 $$$$
@@ -73301,7 +73301,7 @@ CHEMBL15571
   3  4  2  0
   3  5  1  0
 M  END
->  <chembl_id>  (1018) 
+>  <chembl_id>  (1018)
 CHEMBL15571
 
 $$$$
@@ -73326,7 +73326,7 @@ CHEMBL15819
   3  4  1  0
   7  8  3  0
 M  END
->  <chembl_id>  (1019) 
+>  <chembl_id>  (1019)
 CHEMBL15819
 
 $$$$
