@@ -12,6 +12,7 @@ dependencies = [
     "keras",
     "tensorflow",
     "pyyaml",
+    "importlib-resources",
 ]
 
 [project.optional-dependencies]

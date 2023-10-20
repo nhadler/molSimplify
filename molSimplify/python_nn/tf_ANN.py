@@ -19,7 +19,7 @@ import scipy
 from typing import List, Tuple, Union, Optional
 from tensorflow.keras import backend as K
 from tensorflow.keras.models import model_from_json, load_model
-from pkg_resources import resource_filename, Requirement
+from importlib_resources import files as resource_files
 from packaging import version
 import tensorflow as tf
 
@@ -40,7 +40,7 @@ def perform_ANN_prediction(RAC_dataframe: pd.DataFrame, predictor_name: str,
     # - predictor_name_min_latent_distance,
     # - predictor_name_prediction
 
-    assert type(RAC_dataframe) == pd.DataFrame
+    assert type(RAC_dataframe) is pd.DataFrame
     train_vars = load_ANN_variables(predictor_name)
     train_mean_x, train_mean_y, train_var_x, train_var_y = load_normalization_data(predictor_name)
     my_ANN = load_keras_ann(predictor_name)
@@ -67,8 +67,7 @@ def perform_ANN_prediction(RAC_dataframe: pd.DataFrame, predictor_name: str,
     rescaled_output = data_rescale(ANN_prediction, train_mean_y, train_var_y)
 
     # Get latent vectors for training data and queried data
-    train_x = load_training_data(predictor_name)
-    train_x = pd.DataFrame(train_x, columns=train_vars).astype(float)
+    train_x = pd.DataFrame(load_training_data(predictor_name), columns=train_vars).astype(float)
     get_outputs = K.function([my_ANN.layers[0].input, K.learning_phase()],
                              [my_ANN.layers[len(my_ANN.layers) - 2].output])
     normalized_train = data_normalize(train_x, train_mean_x, train_var_x)
@@ -108,15 +107,14 @@ def get_error_params(latent_distances, errors):
 
 def matrix_loader(path: str, rownames: bool = False) -> Union[Tuple[List[List[str]], List[str]], List[List[str]]]:
     # loads matrix with rowname option
+    path_to_file = resource_files("molSimplify.python_nn").joinpath(path.strip("/"))
     if rownames:
-        path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/python_nn/" + path)
         with open(path_to_file, "r") as f:
             csv_lines = list(csv.reader(f))
             row_names = [row[0] for row in csv_lines]
             mat = [row[1:] for row in csv_lines]
         return mat, row_names
     else:
-        path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/python_nn/" + path)
         with open(path_to_file, 'r') as csvfile:
             lines = csv.reader(csvfile, delimiter=',')
             mat = [a for a in lines]
@@ -189,29 +187,25 @@ def data_normalize(data, train_mean, train_var, debug=False) -> np.ndarray:
 
 def load_normalization_data(name: str):
     train_mean_x = list()
-    path_to_file = resource_filename(Requirement.parse("molSimplify"),
-                                     "molSimplify/tf_nn/" + '/rescaling_data/' + name + '_mean_x.csv')
+    path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'rescaling_data/{name}_mean_x.csv')
     if os.path.isfile(path_to_file):
         with open(path_to_file, 'r') as f:
             for lines in f.readlines():
                 train_mean_x.append([float(lines.strip().strip('[]'))])
 
         train_var_x = list()
-        path_to_file = resource_filename(Requirement.parse("molSimplify"),
-                                         "molSimplify/tf_nn/" + '/rescaling_data/' + name + '_var_x.csv')
+        path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'rescaling_data/{name}_var_x.csv')
         with open(path_to_file, 'r') as f:
             for lines in f.readlines():
                 train_var_x.append([float(lines.strip().strip('[]'))])
 
         train_mean_y = list()
-        path_to_file = resource_filename(Requirement.parse("molSimplify"),
-                                         "molSimplify/tf_nn/" + '/rescaling_data/' + name + '_mean_y.csv')
+        path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'rescaling_data/{name}_mean_y.csv')
         with open(path_to_file, 'r') as f:
             for lines in f.readlines():
                 train_mean_y.append([float(lines.strip().strip('[]'))])
         train_var_y = list()
-        path_to_file = resource_filename(Requirement.parse("molSimplify"),
-                                         "molSimplify/tf_nn/" + '/rescaling_data/' + name + '_var_y.csv')
+        path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'rescaling_data/{name}_var_y.csv')
         with open(path_to_file, 'r') as f:
             for lines in f.readlines():
                 train_var_y.append([float(lines.strip().strip('[]'))])
@@ -234,10 +228,10 @@ def get_data_mean_std(predictor: str):
     elif predictor == "split":
         key = predictor + '/' + predictor + '_x'
     elif predictor in ['geo_static_clf', 'sc_static_clf']:
-        key = 'static_clf/' + predictor + '_train_x'
+        key = f'{predictor}/{predictor}_train_x'
     else:
         key = predictor + '/' + predictor + '_x'
-    path_to_feature_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.csv')
+    path_to_feature_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.csv')
     df_feature = pd.read_csv(path_to_feature_file)
     train_mean_x, train_var_x = list(), list()
     for col in df_feature:
@@ -255,10 +249,10 @@ def get_data_mean_std(predictor: str):
     elif predictor == "split":
         key = predictor + '/' + predictor + '_y'
     elif predictor in ['geo_static_clf', 'sc_static_clf']:
-        key = 'static_clf/' + predictor + '_train_y'
+        key = f'{predictor}/{predictor}_train_y'
     else:
         key = predictor + '/' + predictor + '_y'
-    path_to_label_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.csv')
+    path_to_label_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.csv')
     df_label = pd.read_csv(path_to_label_file)
     train_mean_y, train_var_y = list(), list()
     for col in df_label:
@@ -269,7 +263,7 @@ def get_data_mean_std(predictor: str):
 
 def load_ANN_variables(predictor: str, suffix: str = 'vars') -> List[str]:
     key = get_key(predictor, suffix)
-    path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.csv')
+    path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.csv')
     names = []
     with open(path_to_file, 'r') as f:
         for lines in f.readlines():
@@ -292,7 +286,7 @@ def load_training_data(predictor: str) -> List[List[str]]:
         key = predictor + '/' + predictor + '_train_x'
     else:
         key = predictor + '/' + predictor + '_x'
-    path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.csv')
+    path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.csv')
     with open(path_to_file, "r") as f:
         csv_lines = list(csv.reader(f))
         # row_names = [row[0] for row in csv_lines]
@@ -313,10 +307,10 @@ def load_latent_training_data(predictor):
     elif predictor == "split":
         key = predictor + '/' + predictor + '_latent_x_41_OHE'
     elif predictor in ['geo_static_clf', 'sc_static_clf']:
-        key = 'static_clf/' + predictor + '_latent_train_x'
+        key = predictor + '/' + predictor + '_latent_train_x'
     else:
         key = predictor + '/' + predictor + '_latent_x_OHE'
-    path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.csv')
+    path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.csv')
     with open(path_to_file, "r") as f:
         csv_lines = list(csv.reader(f))
         # row_names = [row[0] for row in csv_lines]
@@ -337,7 +331,7 @@ def load_test_data(predictor):
         key = predictor + '/' + predictor + '_test_x'
     else:
         key = predictor + '/' + predictor + '_x'
-    path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.csv')
+    path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.csv')
     with open(path_to_file, "r") as f:
         csv_lines = list(csv.reader(f))
         # row_names = [row[0] for row in csv_lines]
@@ -360,7 +354,7 @@ def load_training_labels(predictor: str) -> List[List[str]]:
         key = predictor + '/' + predictor + '_train_y'
     else:
         key = predictor + '/' + predictor + '_y'
-    path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.csv')
+    path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.csv')
     with open(path_to_file, "r") as f:
         csv_lines = list(csv.reader(f))
         # row_names = [row[0] for row in csv_lines]
@@ -383,7 +377,7 @@ def load_test_labels(predictor: str) -> List[List[str]]:
         key = predictor + '/' + predictor + '_test_y'
     else:
         key = predictor + '/' + predictor + '_y'
-    path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.csv')
+    path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.csv')
     with open(path_to_file, "rU") as f:
         csv_lines = list(csv.reader(f))
         # row_names = [row[0] for row in csv_lines]
@@ -393,7 +387,7 @@ def load_test_labels(predictor: str) -> List[List[str]]:
 
 def load_train_info(predictor: str, suffix: str = 'info') -> dict:
     key = get_key(predictor, suffix)
-    path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.json')
+    path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.json')
     with open(path_to_file, 'r') as json_file:
         loaded_info_dict = json.loads(json_file.read())
     return loaded_info_dict
@@ -406,15 +400,15 @@ def load_keras_ann(predictor: str, suffix: str = 'model', compile: bool = False)
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     key = get_key(predictor, suffix)
     if "clf" not in predictor:
-        path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.json')
+        path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.json')
         with open(path_to_file, 'r') as json_file:
             loaded_model_json = json_file.read()
         loaded_model = model_from_json(loaded_model_json)
         # load weights into  model
-        path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.h5')
+        path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.h5')
         loaded_model.load_weights(path_to_file)
     else:
-        path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.h5')
+        path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.h5')
         loaded_model = load_model(path_to_file)
     if compile:
         from tensorflow.keras.optimizers.legacy import Adam
@@ -554,7 +548,7 @@ def find_true_min_eu_dist(predictor: str,
                    'oxo20': 'oxoandhomo', 'homo_empty': 'oxoandhomo'}
     if predictor in folder_dict:
         key = f'{folder_dict[predictor]}/{predictor}_train_names'
-        path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.csv')
+        path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.csv')
         with open(path_to_file, "r") as f:
             csv_lines = list(csv.reader(f))
             print(('Closest Euc Dist Structure:  ' + str(csv_lines[min_ind]).strip('[]') + ' for predictor ' + str(
@@ -667,7 +661,7 @@ def find_ANN_latent_dist(predictor, latent_space_vector, debug=False):
                    'oxo20': 'oxoandhomo', 'homo_empty': 'oxoandhomo'}
     if predictor in folder_dict:
         key = f'{folder_dict[predictor]}/{predictor}_train_names'
-        path_to_file = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key + '.csv')
+        path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.csv')
         with open(path_to_file, "r") as f:
             csv_lines = list(csv.reader(f))
             print(('Closest Latent Dist Structure: ' + str(csv_lines[min_ind]) + ' for predictor ' + str(predictor)))
@@ -690,7 +684,7 @@ def find_clf_lse(predictor: str,
         print("Unknown model type")
         return np.zeros_like(excitation)
     key = get_key(predictor, suffix='')
-    base_path = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key)
+    base_path = resource_files("molSimplify.tf_nn").joinpath(key)
     train_mean_x, train_mean_y, train_var_x, train_var_y = load_normalization_data(predictor)
     labels_train = np.array(load_training_labels(predictor), dtype='int')
     fmat_train = np.array(load_training_data(predictor), dtype='float64')
@@ -739,7 +733,7 @@ def find_clf_lse(predictor: str,
 def save_model(model: tf.keras.Model, predictor: str,
                num: Optional[int] = None, suffix: Optional[str] = None):
     key = get_key(predictor, suffix)
-    base_path = resource_filename(Requirement.parse("molSimplify"), "molSimplify/tf_nn/" + key)
+    base_path = resource_files("molSimplify.tf_nn").joinpath(key)
     base_path = base_path + 'ensemble_models'
     if not os.path.exists(base_path):
         os.makedirs(base_path)
