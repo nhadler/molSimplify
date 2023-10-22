@@ -40,6 +40,22 @@ We currently recommend installation via the [Conda](https://conda.io/docs/) pack
 ### via conda, from Anaconda
 Releases of molSimplify are also available on Anaconda on the [conda-forge channel](https://anaconda.org/conda-forge/molsimplify) and the [hjkgroup channel](https://anaconda.org/hjkgroup/molsimplify).
 
+### via pip, from GitHub
+1. Clone molSimplify source from github and change into the directory.
+
+   ```bash
+   git clone https://github.com/hjkgrp/molSimplify.git
+   cd molSimplify
+   ```
+2. Locally install the molSimplify package using pip.
+   ```bash
+   pip install -e .[dev]
+   ```
+3. To test your installation, you can run the command below at the root directory of molSimplify. You are good to go if all the tests are passed! Note, some test will be skipped because none of the optional dependencies are installed this way.
+   ```bash
+   pytest
+   ```
+
 ### via docker
 We also maintain an active [docker image on dockerhub](https://hub.docker.com/repository/docker/hjkgroup/molsimplify) for plug-and-play use.
 
