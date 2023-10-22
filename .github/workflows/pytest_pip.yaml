@@ -1,4 +1,4 @@
-name: pytest_pip
+name: Pytest (pip)
 
 on:
   push:
