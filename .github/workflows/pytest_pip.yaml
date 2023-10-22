@@ -32,7 +32,7 @@ jobs:
 
     - name: Run pytest
       run: |
-        pytest -v --cov=molSimplify --cov-report=xml
+        pytest -v
 
     - name: Run doctest
       # For now still excluding several subfolders and files
