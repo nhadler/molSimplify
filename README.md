@@ -1,5 +1,5 @@
 ![](./molSimplify/icons/logo.png)
-[![CI](https://github.com/hjkgrp/molSimplify/actions/workflows/CI.yaml/badge.svg)](https://github.com/hjkgrp/molSimplify/actions/workflows/CI.yaml)
+[![Pytest](https://github.com/hjkgrp/molSimplify/actions/workflows/pytest.yaml/badge.svg)](https://github.com/hjkgrp/molSimplify/actions/workflows/pytest.yaml)
 [![Documentation Status](https://readthedocs.org/projects/molsimplify/badge/?version=latest)](http://molsimplify.readthedocs.io/?badge=latest)
 [![Linter](https://github.com/hjkgrp/molSimplify/actions/workflows/python-linter.yaml/badge.svg)](https://github.com/hjkgrp/molSimplify/actions/workflows/python-linter.yaml)
 
