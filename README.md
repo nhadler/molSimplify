@@ -7,8 +7,36 @@ molSimplify is an open source toolkit for the automated, first-principles screen
 
 ## Installation
 
+### via pip, from PyPI
+
+Starting with version `1.7.4` molSimplify is available on [PyPI](https://pypi.org) enabled by the [openbabel-wheel](https://pypi.org/project/openbabel-wheel/) project.
+
+```bash
+pip install molSimplify
+```
+
+### via pip, from GitHub
+
+To obtain the latest development version or if you plan to modify the code we recommend installation from GitHub.
+
+1. Clone molSimplify source from github and change into the directory.
+
+   ```bash
+   git clone https://github.com/hjkgrp/molSimplify.git
+   cd molSimplify
+   ```
+2. Locally install the molSimplify package using pip.
+   ```bash
+   pip install -e .[dev]
+   ```
+3. To test your installation, you can run the command below at the root directory of molSimplify. You are good to go if all the tests are passed! Note, some test will be skipped because none of the optional dependencies are installed this way.
+   ```bash
+   pytest
+   ```
+
 ### via conda, from GitHub
-We currently recommend installation via the [Conda](https://conda.io/docs/) package management system.
+
+The easiest way of installing molSimplify including optional dependencies such as [xtb](https://github.com/grimme-lab/xtb) is via the [Conda](https://conda.io/docs/) package management system.
 1. Prerequisite: have [Anaconda or miniconda](https://www.anaconda.com/distribution/) installed on your system. **For M1 Macs, please use [Miniforge](https://github.com/conda-forge/miniforge) for Mac OSX arm64.** (We do not recommend simultaneously installing Anaconda and Miniforge - only install Miniforge.)
 
 2. Clone molSimplify source from github and change into the directory.
@@ -39,22 +67,6 @@ We currently recommend installation via the [Conda](https://conda.io/docs/) pack
 
 ### via conda, from Anaconda
 Releases of molSimplify are also available on Anaconda on the [conda-forge channel](https://anaconda.org/conda-forge/molsimplify) and the [hjkgroup channel](https://anaconda.org/hjkgroup/molsimplify).
-
-### via pip, from GitHub
-1. Clone molSimplify source from github and change into the directory.
-
-   ```bash
-   git clone https://github.com/hjkgrp/molSimplify.git
-   cd molSimplify
-   ```
-2. Locally install the molSimplify package using pip.
-   ```bash
-   pip install -e .[dev]
-   ```
-3. To test your installation, you can run the command below at the root directory of molSimplify. You are good to go if all the tests are passed! Note, some test will be skipped because none of the optional dependencies are installed this way.
-   ```bash
-   pytest
-   ```
 
 ### via docker
 We also maintain an active [docker image on dockerhub](https://hub.docker.com/repository/docker/hjkgroup/molsimplify) for plug-and-play use.
