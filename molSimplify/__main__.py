@@ -166,7 +166,7 @@ def main(args=None):
             parser = argparse.ArgumentParser(description=DescString_basic,
                                              formatter_class=argparse.RawDescriptionHelpFormatter)
             parseinputs_basic(parser)
-        exit()
+        return
     # ## run with gui ###
     elif gui and len(args) == 0:
         print('molSimplify is starting!')
