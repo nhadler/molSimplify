@@ -1,5 +1,5 @@
 ![](./molSimplify/icons/logo.png)
-[![CI](https://github.com/hjkgrp/molSimplify/actions/workflows/CI.yaml/badge.svg)](https://github.com/hjkgrp/molSimplify/actions/workflows/CI.yaml)
+[![Pytest](https://github.com/hjkgrp/molSimplify/actions/workflows/pytest.yaml/badge.svg)](https://github.com/hjkgrp/molSimplify/actions/workflows/pytest.yaml)
 [![Documentation Status](https://readthedocs.org/projects/molsimplify/badge/?version=latest)](http://molsimplify.readthedocs.io/?badge=latest)
 [![Linter](https://github.com/hjkgrp/molSimplify/actions/workflows/python-linter.yaml/badge.svg)](https://github.com/hjkgrp/molSimplify/actions/workflows/python-linter.yaml)
 
@@ -7,7 +7,7 @@ molSimplify is an open source toolkit for the automated, first-principles screen
 
 ## Installation
 
-### via conda
+### via conda, from GitHub
 We currently recommend installation via the [Conda](https://conda.io/docs/) package management system.
 1. Prerequisite: have [Anaconda or miniconda](https://www.anaconda.com/distribution/) installed on your system. **For M1 Macs, please use [Miniforge](https://github.com/conda-forge/miniforge) for Mac OSX arm64.** (We do not recommend simultaneously installing Anaconda and Miniforge - only install Miniforge.)
 
@@ -37,6 +37,25 @@ We currently recommend installation via the [Conda](https://conda.io/docs/) pack
    pytest
    ```
 
+### via conda, from Anaconda
+Releases of molSimplify are also available on Anaconda on the [conda-forge channel](https://anaconda.org/conda-forge/molsimplify) and the [hjkgroup channel](https://anaconda.org/hjkgroup/molsimplify).
+
+### via pip, from GitHub
+1. Clone molSimplify source from github and change into the directory.
+
+   ```bash
+   git clone https://github.com/hjkgrp/molSimplify.git
+   cd molSimplify
+   ```
+2. Locally install the molSimplify package using pip.
+   ```bash
+   pip install -e .[dev]
+   ```
+3. To test your installation, you can run the command below at the root directory of molSimplify. You are good to go if all the tests are passed! Note, some test will be skipped because none of the optional dependencies are installed this way.
+   ```bash
+   pytest
+   ```
+
 ### via docker
 We also maintain an active [docker image on dockerhub](https://hub.docker.com/repository/docker/hjkgroup/molsimplify) for plug-and-play use.
 
@@ -44,7 +63,7 @@ For line by line instructions on an installation via docker, please visit [molSi
 
 ## Tutorials
 
-A set of tutorials covering common use cases is available at the [Kulik group webpage](http://hjkgrp.mit.edu/molSimplify-tutorials).
+A set of tutorials covering common use cases is available at the [Kulik group webpage](http://hjkgrp.mit.edu/molSimplify-tutorials). Note that the GUI is no longer supported, so users are encouraged to generate structures through the command line or using the Python command [startgen_pythonic](molSimplify/Scripts/generator.py).
 
 ## Documentation
 
@@ -82,6 +101,6 @@ year = {2018},
 }
 ```
 
-If you use any machine learning (ML) models in molSimplify that results in a publication, please cite the corresponding reference in [this MLmodel reference page](https://github.com/hjkgrp/molSimplify/blob/master/MLmodel-reference.md).
+If you use any machine learning (ML) models in molSimplify that results in a publication, please cite the corresponding reference in [this ML model reference page](https://github.com/hjkgrp/molSimplify/blob/master/MLmodel-reference.md).
 
 **Note that we have disabled developers' supports for Python 2.7 and will only release conda builds on Python 3.**

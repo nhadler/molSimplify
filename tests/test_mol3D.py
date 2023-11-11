@@ -2,7 +2,6 @@ import pytest
 import numpy as np
 from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Classes.atom3D import atom3D
-from pkg_resources import resource_filename, Requirement
 
 
 def test_adding_and_deleting_atoms():
@@ -122,11 +121,8 @@ def test_mutating_atoms():
     ('trigonal_prismatic', 6, 'trigonal prismatic'),
     # ('pentagonal_bipyramidal', 7, 'pentagonal bipyramidal')
     ])
-def test_get_geometry_type(name, coordination_number, geometry_str):
-    xyz_file = resource_filename(
-        Requirement.parse("molSimplify"),
-        f"tests/inputs/geometry_type/{name}.xyz"
-    )
+def test_get_geometry_type(resource_path_root, name, coordination_number, geometry_str):
+    xyz_file = resource_path_root / "inputs" / "geometry_type" / f"{name}.xyz"
     mol = mol3D()
     mol.readfromxyz(xyz_file)
 
@@ -137,11 +133,8 @@ def test_get_geometry_type(name, coordination_number, geometry_str):
     assert geo_report['aromatic'] is False
 
 
-def test_get_geometry_type_catoms_arr():
-    xyz_file = resource_filename(
-        Requirement.parse("molSimplify"),
-        "tests/inputs/geometry_type/octahedral.xyz"
-    )
+def test_get_geometry_type_catoms_arr(resource_path_root):
+    xyz_file = resource_path_root / "inputs" / "geometry_type" / "octahedral.xyz"
     mol = mol3D()
     mol.readfromxyz(xyz_file)
 
@@ -155,11 +148,8 @@ def test_get_geometry_type_catoms_arr():
     assert geo_report['aromatic'] is False
 
 
-def test_readfromxyzfile():
-    xyz_file = resource_filename(
-        Requirement.parse("molSimplify"),
-        "tests/inputs/cr3_f6_optimization.xyz"
-    )
+def test_readfromxyzfile(resource_path_root):
+    xyz_file = resource_path_root / "inputs" / "cr3_f6_optimization.xyz"
     mol = mol3D()
     mol.readfromxyz(xyz_file)
 

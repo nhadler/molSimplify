@@ -4,7 +4,6 @@ from molSimplify.Scripts.inparse import (parseinputfile, checkinput,
                                          parseinputs_basic,
                                          parseinputs_advanced)
 from argparse import ArgumentParser, Namespace
-from pkg_resources import resource_filename, Requirement
 
 
 def test_parseinputfile_empty():
@@ -59,11 +58,10 @@ def test_checkinput(monkeypatch):
     assert args.spin == '5'
 
 
-def test_parseinputfile_inputfile_kwarg():
+def test_parseinputfile_inputfile_kwarg(resource_path_root):
     """Test that both methods of calling parseinputfile
     (with an args.i file or inputfile_str kwarg) yield the same result"""
-    infile = resource_filename(Requirement.parse(
-        "molSimplify"), "tests/inputs/example_1.in")
+    infile = resource_path_root / "inputs" / "example_1.in"
 
     args1 = Namespace(i=infile)
     parseinputfile(args1)

@@ -16,7 +16,7 @@ from molSimplify.Informatics.MOF.PBC_functions import (
 	XYZ_connected,
 	write_cif,
 	)
-from pkg_resources import resource_filename, Requirement
+from importlib_resources import files as resource_files
 import numpy as np
 import scipy
 import networkx as nx
@@ -1257,8 +1257,7 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 
 	# Load in the mol3D from the folder molSimplify folder monofunctionalized_BDC.
 	functional_group_template = mol3D()
-	func_group_xyz_path = resource_filename(Requirement.parse(
-				"molSimplify"), f"molSimplify/Informatics/MOF/monofunctionalized_BDC/{functional_group}.xyz")
+	func_group_xyz_path = str(resource_files("molSimplify").joinpath(f"Informatics/MOF/monofunctionalized_BDC/{functional_group}.xyz"))
 	functional_group_template.readfromxyz(func_group_xyz_path) # This is a whole BDC linker with the requested functional group on it.
 
 	# Read information about the important indices of the functional_group_template.

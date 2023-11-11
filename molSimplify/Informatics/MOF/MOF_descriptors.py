@@ -387,6 +387,7 @@ def make_MOF_linker_RACs(linkerlist, linker_subgraphlist, molcif, depth, name, c
         if not os.path.exists(xyz_path):
             linker_mol_fcoords_connected = XYZ_connected(cell_v, linker_mol_cart_coords, linker_mol_adj_mat)
             writeXYZandGraph(xyz_path, linker_mol_atom_labels, cell_v, linker_mol_fcoords_connected, linker_mol_adj_mat)
+
         # Write TXT file indicating the connecting atoms
         linker_index_connection_indices = []
         for item in global_connection_indices:
@@ -417,7 +418,7 @@ def make_MOF_linker_RACs(linkerlist, linker_subgraphlist, molcif, depth, name, c
             lig_full.append(ligand_ac_full)
 
         # Some formatting
-        lig_full = [item for sublist in lig_full for item in sublist] #flatten lists
+        lig_full = [item for sublist in lig_full for item in sublist] # flatten lists
         colnames = [item for sublist in colnames for item in sublist]
         colnames += ['name']
         lig_full += [name]
@@ -850,7 +851,7 @@ def detect_1D_rod(SBU_list, molcif, allatomtypes, cell_v, logpath, name):
 def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=False, wiggle_room=1,
     max_num_atoms=2000, get_sbu_linker_bond_info=False, surrounded_sbu_file_generation=False, detect_1D_rod_sbu=False):
     """
-    Generates RAC descriptors on a MOF.
+    Generates RAC descriptors on a MOF, assuming it has P1 symmetry.
     Writes three files: sbu_descriptors.csv, linker_descriptors.csv, and lc_descriptors.csv
     These files contain the RAC descriptors of the MOF.
 
@@ -916,7 +917,7 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
     cart_coords = fractional2cart(fcoords, cell_v)
     name = os.path.basename(data).replace(".cif", "")
     if len(cart_coords) > max_num_atoms: # Don't deal with large cifs because of computational resources required for their treatment.
-        print("Too large cif file, skipping it for now...")
+        print("cif file is too large, skipping it for now...")
         failure_str = f"Failed to featurize {name}: large primitive cell\n {len(cart_coords)} atoms"
         full_names, full_descriptors = failure_response(path, failure_str)
         return full_names, full_descriptors
@@ -925,9 +926,9 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
     Getting the adjacency matrix.
     """""""""
     if not graph_provided: # Make the adjacency matrix.
-        distance_mat = compute_distance_matrix3(cell_v,cart_coords)
+        distance_mat = compute_distance_matrix3(cell_v, cart_coords)
         try:
-            adj_matrix, _ = compute_adj_matrix(distance_mat,allatomtypes,wiggle_room)
+            adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes, wiggle_room)
         except NotImplementedError:
             failure_str = f"Failed to featurize {name}: atomic overlap\n"
             full_names, full_descriptors = failure_response(path, failure_str)
@@ -1183,18 +1184,18 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath=False, graph_provided=F
         #     full_names = [0]
         #     full_descriptors = [0]
     elif len(linker_subgraphlist) == 1: # Only one linker identified.
-        print('Suspicious featurization')
+        print(f'Suspicious featurization for {name}: Only one linker identified.')
         full_names = [1]
         full_descriptors = [1]
     else: # Means len(linker_subgraphlist) is zero.
-        print('Failed to featurize this MOF; no linkers were identified.')
-        full_names = [0]
-        full_descriptors = [0]
+        failure_str = f'Failed to featurize {name}: No linkers were identified.\n'
+        full_names, full_descriptors = failure_response(path, failure_str)
+        return full_names, full_descriptors
     if (len(full_names) <= 1) and (len(full_descriptors) <= 1):
         print(f'full_names is {full_names} and full_descriptors is {full_descriptors}')
-        tmpstr = "Failed to featurize %s: Only zero or one total linkers identified.\n"%(name)
-        write2file(path,"/FailedStructures.log",tmpstr)
-
+        failure_str = f'Failed to featurize {name}: Only zero or one total linkers identified.\n'
+        full_names, full_descriptors = failure_response(path, failure_str)
+        return full_names, full_descriptors
 
     # Getting bond information if requested, and writing it to a TXT file.
     if get_sbu_linker_bond_info:

@@ -49,8 +49,6 @@ class atom3D:
             self.name = name
         else:
             self.name = Sym
-        # flag for metal
-        self.metal = None
 
         # Coordinates
         if xyz is None:
@@ -159,12 +157,7 @@ class atom3D:
             metal : bool
                 Bool for whether or not an atom is a metal.
         """
-        if self.metal is None:
-            if self.sym in globalvars().metalslist(transition_metals_only=transition_metals_only):
-                self.metal = True
-            else:
-                self.metal = False
-        return self.metal
+        return self.sym in globalvars().metalslist(transition_metals_only=transition_metals_only)
 
     def setcoords(self, xyz):
         """ Set coordinates of an atom3D class to a new location.

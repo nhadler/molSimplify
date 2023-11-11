@@ -1609,7 +1609,7 @@ class mol3D:
                 nats.append(i)
         return nats
 
-    def getBondCutoff(self, atom, ratom):
+    def getBondCutoff(self, atom: atom3D, ratom: atom3D) -> float:
         """
         Get cutoff based on two atoms.
 
@@ -1632,15 +1632,15 @@ class mol3D:
             distance_max = min(2.75, distance_max)  # 2.75 by 07/22/2021
         if ratom.symbol() == "C" and not atom.symbol() == "H":
             distance_max = min(2.75, distance_max)  # 2.75 by 07/22/2021
-        if ratom.symbol() == "H" and atom.ismetal:
+        if ratom.symbol() == "H" and atom.ismetal():
             # tight cutoff for metal-H bonds
             distance_max = 1.1 * (atom.rad + ratom.rad)
-        if atom.symbol() == "H" and ratom.ismetal:
+        if atom.symbol() == "H" and ratom.ismetal():
             # tight cutoff for metal-H bonds
             distance_max = 1.1 * (atom.rad + ratom.rad)
         return distance_max
 
-    def getBondedAtoms(self, idx):
+    def getBondedAtoms(self, idx: int) -> List[int]:
         """
         Gets atoms bonded to a specific atom. This is determined based on
         element-specific distance cutoffs, rather than predefined valences.
@@ -2672,7 +2672,7 @@ class mol3D:
             ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
         return (ss)
 
-    def readfromxyz(self, filename, ligand_unique_id=False, read_final_optim_step=False):
+    def readfromxyz(self, filename: str, ligand_unique_id=False, read_final_optim_step=False):
         """
         Read XYZ into a mol3D class instance.
 
@@ -2693,8 +2693,7 @@ class mol3D:
         amassdict = globs.amass()
         self.graph = []
         self.xyzfile = filename
-        fname = filename.split('.xyz')[0]
-        with open(fname + '.xyz', 'r') as f:
+        with open(filename, 'r') as f:
             s = f.read().splitlines()
         try:
             atom_count = int(s[0])

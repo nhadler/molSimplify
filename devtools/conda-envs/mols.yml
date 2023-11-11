@@ -8,14 +8,16 @@ dependencies:
   - pandas
   - scipy
   - libffi
+  - importlib_resources
   - pip
   - pip:
     - pytest
+    - pytest-resource-path
 
   # Optional
   # GUI / plotting
-  - pyqt
-  - qt
+  # - pyqt
+  # - qt
   - matplotlib
   # Database
   - pymongo
