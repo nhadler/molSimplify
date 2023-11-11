@@ -1,17 +1,15 @@
 import pytest
+from helperFuncs import compare_report_new
 from molSimplify.__main__ import main
 
 
 def test_main_empty(tmpdir, resource_path_root):
     main(args=[f"-rundir {tmpdir}"])
-    with open(tmpdir / "fe_oct_2_water_6_s_5" /
-              "fe_oct_2_water_6_s_5_conf_1" /
-              "fe_oct_2_water_6_s_5_conf_1.report", "r") as fin:
-        lines = fin.readlines()
-    with open(resource_path_root / "refs" / "test_cli" /
-              "fe_oct_2_water_6_s_5_conf_1.report", "r") as fin:
-        lines_ref = fin.readlines()
-    assert lines == lines_ref
+    compare_report_new(
+        tmpdir / "fe_oct_2_water_6_s_5" / "fe_oct_2_water_6_s_5_conf_1" /
+        "fe_oct_2_water_6_s_5_conf_1.report",
+        resource_path_root / "refs" / "test_cli" /
+        "fe_oct_2_water_6_s_5_conf_1.report")
 
 
 @pytest.mark.skip("Test for help not working yet.")
