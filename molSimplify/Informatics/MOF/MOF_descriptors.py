@@ -274,7 +274,8 @@ def make_MOF_SBU_RACs(SBUlist, SBU_subgraph, molcif, depth, name, cell_v, anchor
                 if j == 0:
                     lc_names = descriptor_names
 
-        averaged_lc_descriptors = np.mean(np.array(lc_descriptor_list), axis=0) # Average the lc RACs over all of the lc atoms in the MOF.
+        averaged_lc_descriptors = np.mean(np.array(lc_descriptor_list), axis=0) # Average the lc RACs over all of the linkers in the MOF.
+        # This CSV will be overwritten until the last SBU, but information on all linkers is being kept thanks to the append function
         lc_descriptors.to_csv(sbu_descriptor_path+'/lc_descriptors.csv',index=False)
         descriptors = []
         descriptor_names = []
