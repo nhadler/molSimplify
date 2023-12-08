@@ -155,7 +155,7 @@ def gen_and_append_desc(temp_mol, target_list, depth, descriptor_names, descript
 # the vector to be of constant dimension so we can correlate the output property.       #
 #########################################################################################
 
-def make_MOF_SBU_RACs(SBUlist, SBU_subgraph, molcif, depth, name, cell_v, anchoring_atoms, sbupath, linkeranchors_superlist, 
+def make_MOF_SBU_RACs(SBUlist, SBU_subgraph, molcif, depth, name, cell_v, anchoring_atoms, sbupath, linkeranchors_superlist,
     Gval, connections_list=False, connections_subgraphlist=False):
     """
     Generated RACs on the SBUs of the MOF, as well as on the lc atoms (SBU-connected atoms of linkers).
