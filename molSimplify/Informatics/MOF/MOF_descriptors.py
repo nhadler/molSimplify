@@ -5,6 +5,7 @@ import itertools
 from scipy import sparse
 import numpy as np
 import pandas as pd
+from typing import Tuple, List, Dict
 from molSimplify.Classes.atom3D import atom3D
 from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Scripts.cellbuilder_tools import import_from_cif
@@ -83,7 +84,7 @@ def get_primitive(datapath, writepath, occupancy_tolerance=1):
 '''<<<< END OF CODE TO COMPUTE PRIMITIVE UNIT CELLS >>>>'''
 
 
-def load_sbu_lc_descriptors(sbupath):
+def load_sbu_lc_descriptors(sbupath: str) -> Tuple[str, pd.DataFrame, pd.DataFrame]:
     """
     Loads the sbu and lc descriptors.
 
@@ -101,19 +102,21 @@ def load_sbu_lc_descriptors(sbupath):
 
     """
     sbu_descriptor_path = os.path.dirname(sbupath)
-    if os.path.getsize(sbu_descriptor_path+'/sbu_descriptors.csv') > 0:  # Checking if there is a file there.
-        sbu_descriptors = pd.read_csv(sbu_descriptor_path+'/sbu_descriptors.csv')
+    if os.path.getsize(sbu_descriptor_path + '/sbu_descriptors.csv') > 0:  # Checking if there is a file there.
+        sbu_descriptors = pd.read_csv(sbu_descriptor_path + '/sbu_descriptors.csv')
     else:
         sbu_descriptors = pd.DataFrame()
-    if os.path.getsize(sbu_descriptor_path+'/lc_descriptors.csv') > 0:  # Checking if there is a file there.
-        lc_descriptors = pd.read_csv(sbu_descriptor_path+'/lc_descriptors.csv')
+    if os.path.getsize(sbu_descriptor_path + '/lc_descriptors.csv') > 0:  # Checking if there is a file there.
+        lc_descriptors = pd.read_csv(sbu_descriptor_path + '/lc_descriptors.csv')
     else:
         lc_descriptors = pd.DataFrame()
 
     return sbu_descriptor_path, sbu_descriptors, lc_descriptors
 
 
-def gen_and_append_desc(temp_mol, target_list, depth, descriptor_names, descriptors, Gval, feature_type):
+def gen_and_append_desc(
+        temp_mol: mol3D, target_list, depth: int, descriptor_names: List[str],
+        descriptors: List[float], Gval: bool, feature_type: str) -> Tuple[Dict, List[str], List[float]]:
     """
     Generate and append descriptors, both standard and delta.
 
