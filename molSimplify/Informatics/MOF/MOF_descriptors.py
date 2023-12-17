@@ -355,7 +355,6 @@ def make_MOF_SBU_RACs(
         # Some formatting
         descriptor_names += ['name']
         descriptors += [name]
-        descriptors == list(descriptors)
         desc_dict = {key: descriptors[ii] for ii, key in enumerate(descriptor_names)}
         descriptors.remove(name)
         descriptor_names.remove('name')
