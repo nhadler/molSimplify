@@ -54,7 +54,6 @@ from molSimplify.Informatics.MOF.PBC_functions import (
 
 ### Defining pymatgen function for getting primitive, since molSimplify does not depend on pymatgen.
 # This function is commented out and should be uncommented if used.
-from pymatgen.io.cif import CifParser
 
 
 def get_primitive(datapath, writepath, occupancy_tolerance=1):
@@ -75,10 +74,10 @@ def get_primitive(datapath, writepath, occupancy_tolerance=1):
     None
 
     """
-
+    from pymatgen.io.cif import CifParser
     s = CifParser(datapath, occupancy_tolerance=occupancy_tolerance).get_structures()[0]
     sprim = s.get_primitive_structure()
-    sprim.to("cif", writepath)  # Output structure to a file.
+    sprim.to(writepath, "cif")  # Output structure to a file.
 
 
 '''<<<< END OF CODE TO COMPUTE PRIMITIVE UNIT CELLS >>>>'''

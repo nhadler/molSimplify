@@ -33,16 +33,16 @@ def ref_names(depth=3):
 
 
 @pytest.mark.parametrize(
-    "name",
+    "cif_file",
     ["odac-21383.cif",
      "odac-21433.cif",
      "odac-21478.cif",
      "odac-21735.cif",
      "odac-21816.cif"])
-def test_get_MOF_descriptors(resource_path_root, tmpdir, name, ref_names):
+def test_get_MOF_descriptors(resource_path_root, tmpdir, cif_file, ref_names):
     with DebugTimer("get_MOF_descriptors()"):
         full_names, full_descriptors = get_MOF_descriptors(
-            str(resource_path_root / "inputs" / "cif_files" / name),
+            str(resource_path_root / "inputs" / "cif_files" / cif_file),
             depth=3,
             path=str(tmpdir),
             xyzpath=str(tmpdir / "test.xyz"),
@@ -50,7 +50,7 @@ def test_get_MOF_descriptors(resource_path_root, tmpdir, name, ref_names):
         )
 
     with open(resource_path_root / "refs" / "MOF_descriptors"
-              / name.replace("cif", "json"), "r") as fin:
+              / cif_file.replace("cif", "json"), "r") as fin:
         ref = json.load(fin)
 
     assert full_names == ref_names
