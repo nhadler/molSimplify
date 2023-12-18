@@ -220,7 +220,7 @@ def make_MOF_SBU_RACs(
 
     """
     descriptor_list = []
-    lc_descriptor_list = []
+    lc_descriptor_list: List[List[float]] = []
     lc_names = []
     names = []
     descriptor_names = []
@@ -247,10 +247,12 @@ def make_MOF_SBU_RACs(
         For each linker connected to the SBU, find the lc atoms for the lc-RACs.
         lc atoms are those bonded to a metal.
         """""""""
+        # lc_descriptors for SBU i
+        lc_descriptors_i: List[List[float]] = []
         for j, linker in enumerate(connections_list):  # Iterating over the different linkers
-            descriptor_names = []
-            descriptors = []
             if len(set(SBU).intersection(linker)) > 0:
+                descriptor_names = []
+                descriptors = []
                 # This means that the SBU and the current linker are connected.
                 temp_mol = mol3D()
                 link_list = []  # Will hold the lc atoms for the current linker.
@@ -301,19 +303,16 @@ def make_MOF_SBU_RACs(
                         print('Mixed typing. Please convert to python float, and avoid np float')
                         raise AssertionError('Mixed typing creates issues. Please convert your typing.')
 
-                # Some formatting
-                descriptor_names += ['name']
-                descriptors += [name]
-                desc_dict = {key2: descriptors[kk] for kk, key2 in enumerate(descriptor_names)}
-                descriptors.remove(name)
-                descriptor_names.remove('name')
-                lc_descriptors = lc_descriptors.append(desc_dict, ignore_index=True)
-                lc_descriptor_list.append(descriptors)
+                lc_descriptors_i.append(descriptors)
                 if j == 0:
                     lc_names = descriptor_names
 
+        lc_descriptor_list.extend(lc_descriptors_i)
         averaged_lc_descriptors = np.mean(np.array(lc_descriptor_list), axis=0)  # Average the lc RACs over all of the linkers in the MOF.
-        # This CSV will be overwritten until the last SBU, but information on all linkers is being kept thanks to the append function
+        lc_descriptor_df = pd.DataFrame(lc_descriptors_i, columns=lc_names)
+        lc_descriptor_df['name'] = name
+        # This CSV will be overwritten until the last SBU, but information on all linkers is being kept thanks to the concat function
+        lc_descriptors = pd.concat([lc_descriptors, lc_descriptor_df], ignore_index=True)
         lc_descriptors.to_csv(sbu_descriptor_path+'/lc_descriptors.csv', index=False)
         descriptors = []
         descriptor_names = []
@@ -344,7 +343,7 @@ def make_MOF_SBU_RACs(
             SBU_mol, depth=depth, loud=False, flag_name=False, Gval=Gval)
         descriptor_names, descriptors = append_descriptors(
             descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'f', 'all')
-        #### Now starts at every metal on the graph and autocorrelates
+        # Now starts at every metal on the graph and autocorrelates
         results_dictionary = generate_multimetal_autocorrelations(molcif, depth=depth, loud=False, Gval=Gval)
         descriptor_names, descriptors = append_descriptors(
             descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'mc', 'all')
@@ -352,13 +351,10 @@ def make_MOF_SBU_RACs(
         descriptor_names, descriptors = append_descriptors(
             descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'D_mc', 'all')
 
-        # Some formatting
-        descriptor_names += ['name']
-        descriptors += [name]
-        desc_dict = {key: descriptors[ii] for ii, key in enumerate(descriptor_names)}
-        descriptors.remove(name)
-        descriptor_names.remove('name')
-        sbu_descriptors = sbu_descriptors.append(desc_dict, ignore_index=True)
+        # Add to DataFrame
+        sbu_descriptors_df = pd.DataFrame([descriptors], columns=descriptor_names)
+        sbu_descriptors_df["name"] = name
+        sbu_descriptors = pd.concat([sbu_descriptors, sbu_descriptors_df], ignore_index=True)
         descriptor_list.append(descriptors)
         if i == 0:
             names = descriptor_names
@@ -470,12 +466,9 @@ def make_MOF_linker_RACs(
         # Some formatting
         lig_full = [item for sublist in lig_full for item in sublist]  # flatten lists
         colnames = [item for sublist in colnames for item in sublist]
-        colnames += ['name']
-        lig_full += [name]
-        desc_dict = {key: lig_full[i] for i, key in enumerate(colnames)}
-        linker_descriptors = linker_descriptors.append(desc_dict, ignore_index=True)
-        lig_full.remove(name)
-        colnames.remove('name')
+        linker_descriptors_df = pd.DataFrame([lig_full], columns=colnames)
+        linker_descriptors_df['name'] = name
+        linker_descriptors = pd.concat([linker_descriptors, linker_descriptors_df], ignore_index=True)
         descriptor_list.append(lig_full)
 
     # We dump the standard lc descriptors without averaging or summing so that the user
