@@ -742,7 +742,6 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
             for starting_atom_idx in connection_atoms[linker_idx]:
                 atom3D_dict_copy = atom3D_dict.copy()
                 added_idx = [starting_atom_idx]
-                starting_atom3D = atom3D_dict_copy[starting_atom_idx]  # Position of the starting atom in the SBU, which has been built by this point in the code.
 
                 atoms_connected_to_start = list(np.nonzero(dense_adj_mat[starting_atom_idx])[0])
                 atoms_connected_to_start = [i for i in atoms_connected_to_start if i in linker_indices]
@@ -1086,7 +1085,6 @@ def get_MOF_descriptors(
     linker_list, linker_subgraphlist = get_closed_subgraph(linkers.copy(), removelist.copy(), adj_matrix)
     connections_list = copy.deepcopy(linker_list)
     connections_subgraphlist = copy.deepcopy(linker_subgraphlist)
-    linker_length_list = [len(linker_val) for linker_val in linker_list]  # The number of atoms in each linker.
     """""""""
     find all anchoring atoms on linkers and ligands (lc identification)
         The atoms that are bonded to a metal.
