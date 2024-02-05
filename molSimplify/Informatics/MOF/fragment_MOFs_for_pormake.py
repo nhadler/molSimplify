@@ -682,15 +682,13 @@ def identify_short_linkers(molcif, initial_SBU_list, initial_SBU_subgraphlist, r
             else:
                 # check number of times we cross PBC :
                 # TODO: we still can fail in multidentate ligands!
-                linker_cart_coords = np.array([at.coords() \
-                        for at in [molcif.getAtom(val) for val in atoms_list]])
+                linker_cart_coords = np.array([at.coords() for at in [molcif.getAtom(val) for val in atoms_list]])
                 linker_adjmat = np.array(linker_subgraphlist[ii])
                 pr_image_organic = ligand_detect(cell_v, linker_cart_coords, linker_adjmat, linkeranchors_list)
                 sbu_temp = linkeranchors_atoms.copy()
                 sbu_temp.update({val for val in initial_SBU_list[list(sbu_connect_list)[0]]})
                 sbu_temp = list(sbu_temp)
-                sbu_cart_coords = np.array([at.coords() \
-                       for at in [molcif.getAtom(val) for val in sbu_temp]])
+                sbu_cart_coords = np.array([at.coords() for at in [molcif.getAtom(val) for val in sbu_temp]])
                 sbu_adjmat = slice_mat(adj_matrix.todense(), sbu_temp)
                 pr_image_sbu = ligand_detect(cell_v, sbu_cart_coords, sbu_adjmat,set(range(len(linkeranchors_list))))
                 if not (len(np.unique(pr_image_sbu, axis=0))==1 and len(np.unique(pr_image_organic, axis=0))==1): # linker
