@@ -246,7 +246,7 @@ def make_MOF_SBU_RACs(SBUlist, SBU_subgraph, molcif, depth, name, cell_v, anchor
                 """""""""
                 functional_atoms = []
                 for jj in range(len(temp_mol.graph)):
-                    if not jj in link_list: # linker atom is not bonded to a metal
+                    if jj not in link_list: # linker atom is not bonded to a metal
                         if not set({temp_mol.atoms[jj].sym}) & set({"C","H"}): # not a carbon nor a hydrogen. syms get symbols.
                             functional_atoms.append(jj)
                 """""""""

@@ -140,7 +140,7 @@ def make_MOF_SBU_RACs(SBUlist, SBU_subgraph, molcif, depth, name,cell,anchoring_
                 for jj in range(len(temp_mol.graph)):
                     #print(link_list)
                     #print(main)
-                    if not jj in main:
+                    if jj not in main:
                         if not set({temp_mol.atoms[jj].sym}) & set({"H"}):
                             functional_atoms.append(jj)
                 print(functional_atoms)
