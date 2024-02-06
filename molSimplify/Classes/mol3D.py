@@ -5299,12 +5299,14 @@ class mol3D:
                         _sl.append(set(lig))
                         break
         num_sandwich_lig = len(sandwich_ligands)
-        info_sandwich_lig = [{"natoms_connected": len(
-            x[0]), "natoms_ring": x[1], "aromatic": x[2]} for x in sandwich_ligands]
+        info_sandwich_lig = [
+                {"natoms_connected": len(x[0]), "natoms_ring": x[1], "aromatic": x[2]} for x in sandwich_ligands]
+        sandwich_lig_atoms = [
+                {"atom_idxs": x[0]} for x in sandwich_ligands]
         aromatic = any([x["aromatic"] for x in info_sandwich_lig])
         allconnect = any([x["natoms_connected"] == x["natoms_ring"]
                           for x in info_sandwich_lig])
-        return num_sandwich_lig, info_sandwich_lig, aromatic, allconnect
+        return num_sandwich_lig, info_sandwich_lig, aromatic, allconnect, list(sandwich_lig_atoms)
 
     def is_edge_compound(self, transition_metals_only=True):
         """
@@ -5323,7 +5325,7 @@ class mol3D:
         # two connected non-metal atoms both connected to the metal.
 
         from molSimplify.Informatics.graph_analyze import obtain_truncation_metal
-        num_sandwich_lig, info_sandwich_lig, aromatic, allconnect = self.is_sandwich_compound(transition_metals_only=transition_metals_only)
+        num_sandwich_lig, info_sandwich_lig, aromatic, allconnect, sandwich_lig_atoms = self.is_sandwich_compound(transition_metals_only=transition_metals_only)
         if not num_sandwich_lig or (num_sandwich_lig and not allconnect):
             mol_fcs = obtain_truncation_metal(self, hops=1)
             metal_ind = mol_fcs.findMetal(transition_metals_only=transition_metals_only)[0]
@@ -5336,17 +5338,19 @@ class mol3D:
                 if len(lig) >= 2 and not set(lig) in _el:
                     edge_ligands.append([set(lig)])
                     _el.append(set(lig))
-                    break
+                    # break
             num_edge_lig = len(edge_ligands)
             info_edge_lig = [
                 {"natoms_connected": len(x[0])} for x in edge_ligands]
+            edge_lig_atoms = [
+                {"atom_idxs": x[0]} for x in edge_ligands]
         else:
-            num_edge_lig, info_edge_lig = 0, list()
-        return num_edge_lig, info_edge_lig
+            num_edge_lig, info_edge_lig, edge_lig_atoms = 0, list(), list()
+        return num_edge_lig, info_edge_lig, edge_lig_atoms
 
     def get_geometry_type(self, dict_check=False, angle_ref=False, num_coord=False,
                           flag_catoms=False, catoms_arr=None, debug=False,
-                          skip=False, transition_metals_only=False):
+                          skip=False, transition_metals_only=False, num_recursions=[0, 0]):
         """
         Get the type of the geometry (trigonal planar(3), tetrahedral(4), square planar(4),
         trigonal bipyramidal(5), square pyramidal(5, one-empty-site),
@@ -5371,6 +5375,8 @@ class mol3D:
                 Geometry checks to skip. Default is False.
             transition_metals_only : bool, optional
                 Flag for considering more than just transition metals as metals. Default is False.
+            num_recursions : list, optional
+                counter to track number of ligands classified as 'sandwich' and 'edge' in original structure
 
         Returns
         -------
@@ -5378,6 +5384,7 @@ class mol3D:
                 Measurement of deviations from arrays.
 
         """
+        # from molSimplify.Classes.ligand import ligand_breakdown
 
         all_geometries = globalvars().get_all_geometries()
         all_angle_refs = globalvars().get_all_angle_refs()
@@ -5388,7 +5395,6 @@ class mol3D:
                 raise ValueError('Multimetal complexes are not yet handled.')
             elif len(self.findMetal(transition_metals_only=transition_metals_only)) == 1:
                 num_coord = len(self.getBondedAtomsSmart(self.findMetal(transition_metals_only=transition_metals_only)[0]))
-                # print("coord number:", num_coord)
             else:
                 raise ValueError('No metal centers exist in this complex.')
 
@@ -5400,26 +5406,57 @@ class mol3D:
         if catoms_arr is not None and len(catoms_arr) != num_coord:
             raise ValueError("num_coord and the length of catoms_arr do not match.")
 
-        num_sandwich_lig, info_sandwich_lig, aromatic, allconnect = self.is_sandwich_compound(transition_metals_only=transition_metals_only)
-        num_edge_lig, info_edge_lig = self.is_edge_compound(transition_metals_only=transition_metals_only)
+        num_sandwich_lig, info_sandwich_lig, aromatic, allconnect, sandwich_lig_atoms = self.is_sandwich_compound(transition_metals_only=transition_metals_only)
+        num_edge_lig, info_edge_lig, edge_lig_atoms = self.is_edge_compound(transition_metals_only=transition_metals_only)
 
-        if num_coord not in [3, 4, 5, 6, 7]:
-            if num_sandwich_lig:
-                geometry = "sandwich"
-            elif num_edge_lig:
-                geometry = "edge"
-            else:
-                geometry = "unknown"
+        if num_sandwich_lig:
+            mol_copy = mol3D()
+            mol_copy.copymol3D(mol0=self)
+            catoms = mol_copy.getBondedAtoms(idx=self.findMetal()[0])
+            centroid_coords = []
+            sandwich_lig_catom_idxs = []
+            for idx in range(num_sandwich_lig):
+                sandwich_lig_catoms = np.array(list(sandwich_lig_atoms[idx]['atom_idxs']))-1
+                sandwich_lig_catom_idxs.extend([catoms[i] for i in sandwich_lig_catoms])
+                atom_coords = np.array([mol_copy.getAtomCoords(idx=atom_idx) for atom_idx in [catoms[i] for i in sandwich_lig_catoms]])
+                centroid_coords.append([np.mean(atom_coords[:, 0]), np.mean(atom_coords[:, 1]), np.mean(atom_coords[:, 2])])
+            mol_copy.deleteatoms(sandwich_lig_catom_idxs)
+            for idx in range(num_sandwich_lig):
+                atom = atom3D()
+                atom.setcoords(xyz=centroid_coords[idx])
+                mol_copy.addAtom(atom)
+                mol_copy.add_bond(idx1=mol_copy.findMetal()[0], idx2=mol_copy.natoms-1, bond_type=1)
+            return mol_copy.get_geometry_type(num_recursions=[num_sandwich_lig, num_edge_lig])
+
+        if num_edge_lig:
+            mol_copy = mol3D()
+            mol_copy.copymol3D(mol0=self)
+            catoms = mol_copy.getBondedAtoms(idx=self.findMetal()[0])
+            centroid_coords = []
+            edge_lig_catom_idxs = []
+            for idx in range(num_edge_lig):
+                edge_lig_catoms = np.array(list(edge_lig_atoms[idx]['atom_idxs']))-1
+                edge_lig_catom_idxs.extend([catoms[i] for i in edge_lig_catoms])
+                atom_coords = np.array([mol_copy.getAtomCoords(idx=atom_idx) for atom_idx in [catoms[i] for i in edge_lig_catoms]])
+                centroid_coords.append([np.mean(atom_coords[:, 0]), np.mean(atom_coords[:, 1]), np.mean(atom_coords[:, 2])])
+            mol_copy.deleteatoms(edge_lig_catom_idxs)
+            for idx in range(num_edge_lig):
+                atom = atom3D()
+                atom.setcoords(xyz=centroid_coords[idx])
+                mol_copy.addAtom(atom)
+                mol_copy.add_bond(idx1=mol_copy.findMetal()[0], idx2=mol_copy.natoms-1, bond_type=1)
+            return mol_copy.get_geometry_type(num_recursions=[num_sandwich_lig, num_edge_lig])
+
+        if num_coord not in [2, 3, 4, 5, 6, 7, 8, 9]:
+            geometry = "unknown"
             results = {
                 "geometry": geometry,
                 "angle_devi": False,
                 "summary": {},
-                "num_sandwich_lig": num_sandwich_lig,
-                "info_sandwich_lig": info_sandwich_lig,
+                "num_sandwich_lig": num_recursions[0],
                 "aromatic": aromatic,
                 "allconnect": allconnect,
-                "num_edge_lig": num_edge_lig,
-                "info_edge_lig": info_edge_lig,
+                "num_edge_lig": num_recursions[1]
             }
             return results
 
@@ -5438,22 +5475,14 @@ class mol3D:
             if summary[geotype]["oct_angle_devi_max"] < angle_devi:
                 angle_devi = summary[geotype]["oct_angle_devi_max"]
                 geometry = geotype
-        if num_sandwich_lig:
-            geometry = "sandwich"
-            angle_devi = False
-        elif num_edge_lig:
-            geometry = "edge"
-            angle_devi = False
         results = {
             "geometry": geometry,
             "angle_devi": angle_devi,
             "summary": summary,
-            "num_sandwich_lig": num_sandwich_lig,
-            "info_sandwich_lig": info_sandwich_lig,
+            "num_sandwich_lig": num_recursions[0],
             "aromatic": aromatic,
             "allconnect": allconnect,
-            "num_edge_lig": num_edge_lig,
-            "info_edge_lig": info_edge_lig,
+            "num_edge_lig": num_recursions[1]
         }
         return results
 

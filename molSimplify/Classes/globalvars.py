@@ -402,27 +402,46 @@ dict_tetra_check_st = {"mono": {'num_coord_metal': 4, 'rmsd_max': 0.3,
                                  'devi_linear_avrg': 20, 'devi_linear_max': 28}
                        }
 
+dict_eightcoord_check = {"mono": {'num_coord_metal': 8,
+                              'rmsd_max': 0.4, 'atom_dist_max': 0.6,
+                              'oct_angle_devi_max': 16, 'max_del_sig_angle': 27,
+                              'dist_del_eq': 0.45, 'dist_del_all': 1.25,
+                              'devi_linear_avrg': 35, 'devi_linear_max': 40},
+                         "multi": {'num_coord_metal': 8,
+                               'rmsd_max': 0.4, 'atom_dist_max': 0.6,
+                               'oct_angle_devi_max': 20, 'max_del_sig_angle': 35,
+                               'dist_del_eq': 0.45, 'dist_del_all': 1.25,
+                               'devi_linear_avrg': 35, 'devi_linear_max': 40}
+                         }
+
 dict_staus = {'good': 1, 'bad': 0}
 
 oct_angle_ref = [[90, 90, 90, 90, 180] for x in range(6)]
 tetra_angle_ref = [[109.47, 109.47, 109.47] for x in range(4)]
 oneempty_angle_ref = [[90, 90, 90, 90], [180, 90, 90, 90], [180, 90, 90, 90],
                       [180, 90, 90, 90], [180, 90, 90, 90]]
+eightcoord_angle_ref = [[73.7, 73.7, 76.8, 76.8, 116.1, 142.1, 142.1] for x in range(8)]
 geo_check_dictionary = {"dict_oct_check_loose": dict_oct_check_loose,
                         "dict_oct_check_st": dict_oct_check_st,
                         "dict_oneempty_check_st": dict_oneempty_check_st,
                         "dict_oneempty_check_loose": dict_oneempty_check_loose,
                         "dict_staus": dict_staus,
                         "oct_angle_ref": oct_angle_ref,
-                        "oneempty_angle_ref": oneempty_angle_ref}
+                        "oneempty_angle_ref": oneempty_angle_ref,
+                        "eightcoord_angle_ref": eightcoord_angle_ref}
 all_geometries = {
+    2: ["linear", "bent"],
     3: ["trigonal planar", "T shape", "trigonal pyramidal"],
     4: ["tetrahedral", "square planar", "seesaw"],
     5: ["trigonal bipyramidal", "square pyramidal", "pentagonal planar"],
     6: ["octahedral", "pentagonal pyramidal", "trigonal prismatic"],
     7: ["pentagonal bipyramidal"],
+    8: ["square antiprismatic"],
+    9: ["tricapped trigonal prismatic"]
 }
 all_angle_refs = {
+    "linear": [[180] for x in range(2)],
+    "bent": [[120] for x in range(2)],
     "trigonal planar": [[120, 120] for x in range(3)],
     "T shape": [[90, 90], [90, 180], [90, 180]],
     "tetrahedral": [[109.47, 109.47, 109.47] for x in range(4)],
@@ -435,9 +454,13 @@ all_angle_refs = {
     "octahedral": [[90, 90, 90, 90, 180] for x in range(6)],
     "pentagonal pyramidal": [[90, 90, 90, 90, 90]] + [[36, 36, 72, 72, 90] for x in range(5)],
     "trigonal prismatic": [[75.3, 86.5, 86.5, 133.3, 133.3] for x in range(6)],
-    "pentagonal bipyramidal": [[90, 90, 90, 90, 90, 180] for x in range(2)] + [[72, 72, 144, 144, 90, 90] for x in range(5)]
+    "pentagonal bipyramidal": [[90, 90, 90, 90, 90, 180] for x in range(2)] +
+                              [[72, 72, 144, 144, 90, 90] for x in range(5)],
+    "square antiprismatic": [[73.7, 73.7, 76.8, 76.8, 116.1, 142.1, 142.1] for x in range(8)],
+    "tricapped trigonal prismatic": [[70.5, 70.5, 120, 67.7, 67.7, 135.5, 135.5, 120] for x in range(4)] +
+                                    [[76.3, 79, 138.2, 70.5, 67.7, 76.3, 138.2, 135.5] for x in range(4)] +
+                                    [[70.5, 70.5, 67.7, 67.7, 120, 120, 135.5, 135.5]]
 }
-
 
 # Module for running bash commands
 #  @param cmd String containing command to be run
