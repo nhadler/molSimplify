@@ -182,3 +182,83 @@ def test_readfromxyzfile(resource_path_root):
 
     for atom, ref in zip(mol.atoms, atoms_ref):
         assert (atom.symbol(), atom.coords()) == ref
+
+
+def test_mol3D_from_smiles_macrocycles():
+    """Uses an examples from Aditya's macrocycles that were previously
+    converted wrong.
+    """
+    smiles = "C9SC(=CCSC(CSC(=NCSC9)))"
+    mol = mol3D.from_smiles(smiles)
+    assert mol.natoms == 29
+
+    ref_graph = np.zeros([mol.natoms, mol.natoms])
+    ref_bo_graph = np.zeros([mol.natoms, mol.natoms])
+    bonds = [
+        (21, 7, 1.0),
+        (29, 14, 1.0),
+        (13, 14, 1.0),
+        (13, 12, 1.0),
+        (9, 10, 1.0),
+        (9, 8, 1.0),
+        (27, 12, 1.0),
+        (6, 7, 1.0),
+        (6, 5, 1.0),
+        (14, 28, 1.0),
+        (14, 1, 1.0),
+        (7, 8, 1.0),
+        (7, 22, 1.0),
+        (2, 1, 1.0),
+        (2, 3, 1.0),
+        (24, 8, 1.0),
+        (12, 11, 1.0),
+        (12, 26, 1.0),
+        (10, 11, 2.0),
+        (10, 25, 1.0),
+        (8, 23, 1.0),
+        (1, 15, 1.0),
+        (1, 16, 1.0),
+        (3, 17, 1.0),
+        (3, 4, 2.0),
+        (5, 19, 1.0),
+        (5, 4, 1.0),
+        (5, 20, 1.0),
+        (4, 18, 1.0),
+    ]
+    for bond in bonds:
+        i, j = bond[0] - 1, bond[1] - 1
+        ref_graph[i, j] = ref_graph[j, i] = 1
+        ref_bo_graph[i, j] = ref_bo_graph[j, i] = bond[2]
+
+    np.testing.assert_allclose(mol.graph, ref_graph)
+    np.testing.assert_allclose(mol.bo_graph, ref_bo_graph)
+
+
+def test_mol3D_from_smiles_benzene():
+    smiles = "c1ccccc1"
+    mol = mol3D.from_smiles(smiles)
+    assert mol.natoms == 12
+
+    ref_graph = np.zeros([mol.natoms, mol.natoms])
+    ref_bo_graph = np.zeros([mol.natoms, mol.natoms])
+    bonds = [
+        (1, 2, 1.5),
+        (2, 3, 1.5),
+        (3, 4, 1.5),
+        (4, 5, 1.5),
+        (5, 6, 1.5),
+        (1, 6, 1.5),
+        (1, 7, 1.0),
+        (2, 8, 1.0),
+        (3, 9, 1.0),
+        (4, 10, 1.0),
+        (5, 11, 1.0),
+        (6, 12, 1.0),
+    ]
+    for bond in bonds:
+        i, j = bond[0] - 1, bond[1] - 1
+        ref_graph[i, j] = ref_graph[j, i] = 1
+        ref_bo_graph[i, j] = ref_bo_graph[j, i] = bond[2]
+
+    np.testing.assert_allclose(mol.graph, ref_graph)
+    np.testing.assert_allclose(mol.bo_graph, ref_bo_graph)
