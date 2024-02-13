@@ -5343,7 +5343,7 @@ class mol3D:
             num_edge_lig, info_edge_lig = 0, list()
         return num_edge_lig, info_edge_lig
 
-    def get_geometry_type(self, dict_check=False, angle_ref=False, num_coord=False,
+    def get_geometry_type(self, dict_check=False, angle_ref=False, num_coord=None,
                           flag_catoms=False, catoms_arr=None, debug=False,
                           skip=False, transition_metals_only=False):
         """
@@ -5391,7 +5391,7 @@ class mol3D:
             else:
                 raise ValueError('No metal centers exist in this complex.')
 
-        if num_coord is False:
+        if num_coord is None:
             # TODO: Implement the case where we don't know the coordination number.
             raise NotImplementedError(
                 "Not implemented yet. Please at least provide the coordination number.")
