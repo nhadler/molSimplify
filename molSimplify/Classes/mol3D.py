@@ -1439,6 +1439,35 @@ class mol3D:
                     conatoms.remove(atidx)  # remove from list to check
         return subm
 
+    @classmethod
+    def from_smiles(cls, smiles):
+        mol = cls()
+        mol.getOBMol(smiles, "smistring")
+
+        elem = globalvars().elementsbynum()
+        # Add atoms
+        for atom in openbabel.OBMolAtomIter(mol.OBMol):
+            # get coordinates
+            pos = [atom.GetX(), atom.GetY(), atom.GetZ()]
+            # get atomic symbol
+            sym = elem[atom.GetAtomicNum() - 1]
+            # add atom to molecule
+            # atom3D_list.append(atom3D(sym, pos))
+            mol.addAtom(atom3D(sym, pos))
+
+        # Add bonds
+        mol.graph = np.zeros([mol.natoms, mol.natoms])
+        mol.bo_graph = np.zeros([mol.natoms, mol.natoms])
+        for bond in openbabel.OBMolBondIter(mol.OBMol):
+            i = bond.GetBeginAtomIdx() - 1
+            j = bond.GetEndAtomIdx() - 1
+            bond_order = bond.GetBondOrder()
+            if bond.IsAromatic():
+                bond_order = 1.5
+            mol.graph[i, j] = mol.graph[j, i] = 1
+            mol.bo_graph[i, j] = mol.bo_graph[j, i] = bond_order
+        return mol
+
     def getAtom(self, idx):
         """
         Get atom with a given index.
