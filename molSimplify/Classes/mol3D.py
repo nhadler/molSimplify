@@ -5447,7 +5447,7 @@ class mol3D:
                 mol_copy.add_bond(idx1=mol_copy.findMetal()[0], idx2=mol_copy.natoms-1, bond_type=1)
             return mol_copy.get_geometry_type(num_recursions=[num_sandwich_lig, num_edge_lig])
 
-        if num_coord not in [2, 3, 4, 5, 6, 7, 8, 9]:
+        if num_coord not in all_geometries:
             geometry = "unknown"
             results = {
                 "geometry": geometry,
