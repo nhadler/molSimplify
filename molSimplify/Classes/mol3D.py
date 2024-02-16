@@ -5306,7 +5306,7 @@ class mol3D:
         aromatic = any([x["aromatic"] for x in info_sandwich_lig])
         allconnect = any([x["natoms_connected"] == x["natoms_ring"]
                           for x in info_sandwich_lig])
-        return num_sandwich_lig, info_sandwich_lig, aromatic, allconnect, list(sandwich_lig_atoms)
+        return num_sandwich_lig, info_sandwich_lig, aromatic, allconnect, sandwich_lig_atoms
 
     def is_edge_compound(self, transition_metals_only=True):
         """
