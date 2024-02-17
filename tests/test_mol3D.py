@@ -108,6 +108,7 @@ def test_mutating_atoms():
 
 
 @pytest.mark.parametrize('name, coordination_number, geometry_str', [
+    ('linear', 2, 'linear'),
     ('trigonal_planar', 3, 'trigonal planar'),
     ('t_shape', 3, 'T shape'),
     ('trigonal_pyramidal', 3, 'trigonal pyramidal'),
@@ -121,7 +122,9 @@ def test_mutating_atoms():
     # ('pentagonal_pyramidal', 6, 'pentagonal pyramidal'),
     ('trigonal_prismatic', 6, 'trigonal prismatic'),
     # ('pentagonal_bipyramidal', 7, 'pentagonal bipyramidal')
-    ])
+    # ('square_antiprismatic', 8, 'square antiprismatic'),
+    # ('tricapped_trigonal_prismatic', 9, 'tricapped trigonal prismatic'),
+])
 def test_get_geometry_type(name, coordination_number, geometry_str):
     xyz_file = resource_filename(
         Requirement.parse("molSimplify"),
@@ -130,7 +133,7 @@ def test_get_geometry_type(name, coordination_number, geometry_str):
     mol = mol3D()
     mol.readfromxyz(xyz_file)
 
-    geo_report = mol.get_geometry_type(num_coord=coordination_number)
+    geo_report = mol.get_geometry_type(num_coord=coordination_number, debug=True)
 
     assert geo_report['geometry'] == geometry_str
     assert geo_report['allconnect'] is False
