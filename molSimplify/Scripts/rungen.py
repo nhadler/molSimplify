@@ -257,7 +257,6 @@ def multigenruns(rundir, args, write_files=True):
             if emsg:
                 return emsg
     elif args.isomers or args.stereos:
-        print('Running Through 3rd if')
         isomers = generateisomers(args)
         if args.charge:
             args.charge = args.charge[0]
