@@ -735,6 +735,7 @@ def identify_short_linkers(molcif, initial_SBU_list, initial_SBU_subgraphlist, r
 def make_MOF_fragments(data, path=False, xyzpath=False):
     """
     Breaks a MOF into fragments for use with pormake (in silico MOF construction).
+    cif for MOF should have P1 symmetry.
 
     Output codes are as follows:
     2: There exist short (i.e. 2 atom) and longer linkers. We could not split the MOF apart consistently.

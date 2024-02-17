@@ -1165,7 +1165,7 @@ def overlap_removal(cif_path, new_cif_path):
 def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
     """
     Reads a cif file, removes floating solvent and overlapping atoms, and writes the cif to the provided path.
-    If MOF has a lot of solvent, you may need to apply this function multiple times.
+    Assumes cif has P1 symmetry.
 
     Parameters
     ----------

@@ -8,6 +8,8 @@ dependencies:
   - pandas
   - scipy
   - libffi
+  - importlib_resources
   - pip
   - pip:
     - pytest
+    - pytest-resource-path

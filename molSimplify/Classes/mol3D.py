@@ -1439,6 +1439,35 @@ class mol3D:
                     conatoms.remove(atidx)  # remove from list to check
         return subm
 
+    @classmethod
+    def from_smiles(cls, smiles):
+        mol = cls()
+        mol.getOBMol(smiles, "smistring")
+
+        elem = globalvars().elementsbynum()
+        # Add atoms
+        for atom in openbabel.OBMolAtomIter(mol.OBMol):
+            # get coordinates
+            pos = [atom.GetX(), atom.GetY(), atom.GetZ()]
+            # get atomic symbol
+            sym = elem[atom.GetAtomicNum() - 1]
+            # add atom to molecule
+            # atom3D_list.append(atom3D(sym, pos))
+            mol.addAtom(atom3D(sym, pos))
+
+        # Add bonds
+        mol.graph = np.zeros([mol.natoms, mol.natoms])
+        mol.bo_graph = np.zeros([mol.natoms, mol.natoms])
+        for bond in openbabel.OBMolBondIter(mol.OBMol):
+            i = bond.GetBeginAtomIdx() - 1
+            j = bond.GetEndAtomIdx() - 1
+            bond_order = bond.GetBondOrder()
+            if bond.IsAromatic():
+                bond_order = 1.5
+            mol.graph[i, j] = mol.graph[j, i] = 1
+            mol.bo_graph[i, j] = mol.bo_graph[j, i] = bond_order
+        return mol
+
     def getAtom(self, idx):
         """
         Get atom with a given index.
@@ -2673,7 +2702,7 @@ class mol3D:
             ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
         return (ss)
 
-    def readfromxyz(self, filename, ligand_unique_id=False, read_final_optim_step=False):
+    def readfromxyz(self, filename: str, ligand_unique_id=False, read_final_optim_step=False):
         """
         Read XYZ into a mol3D class instance.
 
@@ -2694,8 +2723,7 @@ class mol3D:
         amassdict = globs.amass()
         self.graph = []
         self.xyzfile = filename
-        fname = filename.split('.xyz')[0]
-        with open(fname + '.xyz', 'r') as f:
+        with open(filename, 'r') as f:
             s = f.read().splitlines()
         try:
             atom_count = int(s[0])
@@ -5348,7 +5376,7 @@ class mol3D:
             num_edge_lig, info_edge_lig, edge_lig_atoms = 0, list(), list()
         return num_edge_lig, info_edge_lig, edge_lig_atoms
 
-    def get_geometry_type(self, dict_check=False, angle_ref=False, num_coord=False,
+    def get_geometry_type(self, dict_check=False, angle_ref=False, num_coord=None,
                           flag_catoms=False, catoms_arr=None, debug=False,
                           skip=False, transition_metals_only=False, num_recursions=[0, 0]):
         """
@@ -5398,7 +5426,7 @@ class mol3D:
             else:
                 raise ValueError('No metal centers exist in this complex.')
 
-        if num_coord is False:
+        if num_coord is None:
             # TODO: Implement the case where we don't know the coordination number.
             raise NotImplementedError(
                 "Not implemented yet. Please at least provide the coordination number.")

@@ -1,9 +1,7 @@
-
-from helperFuncs import jobname
 from molSimplify.Scripts.generator import startgen_pythonic
 
 
-def test_joption_pythonic(tmpdir):
+def test_joption_pythonic(tmpdir, resource_path_root):
     out_dir = "cr_thd_2_cl_4_s_1/cr_thd_2_cl_4_s_1_conf_1/jobscript"
     input_dict_homo = {
         '-core': "cr",
@@ -23,9 +21,7 @@ def test_joption_pythonic(tmpdir):
     startgen_pythonic(input_dict_homo, write=1)
     with open(str(tmpdir) + "/" + out_dir, 'r') as f_in:
         data1 = f_in.readlines()
-    with open("tests/refs/joption_pythonic_jobscript", 'r') as f_in:
+    with open(resource_path_root / "refs" / "joption_pythonic_jobscript", 'r') as f_in:
         data2 = f_in.readlines()
     for i, j in zip(data1, data2):
         assert i == j
-
-#test_joption_pythonic("../Runs")

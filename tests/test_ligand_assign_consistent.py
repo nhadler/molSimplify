@@ -1,14 +1,10 @@
 from molSimplify.Classes.ligand import ligand_assign_consistent, ligand_breakdown
 from molSimplify.Classes.mol3D import mol3D
-from pkg_resources import resource_filename, Requirement
 
 
-def test_six_monodentate():
-    xyz_file = resource_filename(
-        Requirement.parse("molSimplify"),
-        "tests/inputs/ligand_assign_consistent/"
-        "fe_water_ammonia_carbonyl_formaldehyde_hydrogensulfide_hydrocyanide.xyz"
-    )
+def test_six_monodentate(resource_path_root):
+    xyz_file = (resource_path_root / "inputs" / "ligand_assign_consistent"
+                / "fe_water_ammonia_carbonyl_formaldehyde_hydrogensulfide_hydrocyanide.xyz")
     mol = mol3D()
     mol.readfromxyz(xyz_file)
 
@@ -36,11 +32,9 @@ def test_six_monodentate():
     assert eq_con_list == [[14], [4], [18], [11]]
 
 
-def test_triple_bidentate():
-    xyz_file = resource_filename(
-        Requirement.parse("molSimplify"),
-        "tests/inputs/ligand_assign_consistent/fe_acac_bipy_bipy.xyz"
-    )
+def test_triple_bidentate(resource_path_root):
+    xyz_file = (resource_path_root / "inputs" / "ligand_assign_consistent"
+                / "fe_acac_bipy_bipy.xyz")
     mol = mol3D()
     mol.readfromxyz(xyz_file)
 
