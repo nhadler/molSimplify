@@ -151,6 +151,31 @@ def test_get_geometry_type_catoms_arr(resource_path_root):
     assert geo_report['aromatic'] is False
 
 
+@pytest.mark.parametrize(
+    'name, con_atoms',
+    [
+        ('BOWROX_comp_0.mol2', [{3, 4, 5, 6, 7}]),
+        ('BOXTEQ_comp_0.mol2', [{4, 5, 6, 7, 8, 9}]),
+        ('BOXTIU_comp_0.mol2', [{2, 3, 5, 6, 8, 9}]),
+        ('BOZHOQ_comp_2.mol2', [{1, 2, 3, 6, 8}, {4, 5, 7, 9, 10}]),
+        ('BOZHUW_comp_2.mol2', [{1, 2, 3, 4, 5}, {6, 7, 8, 9, 10}]),
+    ]
+)
+def test_is_sandwich_compound(resource_path_root, name, con_atoms):
+    xyz_file = resource_path_root / "inputs" / "sandwich_compounds" / name
+    mol = mol3D()
+    mol.readfrommol2(xyz_file)
+
+    num_sandwich_lig, info_sandwich_lig, aromatic, allconnect, sandwich_lig_atoms = mol.is_sandwich_compound()
+    print(num_sandwich_lig, info_sandwich_lig, aromatic, allconnect, sandwich_lig_atoms)
+
+    assert num_sandwich_lig == len(con_atoms)
+    assert aromatic
+    assert allconnect
+    for i, lig in enumerate(sandwich_lig_atoms):
+        assert lig["atom_idxs"] == con_atoms[i]
+
+
 def test_readfromxyzfile(resource_path_root):
     xyz_file = resource_path_root / "inputs" / "cr3_f6_optimization.xyz"
     mol = mol3D()
