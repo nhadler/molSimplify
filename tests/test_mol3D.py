@@ -152,6 +152,24 @@ def test_get_geometry_type_catoms_arr(resource_path_root):
 
 
 @pytest.mark.parametrize(
+    'name, geometry_str, num_sandwich',
+    [
+        ('BOWROX_comp_0.mol2', 'tetrahedral', 1),
+        # ('BOXTIU_comp_0.mol2', 'linear', 2),
+    ]
+)
+def test_get_geometry_type_sandwich(resource_path_root, name, geometry_str, num_sandwich):
+    input_file = resource_path_root / "inputs" / "sandwich_compounds" / name
+    mol = mol3D()
+    mol.readfrommol2(input_file)
+
+    geo_report = mol.get_geometry_type(debug=True)
+
+    assert geo_report["geometry"] == geometry_str
+    assert geo_report["num_sandwich_lig"] == num_sandwich
+
+
+@pytest.mark.parametrize(
     'name, con_atoms',
     [
         ('BOWROX_comp_0.mol2', [{3, 4, 5, 6, 7}]),
@@ -162,17 +180,42 @@ def test_get_geometry_type_catoms_arr(resource_path_root):
     ]
 )
 def test_is_sandwich_compound(resource_path_root, name, con_atoms):
-    xyz_file = resource_path_root / "inputs" / "sandwich_compounds" / name
+    input_file = resource_path_root / "inputs" / "sandwich_compounds" / name
     mol = mol3D()
-    mol.readfrommol2(xyz_file)
+    mol.readfrommol2(input_file)
 
     num_sandwich_lig, info_sandwich_lig, aromatic, allconnect, sandwich_lig_atoms = mol.is_sandwich_compound()
-    print(num_sandwich_lig, info_sandwich_lig, aromatic, allconnect, sandwich_lig_atoms)
 
     assert num_sandwich_lig == len(con_atoms)
     assert aromatic
     assert allconnect
-    for i, lig in enumerate(sandwich_lig_atoms):
+    for i, (info, lig) in enumerate(zip(info_sandwich_lig, sandwich_lig_atoms)):
+        assert info["aromatic"]
+        assert info["natoms_connected"] == len(con_atoms[i])
+        assert info["natoms_ring"] == len(con_atoms[i])
+        assert lig["atom_idxs"] == con_atoms[i]
+
+
+@pytest.mark.parametrize(
+    'name, con_atoms',
+    [
+        ("BUFLUM_comp_0.mol2", [{2, 4}]),
+        ("BUHMID_comp_0.mol2", [{3, 4, 5}]),
+        ("COYXUM_comp_0.mol2", [{0, 1, 2, 3, 4}]),
+        ("COYYEX_comp_0.mol2", [{0, 1, 2, 3, 4}]),
+        ("COYYIB_comp_0.mol2", [{1, 2, 3, 6, 7}]),
+    ]
+)
+def test_is_edge_compound(resource_path_root, name, con_atoms):
+    input_file = resource_path_root / "inputs" / "edge_compounds" / name
+    mol = mol3D()
+    mol.readfrommol2(input_file)
+
+    num_edge_lig, info_edge_lig, edge_lig_atoms = mol.is_edge_compound()
+
+    assert num_edge_lig == len(con_atoms)
+    for i, (info, lig) in enumerate(zip(info_edge_lig, edge_lig_atoms)):
+        assert info["natoms_connected"] == len(con_atoms[i])
         assert lig["atom_idxs"] == con_atoms[i]
 
 
