@@ -155,7 +155,10 @@ def test_get_geometry_type_catoms_arr(resource_path_root):
     'name, geometry_str, num_sandwich',
     [
         ('BOWROX_comp_0.mol2', 'tetrahedral', 1),
-        # ('BOXTIU_comp_0.mol2', 'linear', 2),
+        ('BOXTEQ_comp_0.mol2', 'tetrahedral', 1),
+        ('BOXTIU_comp_0.mol2', 'tetrahedral', 1),
+        # ('BOZHOQ_comp_2.mol2', 'linear', 2),
+        # ('BOZHUW_comp_2.mol2', 'linear', 2),
     ]
 )
 def test_get_geometry_type_sandwich(resource_path_root, name, geometry_str, num_sandwich):
