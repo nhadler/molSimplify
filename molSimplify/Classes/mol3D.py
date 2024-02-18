@@ -16,7 +16,7 @@ try:
     from openbabel import openbabel  # version 3 style import
 except ImportError:
     import openbabel  # fallback to version 2
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from scipy.spatial import ConvexHull
 from molSimplify.utils.decorators import deprecated
 
@@ -5278,7 +5278,8 @@ class mol3D:
                 eq_catoms = False
             return eqsym, maxdent, ligdents, homoleptic, ligsymmetry, eq_catoms
 
-    def is_sandwich_compound(self, transition_metals_only=True):
+    def is_sandwich_compound(self, transition_metals_only: bool = True
+                             ) -> Tuple[int, List, bool, bool, List]:
         """
         Evaluates whether a compound is a sandwich compound
 
@@ -5292,7 +5293,8 @@ class mol3D:
                 Flag about whether the ligand is aromatic.
             allconnect : bool
                 Flag for connected atoms in ring.
-
+            edge_lig_atoms: list
+                List of dictionaries with the connecting atoms of the sandwich ligands.
         """
 
         # Check if a structure is sandwich compound.
@@ -5336,7 +5338,7 @@ class mol3D:
                           for x in info_sandwich_lig])
         return num_sandwich_lig, info_sandwich_lig, aromatic, allconnect, sandwich_lig_atoms
 
-    def is_edge_compound(self, transition_metals_only=True):
+    def is_edge_compound(self, transition_metals_only: bool = True) -> Tuple[int, List, List]:
         """
         Check if a structure is edge compound.
 
@@ -5346,14 +5348,18 @@ class mol3D:
                 Number of edge ligands.
             info_edge_lig : list
                 List of dictionaries with info about edge ligands.
-
+            edge_lig_atoms: list
+                List of dictionaries with the connecting atoms of the edge ligands.
         """
 
         # Request: 1) complexes with ligands where there are at least
         # two connected non-metal atoms both connected to the metal.
 
         from molSimplify.Informatics.graph_analyze import obtain_truncation_metal
-        num_sandwich_lig, info_sandwich_lig, aromatic, allconnect, sandwich_lig_atoms = self.is_sandwich_compound(transition_metals_only=transition_metals_only)
+        (num_sandwich_lig, info_sandwich_lig, aromatic, allconnect,
+         sandwich_lig_atoms) = self.is_sandwich_compound(
+             transition_metals_only=transition_metals_only
+        )
         if not num_sandwich_lig or (num_sandwich_lig and not allconnect):
             mol_fcs = obtain_truncation_metal(self, hops=1)
             metal_ind = mol_fcs.findMetal(transition_metals_only=transition_metals_only)[0]
