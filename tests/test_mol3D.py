@@ -2,7 +2,6 @@ import pytest
 import numpy as np
 from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Classes.atom3D import atom3D
-from pkg_resources import resource_filename, Requirement
 
 
 def test_adding_and_deleting_atoms():
@@ -122,11 +121,8 @@ def test_mutating_atoms():
     ('trigonal_prismatic', 6, 'trigonal prismatic'),
     # ('pentagonal_bipyramidal', 7, 'pentagonal bipyramidal')
     ])
-def test_get_geometry_type(name, coordination_number, geometry_str):
-    xyz_file = resource_filename(
-        Requirement.parse("molSimplify"),
-        f"tests/refs/geometry_type/{name}.xyz"
-    )
+def test_get_geometry_type(resource_path_root, name, coordination_number, geometry_str):
+    xyz_file = resource_path_root / "inputs" / "geometry_type" / f"{name}.xyz"
     mol = mol3D()
     mol.readfromxyz(xyz_file)
 
@@ -137,19 +133,132 @@ def test_get_geometry_type(name, coordination_number, geometry_str):
     assert geo_report['aromatic'] is False
 
 
-def test_get_geometry_type_catoms_arr():
-    xyz_file = resource_filename(
-        Requirement.parse("molSimplify"),
-        "tests/refs/geometry_type/octahedral.xyz"
-    )
+def test_get_geometry_type_catoms_arr(resource_path_root):
+    xyz_file = resource_path_root / "inputs" / "geometry_type" / "octahedral.xyz"
     mol = mol3D()
     mol.readfromxyz(xyz_file)
 
     with pytest.raises(ValueError):
-        geo_report = mol.get_geometry_type(num_coord=6, catoms_arr=[1], debug=True)
+        mol.get_geometry_type(num_coord=6, catoms_arr=[1], debug=True)
 
     geo_report = mol.get_geometry_type(num_coord=6, catoms_arr=[1, 4, 7, 10, 13, 16], debug=True)
 
     assert geo_report['geometry'] == 'octahedral'
     assert geo_report['allconnect'] is False
     assert geo_report['aromatic'] is False
+
+
+def test_readfromxyzfile(resource_path_root):
+    xyz_file = resource_path_root / "inputs" / "cr3_f6_optimization.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    atoms_ref = [
+        ("Cr", [-0.060052, -0.000019, -0.000023]),
+        ("F", [1.802823, -0.010399, -0.004515]),
+        ("F", [-0.070170, 1.865178, 0.0035660]),
+        ("F", [-1.922959, 0.010197, 0.0049120]),
+        ("F", [-0.049552, -1.865205, -0.0038600]),
+        ("F", [-0.064742, 0.003876, 1.8531400]),
+        ("F", [-0.055253, -0.003594, -1.8531790]),
+    ]
+
+    for atom, ref in zip(mol.atoms, atoms_ref):
+        assert (atom.symbol(), atom.coords()) == ref
+
+    # Test read_final_optim_step
+    mol = mol3D()
+    mol.readfromxyz(xyz_file, read_final_optim_step=True)
+
+    atoms_ref = [
+        ("Cr", [-0.0599865612, 0.0000165451, 0.0000028031]),
+        ("F", [1.8820549261, 0.0000076116, 0.0000163815]),
+        ("F", [-0.0600064919, 1.9420510001, -0.0000022958]),
+        ("F", [-2.0019508544, -0.0000130345, -0.0000067108]),
+        ("F", [-0.0599967119, -1.9420284092, 0.0000133671]),
+        ("F", [-0.0600235008, 0.0000085354, 1.9418467918]),
+        ("F", [-0.0599958059, -0.0000082485, -1.9418293370]),
+    ]
+
+    for atom, ref in zip(mol.atoms, atoms_ref):
+        assert (atom.symbol(), atom.coords()) == ref
+
+
+def test_mol3D_from_smiles_macrocycles():
+    """Uses an examples from Aditya's macrocycles that were previously
+    converted wrong.
+    """
+    smiles = "C9SC(=CCSC(CSC(=NCSC9)))"
+    mol = mol3D.from_smiles(smiles)
+    assert mol.natoms == 29
+
+    ref_graph = np.zeros([mol.natoms, mol.natoms])
+    ref_bo_graph = np.zeros([mol.natoms, mol.natoms])
+    bonds = [
+        (21, 7, 1.0),
+        (29, 14, 1.0),
+        (13, 14, 1.0),
+        (13, 12, 1.0),
+        (9, 10, 1.0),
+        (9, 8, 1.0),
+        (27, 12, 1.0),
+        (6, 7, 1.0),
+        (6, 5, 1.0),
+        (14, 28, 1.0),
+        (14, 1, 1.0),
+        (7, 8, 1.0),
+        (7, 22, 1.0),
+        (2, 1, 1.0),
+        (2, 3, 1.0),
+        (24, 8, 1.0),
+        (12, 11, 1.0),
+        (12, 26, 1.0),
+        (10, 11, 2.0),
+        (10, 25, 1.0),
+        (8, 23, 1.0),
+        (1, 15, 1.0),
+        (1, 16, 1.0),
+        (3, 17, 1.0),
+        (3, 4, 2.0),
+        (5, 19, 1.0),
+        (5, 4, 1.0),
+        (5, 20, 1.0),
+        (4, 18, 1.0),
+    ]
+    for bond in bonds:
+        i, j = bond[0] - 1, bond[1] - 1
+        ref_graph[i, j] = ref_graph[j, i] = 1
+        ref_bo_graph[i, j] = ref_bo_graph[j, i] = bond[2]
+
+    np.testing.assert_allclose(mol.graph, ref_graph)
+    np.testing.assert_allclose(mol.bo_graph, ref_bo_graph)
+
+
+def test_mol3D_from_smiles_benzene():
+    smiles = "c1ccccc1"
+    mol = mol3D.from_smiles(smiles)
+    assert mol.natoms == 12
+
+    ref_graph = np.zeros([mol.natoms, mol.natoms])
+    ref_bo_graph = np.zeros([mol.natoms, mol.natoms])
+    bonds = [
+        (1, 2, 1.5),
+        (2, 3, 1.5),
+        (3, 4, 1.5),
+        (4, 5, 1.5),
+        (5, 6, 1.5),
+        (1, 6, 1.5),
+        (1, 7, 1.0),
+        (2, 8, 1.0),
+        (3, 9, 1.0),
+        (4, 10, 1.0),
+        (5, 11, 1.0),
+        (6, 12, 1.0),
+    ]
+    for bond in bonds:
+        i, j = bond[0] - 1, bond[1] - 1
+        ref_graph[i, j] = ref_graph[j, i] = 1
+        ref_bo_graph[i, j] = ref_bo_graph[j, i] = bond[2]
+
+    np.testing.assert_allclose(mol.graph, ref_graph)
+    np.testing.assert_allclose(mol.bo_graph, ref_bo_graph)

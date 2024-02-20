@@ -83,7 +83,7 @@ def make_MOF_SBU_RACs(SBUlist, SBU_subgraph, molcif, depth, name,cell,anchoring_
                 """""""""
                 functional_atoms = []
                 for jj in range(len(temp_mol.graph)):
-                    if not jj in link_list:
+                    if jj not in link_list:
                         if not set({temp_mol.atoms[jj].sym}) & set({"C","H"}):
                             functional_atoms.append(jj)
         # At this point, we look at the cycles for the graph, then add atoms if they are part of a cycle
@@ -165,9 +165,9 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath = False):
         tmpstr = "Failed to featurize %s: large primitive cell\n"%(name)
         pbc_funs.write2file(path, "/FailedStructures.log", tmpstr)
         return None, None
-    distance_mat = pbc_funs.compute_distance_matrix2(cell_v, cart_coords)
+    distance_mat = pbc_funs.compute_distance_matrix3(cell_v, cart_coords)
     try:
-        adj_matrix = pbc_funs.compute_adj_matrix(distance_mat, allatomtypes)
+        adj_matrix, _ = pbc_funs.compute_adj_matrix(distance_mat, allatomtypes)
     except NotImplementedError:
         tmpstr = "Failed to featurize %s: atomic overlap\n" % (name)
         pbc_funs.write2file(path, "/FailedStructures.log", tmpstr)
