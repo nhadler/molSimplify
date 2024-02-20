@@ -1,6 +1,8 @@
 import pytest
+import numpy as np
 from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Scripts.rmsd import rigorous_rmsd
+from molSimplify.Scripts.geometry import rotate_around_axis
 
 
 @pytest.mark.parametrize(
@@ -27,3 +29,29 @@ def test_rigorous_rmsd(resource_path_root, path1, path2, ref_hungarian, ref_none
 
     r = rigorous_rmsd(mol1, mol2, reorder='none')
     assert abs(r - ref_none) < atol
+
+
+@pytest.mark.skip
+def test_methane_rotation(atol=1e-3):
+    """This test case is intended to show the problem with our current RMSD implementation"""
+    # XYZ data copied from
+    # https://github.com/OpenChemistry/avogadrodata/blob/master/data/methane.xyz
+    d = 1.02672
+    theta = 110 * np.pi / 180
+    xyz_string = (
+        "C      0.00000    0.00000    0.0000\n"
+        "H      0.00000    0.00000    1.08900\n"
+        "H      1.02672    0.00000   -0.36300\n"
+        f"H    {d * np.cos(theta):8.5f}   {d * np.sin(theta):8.5f}   -0.36300\n"
+        f"H    {d * np.cos(theta):8.5f}   {-d * np.sin(theta):8.5f}   -0.36300\n"
+    )
+    mol1 = mol3D()
+    mol1.readfromstring(xyz_string)
+
+    mol2 = mol3D()
+    mol2.readfromstring(xyz_string)
+    # rotate 180 degrees around the z axis
+    mol2 = rotate_around_axis(mol2, [0.0, 0.0, 0.0], [0.0, 0.0, 1.0], 180)
+    assert rigorous_rmsd(mol1, mol2, reorder='none') < atol
+
+    assert rigorous_rmsd(mol1, mol2, reorder='hungarian') < atol
