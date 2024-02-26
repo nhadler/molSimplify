@@ -1,0 +1,22 @@
+# Input file generated from molSimplify at 11/10/2023 22:28
+-checkdirb True
+-core Fe
+-oxstate 2
+-coord 6
+-geometry oct
+-lig water
+-ligocc 6
+-spin 5
+-keepHs auto
+-rundir /private/var/folders/l6/1j71dcgj4j7c_vc466yjsq3r0000gn/T/pytest-of-ralf/pytest-5/test_main0
+-ffoption N
+-nconfs 1
+-charge 2
+-calccharge True
+-distort 0
+-qccode terachem
+-runtyp energy
+-method b3lyp
+-basis lacvps_ecp
+-jsched sge
+-bcharge 0

@@ -115,12 +115,6 @@ def readdict(fname):
 
 
 def readdict_sub(fname):
-    # Constructor
-    #  @param self The object pointer
-    #  @param subname The name of the substrate
-    class substrate:
-        def __init__(self, subname):
-            self.subname = subname
     d = dict()
     with open(fname, 'r') as f:
         txt = f.read()
@@ -137,8 +131,7 @@ def readdict_sub(fname):
                     vv.append(vvs)
                 else:
                     vv += vvs
-            # dict keys are instances of the substrate class
-            d[substrate(key)] = vv
+            d[key] = vv
     return d
 
 # Get ligands in dictionary
