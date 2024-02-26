@@ -2,7 +2,7 @@ import pytest
 import json
 import numpy as np
 import pandas as pd
-from molSimplify.Informatics.MOF.MOF_descriptors import get_MOF_descriptors, get_primitive
+from molSimplify.Informatics.MOF.MOF_descriptors import get_MOF_descriptors
 from molSimplify.utils.timer import DebugTimer
 
 
@@ -83,8 +83,8 @@ def test_get_MOF_descriptors_ODAC(resource_path_root, tmpdir, name, ref_names):
         "SETDUS_clean",
         "UXUPEK_clean",
         "NEXXIZ_clean",
-        # "ETECIR_clean",
-        # "FAVGUH_clean", Disagreement on all ligand center RACs
+        # "ETECIR_clean",  TODO: Figure out why these two example do not work!
+        # "FAVGUH_clean",  Disagreement on all ligand center RACs
         "YICDAR_clean",
         "VONBIK_clean",
     ])
