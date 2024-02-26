@@ -8,6 +8,7 @@
 #  Department of Chemical Engineering, MIT
 
 import numpy as np
+from typing import List
 
 
 def norm(u):
@@ -498,7 +499,7 @@ def PointRotateMat(r, R):
     return rn
 
 
-def PointTranslateSph(Rp, p0, D):
+def PointTranslateSph(Rp, p0, D) -> List[float]:
     """Translates point in spherical coordinates.
 
     Parameters
@@ -517,7 +518,7 @@ def PointTranslateSph(Rp, p0, D):
 
     """
     # translate to origin
-    ps = [0, 0, 0]
+    ps = [0., 0., 0.]
     ps[0] = p0[0] - Rp[0]
     ps[1] = p0[1] - Rp[1]
     ps[2] = p0[2] - Rp[2]
@@ -525,12 +526,12 @@ def PointTranslateSph(Rp, p0, D):
     r0 = norm(ps)
     if (r0 < 1e-16):
         phi0 = 0.5 * np.pi
-        theta0 = 0
+        theta0 = 0.
     else:
         phi0 = np.arccos(ps[2] / r0)  # z/r
         theta0 = np.arctan2(ps[1], ps[0])  # y/x
     # get new point
-    p = [0, 0, 0]
+    p = [0., 0., 0.]
     p[0] = (D[0]) * np.sin(phi0 + D[2]) * np.cos(theta0 + D[1]) + Rp[0]
     p[1] = (D[0]) * np.sin(phi0 + D[2]) * np.sin(theta0 + D[1]) + Rp[1]
     p[2] = (D[0]) * np.cos(phi0 + D[2]) + Rp[2]

@@ -12,7 +12,9 @@ import shutil
 import sys
 from collections import Counter
 import glob
+from typing import List, Union, Tuple
 
+from argparse import Namespace
 from molSimplify.Classes.globalvars import globalvars
 from molSimplify.Scripts.isomers import generateisomers
 from molSimplify.Scripts.jobgen import (sgejobgen,
@@ -31,20 +33,20 @@ from molSimplify.Scripts.qcgen import (mlpgen,
                                        multitcgen)
 from molSimplify.Scripts.structgen import (structgen)
 
-###################################################################
-### define input for cross-compatibility between python 2 and 3 ###
-###################################################################
+# ##################################################################
+# ## define input for cross-compatibility between python 2 and 3 ###
+# ##################################################################
 get_input = input
 if sys.version_info[:2] <= (2, 7):
     get_input = raw_input  # noqa: F821
 
-#####################################
-### constrained random generation ###
-#####################################
+# ####################################
+# ## constrained random generation ###
+# ####################################
 
 
-def constrgen(rundir, args):
-    emsg = False
+def constrgen(rundir: str, args: Namespace) -> Tuple[Union[Namespace, bool], str]:
+    emsg = ""
     # load global variables
     licores = getlicores()
     print('Random generation started..\n\n')
@@ -145,9 +147,9 @@ def constrgen(rundir, args):
     return args, emsg
 
 
-###############################################
-### get sample aggreeing to the constraints ###
-###############################################
+# ##############################################
+# ## get sample aggreeing to the constraints ###
+# ##############################################
 
 
 def getconstsample(no_rgen, args, licores, coord):
@@ -302,14 +304,14 @@ def multigenruns(rundir, args, write_files=True):
 #  @return Ligand list, connecting atoms, multiple ligand flag
 
 
-def checkmultilig(ligs):
+def checkmultilig(ligs: List[str]) -> Tuple[List[List[str]], List[List[str]], int]:
     mligs = []
     tcats = []
     multidx = -1
     # loop over ligands
 
     for i, lig in enumerate(ligs):
-        connatoms = []
+        connatoms: List[str] = []
         if '.smi' in lig:
             if '~' in lig:
                 lig = lig.replace('~', os.path.expanduser("~"))
@@ -321,12 +323,9 @@ def checkmultilig(ligs):
                 for ss in s:
                     ss = ss.replace('\t', ' ')
                     sf = [_f for _f in ss.split(' ') if _f]
-                    print(sf)
                     if len(sf) > 0:
                         connatoms.append(sf[-1])
                         multidx = i
-                    else:
-                        connatoms.append(False)
                 if len(s) > 1:
                     mligs.append(s)
                 else:
@@ -337,6 +336,7 @@ def checkmultilig(ligs):
             mligs.append([lig])
         tcats.append(connatoms)
     ligandslist = list(itertools.product(*mligs))
+
     # convert tuple to list
     llist = []
     for l0 in ligandslist:
@@ -353,13 +353,14 @@ def checkmultilig(ligs):
 #  @param rundir Run directory
 
 
-def draw_supervisor(args, rundir):
+def draw_supervisor(args: Namespace, rundir: str):
     if args.lig:
         print('Due to technical limitations, we will draw only the first ligand.')
         print('To view multiple ligands at once, consider using the GUI instead.')
         li = args.lig[0]
         lig, emsg = lig_load(li)
-        lig.draw_svg(li)
+        if lig is not None:
+            lig.draw_svg(li)
     elif args.core:
         if len(args.core) > 1:
             print('Due to technical limitations, we will draw only the first core.')
@@ -368,14 +369,16 @@ def draw_supervisor(args, rundir):
             print('Due to technical limitations, we can draw only one structure per run. '
                   'To draw the substrate, run the program again.')
         cc, emsg = core_load(args.core[0])
-        cc.draw_svg(args.core[0])
+        if cc is not None:
+            cc.draw_svg(args.core[0])
     elif args.substrate:
         if len(args.substrate) > 1:
             print('Due to technical limitations, we will draw only the first substrate.')
         print('Drawing the substrate.')
         print((args.substrate[0]))
         substrate, subcatoms, emsg = substr_load(args.substrate[0], 0, args.subcatoms)
-        substrate.draw_svg(args.substrate[0])
+        if substrate is not None:
+            substrate.draw_svg(args.substrate[0])
     else:
         print('You have not specified anything to draw. Currently supported: ligand, core, substrate')
 
@@ -386,14 +389,15 @@ def draw_supervisor(args, rundir):
 #  @return Error messages
 
 
-def rungen(rundir, args, chspfname=None, write_files=True):
+def rungen(rundir, args: Namespace, chspfname=None, write_files: bool = True):
     emsg = ''
     globs = globalvars()
     globs.nosmiles = 0  # reset smiles ligands for each run
     # check for specified ligands/functionalization
     ligocc = []
     # check for files specified for multiple ligands
-    mligs, catoms = [False], [False]
+    mligs: List[List[str]] = [[]]
+    catoms: List[List[str]] = [[]]
     if args.lig is not None:
         if args.lig:
             mligs, catoms, multidx = checkmultilig(args.lig)
@@ -401,10 +405,10 @@ def rungen(rundir, args, chspfname=None, write_files=True):
                 print('after checking for multiple ligs, we found '
                       f'{multidx} ligands')
     # save initial
-    smicat0 = [ss for ss in args.smicat] if args.smicat else False
+    smicat0 = [ss for ss in args.smicat] if args.smicat else []
     # loop over ligands
     for mcount, mlig in enumerate(mligs):
-        args.smicat = [ss for ss in smicat0] if smicat0 else False
+        args.smicat = [ss for ss in smicat0] if smicat0 else []
         args.checkdir, skip = False, False  # initialize flags
         if len(mligs) > 0 and mligs[0]:
             args.lig = mlig  # get combination
@@ -447,8 +451,8 @@ def rungen(rundir, args, chspfname=None, write_files=True):
         else:
             ligands = []
             lig = ''
-            ligocc = ''
-    # fetch smart name
+            ligocc = []
+        # fetch smart name
         fname = name_complex(rundir, args.core, args.geometry, ligands, ligocc,
                              mcount, args, nconf=False, sanity=False, bind=args.bind, bsmi=args.nambsmi)
         if args.tsgen:
@@ -458,13 +462,15 @@ def rungen(rundir, args, chspfname=None, write_files=True):
                 subcatoms = args.subcatoms
             mlig = args.mlig
             mligcatoms = args.mligcatoms
-            fname = name_ts_complex(rundir, args.core, args.geometry, ligands, ligocc, substrate, subcatoms,
-                                    mlig, mligcatoms, mcount, args, nconf=False, sanity=False, bind=args.bind, bsmi=args.nambsmi)
+            fname = name_ts_complex(rundir, args.core, args.geometry, ligands, ligocc,
+                                    substrate, subcatoms, mlig, mligcatoms, mcount,
+                                    args, nconf=False, sanity=False, bind=args.bind,
+                                    bsmi=args.nambsmi)
         if args.debug:
             print(('fname is ' + str(fname)))
         rootdir = fname
         # check for charges/spin
-        rootcheck = False
+        rootcheck = ""
         if chspfname is not None:
             rootcheck = rootdir
             rootdir = rootdir + '/' + chspfname
@@ -487,7 +493,8 @@ def rungen(rundir, args, chspfname=None, write_files=True):
                 else:
                     flagdir = 'replace'
             else:
-                # qqb = qBoxFolder(args.gui.wmain,'Folder exists','Directory '+rootcheck+' already exists. What do you want to do?')
+                # qqb = qBoxFolder(args.gui.wmain,'Folder exists',
+                #                  'Directory '+rootcheck+' already exists. What do you want to do?')
                 # flagdir = qqb.getaction()
                 flagdir = 'replace'
                 # replace existing directory
@@ -526,7 +533,8 @@ def rungen(rundir, args, chspfname=None, write_files=True):
                 else:
                     flagdir = 'replace'
             else:
-                # qqb = qBoxFolder(args.gui.wmain,'Folder exists','Directory '+rootdir+' already exists. What do you want to do?')
+                # qqb = qBoxFolder(args.gui.wmain,'Folder exists',
+                #                  'Directory '+rootdir+' already exists. What do you want to do?')
                 # flagdir = qqb.getaction()
                 flagdir = 'replace'
             # replace existing directory
@@ -548,9 +556,9 @@ def rungen(rundir, args, chspfname=None, write_files=True):
                 if write_files:
                     args.checkdirb = True
                     os.mkdir(rootdir)
-            ####################################
-            ############ GENERATION ############
-            ####################################
+        # ###################################
+        # ########### GENERATION ############
+        # ###################################
         if not skip:
             # check for generate all
             if args.genall:
@@ -560,14 +568,14 @@ def rungen(rundir, args, chspfname=None, write_files=True):
                 args.ffoption = 'ba'
                 args.MLbonds = False
                 strfiles, emsg, this_diag = structgen(
-                    args, rootdir, ligands, ligocc, globs, mcount, write_files=write_files)
+                    args, rootdir, ligands, ligocc, mcount, write_files=write_files)
                 for strf in strfiles:
                     tstrfiles.append(strf+'FFML')
                     os.rename(strf+'.xyz', strf+'FFML.xyz')
                 # generate xyz with FF and covalent
                 args.MLbonds = ['c' for i in range(0, len(args.lig))]
                 strfiles, emsg, this_diag = structgen(
-                    args, rootdir, ligands, ligocc, globs, mcount, write_files=write_files)
+                    args, rootdir, ligands, ligocc, mcount, write_files=write_files)
                 for strf in strfiles:
                     tstrfiles.append(strf+'FFc')
                     os.rename(strf+'.xyz', strf+'FFc.xyz')
@@ -576,14 +584,14 @@ def rungen(rundir, args, chspfname=None, write_files=True):
                 args.MLbonds = False
                 # generate xyz without FF and trained ML
                 strfiles, emsg, this_diag = structgen(
-                    args, rootdir, ligands, ligocc, globs, mcount, write_files=write_files)
+                    args, rootdir, ligands, ligocc, mcount, write_files=write_files)
                 for strf in strfiles:
                     tstrfiles.append(strf+'ML')
                     os.rename(strf+'.xyz', strf+'ML.xyz')
                 args.MLbonds = ['c' for i in range(0, len(args.lig))]
                 # generate xyz without FF and covalent ML
                 strfiles, emsg, this_diag = structgen(
-                    args, rootdir, ligands, ligocc, globs, mcount, write_files=write_files)
+                    args, rootdir, ligands, ligocc, mcount, write_files=write_files)
                 for strf in strfiles:
                     tstrfiles.append(strf+'c')
                     os.rename(strf+'.xyz', strf+'c.xyz')
@@ -591,7 +599,7 @@ def rungen(rundir, args, chspfname=None, write_files=True):
             else:
                 # generate xyz files
                 strfiles, emsg, this_diag = structgen(
-                    args, rootdir, ligands, ligocc, globs, mcount, write_files=write_files)
+                    args, rootdir, ligands, ligocc, mcount, write_files=write_files)
             # generate QC input files
             if args.qccode and (not emsg) and write_files:
                 if args.charge and (isinstance(args.charge, list)):
