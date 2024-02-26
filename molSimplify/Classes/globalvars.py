@@ -12,6 +12,7 @@ import glob
 import platform
 import sys
 import subprocess
+from typing import Dict, Tuple
 from molSimplify.utils.metaclasses import Singleton
 
 # Dictionary containing atomic mass, atomic number, covalent radius, num valence electrons
@@ -563,7 +564,7 @@ class globalvars(metaclass=Singleton):
     # Returns atomic mass dictionary
     #  @param self The object pointer
     #  @return Atomic mass dictionary
-    def amass(self):
+    def amass(self) -> Dict[str, Tuple[float, int, float, int]]:
         """Get the atomic mass dictionary.
 
         Returns
@@ -573,7 +574,7 @@ class globalvars(metaclass=Singleton):
         """
         return amassdict
 
-    def polarizability(self):
+    def polarizability(self) -> Dict[str, float]:
         """Get the polarizability dictionary.
 
         Returns

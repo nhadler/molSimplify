@@ -927,7 +927,7 @@ def plugin_defs() -> str:
 #  @return Complex name
 
 
-def name_complex(rootdir: str, core, geometry, ligs, ligoc, sernum,
+def name_complex(rootdir: str, core, geometry, ligs, ligoc, sernum: int,
                  args, nconf=False, sanity=False, bind=False, bsmi=False) -> str:
     # new version of the above, designed to
     # produce more human and machine-readable formats

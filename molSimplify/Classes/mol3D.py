@@ -1345,6 +1345,7 @@ class mol3D:
         return close_metal
 
     def findMetal(self, transition_metals_only: bool = True) -> List[int]:
+#        transition_metals_only = False
         """
         Find metal(s) in a mol3D class.
 
@@ -1437,6 +1438,35 @@ class mol3D:
                 if atidx in conatoms:
                     conatoms.remove(atidx)  # remove from list to check
         return subm
+
+    @classmethod
+    def from_smiles(cls, smiles):
+        mol = cls()
+        mol.getOBMol(smiles, "smistring")
+
+        elem = globalvars().elementsbynum()
+        # Add atoms
+        for atom in openbabel.OBMolAtomIter(mol.OBMol):
+            # get coordinates
+            pos = [atom.GetX(), atom.GetY(), atom.GetZ()]
+            # get atomic symbol
+            sym = elem[atom.GetAtomicNum() - 1]
+            # add atom to molecule
+            # atom3D_list.append(atom3D(sym, pos))
+            mol.addAtom(atom3D(sym, pos))
+
+        # Add bonds
+        mol.graph = np.zeros([mol.natoms, mol.natoms])
+        mol.bo_graph = np.zeros([mol.natoms, mol.natoms])
+        for bond in openbabel.OBMolBondIter(mol.OBMol):
+            i = bond.GetBeginAtomIdx() - 1
+            j = bond.GetEndAtomIdx() - 1
+            bond_order = bond.GetBondOrder()
+            if bond.IsAromatic():
+                bond_order = 1.5
+            mol.graph[i, j] = mol.graph[j, i] = 1
+            mol.bo_graph[i, j] = mol.bo_graph[j, i] = bond_order
+        return mol
 
     def getAtom(self, idx):
         """
@@ -5248,7 +5278,7 @@ class mol3D:
                 eq_catoms = False
             return eqsym, maxdent, ligdents, homoleptic, ligsymmetry, eq_catoms
 
-    def is_sandwich_compound(self):
+    def is_sandwich_compound(self, transition_metals_only=True):
         """
         Evaluates whether a compound is a sandwich compound
 
@@ -5274,7 +5304,7 @@ class mol3D:
 
         from molSimplify.Informatics.graph_analyze import obtain_truncation_metal
         mol_fcs = obtain_truncation_metal(self, hops=1)
-        metal_ind = mol_fcs.findMetal()[0]
+        metal_ind = mol_fcs.findMetal(transition_metals_only=transition_metals_only)[0]
         catoms = list(range(mol_fcs.natoms))
         catoms.remove(metal_ind)
         sandwich_ligands, _sl = list(), list()
@@ -5304,7 +5334,7 @@ class mol3D:
                           for x in info_sandwich_lig])
         return num_sandwich_lig, info_sandwich_lig, aromatic, allconnect
 
-    def is_edge_compound(self):
+    def is_edge_compound(self, transition_metals_only=True):
         """
         Check if a structure is edge compound.
 
@@ -5321,10 +5351,10 @@ class mol3D:
         # two connected non-metal atoms both connected to the metal.
 
         from molSimplify.Informatics.graph_analyze import obtain_truncation_metal
-        num_sandwich_lig, info_sandwich_lig, aromatic, allconnect = self.is_sandwich_compound()
+        num_sandwich_lig, info_sandwich_lig, aromatic, allconnect = self.is_sandwich_compound(transition_metals_only=transition_metals_only)
         if not num_sandwich_lig or (num_sandwich_lig and not allconnect):
             mol_fcs = obtain_truncation_metal(self, hops=1)
-            metal_ind = mol_fcs.findMetal()[0]
+            metal_ind = mol_fcs.findMetal(transition_metals_only=transition_metals_only)[0]
             catoms = list(range(mol_fcs.natoms))
             catoms.remove(metal_ind)
             edge_ligands, _el = list(), list()
@@ -5342,7 +5372,7 @@ class mol3D:
             num_edge_lig, info_edge_lig = 0, list()
         return num_edge_lig, info_edge_lig
 
-    def get_geometry_type(self, dict_check=False, angle_ref=False, num_coord=False,
+    def get_geometry_type(self, dict_check=False, angle_ref=False, num_coord=None,
                           flag_catoms=False, catoms_arr=None, debug=False,
                           skip=False, transition_metals_only=False):
         """
@@ -5390,7 +5420,7 @@ class mol3D:
             else:
                 raise ValueError('No metal centers exist in this complex.')
 
-        if num_coord is False:
+        if num_coord is None:
             # TODO: Implement the case where we don't know the coordination number.
             raise NotImplementedError(
                 "Not implemented yet. Please at least provide the coordination number.")
@@ -5398,8 +5428,8 @@ class mol3D:
         if catoms_arr is not None and len(catoms_arr) != num_coord:
             raise ValueError("num_coord and the length of catoms_arr do not match.")
 
-        num_sandwich_lig, info_sandwich_lig, aromatic, allconnect = self.is_sandwich_compound()
-        num_edge_lig, info_edge_lig = self.is_edge_compound()
+        num_sandwich_lig, info_sandwich_lig, aromatic, allconnect = self.is_sandwich_compound(transition_metals_only=transition_metals_only)
+        num_edge_lig, info_edge_lig = self.is_edge_compound(transition_metals_only=transition_metals_only)
 
         if num_coord not in [3, 4, 5, 6, 7]:
             if num_sandwich_lig:

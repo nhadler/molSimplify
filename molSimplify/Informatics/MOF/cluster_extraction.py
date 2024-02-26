@@ -83,7 +83,7 @@ def make_MOF_SBU_RACs(SBUlist, SBU_subgraph, molcif, depth, name,cell,anchoring_
                 """""""""
                 functional_atoms = []
                 for jj in range(len(temp_mol.graph)):
-                    if not jj in link_list:
+                    if jj not in link_list:
                         if not set({temp_mol.atoms[jj].sym}) & set({"C","H"}):
                             functional_atoms.append(jj)
         # At this point, we look at the cycles for the graph, then add atoms if they are part of a cycle

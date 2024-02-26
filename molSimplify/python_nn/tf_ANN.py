@@ -51,7 +51,7 @@ def perform_ANN_prediction(RAC_dataframe: pd.DataFrame, predictor_name: str,
     if len(missing_labels) > 0:
         # Try checking if there is anything in the column `RAC_column`. If so, deserialize it and re-run.
         if RAC_column in RAC_dataframe.columns:
-            deserialized_RACs = pd.DataFrame.from_records(RAC_dataframe[RAC_column].values, index=RAC_dataframe.index)
+            deserialized_RACs = pd.DataFrame.from_records(RAC_dataframe[RAC_column].values, index=RAC_dataframe.index.values)
             deserialized_RACs = deserialized_RACs.astype(float)
             RAC_dataframe = RAC_dataframe.join(deserialized_RACs)
             return perform_ANN_prediction(RAC_dataframe, predictor_name, RAC_column='RACs')
