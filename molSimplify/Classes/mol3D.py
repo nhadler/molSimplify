@@ -1440,9 +1440,9 @@ class mol3D:
         return subm
 
     @classmethod
-    def from_smiles(cls, smiles):
+    def from_smiles(cls, smiles, gen3d: bool = True):
         mol = cls()
-        mol.getOBMol(smiles, "smistring")
+        mol.getOBMol(smiles, "smistring", gen3d=gen3d)
 
         elem = globalvars().elementsbynum()
         # Add atoms
@@ -2291,7 +2291,7 @@ class mol3D:
         angle = vecangle(v1, v2)
         return angle
 
-    def getOBMol(self, fst, convtype, ffclean=False):
+    def getOBMol(self, fst, convtype, ffclean=False, gen3d=True):
         """
         Get OBMol object from a file or SMILES string. If you have a mol3D,
         then use convert2OBMol instead.
@@ -2304,6 +2304,8 @@ class mol3D:
                 Input filetype (xyz,mol,smi).
             ffclean : bool, optional
                 Flag for forcefield cleanup of structure. Default is False.
+            gen3d: bool, optional
+                Flag for 3D structure generation using openbabel.OBBuilder
 
         Returns
         -------
@@ -2321,8 +2323,9 @@ class mol3D:
             obConversion.ReadFile(OBMol, fst)
         if 'smi' in convtype:
             OBMol.AddHydrogens()
-            b = openbabel.OBBuilder()
-            b.Build(OBMol)
+            if gen3d:
+                b = openbabel.OBBuilder()
+                b.Build(OBMol)
         if ffclean:
             forcefield = openbabel.OBForceField.FindForceField('mmff94')
             forcefield.Setup(OBMol)
