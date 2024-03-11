@@ -5513,7 +5513,7 @@ class mol3D:
         }
         return results
 
-    def get_geometry_type_new(self, dict_check=False, angle_ref=False, 
+    def get_geometry_type_new(self, dict_check=False, angle_ref=False,
                           flag_catoms=False, catoms_arr=None, debug=False,
                           skip=False, transition_metals_only=False):
         """
@@ -5570,7 +5570,7 @@ class mol3D:
             # TODO: Implement the case where we don't know the coordination number.
             #raise NotImplementedError(
             #    "Not implemented yet. Please at least provide the coordination number.")
-            
+
 
         if catoms_arr is not None and len(catoms_arr) != num_coord:
             raise ValueError("num_coord and the length of catoms_arr do not match.")
@@ -5620,7 +5620,7 @@ class mol3D:
             "summary": summary,
             "hapticity": hapt,
         }
-        return results    
+        return results
 
     def get_features(self, lac=True, force_generate=False, eq_sym=False,
                      use_dist=False, NumB=False, Gval=False, size_normalize=False,
