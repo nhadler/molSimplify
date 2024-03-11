@@ -5589,9 +5589,11 @@ class mol3D:
             return results
         elif num_coord==2:
             geometry = "linear"
+            angle = first_shell.getAngle(1,0,2)
+            angle_devi = 180 - angle
             results = {
                 "geometry": "linear",
-                "angle_devi": False,
+                "angle_devi": angle_devi,
                 "summary": {},
                 "hapticity": hapt,
             }
