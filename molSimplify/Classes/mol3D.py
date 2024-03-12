@@ -5400,7 +5400,7 @@ class mol3D:
             num_edge_lig, info_edge_lig = 0, list()
         return num_edge_lig, info_edge_lig
 
-    def get_geometry_type(self, dict_check=False, angle_ref=False, num_coord=False,
+    def get_geometry_type_old(self, dict_check=False, angle_ref=False, num_coord=False,
                           flag_catoms=False, catoms_arr=None, debug=False,
                           skip=False, transition_metals_only=False):
         """
@@ -5513,7 +5513,7 @@ class mol3D:
         }
         return results
 
-    def get_geometry_type_new(self, dict_check=False, angle_ref=False,
+    def get_geometry_type(self, dict_check=False, angle_ref=False,
                           flag_catoms=False, catoms_arr=None, debug=False,
                           skip=False, transition_metals_only=False):
         """
@@ -5589,7 +5589,12 @@ class mol3D:
             return results
         elif num_coord==2:
             geometry = "linear"
-            angle = first_shell.getAngle(1,0,2)
+            if first_shell.findMetal()[0] == 2:
+                angle = first_shell.getAngle(0,2,1)
+            elif first_shell.findMetal()[0] == 1:
+                angle = first_shell.getAngle(0,1,2)
+            else:
+                angle = first_shell.getAngle(1,0,2)
             angle_devi = 180 - angle
             results = {
                 "geometry": "linear",
