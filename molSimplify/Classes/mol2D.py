@@ -1,4 +1,5 @@
 import networkx as nx
+from packaging import version
 from molSimplify.Classes.globalvars import globalvars
 
 try:
@@ -85,9 +86,17 @@ class Mol2D(nx.Graph):
         return mol
 
     def graph_hash(self):
+        # This is necessary because networkx < 2.7 had a bug in the implementation
+        # of weisfeiler_lehman_graph_hash
+        # https://github.com/networkx/networkx/pull/4946#issuecomment-914623654
+        assert version.parse(nx.__version__) >= version.parse("2.7")
         return nx.weisfeiler_lehman_graph_hash(self, node_attr="symbol")
 
     def graph_hash_edge_attr(self):
+        # This is necessary because networkx < 2.7 had a bug in the implementation
+        # of weisfeiler_lehman_graph_hash
+        # https://github.com/networkx/networkx/pull/4946#issuecomment-914623654
+        assert version.parse(nx.__version__) >= version.parse("2.7")
         # Copy orginal graph before adding edge attributes
         G = self.copy()
 
