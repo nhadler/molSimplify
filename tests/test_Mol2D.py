@@ -54,7 +54,7 @@ def acac_Mol2D():
     )
     mol.add_edges_from(
         [(0, 1), (1, 2), (1, 3), (2, 7), (2, 8), (2, 9), (3, 4),
-         (3, 13), (4, 5), (4, 6), (6, 10), (6, 11), (6, 12)]
+         (3, 10), (4, 5), (4, 6), (6, 11), (6, 12), (6, 13)]
     )
     return mol
 
@@ -64,7 +64,7 @@ def acac_Mol2D():
     [
         ("water", "O", water_Mol2D()),
         ("furan", "o1cccc1", furan_Mol2D()),
-        ("acac", None, acac_Mol2D()),  # TODO: find the correct SMILES string for acac
+        ("acac", "[O-]-C(C)=CC(=O)C", acac_Mol2D()),
     ]
 )
 def test_Mol2D_constructors(resource_path_root, name, smiles, mol_ref):
@@ -81,11 +81,10 @@ def test_Mol2D_constructors(resource_path_root, name, smiles, mol_ref):
     assert mol.edges == mol_ref.edges
 
     # From smiles
-    if smiles is not None:
-        mol = Mol2D.from_smiles(smiles)
+    mol = Mol2D.from_smiles(smiles)
 
-        assert mol.nodes == mol_ref.nodes
-        assert mol.edges == mol_ref.edges
+    assert mol.nodes == mol_ref.nodes
+    assert mol.edges == mol_ref.edges
 
 
 @pytest.mark.parametrize(
