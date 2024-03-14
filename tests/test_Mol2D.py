@@ -2,7 +2,6 @@ import pytest
 from molSimplify.Classes.mol2D import Mol2D
 
 
-@pytest.fixture
 def water_Mol2D():
     mol = Mol2D()
     mol.add_nodes_from(
@@ -12,7 +11,6 @@ def water_Mol2D():
     return mol
 
 
-@pytest.fixture
 def furan_Mol2D():
     mol = Mol2D()
     mol.add_nodes_from(
@@ -34,7 +32,6 @@ def furan_Mol2D():
     return mol
 
 
-@pytest.fixture
 def acac_Mol2D():
     mol = Mol2D()
     mol.add_nodes_from(
@@ -65,15 +62,12 @@ def acac_Mol2D():
 @pytest.mark.parametrize(
     "name, smiles, mol_ref",
     [
-        ("water", "O", "water_Mol2D"),
-        ("furan", "o1cccc1", "furan_Mol2D"),
-        ("acac", None, "acac_Mol2D"),  # TODO: find the correct SMILES string for acac
+        ("water", "O", water_Mol2D()),
+        ("furan", "o1cccc1", furan_Mol2D()),
+        ("acac", None, acac_Mol2D()),  # TODO: find the correct SMILES string for acac
     ]
 )
-def test_Mol2D_constructors(resource_path_root, request, name, smiles, mol_ref):
-    # Use pytests request functionality to actually construct the reference:
-    mol_ref = request.getfixturevalue(mol_ref)
-
+def test_Mol2D_constructors(resource_path_root, name, smiles, mol_ref):
     # From mol file
     mol = Mol2D.from_mol_file(resource_path_root / "inputs" / "io" / f"{name}.mol")
 
