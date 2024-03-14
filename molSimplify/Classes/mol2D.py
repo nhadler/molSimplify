@@ -83,3 +83,16 @@ class Mol2D(nx.Graph):
             mol.add_edge(int(sp[0]) - 1, int(sp[1]) - 1)
 
         return mol
+
+    def graph_hash(self):
+        return nx.weisfeiler_lehman_graph_hash(self, node_attr="symbol")
+
+    def graph_hash_edge_attr(self):
+        # Copy orginal graph before adding edge attributes
+        G = self.copy()
+
+        for i, j in G.edges:
+            G.edges[i, j]["label"] = "".join(sorted([G.nodes[i]["symbol"],
+                                                     G.nodes[j]["symbol"]]))
+
+        return nx.weisfeiler_lehman_graph_hash(G, edge_attr="label")

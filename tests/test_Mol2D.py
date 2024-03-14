@@ -1,3 +1,4 @@
+import pytest
 from molSimplify.Classes.mol2D import Mol2D
 
 
@@ -108,3 +109,23 @@ def test_Mol2D_acac(resource_path_root):
 
     # assert mol.nodes == mol_ref.nodes
     # assert mol.edges == mol_ref.edges
+
+
+@pytest.mark.parametrize(
+    "filename, node_hash_ref, edge_hash_ref",
+    [
+        ("water.mol2", "2c96eb4288d63b2a9437ddd4172e67f3", "e5206dd18f7e829cf77fae1a48e7b0b9"),
+        ("furan.mol2", "f6090276d7369c0c0a535113ec1d97cf", "a9b6fbc7b5f53613546d5e91a7544ed6"),
+        ("acac.mol2", "0dfc6836e022406f1be7b5627451d590", "d4879258a3a6c832b55b2e9d7387f96d"),
+        ("ADUYUV.mol2", "e134585068e342d12364850112ec7609", "9bc68a69bfeceabffe878084da72f542"),
+    ]
+)
+def test_Mol2D_graph_hash(resource_path_root, filename, node_hash_ref, edge_hash_ref):
+    # From mol file
+    mol = Mol2D.from_mol2_file(resource_path_root / "inputs" / "io" / filename)
+
+    node_hash = mol.graph_hash()
+    edge_hash = mol.graph_hash_edge_attr()
+
+    assert node_hash == node_hash_ref
+    assert edge_hash == edge_hash_ref
