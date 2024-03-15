@@ -1,4 +1,5 @@
 import networkx as nx
+import numpy as np
 from packaging import version
 from molSimplify.Classes.globalvars import globalvars
 
@@ -105,3 +106,24 @@ class Mol2D(nx.Graph):
                                                      G.nodes[j]["symbol"]]))
 
         return nx.weisfeiler_lehman_graph_hash(G, edge_attr="label")
+
+    def graph_determinant(self, return_string=True):
+        atomic_masses = globalvars().amass()
+        weights = np.array(
+            [
+                atomic_masses[atom[1]][0]
+                for atom in self.nodes(data="symbol", default="X")
+            ]
+        )
+        adjacency = nx.adjacency_matrix(self)
+        mat = np.outer(weights, weights) * adjacency.toarray()
+        np.fill_diagonal(mat, weights)
+        det = np.linalg.det(mat)
+        if return_string:
+            det = str(det)
+            if "e+" in det:
+                sp = det.split("e+")
+                det = sp[0][0:12] + "e+" + sp[1]
+            else:
+                det = det[0:12]
+        return det
