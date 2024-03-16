@@ -119,6 +119,13 @@ class Mol2D(nx.Graph):
         mat = np.outer(weights, weights) * adjacency
         np.fill_diagonal(mat, weights)
         det = np.linalg.det(mat)
+        with np.errstate(over='raise'):
+            try:
+                det = np.linalg.det(mat)
+            except (np.linalg.LinAlgError, FloatingPointError):
+                (sign, det) = np.linalg.slogdet(mat)
+                if sign != 0:
+                    det = sign*det
         if return_string:
             det = str(det)
             if "e+" in det:
