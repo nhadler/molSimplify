@@ -115,8 +115,8 @@ class Mol2D(nx.Graph):
                 for atom in self.nodes(data="symbol", default="X")
             ]
         )
-        adjacency = nx.adjacency_matrix(self)
-        mat = np.outer(weights, weights) * adjacency.toarray()
+        adjacency = nx.to_numpy_array(self)
+        mat = np.outer(weights, weights) * adjacency
         np.fill_diagonal(mat, weights)
         det = np.linalg.det(mat)
         if return_string:
