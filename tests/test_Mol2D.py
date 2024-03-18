@@ -60,6 +60,17 @@ def acac_Mol2D():
 
 
 @pytest.mark.parametrize(
+    "mol, ref",
+    [
+        (water_Mol2D(), "Mol2D(O1H2)"),
+        (furan_Mol2D(), "Mol2D(O1C4H4)"),
+        (acac_Mol2D(), "Mol2D(O2C5H7)"),
+    ])
+def test_Mol2D_repr(mol, ref):
+    assert mol.__repr__() == ref
+
+
+@pytest.mark.parametrize(
     "name, smiles, mol_ref",
     [
         ("water", "O", water_Mol2D()),

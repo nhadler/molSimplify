@@ -11,6 +11,21 @@ except ImportError:
 
 class Mol2D(nx.Graph):
 
+    def __repr__(self):
+        atom_counts = {}
+        for _, sym in self.nodes.data(data="symbol", default="X"):
+            if sym not in atom_counts:
+                atom_counts[sym] = 1
+            else:
+                atom_counts[sym] += 1
+
+        symbols = globalvars().elementsbynum()
+        formula = ""
+        for sym in sorted(atom_counts.keys(),
+                          key=lambda x: symbols.index(x), reverse=True):
+            formula += f"{sym}{atom_counts[sym]}"
+        return f"Mol2D({formula})"
+
     @classmethod
     def from_smiles(cls, smiles):
         mol = cls()
