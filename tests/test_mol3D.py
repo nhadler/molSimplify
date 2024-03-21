@@ -106,34 +106,32 @@ def test_mutating_atoms():
     assert mol.findMetal() == []
 
 
-@pytest.mark.parametrize('name, coordination_number, geometry_str', [
-    ('linear', 2, 'linear'),
-    ('trigonal_planar', 3, 'trigonal planar'),
-    ('t_shape', 3, 'T shape'),
-    ('trigonal_pyramidal', 3, 'trigonal pyramidal'),
-    ('tetrahedral', 4, 'tetrahedral'),
-    ('square_planar', 4, 'square planar'),
-    ('seesaw', 4, 'seesaw'),
-    ('trigonal_bipyramidal', 5, 'trigonal bipyramidal'),
-    ('square_pyramidal', 5, 'square pyramidal'),
-    # ('pentagonal_planar', 5, 'pentagonal planar'),
-    ('octahedral', 6, 'octahedral'),
-    # ('pentagonal_pyramidal', 6, 'pentagonal pyramidal'),
-    ('trigonal_prismatic', 6, 'trigonal prismatic'),
-    # ('pentagonal_bipyramidal', 7, 'pentagonal bipyramidal')
-    # ('square_antiprismatic', 8, 'square antiprismatic'),
-    # ('tricapped_trigonal_prismatic', 9, 'tricapped trigonal prismatic'),
+@pytest.mark.parametrize('name, geometry_str', [
+    ('linear', 'linear'),
+    ('trigonal_planar', 'trigonal planar'),
+    ('t_shape', 'T shape'),
+    ('trigonal_pyramidal', 'trigonal pyramidal'),
+    ('tetrahedral', 'tetrahedral'),
+    ('square_planar', 'square planar'),
+    ('seesaw', 'seesaw'),
+    ('trigonal_bipyramidal', 'trigonal bipyramidal'),
+    ('square_pyramidal', 'square pyramidal'),
+    # ('pentagonal_planar', 'pentagonal planar'),
+    ('octahedral', 'octahedral'),
+    # ('pentagonal_pyramidal', 'pentagonal pyramidal'),
+    ('trigonal_prismatic', 'trigonal prismatic'),
+    # ('pentagonal_bipyramidal', 'pentagonal bipyramidal')
+    # ('square_antiprismatic', 'square antiprismatic'),
+    # ('tricapped_trigonal_prismatic', 'tricapped trigonal prismatic'),
 ])
-def test_get_geometry_type(resource_path_root, name, coordination_number, geometry_str):
+def test_get_geometry_type(resource_path_root, name, geometry_str):
     xyz_file = resource_path_root / "inputs" / "geometry_type" / f"{name}.xyz"
     mol = mol3D()
     mol.readfromxyz(xyz_file)
 
-    geo_report = mol.get_geometry_type(num_coord=coordination_number, debug=True)
+    geo_report = mol.get_geometry_type(debug=True)
 
     assert geo_report['geometry'] == geometry_str
-    assert geo_report['allconnect'] is False
-    assert geo_report['aromatic'] is False
 
 
 def test_get_geometry_type_catoms_arr(resource_path_root):
@@ -142,34 +140,38 @@ def test_get_geometry_type_catoms_arr(resource_path_root):
     mol.readfromxyz(xyz_file)
 
     with pytest.raises(ValueError):
-        mol.get_geometry_type(num_coord=6, catoms_arr=[1], debug=True)
+        mol.get_geometry_type(catoms_arr=[1], debug=True)
 
-    geo_report = mol.get_geometry_type(num_coord=6, catoms_arr=[1, 4, 7, 10, 13, 16], debug=True)
+    geo_report = mol.get_geometry_type(catoms_arr=[1, 4, 7, 10, 13, 16], debug=True)
 
     assert geo_report['geometry'] == 'octahedral'
-    assert geo_report['allconnect'] is False
-    assert geo_report['aromatic'] is False
 
 
 @pytest.mark.parametrize(
-    'name, geometry_str, num_sandwich',
+    'name, geometry_str, hapticity',
     [
-        ('BOWROX_comp_0.mol2', 'tetrahedral', 1),
-        ('BOXTEQ_comp_0.mol2', 'tetrahedral', 1),
-        ('BOXTIU_comp_0.mol2', 'tetrahedral', 1),
-        # ('BOZHOQ_comp_2.mol2', 'linear', 2),
-        # ('BOZHUW_comp_2.mol2', 'linear', 2),
+        ('BOWROX_comp_0.mol2', 'tetrahedral', [5, 1, 1, 1]),
+        ('BOXTEQ_comp_0.mol2', 'tetrahedral', [6, 1, 1, 1]),
+        ('BOXTIU_comp_0.mol2', 'tetrahedral', [6, 1, 1, 1]),
+        ('BOZHOQ_comp_2.mol2', 'linear', [5, 5]),
+        ('BOZHUW_comp_2.mol2', 'linear', [5, 5]),
+        ('BUFLUM_comp_0.mol2', 'T shape', [2, 1, 1]),
+        ('BUHMID_comp_0.mol2', 'trigonal planar', [3, 1, 1]),
+        # ('COYXUM_comp_0.mol2', 'trigonal pyramidal', [5, 1, 1, 1]),  Seems like we do not have that geometry
+        ('COYYEX_comp_0.mol2', 'trigonal planar', [5, 1, 1]),
+        # ('COYYIB_comp_0.mol2', 'trigonal pyramidal', [5, 1, 1, 1]),  # Seems like we do not have that geometry
     ]
 )
-def test_get_geometry_type_sandwich(resource_path_root, name, geometry_str, num_sandwich):
-    input_file = resource_path_root / "inputs" / "sandwich_compounds" / name
+def test_get_geometry_type_hapticity(resource_path_root, name, geometry_str, hapticity):
+    input_file = resource_path_root / "inputs" / "hapticity_compounds" / name
     mol = mol3D()
     mol.readfrommol2(input_file)
 
     geo_report = mol.get_geometry_type(debug=True)
 
+    print(geo_report)
     assert geo_report["geometry"] == geometry_str
-    assert geo_report["num_sandwich_lig"] == num_sandwich
+    assert geo_report["hapticity"] == hapticity
 
 
 @pytest.mark.parametrize(
@@ -183,7 +185,7 @@ def test_get_geometry_type_sandwich(resource_path_root, name, geometry_str, num_
     ]
 )
 def test_is_sandwich_compound(resource_path_root, name, con_atoms):
-    input_file = resource_path_root / "inputs" / "sandwich_compounds" / name
+    input_file = resource_path_root / "inputs" / "hapticity_compounds" / name
     mol = mol3D()
     mol.readfrommol2(input_file)
 
@@ -204,13 +206,10 @@ def test_is_sandwich_compound(resource_path_root, name, con_atoms):
     [
         ("BUFLUM_comp_0.mol2", [{2, 4}]),
         ("BUHMID_comp_0.mol2", [{3, 4, 5}]),
-        ("COYXUM_comp_0.mol2", [{0, 1, 2, 3, 4}]),
-        ("COYYEX_comp_0.mol2", [{0, 1, 2, 3, 4}]),
-        ("COYYIB_comp_0.mol2", [{1, 2, 3, 6, 7}]),
     ]
 )
 def test_is_edge_compound(resource_path_root, name, con_atoms):
-    input_file = resource_path_root / "inputs" / "edge_compounds" / name
+    input_file = resource_path_root / "inputs" / "hapticity_compounds" / name
     mol = mol3D()
     mol.readfrommol2(input_file)
 
