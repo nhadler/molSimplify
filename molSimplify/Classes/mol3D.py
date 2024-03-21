@@ -30,7 +30,6 @@ from molSimplify.Scripts.rmsd import rigorous_rmsd
 try:
     import PyQt5  # noqa: F401
     from molSimplify.Classes.miniGUI import miniGUI
-
     # PyQt5 flag
     qtflag = True
 except ImportError:
@@ -1184,6 +1183,65 @@ class mol3D:
         nh_obmol = int(nh_obmol)
         charge = charge - nh_obmol + nh
         return charge
+
+    def get_first_shell(self, check_hapticity=True):
+        '''
+        Get the first coordination shell of a mol3D object with a single transition metal (read from CSD mol2 file)
+        if check_hapticity is True updates the first shell of multiheptate ligand to be hydrogen set at the geometric mean
+
+        Parameters
+        ----------
+            check_hapticity: boolean
+                whether to update multiheptate ligands to their geometric centroid
+        Returns
+        ----------
+            mol 3D object: first coordination shell with metal (can change based on check_hapticity)
+            list: list of hapticity
+        '''
+        from molSimplify.Informatics.graph_analyze import obtain_truncation_metal
+        import networkx as nx
+        mol_fcs = obtain_truncation_metal(self, hops=1)
+        M_coord = mol_fcs.getAtomCoords(mol_fcs.findMetal()[0])
+        M_sym = mol_fcs.getAtom(mol_fcs.findMetal()[0]).symbol()
+        G = nx.from_numpy_array(mol_fcs.graph)
+        G.remove_node(mol_fcs.findMetal()[0])
+        coord_list = [c for c in sorted(nx.connected_components(G), key=len, reverse=True)]
+        hapticity_list = [len(c) for c in sorted(nx.connected_components(G), key=len, reverse=True)]
+        new_coords_mol = []
+        new_coords_sym = []
+        if not len(coord_list) == G.number_of_nodes():
+            for i in range(len(coord_list)):
+                if len(coord_list[i]) == 1:
+                    coord_index = list(coord_list[i])[0]
+                    coord = mol_fcs.getAtomCoords(coord_index)
+                    sym = mol_fcs.getAtom(coord_index).symbol()
+                    new_coords_mol.append(coord)
+                    new_coords_sym.append(sym)
+                else:
+                    get_centroid = []
+                    for j in coord_list[i]:
+                        get_centroid.append(mol_fcs.getAtomCoords(j))
+                    coordinating = np.array(get_centroid)
+                    coord = np.mean(coordinating, axis=0)
+                    new_coords_mol.append(coord.tolist())
+                    new_coords_sym.append('H')
+            new_mol = mol3D()
+            new_mol.bo_dict = {}
+            new_mol.addAtom(atom3D(M_sym, M_coord))
+            for i in range(len(new_coords_mol)):
+                new_mol.addAtom(atom3D(new_coords_sym[i], new_coords_mol[i]))
+            new_mol.graph = np.zeros([new_mol.natoms, new_mol.natoms])
+            for i in range(new_mol.natoms):
+                if i != new_mol.findMetal()[0]:
+                    new_mol.add_bond(new_mol.findMetal()[0], i, 1)
+        else:
+            new_mol = mol3D()
+            new_mol.copymol3D(mol_fcs)
+
+        if check_hapticity:
+            return new_mol, hapticity_list
+        else:
+            return mol_fcs, hapticity_list
 
     def get_octetrule_charge(self, debug=False):
         '''
@@ -5385,7 +5443,7 @@ class mol3D:
             num_edge_lig, info_edge_lig, edge_lig_atoms = 0, list(), list()
         return num_edge_lig, info_edge_lig, edge_lig_atoms
 
-    def get_geometry_type(self, dict_check=False, angle_ref=False, num_coord=None,
+    def get_geometry_type_old(self, dict_check=False, angle_ref=False, num_coord=None,
                           flag_catoms=False, catoms_arr=None, debug=False,
                           skip=False, transition_metals_only=False, num_recursions=[0, 0]):
         """
@@ -5463,7 +5521,7 @@ class mol3D:
                 atom.setcoords(xyz=centroid_coords[idx])
                 mol_copy.addAtom(atom)
                 mol_copy.add_bond(idx1=mol_copy.findMetal()[0], idx2=mol_copy.natoms-1, bond_type=1)
-            return mol_copy.get_geometry_type(num_recursions=[num_sandwich_lig, num_edge_lig])
+            return mol_copy.get_geometry_type_old(num_recursions=[num_sandwich_lig, num_edge_lig])
 
         if num_edge_lig:
             mol_copy = mol3D()
@@ -5482,7 +5540,7 @@ class mol3D:
                 atom.setcoords(xyz=centroid_coords[idx])
                 mol_copy.addAtom(atom)
                 mol_copy.add_bond(idx1=mol_copy.findMetal()[0], idx2=mol_copy.natoms-1, bond_type=1)
-            return mol_copy.get_geometry_type(num_recursions=[num_sandwich_lig, num_edge_lig])
+            return mol_copy.get_geometry_type_old(num_recursions=[num_sandwich_lig, num_edge_lig])
 
         if num_coord not in all_geometries:
             geometry = "unknown"
@@ -5517,9 +5575,111 @@ class mol3D:
             "angle_devi": angle_devi,
             "summary": summary,
             "num_sandwich_lig": num_recursions[0],
+            "info_sandwich_lig": info_sandwich_lig,
             "aromatic": aromatic,
             "allconnect": allconnect,
-            "num_edge_lig": num_recursions[1]
+            "num_edge_lig": num_recursions[1],
+            "info_edge_lig": info_edge_lig,
+        }
+        return results
+
+    def get_geometry_type(self, dict_check=False, angle_ref=False,
+                          flag_catoms=False, catoms_arr=None, debug=False,
+                          skip=False, transition_metals_only=False):
+        """
+        Get the type of the geometry (linear (2), trigonal planar(3), tetrahedral(4), square planar(4),
+        trigonal bipyramidal(5), square pyramidal(5, one-empty-site),
+        octahedral(6), pentagonal bipyramidal(7))
+
+        uses hapticity truncated first coordination shell.
+        Does not require the input of num_coord.
+
+        Parameters
+        ----------
+            dict_check : dict, optional
+                The cutoffs of each geo_check metrics we have. Default is False
+            angle_ref : bool, optional
+                Reference list of list for the expected angles (A-metal-B) of each connection atom.
+            num_coord : int, optional
+                Expected coordination number.
+            flag_catoms : bool, optional
+                Whether or not to return the catoms arr. Default as False.
+            catoms_arr : Nonetype, optional
+                Uses the catoms of the mol3D by default. User and overwrite this connection atom array by explicit input.
+                Default is Nonetype.
+            debug : bool, optional
+                Flag for extra printout. Default is False.
+            skip : list, optional
+                Geometry checks to skip. Default is False.
+            transition_metals_only : bool, optional
+                Flag for considering more than just transition metals as metals. Default is False.
+
+        Returns
+        -------
+            results : dictionary
+                Measurement of deviations from arrays.
+
+        """
+
+        first_shell, hapt = self.get_first_shell()
+        num_coord = first_shell.natoms - 1
+        all_geometries = globalvars().get_all_geometries()
+        all_angle_refs = globalvars().get_all_angle_refs()
+        summary = {}
+
+        if len(first_shell.graph):  # Find num_coord based on metal_cn if graph is assigned
+            if len(first_shell.findMetal()) > 1:
+                raise ValueError('Multimetal complexes are not yet handled.')
+            elif len(first_shell.findMetal(transition_metals_only=transition_metals_only)) == 1:
+                num_coord = len(first_shell.getBondedAtomsSmart(first_shell.findMetal(transition_metals_only=transition_metals_only)[0]))
+            else:
+                raise ValueError('No metal centers exist in this complex.')
+
+        if catoms_arr is not None and len(catoms_arr) != num_coord:
+            raise ValueError("num_coord and the length of catoms_arr do not match.")
+
+        if num_coord not in [2, 3, 4, 5, 6, 7]:
+            results = {
+                "geometry": "unknown",
+                "angle_devi": False,
+                "summary": {},
+                "hapticity": hapt,
+            }
+            return results
+        elif num_coord == 2:
+            if first_shell.findMetal()[0] == 2:
+                angle = first_shell.getAngle(0, 2, 1)
+            elif first_shell.findMetal()[0] == 1:
+                angle = first_shell.getAngle(0, 1, 2)
+            else:
+                angle = first_shell.getAngle(1, 0, 2)
+            results = {
+                "geometry": "linear",
+                "angle_devi": 180 - angle,
+                "summary": {},
+                "hapticity": hapt,
+            }
+            return results
+
+        possible_geometries = all_geometries[num_coord]
+        for geotype in possible_geometries:
+            dict_catoms_shape, catoms_assigned = first_shell.oct_comp(
+                angle_ref=all_angle_refs[geotype], catoms_arr=None, debug=debug)
+            if debug:
+                print("Geocheck assigned catoms: ", catoms_assigned,
+                      [first_shell.getAtom(ind).symbol() for ind in catoms_assigned])
+            summary.update({geotype: dict_catoms_shape})
+
+        angle_devi, geometry = 10000, None
+        for geotype in summary:
+            if summary[geotype]["oct_angle_devi_max"] < angle_devi:
+                angle_devi = summary[geotype]["oct_angle_devi_max"]
+                geometry = geotype
+        results = {
+            "geometry": geometry,
+            "angle_devi": angle_devi,
+            "summary": summary,
+            "hapticity": hapt,
         }
         return results
 
