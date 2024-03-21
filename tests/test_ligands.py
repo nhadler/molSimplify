@@ -40,7 +40,7 @@ def test_ligands_dict(lig_name):
         for line in lines:
             if 'CHG' in line:
                 # Should be in the following format:
-                # "M  CHGnn8 aaa vvv\n"
+                # "M  CHG  n aaa vvv\n"
                 # Where 'n' the number first number after 'CHG' states how
                 # many atom/charge pairs (8 characters each) follow.
                 n_charges = int(line[6:9])

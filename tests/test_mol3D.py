@@ -107,6 +107,7 @@ def test_mutating_atoms():
 
 
 @pytest.mark.parametrize('name, coordination_number, geometry_str', [
+    ('linear', 2, 'linear'),
     ('trigonal_planar', 3, 'trigonal planar'),
     ('t_shape', 3, 'T shape'),
     ('trigonal_pyramidal', 3, 'trigonal pyramidal'),
@@ -120,13 +121,15 @@ def test_mutating_atoms():
     # ('pentagonal_pyramidal', 6, 'pentagonal pyramidal'),
     ('trigonal_prismatic', 6, 'trigonal prismatic'),
     # ('pentagonal_bipyramidal', 7, 'pentagonal bipyramidal')
-    ])
+    # ('square_antiprismatic', 8, 'square antiprismatic'),
+    # ('tricapped_trigonal_prismatic', 9, 'tricapped trigonal prismatic'),
+])
 def test_get_geometry_type(resource_path_root, name, coordination_number, geometry_str):
     xyz_file = resource_path_root / "inputs" / "geometry_type" / f"{name}.xyz"
     mol = mol3D()
     mol.readfromxyz(xyz_file)
 
-    geo_report = mol.get_geometry_type(num_coord=coordination_number)
+    geo_report = mol.get_geometry_type(num_coord=coordination_number, debug=True)
 
     assert geo_report['geometry'] == geometry_str
     assert geo_report['allconnect'] is False
@@ -146,6 +149,77 @@ def test_get_geometry_type_catoms_arr(resource_path_root):
     assert geo_report['geometry'] == 'octahedral'
     assert geo_report['allconnect'] is False
     assert geo_report['aromatic'] is False
+
+
+@pytest.mark.parametrize(
+    'name, geometry_str, num_sandwich',
+    [
+        ('BOWROX_comp_0.mol2', 'tetrahedral', 1),
+        ('BOXTEQ_comp_0.mol2', 'tetrahedral', 1),
+        ('BOXTIU_comp_0.mol2', 'tetrahedral', 1),
+        # ('BOZHOQ_comp_2.mol2', 'linear', 2),
+        # ('BOZHUW_comp_2.mol2', 'linear', 2),
+    ]
+)
+def test_get_geometry_type_sandwich(resource_path_root, name, geometry_str, num_sandwich):
+    input_file = resource_path_root / "inputs" / "sandwich_compounds" / name
+    mol = mol3D()
+    mol.readfrommol2(input_file)
+
+    geo_report = mol.get_geometry_type(debug=True)
+
+    assert geo_report["geometry"] == geometry_str
+    assert geo_report["num_sandwich_lig"] == num_sandwich
+
+
+@pytest.mark.parametrize(
+    'name, con_atoms',
+    [
+        ('BOWROX_comp_0.mol2', [{3, 4, 5, 6, 7}]),
+        ('BOXTEQ_comp_0.mol2', [{4, 5, 6, 7, 8, 9}]),
+        ('BOXTIU_comp_0.mol2', [{2, 3, 5, 6, 8, 9}]),
+        ('BOZHOQ_comp_2.mol2', [{1, 2, 3, 6, 8}, {4, 5, 7, 9, 10}]),
+        ('BOZHUW_comp_2.mol2', [{1, 2, 3, 4, 5}, {6, 7, 8, 9, 10}]),
+    ]
+)
+def test_is_sandwich_compound(resource_path_root, name, con_atoms):
+    input_file = resource_path_root / "inputs" / "sandwich_compounds" / name
+    mol = mol3D()
+    mol.readfrommol2(input_file)
+
+    num_sandwich_lig, info_sandwich_lig, aromatic, allconnect, sandwich_lig_atoms = mol.is_sandwich_compound()
+
+    assert num_sandwich_lig == len(con_atoms)
+    assert aromatic
+    assert allconnect
+    for i, (info, lig) in enumerate(zip(info_sandwich_lig, sandwich_lig_atoms)):
+        assert info["aromatic"]
+        assert info["natoms_connected"] == len(con_atoms[i])
+        assert info["natoms_ring"] == len(con_atoms[i])
+        assert lig["atom_idxs"] == con_atoms[i]
+
+
+@pytest.mark.parametrize(
+    'name, con_atoms',
+    [
+        ("BUFLUM_comp_0.mol2", [{2, 4}]),
+        ("BUHMID_comp_0.mol2", [{3, 4, 5}]),
+        ("COYXUM_comp_0.mol2", [{0, 1, 2, 3, 4}]),
+        ("COYYEX_comp_0.mol2", [{0, 1, 2, 3, 4}]),
+        ("COYYIB_comp_0.mol2", [{1, 2, 3, 6, 7}]),
+    ]
+)
+def test_is_edge_compound(resource_path_root, name, con_atoms):
+    input_file = resource_path_root / "inputs" / "edge_compounds" / name
+    mol = mol3D()
+    mol.readfrommol2(input_file)
+
+    num_edge_lig, info_edge_lig, edge_lig_atoms = mol.is_edge_compound()
+
+    assert num_edge_lig == len(con_atoms)
+    for i, (info, lig) in enumerate(zip(info_edge_lig, edge_lig_atoms)):
+        assert info["natoms_connected"] == len(con_atoms[i])
+        assert lig["atom_idxs"] == con_atoms[i]
 
 
 def test_readfromxyzfile(resource_path_root):
@@ -182,3 +256,83 @@ def test_readfromxyzfile(resource_path_root):
 
     for atom, ref in zip(mol.atoms, atoms_ref):
         assert (atom.symbol(), atom.coords()) == ref
+
+
+def test_mol3D_from_smiles_macrocycles():
+    """Uses an examples from Aditya's macrocycles that were previously
+    converted wrong.
+    """
+    smiles = "C9SC(=CCSC(CSC(=NCSC9)))"
+    mol = mol3D.from_smiles(smiles)
+    assert mol.natoms == 29
+
+    ref_graph = np.zeros([mol.natoms, mol.natoms])
+    ref_bo_graph = np.zeros([mol.natoms, mol.natoms])
+    bonds = [
+        (21, 7, 1.0),
+        (29, 14, 1.0),
+        (13, 14, 1.0),
+        (13, 12, 1.0),
+        (9, 10, 1.0),
+        (9, 8, 1.0),
+        (27, 12, 1.0),
+        (6, 7, 1.0),
+        (6, 5, 1.0),
+        (14, 28, 1.0),
+        (14, 1, 1.0),
+        (7, 8, 1.0),
+        (7, 22, 1.0),
+        (2, 1, 1.0),
+        (2, 3, 1.0),
+        (24, 8, 1.0),
+        (12, 11, 1.0),
+        (12, 26, 1.0),
+        (10, 11, 2.0),
+        (10, 25, 1.0),
+        (8, 23, 1.0),
+        (1, 15, 1.0),
+        (1, 16, 1.0),
+        (3, 17, 1.0),
+        (3, 4, 2.0),
+        (5, 19, 1.0),
+        (5, 4, 1.0),
+        (5, 20, 1.0),
+        (4, 18, 1.0),
+    ]
+    for bond in bonds:
+        i, j = bond[0] - 1, bond[1] - 1
+        ref_graph[i, j] = ref_graph[j, i] = 1
+        ref_bo_graph[i, j] = ref_bo_graph[j, i] = bond[2]
+
+    np.testing.assert_allclose(mol.graph, ref_graph)
+    np.testing.assert_allclose(mol.bo_graph, ref_bo_graph)
+
+
+def test_mol3D_from_smiles_benzene():
+    smiles = "c1ccccc1"
+    mol = mol3D.from_smiles(smiles)
+    assert mol.natoms == 12
+
+    ref_graph = np.zeros([mol.natoms, mol.natoms])
+    ref_bo_graph = np.zeros([mol.natoms, mol.natoms])
+    bonds = [
+        (1, 2, 1.5),
+        (2, 3, 1.5),
+        (3, 4, 1.5),
+        (4, 5, 1.5),
+        (5, 6, 1.5),
+        (1, 6, 1.5),
+        (1, 7, 1.0),
+        (2, 8, 1.0),
+        (3, 9, 1.0),
+        (4, 10, 1.0),
+        (5, 11, 1.0),
+        (6, 12, 1.0),
+    ]
+    for bond in bonds:
+        i, j = bond[0] - 1, bond[1] - 1
+        ref_graph[i, j] = ref_graph[j, i] = 1
+        ref_bo_graph[i, j] = ref_bo_graph[j, i] = bond[2]
+
+    np.testing.assert_allclose(mol.graph, ref_graph)
+    np.testing.assert_allclose(mol.bo_graph, ref_bo_graph)
