@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from molSimplify.Informatics.active_learning.expected_improvement import (
-    get_pareto_indices,
+    get_2D_pareto_indices,
     get_2D_PI_and_centroid,
     get_2D_EI,
 )
@@ -10,23 +10,23 @@ from molSimplify.Informatics.active_learning.expected_improvement import (
 def test_get_pareto_indices():
     points = np.random.default_rng(0).normal(size=(500, 2))
 
-    pareto_indices = get_pareto_indices(points)
+    pareto_indices = get_2D_pareto_indices(points)
     np.testing.assert_equal(pareto_indices, [239, 119, 308, 95, 49, 230, 79, 206, 151])
 
     # Also test the 3 other quadrants:
     # Maximize dimension 0, minimize dimension 1
     points[:, 0] *= -1
-    pareto_indices = get_pareto_indices(points)
+    pareto_indices = get_2D_pareto_indices(points)
     np.testing.assert_equal(pareto_indices, [135, 331, 376, 247, 34, 151])
 
     # Maximize dimension 0, maximize dimension 1
     points[:, 1] *= -1
-    pareto_indices = get_pareto_indices(points)
+    pareto_indices = get_2D_pareto_indices(points)
     np.testing.assert_equal(pareto_indices, [135, 258, 23, 489, 466, 123, 109])
 
     # Minimize dimension 0, maximize dimension 1
     points[:, 0] *= -1
-    pareto_indices = get_pareto_indices(points)
+    pareto_indices = get_2D_pareto_indices(points)
     np.testing.assert_equal(pareto_indices, [239, 69, 175, 201, 389, 109])
 
 

@@ -3,7 +3,7 @@ from scipy.stats import norm
 from typing import Tuple
 
 
-def get_pareto_indices(points: np.ndarray) -> np.ndarray:
+def get_2D_pareto_indices(points: np.ndarray) -> np.ndarray:
     """Calculate the indices of the points that make up the 2D pareto front.
 
     Parameters
