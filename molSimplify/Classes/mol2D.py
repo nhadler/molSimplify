@@ -133,7 +133,6 @@ class Mol2D(nx.Graph):
         adjacency = nx.to_numpy_array(self)
         mat = np.outer(weights, weights) * adjacency
         np.fill_diagonal(mat, weights)
-        det = np.linalg.det(mat)
         with np.errstate(over='raise'):
             try:
                 det = np.linalg.det(mat)
