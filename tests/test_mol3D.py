@@ -107,6 +107,7 @@ def test_mutating_atoms():
 
 
 @pytest.mark.parametrize('name, coordination_number, geometry_str', [
+    ('linear', 2, 'linear'),
     ('trigonal_planar', 3, 'trigonal planar'),
     ('t_shape', 3, 'T shape'),
     ('trigonal_pyramidal', 3, 'trigonal pyramidal'),
@@ -120,13 +121,15 @@ def test_mutating_atoms():
     # ('pentagonal_pyramidal', 6, 'pentagonal pyramidal'),
     ('trigonal_prismatic', 6, 'trigonal prismatic'),
     # ('pentagonal_bipyramidal', 7, 'pentagonal bipyramidal')
-    ])
+    # ('square_antiprismatic', 8, 'square antiprismatic'),
+    # ('tricapped_trigonal_prismatic', 9, 'tricapped trigonal prismatic'),
+])
 def test_get_geometry_type(resource_path_root, name, coordination_number, geometry_str):
     xyz_file = resource_path_root / "inputs" / "geometry_type" / f"{name}.xyz"
     mol = mol3D()
     mol.readfromxyz(xyz_file)
 
-    geo_report = mol.get_geometry_type(num_coord=coordination_number)
+    geo_report = mol.get_geometry_type(num_coord=coordination_number, debug=True)
 
     assert geo_report['geometry'] == geometry_str
     assert geo_report['allconnect'] is False
@@ -146,6 +149,77 @@ def test_get_geometry_type_catoms_arr(resource_path_root):
     assert geo_report['geometry'] == 'octahedral'
     assert geo_report['allconnect'] is False
     assert geo_report['aromatic'] is False
+
+
+@pytest.mark.parametrize(
+    'name, geometry_str, num_sandwich',
+    [
+        ('BOWROX_comp_0.mol2', 'tetrahedral', 1),
+        ('BOXTEQ_comp_0.mol2', 'tetrahedral', 1),
+        ('BOXTIU_comp_0.mol2', 'tetrahedral', 1),
+        # ('BOZHOQ_comp_2.mol2', 'linear', 2),
+        # ('BOZHUW_comp_2.mol2', 'linear', 2),
+    ]
+)
+def test_get_geometry_type_sandwich(resource_path_root, name, geometry_str, num_sandwich):
+    input_file = resource_path_root / "inputs" / "sandwich_compounds" / name
+    mol = mol3D()
+    mol.readfrommol2(input_file)
+
+    geo_report = mol.get_geometry_type(debug=True)
+
+    assert geo_report["geometry"] == geometry_str
+    assert geo_report["num_sandwich_lig"] == num_sandwich
+
+
+@pytest.mark.parametrize(
+    'name, con_atoms',
+    [
+        ('BOWROX_comp_0.mol2', [{3, 4, 5, 6, 7}]),
+        ('BOXTEQ_comp_0.mol2', [{4, 5, 6, 7, 8, 9}]),
+        ('BOXTIU_comp_0.mol2', [{2, 3, 5, 6, 8, 9}]),
+        ('BOZHOQ_comp_2.mol2', [{1, 2, 3, 6, 8}, {4, 5, 7, 9, 10}]),
+        ('BOZHUW_comp_2.mol2', [{1, 2, 3, 4, 5}, {6, 7, 8, 9, 10}]),
+    ]
+)
+def test_is_sandwich_compound(resource_path_root, name, con_atoms):
+    input_file = resource_path_root / "inputs" / "sandwich_compounds" / name
+    mol = mol3D()
+    mol.readfrommol2(input_file)
+
+    num_sandwich_lig, info_sandwich_lig, aromatic, allconnect, sandwich_lig_atoms = mol.is_sandwich_compound()
+
+    assert num_sandwich_lig == len(con_atoms)
+    assert aromatic
+    assert allconnect
+    for i, (info, lig) in enumerate(zip(info_sandwich_lig, sandwich_lig_atoms)):
+        assert info["aromatic"]
+        assert info["natoms_connected"] == len(con_atoms[i])
+        assert info["natoms_ring"] == len(con_atoms[i])
+        assert lig["atom_idxs"] == con_atoms[i]
+
+
+@pytest.mark.parametrize(
+    'name, con_atoms',
+    [
+        ("BUFLUM_comp_0.mol2", [{2, 4}]),
+        ("BUHMID_comp_0.mol2", [{3, 4, 5}]),
+        ("COYXUM_comp_0.mol2", [{0, 1, 2, 3, 4}]),
+        ("COYYEX_comp_0.mol2", [{0, 1, 2, 3, 4}]),
+        ("COYYIB_comp_0.mol2", [{1, 2, 3, 6, 7}]),
+    ]
+)
+def test_is_edge_compound(resource_path_root, name, con_atoms):
+    input_file = resource_path_root / "inputs" / "edge_compounds" / name
+    mol = mol3D()
+    mol.readfrommol2(input_file)
+
+    num_edge_lig, info_edge_lig, edge_lig_atoms = mol.is_edge_compound()
+
+    assert num_edge_lig == len(con_atoms)
+    for i, (info, lig) in enumerate(zip(info_edge_lig, edge_lig_atoms)):
+        assert info["natoms_connected"] == len(con_atoms[i])
+        assert lig["atom_idxs"] == con_atoms[i]
 
 
 def test_readfromxyzfile(resource_path_root):
