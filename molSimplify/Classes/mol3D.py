@@ -5521,7 +5521,7 @@ class mol3D:
                 atom.setcoords(xyz=centroid_coords[idx])
                 mol_copy.addAtom(atom)
                 mol_copy.add_bond(idx1=mol_copy.findMetal()[0], idx2=mol_copy.natoms-1, bond_type=1)
-            return mol_copy.get_geometry_type(num_recursions=[num_sandwich_lig, num_edge_lig])
+            return mol_copy.get_geometry_type_old(num_recursions=[num_sandwich_lig, num_edge_lig])
 
         if num_edge_lig:
             mol_copy = mol3D()
@@ -5540,7 +5540,7 @@ class mol3D:
                 atom.setcoords(xyz=centroid_coords[idx])
                 mol_copy.addAtom(atom)
                 mol_copy.add_bond(idx1=mol_copy.findMetal()[0], idx2=mol_copy.natoms-1, bond_type=1)
-            return mol_copy.get_geometry_type(num_recursions=[num_sandwich_lig, num_edge_lig])
+            return mol_copy.get_geometry_type_old(num_recursions=[num_sandwich_lig, num_edge_lig])
 
         if num_coord not in all_geometries:
             geometry = "unknown"
@@ -5621,7 +5621,7 @@ class mol3D:
 
         """
 
-        first_shell,hapt = self.get_first_shell()
+        first_shell, hapt = self.get_first_shell()
         num_coord = first_shell.natoms - 1
         all_geometries = globalvars().get_all_geometries()
         all_angle_refs = globalvars().get_all_angle_refs()
@@ -5632,21 +5632,11 @@ class mol3D:
                 raise ValueError('Multimetal complexes are not yet handled.')
             elif len(first_shell.findMetal(transition_metals_only=transition_metals_only)) == 1:
                 num_coord = len(first_shell.getBondedAtomsSmart(first_shell.findMetal(transition_metals_only=transition_metals_only)[0]))
-                # print("coord number:", num_coord)
             else:
                 raise ValueError('No metal centers exist in this complex.')
 
-   #     if num_coord is False:
-            # TODO: Implement the case where we don't know the coordination number.
-            #raise NotImplementedError(
-            #    "Not implemented yet. Please at least provide the coordination number.")
-
-
         if catoms_arr is not None and len(catoms_arr) != num_coord:
             raise ValueError("num_coord and the length of catoms_arr do not match.")
-
-        #num_sandwich_lig, info_sandwich_lig, aromatic, allconnect = self.is_sandwich_compound()
-        #num_edge_lig, info_edge_lig = self.is_edge_compound()
 
         if num_coord not in [2, 3, 4, 5, 6, 7]:
             geometry = "unknown"
@@ -5657,14 +5647,14 @@ class mol3D:
                 "hapticity": hapt,
             }
             return results
-        elif num_coord==2:
+        elif num_coord == 2:
             geometry = "linear"
             if first_shell.findMetal()[0] == 2:
-                angle = first_shell.getAngle(0,2,1)
+                angle = first_shell.getAngle(0, 2, 1)
             elif first_shell.findMetal()[0] == 1:
-                angle = first_shell.getAngle(0,1,2)
+                angle = first_shell.getAngle(0, 1, 2)
             else:
-                angle = first_shell.getAngle(1,0,2)
+                angle = first_shell.getAngle(1, 0, 2)
             angle_devi = 180 - angle
             results = {
                 "geometry": "linear",
@@ -5676,9 +5666,8 @@ class mol3D:
 
         possible_geometries = all_geometries[num_coord]
         for geotype in possible_geometries:
-            dict_catoms_shape, catoms_assigned = first_shell.oct_comp(angle_ref=all_angle_refs[geotype],
-                                                               catoms_arr=None,
-                                                               debug=debug)
+            dict_catoms_shape, catoms_assigned = first_shell.oct_comp(
+                angle_ref=all_angle_refs[geotype], catoms_arr=None, debug=debug)
             if debug:
                 print("Geocheck assigned catoms: ", catoms_assigned,
                       [first_shell.getAtom(ind).symbol() for ind in catoms_assigned])
