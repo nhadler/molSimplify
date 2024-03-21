@@ -52,6 +52,10 @@ def get_2D_EI(pred_mean: np.ndarray, pred_std: np.ndarray,
         use the probability distribution that augments ("aug") or dominates ("dom")
         the current Pareto front. "mix" is an average of the two and corresponds to
         straight line connections between the points on the Pareto front.
+    Returns
+    -------
+    np.ndarray, shape (N,)
+        array of the expected improvement values
     """
     PI, centroid = get_2D_PI_and_centroid(
         pred_mean, pred_std, pareto_points, method=method)
