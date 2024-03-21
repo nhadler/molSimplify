@@ -5639,26 +5639,23 @@ class mol3D:
             raise ValueError("num_coord and the length of catoms_arr do not match.")
 
         if num_coord not in [2, 3, 4, 5, 6, 7]:
-            geometry = "unknown"
             results = {
-                "geometry": geometry,
+                "geometry": "unknown",
                 "angle_devi": False,
                 "summary": {},
                 "hapticity": hapt,
             }
             return results
         elif num_coord == 2:
-            geometry = "linear"
             if first_shell.findMetal()[0] == 2:
                 angle = first_shell.getAngle(0, 2, 1)
             elif first_shell.findMetal()[0] == 1:
                 angle = first_shell.getAngle(0, 1, 2)
             else:
                 angle = first_shell.getAngle(1, 0, 2)
-            angle_devi = 180 - angle
             results = {
                 "geometry": "linear",
-                "angle_devi": angle_devi,
+                "angle_devi": 180 - angle,
                 "summary": {},
                 "hapticity": hapt,
             }
