@@ -1183,7 +1183,8 @@ class mol3D:
         nh_obmol = int(nh_obmol)
         charge = charge - nh_obmol + nh
         return charge
-    def get_first_shell(self,check_hapticity=True):
+
+    def get_first_shell(self, check_hapticity=True):
         '''
         Get the first coordination shell of a mol3D object with a single transition metal (read from CSD mol2 file)
         if check_hapticity is True updates the first shell of multiheptate ligand to be hydrogen set at the geometric mean
@@ -1227,12 +1228,12 @@ class mol3D:
             new_mol = mol3D()
             new_mol.bo_dict = {}
             new_mol.addAtom(atom3D(M_sym, M_coord))
-            for i in  range(len(new_coords_mol)):
+            for i in range(len(new_coords_mol)):
                 new_mol.addAtom(atom3D(new_coords_sym[i], new_coords_mol[i]))
             new_mol.graph = np.zeros([new_mol.natoms, new_mol.natoms])
             for i in range(new_mol.natoms):
-                if not i== new_mol.findMetal()[0]:
-                    new_mol.add_bond(new_mol.findMetal()[0],i,1)
+                if i != new_mol.findMetal()[0]:
+                    new_mol.add_bond(new_mol.findMetal()[0], i, 1)
         else:
             new_mol = mol3D()
             new_mol.copymol3D(mol_fcs)
@@ -1241,7 +1242,6 @@ class mol3D:
             return new_mol, hapticity_list
         else:
             return mol_fcs, hapticity_list
-
 
     def get_octetrule_charge(self, debug=False):
         '''
