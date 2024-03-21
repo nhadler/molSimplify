@@ -186,5 +186,5 @@ def get_2D_PI_and_centroid(pred_mean: np.ndarray, pred_std: np.ndarray,
     # again is performed using the helper function
     centroid[:, 1] += (
         1 - norm.cdf(f_1e[-1], mu_1, s_1)) * int_by_parts(f_2e[-1], mu_2, s_2)
-    centroid /= PI[:, np.newaxis]
+    centroid /= np.maximum(PI[:, np.newaxis], 1e-10)
     return PI, centroid
