@@ -8,6 +8,7 @@ dependencies:
   - pandas
   - scipy
   - libffi
+  - networkx >= 2.7
   - importlib_resources
   - pip
   - pip:

@@ -5247,7 +5247,7 @@ class mol3D:
         with np.errstate(over='raise'):
             try:
                 det = np.linalg.det(tmpgraph)
-            except np.linalg.LinAlgError:
+            except (np.linalg.LinAlgError, FloatingPointError):
                 (sign, det) = np.linalg.slogdet(tmpgraph)
                 if sign != 0:
                     det = sign*det
