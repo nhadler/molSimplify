@@ -45,8 +45,8 @@ def get_2D_EI(pred_mean: np.ndarray, pred_std: np.ndarray,
     pred_mean : array_like, shape (N,2)
         the predicted mean from a ML model for both target properties
     pred_std : array_like, shape (N,2)
-        the std mean from a ML model for both target properties
-    pareto_points : array_like, shape (M, 2)
+        the predicted std from a ML model for both target properties
+    pareto_points : array_like, shape (M,2)
         the points on the current Pareto front, must be correctly ordered
     method: str, default = "aug"
         use the probability distribution that augments ("aug") or dominates ("dom")
@@ -90,8 +90,8 @@ def get_2D_PI_and_centroid(pred_mean: np.ndarray, pred_std: np.ndarray,
     pred_mean : array_like, shape (N,2)
         the predicted mean from a ML model for both target properties
     pred_std : array_like, shape (N,2)
-        the std mean from a ML model for both target properties
-    pareto_points : array_like, shape (M, 2)
+        the predicted std from a ML model for both target properties
+    pareto_points : array_like, shape (M,2)
         the points on the current Pareto front, must be correctly ordered
     method: str, default = "aug"
         use the probability distribution that augments ("aug") or dominates ("dom")
@@ -200,7 +200,7 @@ def get_2D_EHVI(pred_mean: np.ndarray, pred_std: np.ndarray,
         the predicted mean from a ML model for both target properties
     pred_std : array_like, shape (N,2)
         the predicted std from a ML model for both target properties
-    pareto_points : array_like, shape (M, 2)
+    pareto_points : array_like, shape (M,2)
         the points on the current Pareto front, must be correctly ordered
     r : array_like, shape (2,)
         reference point for hypervolume calculation
