@@ -4,6 +4,7 @@ from molSimplify.Informatics.active_learning.expected_improvement import (
     get_2D_pareto_indices,
     get_2D_PI_and_centroid,
     get_2D_EI,
+    get_2D_EHVI,
 )
 
 
@@ -65,3 +66,28 @@ def test_get_2D_EI(method, atol=1e-6):
                       method=method)
 
     np.testing.assert_allclose(EI_xy, EI_yx, atol=atol)
+
+
+@pytest.mark.skip(reason="This test is not implemented yet.")
+def test_get_2D_EHVI(atol=1e-6):
+    pred_mean = np.array([[0.0, 0.0]])
+    pred_std = np.array([[0.1, 0.1]])
+    pareto_points = np.array([[0.0, 2.0], [1.0, 1.0], [2.0, 0.0]])
+    r = np.array([3.0, 3.0])
+
+    np.testing.assert_allclose(
+        get_2D_EHVI(pred_mean, pred_std, pareto_points, r),
+        [3.0],
+        atol=atol,
+    )
+
+    pred_mean = np.array([[10.0, 10.0]])
+    pred_std = np.array([[4.0, 4.0]])
+    pareto_points = np.array([[1.0, 2.0], [2.0, 1.0]])
+    r = np.array([11.0, 11.0])
+
+    np.testing.assert_allclose(
+        get_2D_EHVI(pred_mean, pred_std, pareto_points, r),
+        [0.0726],
+        atol=atol,
+    )

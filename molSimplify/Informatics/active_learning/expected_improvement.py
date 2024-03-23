@@ -188,3 +188,37 @@ def get_2D_PI_and_centroid(pred_mean: np.ndarray, pred_std: np.ndarray,
         1 - norm.cdf(f_1e[-1], mu_1, s_1)) * int_by_parts(f_2e[-1], mu_2, s_2)
     centroid /= np.maximum(PI[:, np.newaxis], 1e-10)
     return PI, centroid
+
+
+def get_2D_EHVI(pred_mean: np.ndarray, pred_std: np.ndarray,
+                pareto_points: np.ndarray, r: np.ndarray):
+    """Calculates the two dimensional expected hypervolume improvement.
+
+    Parameters
+    ----------
+    pred_mean : array_like, shape (N,2)
+        the predicted mean from a ML model for both target properties
+    pred_std : array_like, shape (N,2)
+        the predicted std from a ML model for both target properties
+    pareto_points : array_like, shape (M, 2)
+        the points on the current Pareto front, must be correctly ordered
+    r : array_like, shape (2,)
+        reference point for hypervolume calculation
+
+    Returns
+    -------
+    np.ndarray, shape (N,)
+        array of the expected hypervolume improvement values
+    """
+    # Test that the pareto_points make a valid front (Important for the order of the
+    # integrals)
+    # The x values must be strictly ascending
+    if any(np.diff(pareto_points[:, 0]) < 0.0):
+        raise ValueError("The x values of the Pareto front must be in ascending order")
+    # The corresponding y values must be strictly descending
+    if any(np.diff(pareto_points[:, 1]) > 0.0):
+        raise ValueError("The y values of the Pareto front must be in descending order")
+
+    evhi = np.zeros(len(pred_mean))
+
+    return evhi
