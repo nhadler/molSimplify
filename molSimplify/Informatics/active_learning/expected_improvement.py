@@ -202,7 +202,10 @@ def get_2D_PI_and_centroid(pred_mean: np.ndarray, pred_std: np.ndarray,
 
 def get_2D_EHVI(pred_mean: np.ndarray, pred_std: np.ndarray,
                 pareto_points: np.ndarray, r: np.ndarray):
-    """Calculates the two dimensional expected hypervolume improvement.
+    """Calculates the two dimensional expected hypervolume improvement following
+    M. Emmerich, K. Yang, A. Deutz, H. Wang, and C. M. Fonseca, "A Multicriteria
+    Generalization of Bayesian Global Optimization":
+    https://doi.org/10.1007/978-3-319-29975-4_12
 
     Parameters
     ----------
@@ -229,6 +232,38 @@ def get_2D_EHVI(pred_mean: np.ndarray, pred_std: np.ndarray,
     if any(np.diff(pareto_points[:, 1]) > 0.0):
         raise ValueError("The y values of the Pareto front must be in descending order")
 
+    # Variables consistent with naming in the paper:
+    mu_1 = pred_mean[:, 0]
+    s_1 = pred_std[:, 0]
+    mu_2 = pred_mean[:, 1]
+    s_2 = pred_std[:, 1]
+
+    P = np.zeros([len(pareto_points) + 2, 2])
+    P[0] = (r[0], -np.inf)
+    P[1:-1] = pareto_points[::-1]
+    P[-1] = (-np.inf, r[1])
+
     ehvi = np.zeros(len(pred_mean))
 
+    def psi(a, b, mu, s):
+        t = (b - mu)/s
+        return s*norm.pdf(t) + (a - mu)*norm.cdf(t)
+
+    # NOTE: This integration order in this function is different from the one in the
+    # get_2D_PI_and_centroid function going from right to left
+    # Indices shifted by one for python indexing
+    for i in range(len(pareto_points)+1):
+        # Exclude the last point because of a np.inf * 0 multiplication
+        if i != len(pareto_points):
+            # Equation (17) in the paper
+            ehvi += (
+                (P[i][0] - P[i+1][0])
+                * norm.cdf((P[i+1][0] - mu_1) / s_1)
+                * psi(P[i+1][1], P[i+1][1], mu_2, s_2)
+            )
+        # Equation (18) in the paper
+        ehvi += (
+            psi(P[i][0], P[i][0], mu_1, s_1)
+            - psi(P[i][0], P[i+1][0], mu_1, s_1)
+        ) * psi(P[i+1][1], P[i+1][1], mu_2, s_2)
     return ehvi
