@@ -77,7 +77,7 @@ def get_2D_EI(pred_mean: np.ndarray, pred_std: np.ndarray,
 def get_2D_PI_and_centroid(pred_mean: np.ndarray, pred_std: np.ndarray,
                            pareto_points: np.ndarray, method: str = "aug"
                            ) -> Tuple[np.ndarray, np.ndarray]:
-    """Calculates the two dimensional probability of improvement following and the
+    """Calculates the two dimensional probability of improvement and the
     first moments of that probability distribution according to equations (14) / (16)
     and (18) / (19) in A. J. Keane, AIAA Journal, 44, 4, 2006,
     https://doi.org/10.2514/1.16875
@@ -125,13 +125,23 @@ def get_2D_PI_and_centroid(pred_mean: np.ndarray, pred_std: np.ndarray,
     # Helper function for the centroid calculations that combines the result of the
     # integration by parts: mu * cdf - s * pdf into one function:
     def int_by_parts(f_e, mu, s):
-        return mu * norm.cdf(f_e, mu, s) - s * norm.pdf(f_e, mu, s)
+        t = (f_e - mu) / s
+        return mu * norm.cdf(t) - s * norm.pdf(t)
+
+    # Helper functions for the normal distribution
+    def pdf(f_e, mu, s):
+        t = (f_e - mu) / s
+        return norm.pdf(t)
+
+    def cdf(f_e, mu, s):
+        t = (f_e - mu) / s
+        return norm.cdf(t)
 
     # NOTE: instead of using the integration variables y_1 and y_2 the comments just
     # refer to the two dimensions as x and y.
     # First part is the integral dx from -inf to the x-coordinate of the left most
     # Pareto point and the integral dy from -inf to inf, later of which is 1
-    PI = norm.cdf(f_1e[0], mu_1, s_1)
+    PI = cdf(f_1e[0], mu_1, s_1)
 
     # Similarly for the centroid
     centroid = np.zeros_like(pred_mean)
@@ -140,28 +150,28 @@ def get_2D_PI_and_centroid(pred_mean: np.ndarray, pred_std: np.ndarray,
     # Integral over dx (same as PI) multiplied by the integral dy from -inf to inf,
     # Perform integration by parts, where cdf(inf)=1 and pdf(inf)=0,
     # therefore, int y dy from -inf to inf is just mu_2
-    centroid[:, 1] = norm.cdf(f_1e[0], mu_1, s_1) * mu_2
+    centroid[:, 1] = cdf(f_1e[0], mu_1, s_1) * mu_2
 
     for i in range(len(pareto_points) - 1):
         # First the integral dx from the x-coordinate of Pareto point i to the
         # x-coordinate of Pareto point i+1
-        int_dx = norm.cdf(f_1e[i+1], mu_1, s_1) - norm.cdf(f_1e[i], mu_1, s_1)
+        int_dx = cdf(f_1e[i+1], mu_1, s_1) - cdf(f_1e[i], mu_1, s_1)
         cent_1_dx = (int_by_parts(f_1e[i+1], mu_1, s_1)
                      - int_by_parts(f_1e[i], mu_1, s_1))
         # (method dependent) integral dy:
         if method == "aug":
             # Equation (14)
-            int_dy = norm.cdf(f_2e[i], mu_2, s_2)
+            int_dy = cdf(f_2e[i], mu_2, s_2)
             cent_2_dy = int_by_parts(f_2e[i], mu_2, s_2)
         elif method == "dom":
             # Equation (15)
-            int_dy = norm.cdf(f_2e[i+1], mu_2, s_2)
+            int_dy = cdf(f_2e[i+1], mu_2, s_2)
             cent_2_dy = int_by_parts(f_2e[i+1], mu_2, s_2)
         elif method == "mix":
             # Average of equation (14) and (15) as discussed in the text below
             # equation (15)
-            int_dy = (norm.cdf(f_2e[i], mu_2, s_2)
-                      + norm.cdf(f_2e[i+1], mu_2, s_2)) / 2
+            int_dy = (cdf(f_2e[i], mu_2, s_2)
+                      + cdf(f_2e[i+1], mu_2, s_2)) / 2
             cent_2_dy = (int_by_parts(f_2e[i], mu_2, s_2)
                          + int_by_parts(f_2e[i+1], mu_2, s_2)) / 2
         else:
@@ -173,19 +183,19 @@ def get_2D_PI_and_centroid(pred_mean: np.ndarray, pred_std: np.ndarray,
     # Final part is the integral dx from the x-coordinate of the right most Pareto
     # point to inf and the integral dy from -inf to the y-coordinate of the right
     # most Pareto point
-    PI += (1 - norm.cdf(f_1e[-1], mu_1, s_1)) * norm.cdf(f_2e[-1], mu_2, s_2)
+    PI += (1 - cdf(f_1e[-1], mu_1, s_1)) * cdf(f_2e[-1], mu_2, s_2)
     # Integrate x dx by parts, where we can not use the helper function because of
     # different integration bounds (x-coordinate of right most Pareto point to inf)
     # and multiply by the integral dy from -inf to the y-coordinate of the right
     # most Pareto point. NOTE: mistake in the paper for the integral over dx where
     # mu * CDF is used instead of the correct mu * (1 - CDF)
-    centroid[:, 0] += (mu_1 * (1 - norm.cdf(f_1e[-1], mu_1, s_1))
-                       + s_1 * norm.pdf(f_1e[-1], mu_1, s_1)
-                       ) * norm.cdf(f_2e[-1], mu_2, s_2)
+    centroid[:, 0] += (mu_1 * (1 - cdf(f_1e[-1], mu_1, s_1))
+                       + s_1 * pdf(f_1e[-1], mu_1, s_1)
+                       ) * cdf(f_2e[-1], mu_2, s_2)
     # Integrate dx same as in the PI and multiply by the integral y dy, which
     # again is performed using the helper function
     centroid[:, 1] += (
-        1 - norm.cdf(f_1e[-1], mu_1, s_1)) * int_by_parts(f_2e[-1], mu_2, s_2)
+        1 - cdf(f_1e[-1], mu_1, s_1)) * int_by_parts(f_2e[-1], mu_2, s_2)
     centroid /= np.maximum(PI[:, np.newaxis], 1e-10)
     return PI, centroid
 
@@ -219,6 +229,6 @@ def get_2D_EHVI(pred_mean: np.ndarray, pred_std: np.ndarray,
     if any(np.diff(pareto_points[:, 1]) > 0.0):
         raise ValueError("The y values of the Pareto front must be in descending order")
 
-    evhi = np.zeros(len(pred_mean))
+    ehvi = np.zeros(len(pred_mean))
 
-    return evhi
+    return ehvi
