@@ -25,7 +25,7 @@ from molSimplify.Classes.globalvars import globalvars
 from molSimplify.Scripts.geometry import (distance, connectivity_match,
                                           vecangle, rotation_params,
                                           rotate_around_axis)
-from molSimplify.Scripts.rmsd import rigorous_rmsd
+from molSimplify.Scripts.rmsd import rigorous_rmsd, kabsch_rmsd
 
 try:
     import PyQt5  # noqa: F401
@@ -5682,6 +5682,162 @@ class mol3D:
             "hapticity": hapt,
         }
         return results
+
+    def get_geometry_type_distance(self, max_dev=1e6,
+                          flag_catoms=False, catoms_arr=None, debug=False,
+                          skip=False, transition_metals_only=False):
+        """
+        Get the type of the geometry (available options in globalvars all_geometries).
+
+        uses hapticity truncated first coordination shell.
+        Does not require the input of num_coord.
+
+        Parameters
+        ----------
+            max_dev : float, optional
+                Maximum RMSD allowed between a structure and an ideal geometry before it is classified as unknown. Default is 1e6.
+            flag_catoms : bool, optional
+                Whether or not to return the catoms arr. Default as False.
+            catoms_arr : Nonetype, optional
+                Uses the catoms of the mol3D by default. User and overwrite this connection atom array by explicit input.
+                Default is Nonetype.
+            debug : bool, optional
+                Flag for extra printout. Default is False.
+            skip : list, optional
+                Geometry checks to skip. Default is False.
+            transition_metals_only : bool, optional
+                Flag for considering more than just transition metals as metals. Default is False.
+
+        Returns
+        -------
+            results : dictionary
+                Contains the classified geometry and the RMSD from an ideal structure.
+                Summary contains the RMSD for all considered geometry types.
+
+        """
+
+        first_shell, hapt = self.get_first_shell()
+        num_coord = first_shell.natoms - 1
+        all_geometries = globalvars().get_all_geometries()
+        all_polyhedra = globalvars().get_all_polyhedra()
+        summary = {}
+
+        if len(first_shell.graph):  # Find num_coord based on metal_cn if graph is assigned
+            if len(first_shell.findMetal()) > 1:
+                raise ValueError('Multimetal complexes are not yet handled.')
+            elif len(first_shell.findMetal(transition_metals_only=transition_metals_only)) == 1:
+                num_coord = len(first_shell.getBondedAtomsSmart(first_shell.findMetal(transition_metals_only=transition_metals_only)[0]))
+            else:
+                raise ValueError('No metal centers exist in this complex.')
+
+        if catoms_arr is not None and len(catoms_arr) != num_coord:
+            raise ValueError("num_coord and the length of catoms_arr do not match.")
+
+        if num_coord not in list(all_geometries.keys()):
+            #should we indicate somehow that these are unknown due to a different coordination number?
+            results = {
+                "geometry": "unknown",
+                "rmsd": False,
+                "summary": {},
+                "hapticity": hapt,
+            }
+            return results
+
+        possible_geometries = all_geometries[num_coord]
+        
+        for geotype in possible_geometries:
+            rmsd_calc = self.dev_from_ideal_geometry(all_polyhedra[geotype])
+            if debug:
+                print("Geocheck assigned catoms: ", catoms_assigned,
+                      [first_shell.getAtom(ind).symbol() for ind in catoms_assigned])
+            summary.update({geotype: rmsd_calc})
+
+        current_rmsd, geometry = max_dev, None
+        for geotype in summary:
+            if summary[geotype] < current_rmsd:
+                current_rmsd = summary[geotype]
+                geometry = geotype
+        results = {
+            "geometry": geometry,
+            "rmsd": current_rmsd,
+            "summary": summary,
+            "hapticity": hapt,
+        }
+        return results
+
+    def dev_from_ideal_geometry(self, ideal_polyhedron, max_dev=1e6):
+        """
+        Return the minimum RMSD between a geometry and an ideal polyhedron (with the same average bond distances).
+        Enumerates all possible indexing of the geometry. As such, only recommended for small systems.
+
+        Parameters
+        ----------
+            ideal_polyhedron: np.array of 3-tuples of coordinates
+                Reference list of points for an ideal geometry
+            max_dev : float, optional
+                Maximum RMSD allowed between a structure and an ideal geometry before it is classified as unknown. Default is 1e6.
+
+        Returns
+        -------
+            rmsd: float
+                Minimum root mean square distance between the fed geometry and the ideal polyhedron
+        """
+
+        #get the average bond distance for the first coordination shell of the provided geometry
+        metal_idx = self.findMetal()
+        if len(metal_idx) == 0:
+            raise ValueError('No metal centers exist in this complex.')
+        elif len(metal_idx) != 1:
+            raise ValueError('Multimetal complexes are not yet handled.')
+        fcs_indices = self.get_fcs()
+        if len(fcs_indices) - 1 != len(ideal_polyhedron):
+            raise ValueError('The coordination number differs between the two provided structures.')
+        metal_atom = self.getAtoms()[metal_idx[0]]
+        fcs_atoms = [self.getAtoms()[i] for i in fcs_indices]
+        distances = []
+        positions = np.zeros([len(fcs_indices), 3])
+        for idx, atom in enumerate(fcs_atoms):
+            if atom is not metal_atom:
+                distance = atom.distance(metal_atom)
+                distances.append(distance)
+                positions[idx, :] = atom.coords()
+        mean_dist = np.array(distances).mean()
+
+        #scale ideal geometry to have same average distance
+        scaled_polyhedron = ideal_polyhedron * mean_dist
+        
+        def permutations(list):
+            'Returns all possible permutations of a list.'
+            if len(list) == 0:
+                return []
+            elif len(list) == 1:
+                return [list]
+            l = []
+            for i in range(len(list)):
+                m = list[i]
+                remaining = list[:i] + list[i+1:]
+                for p in permutations(remaining):
+                    l.append([m] + p)
+            return l
+
+        current_min = max_dev
+        orders = permutations(list(np.arange(1, len(ideal_polyhedron)+1)))
+
+        ideal_positions = np.zeros([len(fcs_indices), 3])
+        for order in orders:
+            for i in range(len(order)):
+                ideal_positions[i+1, :] = scaled_polyhedron[order[i]-1]
+            rmsd_calc = kabsch_rmsd(ideal_positions, positions)
+            if rmsd_calc < current_min:
+                current_min = rmsd_calc
+
+        return current_min
+            
+                
+            #TODO: build a mol3D object from a list of 3D coordinates with the metal at (0, 0, 0)
+            #TODO: calculate the average bond distance for the provided mol3D
+            #TODO: scale the ideal polyhedra by the average bond distance
+            #TODO: calculate the RMSD, return the minimum
 
     def get_features(self, lac=True, force_generate=False, eq_sym=False,
                      use_dist=False, NumB=False, Gval=False, size_normalize=False,
