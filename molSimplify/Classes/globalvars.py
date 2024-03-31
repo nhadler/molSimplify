@@ -199,7 +199,7 @@ heavy_metals_and_metalloids = [
     'Ac', 'ac', 'AC', 'actinium', 'Th', 'th', 'TH', 'thorium',
     'Pa', 'pa', 'PA', 'proactinium', 'U', 'u', 'uranium',
     'Np', 'np', 'NP', 'neptunium', 'Pu', 'pu', 'PU', 'plutonium',
-    'Am', 'am', 'AM', 'americium', 'Cu', 'cu', 'CU', 'curium',
+    'Am', 'am', 'AM', 'americium', 'Cm', 'cm', 'CM', 'curium',
     'Bk', 'bk', 'BK', 'berkelium', 'Cf', 'cf', 'CF', 'californium',
     'Es', 'es', 'ES', 'einsteinium', 'Fm', 'fm', 'FM', 'fermium',
     'Md', 'md', 'MD', 'mendelevium', 'No', 'no', 'NO', 'nobelium',
