@@ -344,6 +344,11 @@ def make_MOF_SBU_RACs(
         descriptor_names, descriptors = append_descriptors(
             descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'f', 'all')
         # Now starts at every metal on the graph and autocorrelates
+
+        # Note, by this point in the code, molcif has had self.metals assigned to all metals in the structure
+        # with findMetal(transition_metals_only=False). So all metals are considered for mc and D_mc, not just
+        # transition metals
+
         results_dictionary = generate_multimetal_autocorrelations(molcif, depth=depth, loud=False, Gval=Gval)
         descriptor_names, descriptors = append_descriptors(
             descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'mc', 'all')
