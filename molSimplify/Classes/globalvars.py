@@ -101,7 +101,7 @@ period_4 = ['K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu',
             'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr']
 
 period_5 = ['Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh',
-            'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sn', ' Te', 'I', 'Xe']
+            'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', ' Te', 'I', 'Xe']
 
 period_6 = ['Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd',
             'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 'Hf', 'Ta', 'W', 'Re',
@@ -197,7 +197,7 @@ heavy_metals_and_metalloids = [
     'Er', 'er', 'ER', 'erbium', 'Tm', 'tm', 'TM', 'thulium',
     'Yb', 'yb', 'YB', 'ytterbium', 'Lu', 'lu', 'LU', 'lutetium',
     'Ac', 'ac', 'AC', 'actinium', 'Th', 'th', 'TH', 'thorium',
-    'Pa', 'pa', 'PA', 'proactinium', 'U', 'u', 'uranium',
+    'Pa', 'pa', 'PA', 'protactinium', 'U', 'u', 'uranium',
     'Np', 'np', 'NP', 'neptunium', 'Pu', 'pu', 'PU', 'plutonium',
     'Am', 'am', 'AM', 'americium', 'Cm', 'cm', 'CM', 'curium',
     'Bk', 'bk', 'BK', 'berkelium', 'Cf', 'cf', 'CF', 'californium',
