@@ -464,7 +464,7 @@ all_angle_refs = {
                                     [[70.5, 70.5, 67.7, 67.7, 120, 120, 135.5, 135.5]]
 }
 
-#need these to be distance 1 from the origin
+#need each point to be distance 1 from the origin
 deg_to_rad = 2*np.pi / 360
 all_polyhedra = {
     "linear": np.array([(1, 0, 0), (-1, 0, 0)]),

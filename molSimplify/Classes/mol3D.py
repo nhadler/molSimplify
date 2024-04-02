@@ -5748,8 +5748,8 @@ class mol3D:
         for geotype in possible_geometries:
             rmsd_calc = self.dev_from_ideal_geometry(all_polyhedra[geotype])
             if debug:
-                print("Geocheck assigned catoms: ", catoms_assigned,
-                      [first_shell.getAtom(ind).symbol() for ind in catoms_assigned])
+                pass
+                #not sure what to include here
             summary.update({geotype: rmsd_calc})
 
         current_rmsd, geometry = max_dev, None
@@ -5765,7 +5765,7 @@ class mol3D:
         }
         return results
 
-    def dev_from_ideal_geometry(self, ideal_polyhedron, max_dev=1e6):
+    def dev_from_ideal_geometry(self, ideal_polyhedron):
         """
         Return the minimum RMSD between a geometry and an ideal polyhedron (with the same average bond distances).
         Enumerates all possible indexing of the geometry. As such, only recommended for small systems.
@@ -5774,8 +5774,6 @@ class mol3D:
         ----------
             ideal_polyhedron: np.array of 3-tuples of coordinates
                 Reference list of points for an ideal geometry
-            max_dev : float, optional
-                Maximum RMSD allowed between a structure and an ideal geometry before it is classified as unknown. Default is 1e6.
 
         Returns
         -------
@@ -5783,7 +5781,6 @@ class mol3D:
                 Minimum root mean square distance between the fed geometry and the ideal polyhedron
         """
 
-        #get the average bond distance for the first coordination shell of the provided geometry
         metal_idx = self.findMetal()
         if len(metal_idx) == 0:
             raise ValueError('No metal centers exist in this complex.')
@@ -5794,13 +5791,14 @@ class mol3D:
             raise ValueError('The coordination number differs between the two provided structures.')
         metal_atom = self.getAtoms()[metal_idx[0]]
         fcs_atoms = [self.getAtoms()[i] for i in fcs_indices]
+        #construct a np array of the non-metal atoms in the FCS
         distances = []
         positions = np.zeros([len(fcs_indices), 3])
         for idx, atom in enumerate(fcs_atoms):
             if atom is not metal_atom:
                 distance = atom.distance(metal_atom)
                 distances.append(distance)
-                positions[idx, :] = atom.coords()
+                positions[idx, :] = atom.coords() - metal_atom.coords() #shift so the metal is at (0, 0, 0)
         mean_dist = np.array(distances).mean()
 
         #scale ideal geometry to have same average distance
@@ -5820,9 +5818,10 @@ class mol3D:
                     l.append([m] + p)
             return l
 
-        current_min = max_dev
+        current_min = np.inf
         orders = permutations(list(np.arange(1, len(ideal_polyhedron)+1)))
 
+        #for all possible assignments, find RMSD between ideal and actual structure
         ideal_positions = np.zeros([len(fcs_indices), 3])
         for order in orders:
             for i in range(len(order)):
@@ -5831,13 +5830,8 @@ class mol3D:
             if rmsd_calc < current_min:
                 current_min = rmsd_calc
 
+        #return minimum RMSD
         return current_min
-            
-                
-            #TODO: build a mol3D object from a list of 3D coordinates with the metal at (0, 0, 0)
-            #TODO: calculate the average bond distance for the provided mol3D
-            #TODO: scale the ideal polyhedra by the average bond distance
-            #TODO: calculate the RMSD, return the minimum
 
     def get_features(self, lac=True, force_generate=False, eq_sym=False,
                      use_dist=False, NumB=False, Gval=False, size_normalize=False,
