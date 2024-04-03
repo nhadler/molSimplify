@@ -481,7 +481,9 @@ all_polyhedra = {
     "octahedral": np.array([(1, 0, 0), (0, 1, 0), (-1, 0, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]),
     "pentagonal pyramidal": np.array([(1, 0, 0), (np.cos(72*deg_to_rad), np.sin(72*deg_to_rad), 0), (np.cos(144*deg_to_rad), np.sin(144*deg_to_rad), 0), (np.cos(216*deg_to_rad), np.sin(216*deg_to_rad), 0), (np.cos(288*deg_to_rad), np.sin(288*deg_to_rad), 0), (0, 0, 1)]),
     "trigonal prismatic": np.array([(1, 0, 1), (np.cos(120*deg_to_rad), np.sin(120*deg_to_rad), 1), (np.cos(240*deg_to_rad), np.sin(240*deg_to_rad), 1), (1, 0, -1), (np.cos(120*deg_to_rad), np.sin(120*deg_to_rad), -1), (np.cos(240*deg_to_rad), np.sin(240*deg_to_rad), -1)])/np.sqrt(2),
-    "pentagonal bipyramidal": np.array([(1, 0, 0), (np.cos(72*deg_to_rad), np.sin(72*deg_to_rad), 0), (np.cos(144*deg_to_rad), np.sin(144*deg_to_rad), 0), (np.cos(216*deg_to_rad), np.sin(216*deg_to_rad), 0), (np.cos(288*deg_to_rad), np.sin(288*deg_to_rad), 0), (0, 0, 1), (0, 0, -1)])
+    "pentagonal bipyramidal": np.array([(1, 0, 0), (np.cos(72*deg_to_rad), np.sin(72*deg_to_rad), 0), (np.cos(144*deg_to_rad), np.sin(144*deg_to_rad), 0), (np.cos(216*deg_to_rad), np.sin(216*deg_to_rad), 0), (np.cos(288*deg_to_rad), np.sin(288*deg_to_rad), 0), (0, 0, 1), (0, 0, -1)]),
+    "square antiprismatic": np.array([(1, 0, 1), (0, 1, 1), (-1, 0, 1), (0, -1, 1), (np.cos(45*deg_to_rad), np.sin(45*deg_to_rad), -1), (np.cos(135*deg_to_rad), np.sin(135*deg_to_rad), -1), (np.cos(225*deg_to_rad), np.sin(225*deg_to_rad), -1), (np.cos(315*deg_to_rad), np.sin(315*deg_to_rad), -1)])/np.sqrt(2),
+    "tricapped trigonal prismatic": np.array([(1, 0, 1)/np.sqrt(2), (np.cos(120*deg_to_rad), np.sin(120*deg_to_rad), 1)/np.sqrt(2), (np.cos(240*deg_to_rad), np.sin(240*deg_to_rad), 1)/np.sqrt(2), (1, 0, -1)/np.sqrt(2), (np.cos(120*deg_to_rad), np.sin(120*deg_to_rad), -1)/np.sqrt(2), (np.cos(240*deg_to_rad), np.sin(240*deg_to_rad), -1)/np.sqrt(2), (np.cos(60*deg_to_rad), np.sin(60*deg_to_rad), 0), (np.cos(180*deg_to_rad), np.sin(180*deg_to_rad), 0), (np.cos(300*deg_to_rad), np.sin(300*deg_to_rad), 0)])
 }
 
 # Module for running bash commands

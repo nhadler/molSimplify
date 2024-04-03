@@ -1979,7 +1979,7 @@ class mol3D:
                                 'Error, mol3D could not understand connectivity in mol')
         return nats
 
-    def getBondedAtomsSmart(self, idx, oct=True, strict_cutoff=False, catom_list=None):
+    def getBondedAtomsSmart(self, idx, oct=False, strict_cutoff=False, catom_list=None):
         """
         Get the atoms bonded with the atom specified with the given index, using the molecular graph.
         Creates graph if it does not exist.
@@ -4938,8 +4938,8 @@ class mol3D:
         self.get_num_coord_metal(debug=False, strict_cutoff=strict_cutoff, catom_list=catom_list)
         catoms = self.catoms
         # print(catoms, [self.getAtom(x).symbol() for x in catoms])
-        if len(catoms) > 6:
-            _, catoms = self.oct_comp(debug=False)
+        # if len(catoms) > 6:
+        #     _, catoms = self.oct_comp(debug=False)
         fcs = [metalind] + catoms
         return fcs
 
@@ -5684,7 +5684,7 @@ class mol3D:
         return results
 
     def get_geometry_type_distance(self, max_dev=1e6,
-                          flag_catoms=False, catoms_arr=None, debug=False,
+                          flag_catoms=False, catoms_arr=None,
                           skip=False, transition_metals_only=False):
         """
         Get the type of the geometry (available options in globalvars all_geometries).
@@ -5701,8 +5701,6 @@ class mol3D:
             catoms_arr : Nonetype, optional
                 Uses the catoms of the mol3D by default. User and overwrite this connection atom array by explicit input.
                 Default is Nonetype.
-            debug : bool, optional
-                Flag for extra printout. Default is False.
             skip : list, optional
                 Geometry checks to skip. Default is False.
             transition_metals_only : bool, optional
@@ -5729,7 +5727,6 @@ class mol3D:
                 num_coord = len(first_shell.getBondedAtomsSmart(first_shell.findMetal(transition_metals_only=transition_metals_only)[0]))
             else:
                 raise ValueError('No metal centers exist in this complex.')
-
         if catoms_arr is not None and len(catoms_arr) != num_coord:
             raise ValueError("num_coord and the length of catoms_arr do not match.")
 
@@ -5747,12 +5744,9 @@ class mol3D:
         
         for geotype in possible_geometries:
             rmsd_calc = self.dev_from_ideal_geometry(all_polyhedra[geotype])
-            if debug:
-                pass
-                #not sure what to include here
             summary.update({geotype: rmsd_calc})
 
-        current_rmsd, geometry = max_dev, None
+        current_rmsd, geometry = max_dev, "unknown"
         for geotype in summary:
             if summary[geotype] < current_rmsd:
                 current_rmsd = summary[geotype]
@@ -5786,7 +5780,9 @@ class mol3D:
             raise ValueError('No metal centers exist in this complex.')
         elif len(metal_idx) != 1:
             raise ValueError('Multimetal complexes are not yet handled.')
-        fcs_indices = self.get_fcs()
+        temp_mol = self.get_first_shell()
+        fcs_indices = temp_mol[0].get_fcs()
+
         if len(fcs_indices) - 1 != len(ideal_polyhedron):
             raise ValueError('The coordination number differs between the two provided structures.')
         metal_atom = self.getAtoms()[metal_idx[0]]
@@ -5798,7 +5794,7 @@ class mol3D:
             if atom is not metal_atom:
                 distance = atom.distance(metal_atom)
                 distances.append(distance)
-                positions[idx, :] = atom.coords() - metal_atom.coords() #shift so the metal is at (0, 0, 0)
+                positions[idx, :] = np.array(atom.coords()) - np.array(metal_atom.coords()) #shift so the metal is at (0, 0, 0)
         mean_dist = np.array(distances).mean()
 
         #scale ideal geometry to have same average distance
