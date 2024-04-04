@@ -5783,28 +5783,25 @@ class mol3D:
         temp_mol = self.get_first_shell()[0]
         fcs_indices = temp_mol.get_fcs()
         # remove metal index from first coordination shell
-        fcs_indices.pop(temp_mol.findMetal()[0])
+        fcs_indices.remove(temp_mol.findMetal()[0])
 
         if len(fcs_indices) != len(ideal_polyhedron):
             raise ValueError('The coordination number differs between the two provided structures.')
-        metal_atom = self.getAtoms()[metal_idx[0]]
-        print(metal_atom.coords())
-        fcs_atoms = [self.getAtoms()[i] for i in fcs_indices]
+
+        #have to redo getting metal_idx with the new mol after running get_first_shell
+        #want to work with temp_mol since it has the edge and sandwich logic implemented to replace those with centroids
+        metal_atom = temp_mol.getAtoms()[temp_mol.findMetal()[0]]
+        fcs_atoms = [temp_mol.getAtoms()[i] for i in fcs_indices]
         #construct a np array of the non-metal atoms in the FCS
         distances = []
         positions = np.zeros([len(fcs_indices), 3])
-        for atom in fcs_atoms:
-            print(atom.coords())
         for idx, atom in enumerate(fcs_atoms):
-            if atom is not metal_atom:
-                distance = atom.distance(metal_atom)
-                distances.append(distance)
-                positions[idx, :] = np.array(atom.coords()) - np.array(metal_atom.coords()) #shift so the metal is at (0, 0, 0)
-        print(positions)
-        mean_dist = np.array(distances).mean()
+            distance = atom.distance(metal_atom)
+            distances.append(distance)
+            positions[idx, :] = np.array(atom.coords()) - np.array(metal_atom.coords()) #shift so the metal is at (0, 0, 0)
 
-        #scale ideal geometry to have same average distance
-        scaled_polyhedron = ideal_polyhedron * mean_dist
+        #make it so the ideal polyhedron has same average bond distance as mol
+        scaled_polyhedron = ideal_polyhedron * np.mean(np.array(distances))
         
         def permutations(list):
             'Returns all possible permutations of a list.'
@@ -5821,14 +5818,16 @@ class mol3D:
             return l
 
         current_min = np.inf
-        orders = permutations(list(np.arange(1, len(ideal_polyhedron))))
+        orders = permutations(list(range(len(ideal_polyhedron))))
 
         #for all possible assignments, find RMSD between ideal and actual structure
         ideal_positions = np.zeros([len(fcs_indices), 3])
         for order in orders:
             for i in range(len(order)):
-                ideal_positions[i, :] = scaled_polyhedron[order[i]-1]
-            rmsd_calc = kabsch_rmsd(ideal_positions, positions, translate=True)
+                ideal_positions[i, :] = scaled_polyhedron[order[i]]
+                #if you wanted to let each ligand scale its bond length independently, uncomment the following
+                #ideal_positions[i, :] = ideal_polyhedron[order[i]] * distances[i]
+            rmsd_calc = kabsch_rmsd(ideal_positions, positions)
             if rmsd_calc < current_min:
                 current_min = rmsd_calc
 
