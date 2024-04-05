@@ -25,7 +25,7 @@ from molSimplify.Classes.globalvars import globalvars
 from molSimplify.Scripts.geometry import (distance, connectivity_match,
                                           vecangle, rotation_params,
                                           rotate_around_axis)
-from molSimplify.Scripts.rmsd import rigorous_rmsd, kabsch_rmsd
+from molSimplify.Scripts.rmsd import rigorous_rmsd, kabsch_rmsd, kabsch_rotate
 
 try:
     import PyQt5  # noqa: F401
@@ -5683,7 +5683,7 @@ class mol3D:
         }
         return results
 
-    def get_geometry_type_distance(self, max_dev=1e6,
+    def get_geometry_type_distance(self, max_dev=1e6, close_dev=1e-2,
                           flag_catoms=False, catoms_arr=None,
                           skip=False, transition_metals_only=False):
         """
@@ -5696,6 +5696,8 @@ class mol3D:
         ----------
             max_dev : float, optional
                 Maximum RMSD allowed between a structure and an ideal geometry before it is classified as unknown. Default is 1e6.
+            close_dev : float, optional
+                Maximum difference in RMSD between two classifications allowed before they are compared by maximum single-atom deviation as well.
             flag_catoms : bool, optional
                 Whether or not to return the catoms arr. Default as False.
             catoms_arr : Nonetype, optional
@@ -5710,7 +5712,7 @@ class mol3D:
         -------
             results : dictionary
                 Contains the classified geometry and the RMSD from an ideal structure.
-                Summary contains the RMSD for all considered geometry types.
+                Summary contains a list of the RMSD and the maximum single-atom deviation for all considered geometry types.
 
         """
 
@@ -5741,21 +5743,34 @@ class mol3D:
             return results
 
         possible_geometries = all_geometries[num_coord]
-        
-        for geotype in possible_geometries:
-            rmsd_calc = self.dev_from_ideal_geometry(all_polyhedra[geotype])
-            summary.update({geotype: rmsd_calc})
 
+        #for each same-coordinated geometry, get the minimum RMSD and the maximum single-atom deviation in that pairing
+        for geotype in possible_geometries:
+            rmsd_calc, max_dist = self.dev_from_ideal_geometry(all_polyhedra[geotype])
+            summary.update({geotype: [rmsd_calc, max_dist]})
+
+        close_rmsds = False
         current_rmsd, geometry = max_dev, "unknown"
         for geotype in summary:
-            if summary[geotype] < current_rmsd:
-                current_rmsd = summary[geotype]
-                geometry = geotype
+            #if the RMSD for this structure is the lowest seen so far (within a threshold)
+            if summary[geotype][0] < (current_rmsd + close_dev):
+                #if the RMSDs are close, flag this in the summary and classify on second criterion
+                if np.abs(summary[geotype][0] - current_rmsd) < close_dev:
+                    close_rmsds = True
+                    if summary[geotype][1] < summary[geometry][1]:
+                        #classify based on largest singular deviation
+                        current_rmsd = summary[geotype][0]
+                        geometry = geotype
+                else:
+                    current_rmsd = summary[geotype][0]
+                    geometry = geotype
+        
         results = {
             "geometry": geometry,
             "rmsd": current_rmsd,
             "summary": summary,
             "hapticity": hapt,
+            "close_rmsds": close_rmsds
         }
         return results
 
@@ -5773,6 +5788,8 @@ class mol3D:
         -------
             rmsd: float
                 Minimum root mean square distance between the fed geometry and the ideal polyhedron
+            single_dev: float
+                Maximum distance between any paired points in the fed geometry and the ideal polyhedron.
         """
 
         metal_idx = self.findMetal()
@@ -5799,9 +5816,6 @@ class mol3D:
             distance = atom.distance(metal_atom)
             distances.append(distance)
             positions[idx, :] = np.array(atom.coords()) - np.array(metal_atom.coords()) #shift so the metal is at (0, 0, 0)
-
-        #make it so the ideal polyhedron has same average bond distance as mol
-        scaled_polyhedron = ideal_polyhedron * np.mean(np.array(distances))
         
         def permutations(list):
             'Returns all possible permutations of a list.'
@@ -5819,20 +5833,30 @@ class mol3D:
 
         current_min = np.inf
         orders = permutations(list(range(len(ideal_polyhedron))))
+        max_dist = 0
 
+        #if desired, make it so the ideal polyhedron has same average bond distance as the mol
+        #scaled_polyhedron = ideal_polyhedron * np.mean(np.array(distances))
+        
         #for all possible assignments, find RMSD between ideal and actual structure
         ideal_positions = np.zeros([len(fcs_indices), 3])
         for order in orders:
             for i in range(len(order)):
-                ideal_positions[i, :] = scaled_polyhedron[order[i]]
-                #if you wanted to let each ligand scale its bond length independently, uncomment the following
-                #ideal_positions[i, :] = ideal_polyhedron[order[i]] * distances[i]
+                #if you wanted to use the same average bond length for all, use the following
+                #ideal_positions[i, :] = scaled_polyhedron[order[i]]
+                #if you want to let each ligand scale its length independently, uncomment the following
+                ideal_positions[i, :] = ideal_polyhedron[order[i]] * distances[i]
             rmsd_calc = kabsch_rmsd(ideal_positions, positions)
             if rmsd_calc < current_min:
                 current_min = rmsd_calc
+                #calculate and store the maximum pairwise distance
+                rot_ideal = kabsch_rotate(ideal_positions, positions)
+                diff_matrix = rot_ideal - positions
+                pairwise_dists = np.sum(diff_matrix**2, axis=1)
+                max_dist = np.max(pairwise_dists)
 
-        #return minimum RMSD
-        return current_min
+        #return minimum RMSD, maximum pairwise distance in that structure
+        return current_min, max_dist
 
     def get_features(self, lac=True, force_generate=False, eq_sym=False,
                      use_dist=False, NumB=False, Gval=False, size_normalize=False,
