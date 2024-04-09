@@ -5764,7 +5764,7 @@ class mol3D:
                 else:
                     current_rmsd = summary[geotype][0]
                     geometry = geotype
-        
+
         results = {
             "geometry": geometry,
             "rmsd": current_rmsd,
@@ -5816,7 +5816,7 @@ class mol3D:
             distance = atom.distance(metal_atom)
             distances.append(distance)
             positions[idx, :] = np.array(atom.coords()) - np.array(metal_atom.coords()) #shift so the metal is at (0, 0, 0)
-        
+
         def permutations(list):
             'Returns all possible permutations of a list.'
             if len(list) == 0:
@@ -5837,7 +5837,7 @@ class mol3D:
 
         #if desired, make it so the ideal polyhedron has same average bond distance as the mol
         #scaled_polyhedron = ideal_polyhedron * np.mean(np.array(distances))
-        
+
         #for all possible assignments, find RMSD between ideal and actual structure
         ideal_positions = np.zeros([len(fcs_indices), 3])
         for order in orders:
