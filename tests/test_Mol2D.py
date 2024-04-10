@@ -119,3 +119,10 @@ def test_Mol2D_graph_hash(resource_path_root, filename, node_hash_ref, edge_hash
     assert node_hash == node_hash_ref
     assert edge_hash == edge_hash_ref
     assert graph_det == graph_det_ref
+
+
+def test_find_metal(resource_path_root):
+    mol = Mol2D.from_mol2_file(resource_path_root / "inputs" / "io" / "ADUYUV.mol2")
+    metals = mol.find_metal()
+
+    assert metals == [35]
