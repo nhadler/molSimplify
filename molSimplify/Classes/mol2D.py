@@ -1,5 +1,6 @@
 import networkx as nx
 import numpy as np
+from typing import List
 from packaging import version
 from molSimplify.Classes.globalvars import globalvars
 
@@ -126,8 +127,8 @@ class Mol2D(nx.Graph):
         atomic_masses = globalvars().amass()
         weights = np.array(
             [
-                atomic_masses[atom[1]][0]
-                for atom in self.nodes(data="symbol", default="X")
+                atomic_masses[sym][0]
+                for _, sym in self.nodes(data="symbol", default="X")
             ]
         )
         adjacency = nx.to_numpy_array(self)
@@ -148,3 +149,26 @@ class Mol2D(nx.Graph):
             else:
                 det = det[0:12]
         return det
+
+    def find_metal(self, transition_metals_only: bool = True) -> List[int]:
+        """
+        Find metal(s) in a Mol2D class.
+
+        Parameters
+        ----------
+            transition_metals_only : bool, optional
+                Only find transition metals. Default is true.
+
+        Returns
+        -------
+            metal_list : list
+                List of indices of metal atoms in Mol2D.
+
+        """
+        globs = globalvars()
+
+        metal_list = []
+        for i, sym in self.nodes.data(data="symbol", default="X"):
+            if sym in globs.metalslist(transition_metals_only=transition_metals_only):
+                metal_list.append(i)
+        return metal_list
