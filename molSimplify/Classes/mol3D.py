@@ -51,7 +51,7 @@ class mol3D:
 
     def __init__(self, name='ABC', loc='', use_atom_specific_cutoffs=False):
         # List of atom3D objects
-        self.atoms = []
+        self.atoms: List[atom3D] = []
         # Number of atoms
         self.natoms = 0
         # Mass of molecule
@@ -79,14 +79,14 @@ class mol3D:
         # Holder for global variables
         self.globs = globalvars()
         # Holder for molecular graph
-        self.graph = []
+        self.graph = np.array([])
         self.xyzfile = 'undef'
         self.updated = False
         self.needsconformer = False
         # Holder for molecular group
         self.grps = False
         # Holder for metals
-        self.metals = None
+        self.metals: Optional[List[int]] = None
         # Conformation (empty string if irrelevant)
         self.loc = loc
         # Temporary list for storing conformations
@@ -95,7 +95,7 @@ class mol3D:
         self.hull = []
 
         # Holder for partial charge for each atom
-        self.partialcharges = []
+        self.partialcharges: List[float] = []
 
         # ---geo_check------
         self.dict_oct_check_loose = self.globs.geo_check_dictionary()[
@@ -572,7 +572,7 @@ class mol3D:
         """
 
         # initialize center of mass and mol mass
-        center_of_symmetry = [0, 0, 0]
+        center_of_symmetry = [0.0, 0.0, 0.0]
         # loop over atoms in molecule
         for atom in self.atoms:
             # calculate center of symmetry

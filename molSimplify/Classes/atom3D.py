@@ -6,6 +6,7 @@
 #  Department of Chemical Engineering, MIT
 
 from math import sqrt
+from typing import List, Optional
 from molSimplify.Classes.globalvars import globalvars
 
 
@@ -23,17 +24,26 @@ class atom3D:
             partialcharge : int, optional
                 Charge assigned to atom when added to mol. Default is None.
     """
-    def __init__(self, Sym='C', xyz=None, name=False, partialcharge=None, Tfactor=0, greek='', occup=1.00, loc='', line=""):
+    def __init__(self,
+                 Sym: str = 'C',
+                 xyz: Optional[List[float]] = None,
+                 name: Optional[str] = None,
+                 partialcharge: Optional[float] = None,
+                 Tfactor=0,
+                 greek='',
+                 occup=1.00,
+                 loc='',
+                 line=""):
 
         # Element symbol
         self.sym = Sym
-        self.partialcharge = None
+        self.partialcharge = partialcharge
         globs = globalvars()
         amass = globs.amass()
         if Sym not in amass:  # assign default values if not in dictionary
             print(("We didn't find the atomic mass of %s in the dictionary. Assigning default value of 12!\n" % (Sym)))
             # Atomic mass
-            self.mass = 12  # default atomic mass
+            self.mass = 12.0  # default atomic mass
             # Atomic number
             self.atno = 6  # default atomic number
             # Covalent radius
@@ -45,6 +55,8 @@ class atom3D:
         # Flag for freezing in optimization
         self.frozen = False
         # Flag for atom name
+        # NOTE: does not compare to None because empty string would not be valid and
+        # some parts of molSimplify still instantiate atom3D with name=False
         if name:
             self.name = name
         else:
@@ -102,7 +114,7 @@ class atom3D:
         x, y, z = self.__xyz
         return [x, y, z]
 
-    def distance(self, atom2):
+    def distance(self, atom2) -> float:
         """ Get distance from one atom3D class to another.
 
         Parameters
@@ -144,7 +156,7 @@ class atom3D:
         dz = xyz[2]-point[2]
         return [dx, dy, dz]
 
-    def ismetal(self, transition_metals_only=True):
+    def ismetal(self, transition_metals_only=True) -> bool:
         """ Identify whether an atom is a metal.
 
         Parameters
@@ -171,7 +183,7 @@ class atom3D:
         self.__xyz[1] = xyz[1]
         self.__xyz[2] = xyz[2]
 
-    def symbol(self):
+    def symbol(self) -> str:
         """ Return symbol of atom3D.
 
         Returns
