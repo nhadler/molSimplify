@@ -23,11 +23,15 @@ from molSimplify.Informatics.MOF.PBC_functions import *
 # This MOF RAC generator assumes that pymatgen is installed.                            #
 # Pymatgen is used to get the primitive cell.                                           #
 #########################################################################################
-from pymatgen.io.cif import CifParser
+
+
 def get_primitive(datapath, writepath):
+    from pymatgen.io.cif import CifParser
     s = CifParser(datapath, occupancy_tolerance=1).get_structures()[0]
     sprim = s.get_primitive_structure()
-    sprim.to("cif",writepath)
+    sprim.to("cif", writepath)
+
+
 '''<<<< END OF CODE TO COMPUTE PRIMITIVE UNIT CELLS >>>>'''
 
 #########################################################################################
@@ -140,7 +144,7 @@ def make_MOF_SBU_RACs(SBUlist, SBU_subgraph, molcif, depth, name,cell,anchoring_
                 for jj in range(len(temp_mol.graph)):
                     #print(link_list)
                     #print(main)
-                    if not jj in main:
+                    if jj not in main:
                         if not set({temp_mol.atoms[jj].sym}) & set({"H"}):
                             functional_atoms.append(jj)
                 print(functional_atoms)

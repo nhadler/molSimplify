@@ -2,12 +2,15 @@ channels:
   - conda-forge
 dependencies:
   - openbabel
-  - tensorflow-base
+  - tensorflow-base > 2.0
   - scikit-learn
   - pyyaml
   - pandas
   - scipy
   - libffi
+  - networkx >= 2.7
+  - importlib_resources
   - pip
   - pip:
     - pytest
+    - pytest-resource-path

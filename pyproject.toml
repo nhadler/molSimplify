@@ -4,18 +4,20 @@ version = "v1.7.3"
 license = {file = "LICENSE"}
 readme = "README.md"
 dependencies = [
+    "openbabel-wheel",
     "numpy",
     "scipy",
     "pandas",
-    "networkx",
+    "networkx>=2.7",
     "scikit-learn",
     "keras",
     "tensorflow",
     "pyyaml",
+    "importlib-resources",
 ]
 
 [project.optional-dependencies]
-dev = ["pre-commit"]
+dev = ["pytest", "pytest-resource-path", "pre-commit"]
 docs = [
     "beautifulsoup4",
     "sphinx",

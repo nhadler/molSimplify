@@ -16,7 +16,7 @@ try:
     from openbabel import openbabel  # version 3 style import
 except ImportError:
     import openbabel  # fallback to version 2
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from scipy.spatial import ConvexHull
 from molSimplify.utils.decorators import deprecated
 
@@ -30,7 +30,6 @@ from molSimplify.Scripts.rmsd import rigorous_rmsd
 try:
     import PyQt5  # noqa: F401
     from molSimplify.Classes.miniGUI import miniGUI
-
     # PyQt5 flag
     qtflag = True
 except ImportError:
@@ -51,7 +50,7 @@ class mol3D:
 
     def __init__(self, name='ABC', loc='', use_atom_specific_cutoffs=False):
         # List of atom3D objects
-        self.atoms = []
+        self.atoms: List[atom3D] = []
         # Number of atoms
         self.natoms = 0
         # Mass of molecule
@@ -79,14 +78,14 @@ class mol3D:
         # Holder for global variables
         self.globs = globalvars()
         # Holder for molecular graph
-        self.graph = []
+        self.graph = np.array([])
         self.xyzfile = 'undef'
         self.updated = False
         self.needsconformer = False
         # Holder for molecular group
         self.grps = False
         # Holder for metals
-        self.metals = None
+        self.metals: Optional[List[int]] = None
         # Conformation (empty string if irrelevant)
         self.loc = loc
         # Temporary list for storing conformations
@@ -95,7 +94,7 @@ class mol3D:
         self.hull = []
 
         # Holder for partial charge for each atom
-        self.partialcharges = []
+        self.partialcharges: List[float] = []
 
         # ---geo_check------
         self.dict_oct_check_loose = self.globs.geo_check_dictionary()[
@@ -572,7 +571,7 @@ class mol3D:
         """
 
         # initialize center of mass and mol mass
-        center_of_symmetry = [0, 0, 0]
+        center_of_symmetry = [0.0, 0.0, 0.0]
         # loop over atoms in molecule
         for atom in self.atoms:
             # calculate center of symmetry
@@ -1185,6 +1184,65 @@ class mol3D:
         charge = charge - nh_obmol + nh
         return charge
 
+    def get_first_shell(self, check_hapticity=True):
+        '''
+        Get the first coordination shell of a mol3D object with a single transition metal (read from CSD mol2 file)
+        if check_hapticity is True updates the first shell of multiheptate ligand to be hydrogen set at the geometric mean
+
+        Parameters
+        ----------
+            check_hapticity: boolean
+                whether to update multiheptate ligands to their geometric centroid
+        Returns
+        ----------
+            mol 3D object: first coordination shell with metal (can change based on check_hapticity)
+            list: list of hapticity
+        '''
+        from molSimplify.Informatics.graph_analyze import obtain_truncation_metal
+        import networkx as nx
+        mol_fcs = obtain_truncation_metal(self, hops=1)
+        M_coord = mol_fcs.getAtomCoords(mol_fcs.findMetal()[0])
+        M_sym = mol_fcs.getAtom(mol_fcs.findMetal()[0]).symbol()
+        G = nx.from_numpy_array(mol_fcs.graph)
+        G.remove_node(mol_fcs.findMetal()[0])
+        coord_list = [c for c in sorted(nx.connected_components(G), key=len, reverse=True)]
+        hapticity_list = [len(c) for c in sorted(nx.connected_components(G), key=len, reverse=True)]
+        new_coords_mol = []
+        new_coords_sym = []
+        if not len(coord_list) == G.number_of_nodes():
+            for i in range(len(coord_list)):
+                if len(coord_list[i]) == 1:
+                    coord_index = list(coord_list[i])[0]
+                    coord = mol_fcs.getAtomCoords(coord_index)
+                    sym = mol_fcs.getAtom(coord_index).symbol()
+                    new_coords_mol.append(coord)
+                    new_coords_sym.append(sym)
+                else:
+                    get_centroid = []
+                    for j in coord_list[i]:
+                        get_centroid.append(mol_fcs.getAtomCoords(j))
+                    coordinating = np.array(get_centroid)
+                    coord = np.mean(coordinating, axis=0)
+                    new_coords_mol.append(coord.tolist())
+                    new_coords_sym.append('H')
+            new_mol = mol3D()
+            new_mol.bo_dict = {}
+            new_mol.addAtom(atom3D(M_sym, M_coord))
+            for i in range(len(new_coords_mol)):
+                new_mol.addAtom(atom3D(new_coords_sym[i], new_coords_mol[i]))
+            new_mol.graph = np.zeros([new_mol.natoms, new_mol.natoms])
+            for i in range(new_mol.natoms):
+                if i != new_mol.findMetal()[0]:
+                    new_mol.add_bond(new_mol.findMetal()[0], i, 1)
+        else:
+            new_mol = mol3D()
+            new_mol.copymol3D(mol_fcs)
+
+        if check_hapticity:
+            return new_mol, hapticity_list
+        else:
+            return mol_fcs, hapticity_list
+
     def get_octetrule_charge(self, debug=False):
         '''
         Get the octet-rule charge provided a mol3D object with bo_graph (read from CSD mol2 file)
@@ -1345,6 +1403,7 @@ class mol3D:
         return close_metal
 
     def findMetal(self, transition_metals_only: bool = True) -> List[int]:
+#        transition_metals_only = False
         """
         Find metal(s) in a mol3D class.
 
@@ -1437,6 +1496,35 @@ class mol3D:
                 if atidx in conatoms:
                     conatoms.remove(atidx)  # remove from list to check
         return subm
+
+    @classmethod
+    def from_smiles(cls, smiles, gen3d: bool = True):
+        mol = cls()
+        mol.getOBMol(smiles, "smistring", gen3d=gen3d)
+
+        elem = globalvars().elementsbynum()
+        # Add atoms
+        for atom in openbabel.OBMolAtomIter(mol.OBMol):
+            # get coordinates
+            pos = [atom.GetX(), atom.GetY(), atom.GetZ()]
+            # get atomic symbol
+            sym = elem[atom.GetAtomicNum() - 1]
+            # add atom to molecule
+            # atom3D_list.append(atom3D(sym, pos))
+            mol.addAtom(atom3D(sym, pos))
+
+        # Add bonds
+        mol.graph = np.zeros([mol.natoms, mol.natoms])
+        mol.bo_graph = np.zeros([mol.natoms, mol.natoms])
+        for bond in openbabel.OBMolBondIter(mol.OBMol):
+            i = bond.GetBeginAtomIdx() - 1
+            j = bond.GetEndAtomIdx() - 1
+            bond_order = bond.GetBondOrder()
+            if bond.IsAromatic():
+                bond_order = 1.5
+            mol.graph[i, j] = mol.graph[j, i] = 1
+            mol.bo_graph[i, j] = mol.bo_graph[j, i] = bond_order
+        return mol
 
     def getAtom(self, idx):
         """
@@ -2261,7 +2349,7 @@ class mol3D:
         angle = vecangle(v1, v2)
         return angle
 
-    def getOBMol(self, fst, convtype, ffclean=False):
+    def getOBMol(self, fst, convtype, ffclean=False, gen3d=True):
         """
         Get OBMol object from a file or SMILES string. If you have a mol3D,
         then use convert2OBMol instead.
@@ -2274,6 +2362,8 @@ class mol3D:
                 Input filetype (xyz,mol,smi).
             ffclean : bool, optional
                 Flag for forcefield cleanup of structure. Default is False.
+            gen3d: bool, optional
+                Flag for 3D structure generation using openbabel.OBBuilder
 
         Returns
         -------
@@ -2291,8 +2381,9 @@ class mol3D:
             obConversion.ReadFile(OBMol, fst)
         if 'smi' in convtype:
             OBMol.AddHydrogens()
-            b = openbabel.OBBuilder()
-            b.Build(OBMol)
+            if gen3d:
+                b = openbabel.OBBuilder()
+                b.Build(OBMol)
         if ffclean:
             forcefield = openbabel.OBForceField.FindForceField('mmff94')
             forcefield.Setup(OBMol)
@@ -2672,7 +2763,7 @@ class mol3D:
             ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
         return (ss)
 
-    def readfromxyz(self, filename, ligand_unique_id=False, read_final_optim_step=False):
+    def readfromxyz(self, filename: str, ligand_unique_id=False, read_final_optim_step=False):
         """
         Read XYZ into a mol3D class instance.
 
@@ -2693,8 +2784,7 @@ class mol3D:
         amassdict = globs.amass()
         self.graph = []
         self.xyzfile = filename
-        fname = filename.split('.xyz')[0]
-        with open(fname + '.xyz', 'r') as f:
+        with open(filename, 'r') as f:
             s = f.read().splitlines()
         try:
             atom_count = int(s[0])
@@ -5157,7 +5247,7 @@ class mol3D:
         with np.errstate(over='raise'):
             try:
                 det = np.linalg.det(tmpgraph)
-            except np.linalg.LinAlgError:
+            except (np.linalg.LinAlgError, FloatingPointError):
                 (sign, det) = np.linalg.slogdet(tmpgraph)
                 if sign != 0:
                     det = sign*det
@@ -5249,7 +5339,8 @@ class mol3D:
                 eq_catoms = False
             return eqsym, maxdent, ligdents, homoleptic, ligsymmetry, eq_catoms
 
-    def is_sandwich_compound(self):
+    def is_sandwich_compound(self, transition_metals_only: bool = True
+                             ) -> Tuple[int, List, bool, bool, List]:
         """
         Evaluates whether a compound is a sandwich compound
 
@@ -5263,7 +5354,8 @@ class mol3D:
                 Flag about whether the ligand is aromatic.
             allconnect : bool
                 Flag for connected atoms in ring.
-
+            edge_lig_atoms: list
+                List of dictionaries with the connecting atoms of the sandwich ligands.
         """
 
         # Check if a structure is sandwich compound.
@@ -5275,7 +5367,7 @@ class mol3D:
 
         from molSimplify.Informatics.graph_analyze import obtain_truncation_metal
         mol_fcs = obtain_truncation_metal(self, hops=1)
-        metal_ind = mol_fcs.findMetal()[0]
+        metal_ind = mol_fcs.findMetal(transition_metals_only=transition_metals_only)[0]
         catoms = list(range(mol_fcs.natoms))
         catoms.remove(metal_ind)
         sandwich_ligands, _sl = list(), list()
@@ -5298,14 +5390,16 @@ class mol3D:
                         _sl.append(set(lig))
                         break
         num_sandwich_lig = len(sandwich_ligands)
-        info_sandwich_lig = [{"natoms_connected": len(
-            x[0]), "natoms_ring": x[1], "aromatic": x[2]} for x in sandwich_ligands]
+        info_sandwich_lig = [
+                {"natoms_connected": len(x[0]), "natoms_ring": x[1], "aromatic": x[2]} for x in sandwich_ligands]
+        sandwich_lig_atoms = [
+                {"atom_idxs": x[0]} for x in sandwich_ligands]
         aromatic = any([x["aromatic"] for x in info_sandwich_lig])
         allconnect = any([x["natoms_connected"] == x["natoms_ring"]
                           for x in info_sandwich_lig])
-        return num_sandwich_lig, info_sandwich_lig, aromatic, allconnect
+        return num_sandwich_lig, info_sandwich_lig, aromatic, allconnect, sandwich_lig_atoms
 
-    def is_edge_compound(self):
+    def is_edge_compound(self, transition_metals_only: bool = True) -> Tuple[int, List, List]:
         """
         Check if a structure is edge compound.
 
@@ -5315,17 +5409,21 @@ class mol3D:
                 Number of edge ligands.
             info_edge_lig : list
                 List of dictionaries with info about edge ligands.
-
+            edge_lig_atoms: list
+                List of dictionaries with the connecting atoms of the edge ligands.
         """
 
         # Request: 1) complexes with ligands where there are at least
         # two connected non-metal atoms both connected to the metal.
 
         from molSimplify.Informatics.graph_analyze import obtain_truncation_metal
-        num_sandwich_lig, info_sandwich_lig, aromatic, allconnect = self.is_sandwich_compound()
+        (num_sandwich_lig, info_sandwich_lig, aromatic, allconnect,
+         sandwich_lig_atoms) = self.is_sandwich_compound(
+             transition_metals_only=transition_metals_only
+        )
         if not num_sandwich_lig or (num_sandwich_lig and not allconnect):
             mol_fcs = obtain_truncation_metal(self, hops=1)
-            metal_ind = mol_fcs.findMetal()[0]
+            metal_ind = mol_fcs.findMetal(transition_metals_only=transition_metals_only)[0]
             catoms = list(range(mol_fcs.natoms))
             catoms.remove(metal_ind)
             edge_ligands, _el = list(), list()
@@ -5335,21 +5433,166 @@ class mol3D:
                 if len(lig) >= 2 and not set(lig) in _el:
                     edge_ligands.append([set(lig)])
                     _el.append(set(lig))
-                    break
+                    # break
             num_edge_lig = len(edge_ligands)
             info_edge_lig = [
                 {"natoms_connected": len(x[0])} for x in edge_ligands]
+            edge_lig_atoms = [
+                {"atom_idxs": x[0]} for x in edge_ligands]
         else:
-            num_edge_lig, info_edge_lig = 0, list()
-        return num_edge_lig, info_edge_lig
+            num_edge_lig, info_edge_lig, edge_lig_atoms = 0, list(), list()
+        return num_edge_lig, info_edge_lig, edge_lig_atoms
 
-    def get_geometry_type(self, dict_check=False, angle_ref=False, num_coord=False,
+    def get_geometry_type_old(self, dict_check=False, angle_ref=False, num_coord=None,
                           flag_catoms=False, catoms_arr=None, debug=False,
-                          skip=False, transition_metals_only=False):
+                          skip=False, transition_metals_only=False, num_recursions=[0, 0]):
         """
         Get the type of the geometry (trigonal planar(3), tetrahedral(4), square planar(4),
         trigonal bipyramidal(5), square pyramidal(5, one-empty-site),
         octahedral(6), pentagonal bipyramidal(7))
+
+        Parameters
+        ----------
+            dict_check : dict, optional
+                The cutoffs of each geo_check metrics we have. Default is False
+            angle_ref : bool, optional
+                Reference list of list for the expected angles (A-metal-B) of each connection atom.
+            num_coord : int, optional
+                Expected coordination number.
+            flag_catoms : bool, optional
+                Whether or not to return the catoms arr. Default as False.
+            catoms_arr : Nonetype, optional
+                Uses the catoms of the mol3D by default. User and overwrite this connection atom array by explicit input.
+                Default is Nonetype.
+            debug : bool, optional
+                Flag for extra printout. Default is False.
+            skip : list, optional
+                Geometry checks to skip. Default is False.
+            transition_metals_only : bool, optional
+                Flag for considering more than just transition metals as metals. Default is False.
+            num_recursions : list, optional
+                counter to track number of ligands classified as 'sandwich' and 'edge' in original structure
+
+        Returns
+        -------
+            results : dictionary
+                Measurement of deviations from arrays.
+
+        """
+        # from molSimplify.Classes.ligand import ligand_breakdown
+
+        all_geometries = globalvars().get_all_geometries()
+        all_angle_refs = globalvars().get_all_angle_refs()
+        summary = {}
+
+        if len(self.graph):  # Find num_coord based on metal_cn if graph is assigned
+            if len(self.findMetal()) > 1:
+                raise ValueError('Multimetal complexes are not yet handled.')
+            elif len(self.findMetal(transition_metals_only=transition_metals_only)) == 1:
+                num_coord = len(self.getBondedAtomsSmart(self.findMetal(transition_metals_only=transition_metals_only)[0]))
+            else:
+                raise ValueError('No metal centers exist in this complex.')
+
+        if num_coord is None:
+            # TODO: Implement the case where we don't know the coordination number.
+            raise NotImplementedError(
+                "Not implemented yet. Please at least provide the coordination number.")
+
+        if catoms_arr is not None and len(catoms_arr) != num_coord:
+            raise ValueError("num_coord and the length of catoms_arr do not match.")
+
+        num_sandwich_lig, info_sandwich_lig, aromatic, allconnect, sandwich_lig_atoms = self.is_sandwich_compound(transition_metals_only=transition_metals_only)
+        num_edge_lig, info_edge_lig, edge_lig_atoms = self.is_edge_compound(transition_metals_only=transition_metals_only)
+
+        if num_sandwich_lig:
+            mol_copy = mol3D()
+            mol_copy.copymol3D(mol0=self)
+            catoms = mol_copy.getBondedAtoms(idx=self.findMetal()[0])
+            centroid_coords = []
+            sandwich_lig_catom_idxs = []
+            for idx in range(num_sandwich_lig):
+                sandwich_lig_catoms = np.array(list(sandwich_lig_atoms[idx]['atom_idxs']))-1
+                sandwich_lig_catom_idxs.extend([catoms[i] for i in sandwich_lig_catoms])
+                atom_coords = np.array([mol_copy.getAtomCoords(idx=atom_idx) for atom_idx in [catoms[i] for i in sandwich_lig_catoms]])
+                centroid_coords.append([np.mean(atom_coords[:, 0]), np.mean(atom_coords[:, 1]), np.mean(atom_coords[:, 2])])
+            mol_copy.deleteatoms(sandwich_lig_catom_idxs)
+            for idx in range(num_sandwich_lig):
+                atom = atom3D()
+                atom.setcoords(xyz=centroid_coords[idx])
+                mol_copy.addAtom(atom)
+                mol_copy.add_bond(idx1=mol_copy.findMetal()[0], idx2=mol_copy.natoms-1, bond_type=1)
+            return mol_copy.get_geometry_type_old(num_recursions=[num_sandwich_lig, num_edge_lig])
+
+        if num_edge_lig:
+            mol_copy = mol3D()
+            mol_copy.copymol3D(mol0=self)
+            catoms = mol_copy.getBondedAtoms(idx=self.findMetal()[0])
+            centroid_coords = []
+            edge_lig_catom_idxs = []
+            for idx in range(num_edge_lig):
+                edge_lig_catoms = np.array(list(edge_lig_atoms[idx]['atom_idxs']))-1
+                edge_lig_catom_idxs.extend([catoms[i] for i in edge_lig_catoms])
+                atom_coords = np.array([mol_copy.getAtomCoords(idx=atom_idx) for atom_idx in [catoms[i] for i in edge_lig_catoms]])
+                centroid_coords.append([np.mean(atom_coords[:, 0]), np.mean(atom_coords[:, 1]), np.mean(atom_coords[:, 2])])
+            mol_copy.deleteatoms(edge_lig_catom_idxs)
+            for idx in range(num_edge_lig):
+                atom = atom3D()
+                atom.setcoords(xyz=centroid_coords[idx])
+                mol_copy.addAtom(atom)
+                mol_copy.add_bond(idx1=mol_copy.findMetal()[0], idx2=mol_copy.natoms-1, bond_type=1)
+            return mol_copy.get_geometry_type_old(num_recursions=[num_sandwich_lig, num_edge_lig])
+
+        if num_coord not in all_geometries:
+            geometry = "unknown"
+            results = {
+                "geometry": geometry,
+                "angle_devi": False,
+                "summary": {},
+                "num_sandwich_lig": num_recursions[0],
+                "aromatic": aromatic,
+                "allconnect": allconnect,
+                "num_edge_lig": num_recursions[1]
+            }
+            return results
+
+        possible_geometries = all_geometries[num_coord]
+        for geotype in possible_geometries:
+            dict_catoms_shape, catoms_assigned = self.oct_comp(angle_ref=all_angle_refs[geotype],
+                                                               catoms_arr=None,
+                                                               debug=debug)
+            if debug:
+                print("Geocheck assigned catoms: ", catoms_assigned,
+                      [self.getAtom(ind).symbol() for ind in catoms_assigned])
+            summary.update({geotype: dict_catoms_shape})
+
+        angle_devi, geometry = 10000, None
+        for geotype in summary:
+            if summary[geotype]["oct_angle_devi_max"] < angle_devi:
+                angle_devi = summary[geotype]["oct_angle_devi_max"]
+                geometry = geotype
+        results = {
+            "geometry": geometry,
+            "angle_devi": angle_devi,
+            "summary": summary,
+            "num_sandwich_lig": num_recursions[0],
+            "info_sandwich_lig": info_sandwich_lig,
+            "aromatic": aromatic,
+            "allconnect": allconnect,
+            "num_edge_lig": num_recursions[1],
+            "info_edge_lig": info_edge_lig,
+        }
+        return results
+
+    def get_geometry_type(self, dict_check=False, angle_ref=False,
+                          flag_catoms=False, catoms_arr=None, debug=False,
+                          skip=False, transition_metals_only=False):
+        """
+        Get the type of the geometry (linear (2), trigonal planar(3), tetrahedral(4), square planar(4),
+        trigonal bipyramidal(5), square pyramidal(5, one-empty-site),
+        octahedral(6), pentagonal bipyramidal(7))
+
+        uses hapticity truncated first coordination shell.
+        Does not require the input of num_coord.
 
         Parameters
         ----------
@@ -5378,58 +5621,53 @@ class mol3D:
 
         """
 
+        first_shell, hapt = self.get_first_shell()
+        num_coord = first_shell.natoms - 1
         all_geometries = globalvars().get_all_geometries()
         all_angle_refs = globalvars().get_all_angle_refs()
         summary = {}
 
-        if len(self.graph):  # Find num_coord based on metal_cn if graph is assigned
-            if len(self.findMetal()) > 1:
+        if len(first_shell.graph):  # Find num_coord based on metal_cn if graph is assigned
+            if len(first_shell.findMetal()) > 1:
                 raise ValueError('Multimetal complexes are not yet handled.')
-            elif len(self.findMetal(transition_metals_only=transition_metals_only)) == 1:
-                num_coord = len(self.getBondedAtomsSmart(self.findMetal(transition_metals_only=transition_metals_only)[0]))
-                # print("coord number:", num_coord)
+            elif len(first_shell.findMetal(transition_metals_only=transition_metals_only)) == 1:
+                num_coord = len(first_shell.getBondedAtomsSmart(first_shell.findMetal(transition_metals_only=transition_metals_only)[0]))
             else:
                 raise ValueError('No metal centers exist in this complex.')
-
-        if num_coord is False:
-            # TODO: Implement the case where we don't know the coordination number.
-            raise NotImplementedError(
-                "Not implemented yet. Please at least provide the coordination number.")
 
         if catoms_arr is not None and len(catoms_arr) != num_coord:
             raise ValueError("num_coord and the length of catoms_arr do not match.")
 
-        num_sandwich_lig, info_sandwich_lig, aromatic, allconnect = self.is_sandwich_compound()
-        num_edge_lig, info_edge_lig = self.is_edge_compound()
-
-        if num_coord not in [3, 4, 5, 6, 7]:
-            if num_sandwich_lig:
-                geometry = "sandwich"
-            elif num_edge_lig:
-                geometry = "edge"
-            else:
-                geometry = "unknown"
+        if num_coord not in [2, 3, 4, 5, 6, 7]:
             results = {
-                "geometry": geometry,
+                "geometry": "unknown",
                 "angle_devi": False,
                 "summary": {},
-                "num_sandwich_lig": num_sandwich_lig,
-                "info_sandwich_lig": info_sandwich_lig,
-                "aromatic": aromatic,
-                "allconnect": allconnect,
-                "num_edge_lig": num_edge_lig,
-                "info_edge_lig": info_edge_lig,
+                "hapticity": hapt,
+            }
+            return results
+        elif num_coord == 2:
+            if first_shell.findMetal()[0] == 2:
+                angle = first_shell.getAngle(0, 2, 1)
+            elif first_shell.findMetal()[0] == 1:
+                angle = first_shell.getAngle(0, 1, 2)
+            else:
+                angle = first_shell.getAngle(1, 0, 2)
+            results = {
+                "geometry": "linear",
+                "angle_devi": 180 - angle,
+                "summary": {},
+                "hapticity": hapt,
             }
             return results
 
         possible_geometries = all_geometries[num_coord]
         for geotype in possible_geometries:
-            dict_catoms_shape, catoms_assigned = self.oct_comp(angle_ref=all_angle_refs[geotype],
-                                                               catoms_arr=None,
-                                                               debug=debug)
+            dict_catoms_shape, catoms_assigned = first_shell.oct_comp(
+                angle_ref=all_angle_refs[geotype], catoms_arr=None, debug=debug)
             if debug:
                 print("Geocheck assigned catoms: ", catoms_assigned,
-                      [self.getAtom(ind).symbol() for ind in catoms_assigned])
+                      [first_shell.getAtom(ind).symbol() for ind in catoms_assigned])
             summary.update({geotype: dict_catoms_shape})
 
         angle_devi, geometry = 10000, None
@@ -5437,22 +5675,11 @@ class mol3D:
             if summary[geotype]["oct_angle_devi_max"] < angle_devi:
                 angle_devi = summary[geotype]["oct_angle_devi_max"]
                 geometry = geotype
-        if num_sandwich_lig:
-            geometry = "sandwich"
-            angle_devi = False
-        elif num_edge_lig:
-            geometry = "edge"
-            angle_devi = False
         results = {
             "geometry": geometry,
             "angle_devi": angle_devi,
             "summary": summary,
-            "num_sandwich_lig": num_sandwich_lig,
-            "info_sandwich_lig": info_sandwich_lig,
-            "aromatic": aromatic,
-            "allconnect": allconnect,
-            "num_edge_lig": num_edge_lig,
-            "info_edge_lig": info_edge_lig,
+            "hapticity": hapt,
         }
         return results
 

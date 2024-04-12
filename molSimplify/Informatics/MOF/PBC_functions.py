@@ -392,7 +392,7 @@ def returnXYZandGraph(filename, atoms, cell, fcoords, molgraph):
         cart_coord=np.dot(fcoord,cell)
         coord_list.append([cart_coord[0],cart_coord[1],cart_coord[2]])
     tmpstr=",".join([at for at in atoms])
-    if filename != None:
+    if filename is not None:
         np.savetxt(filename[:-4]+".net",molgraph,fmt="%i",delimiter=",",header=tmpstr)
     return coord_list, molgraph
 
@@ -936,7 +936,7 @@ def get_closed_subgraph(linkers, SBUlist, adj_matrix):
             current_linker_list = current_linker_list-SBUlist
             checked_list.add(start_idx)
             for val in loop_over:
-                if (not val in SBUlist):
+                if val not in SBUlist:
                     current_linker_list.update(np.nonzero(adj_matrix[val])[1]) # np.nonzero(adj_matrix[val])[1] are the indices of atoms with bonds to the atom with index val
             left_to_check = current_linker_list-checked_list-SBUlist # Linker atoms whose connecting atoms still need to be checked.
             if len(left_to_check) == 0:
@@ -1042,7 +1042,7 @@ def disorder_detector(name):
         disordered_atom_types = []
         disordered_atom_occupancies = []
 
-        if occupancy_index != False: # This means that occupancy information is available
+        if occupancy_index: # This means that occupancy information is available
             for idx, at in enumerate(atomlines): # Go through the lines of the cif with atom specific information. Atom by atom.
                 ln=at.strip().split()
 
@@ -1165,7 +1165,7 @@ def overlap_removal(cif_path, new_cif_path):
 def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
     """
     Reads a cif file, removes floating solvent and overlapping atoms, and writes the cif to the provided path.
-    If MOF has a lot of solvent, you may need to apply this function multiple times.
+    Assumes cif has P1 symmetry.
 
     Parameters
     ----------
