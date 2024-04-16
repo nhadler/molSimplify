@@ -1979,7 +1979,7 @@ class mol3D:
                                 'Error, mol3D could not understand connectivity in mol')
         return nats
 
-    def getBondedAtomsSmart(self, idx, oct=False, strict_cutoff=False, catom_list=None):
+    def getBondedAtomsSmart(self, idx, oct=True, strict_cutoff=False, catom_list=None):
         """
         Get the atoms bonded with the atom specified with the given index, using the molecular graph.
         Creates graph if it does not exist.
@@ -5726,7 +5726,8 @@ class mol3D:
             if len(first_shell.findMetal()) > 1:
                 raise ValueError('Multimetal complexes are not yet handled.')
             elif len(first_shell.findMetal(transition_metals_only=transition_metals_only)) == 1:
-                num_coord = len(first_shell.getBondedAtomsSmart(first_shell.findMetal(transition_metals_only=transition_metals_only)[0]))
+                #Use oct=False to ensure coordination number based on radius cutoffs only
+                num_coord = len(first_shell.getBondedAtomsSmart(first_shell.findMetal(transition_metals_only=transition_metals_only)[0]), oct=False)
             else:
                 raise ValueError('No metal centers exist in this complex.')
         if catoms_arr is not None and len(catoms_arr) != num_coord:
