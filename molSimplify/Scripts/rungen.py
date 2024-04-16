@@ -46,6 +46,14 @@ if sys.version_info[:2] <= (2, 7):
 
 
 def constrgen(rundir: str, args: Namespace) -> Tuple[Union[Namespace, bool], str]:
+    # 8/13/23 Roland: Adding assert boolean checks for ligocc and lig info in args. Should quit early so that user
+    # doesn't have and infinitely running code (-ligocc 0) or gets a nonsensical error (missing -lig gives NoneType error). More asserts
+    # can be added should it be necessary. Also, for consistency, coord number should be greater than or equal to
+    # ligocc + (lignum-1)
+    assert type(args.ligocc)==list and int(args.ligocc[0])>0, "Input File Error: -ligocc should be present and greater than 0"
+    assert type(args.lig)==list and len(args.lig)>0, "Input File Error: -lig should be present with a valid ligand"
+    assert int(args.coord)>=int(args.ligocc[0])+(int(args.lignum)-1), "Input File Error: -coord should be greater than or equal to the sum of ligocc and lignum-1"
+
     emsg = ""
     # load global variables
     licores = getlicores()
@@ -227,6 +235,7 @@ def multigenruns(rundir, args, write_files=True):
                 emsg = rungen(rundir, args, fname, write_files=write_files)
                 if emsg:
                     return emsg
+
     elif (multch):
         for ch in charges:
             args.charge = ch
@@ -390,6 +399,9 @@ def draw_supervisor(args: Namespace, rundir: str):
 
 
 def rungen(rundir, args: Namespace, chspfname=None, write_files: bool = True):
+    if isinstance(args.spin, list):
+        args.spin=args.spin[0]
+
     emsg = ''
     globs = globalvars()
     globs.nosmiles = 0  # reset smiles ligands for each run
@@ -556,6 +568,7 @@ def rungen(rundir, args: Namespace, chspfname=None, write_files: bool = True):
                 if write_files:
                     args.checkdirb = True
                     os.mkdir(rootdir)
+
         # ###################################
         # ########### GENERATION ############
         # ###################################
