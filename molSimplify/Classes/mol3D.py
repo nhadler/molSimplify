@@ -4918,7 +4918,7 @@ class mol3D:
                                                                             num_coord=num_coord, debug=debug)
         return flag_oct, flag_list, dict_oct_info, flag_oct_loose, flag_list_loose
 
-    def get_fcs(self, strict_cutoff=False, catom_list=None):
+    def get_fcs(self, strict_cutoff=False, catom_list=None, max6=True):
         """
         Get first coordination shell of a transition metal complex.
 
@@ -4928,6 +4928,8 @@ class mol3D:
                 strict bonding cutoff for fullerene and SACs
             catom_list : list, optional
                 List of indices of coordinating atoms.
+            max6 : bool, optional
+                If True, will return catoms from oct_comp.
 
         Returns
         -------
@@ -4938,8 +4940,8 @@ class mol3D:
         self.get_num_coord_metal(debug=False, strict_cutoff=strict_cutoff, catom_list=catom_list)
         catoms = self.catoms
         # print(catoms, [self.getAtom(x).symbol() for x in catoms])
-        # if len(catoms) > 6:
-        #     _, catoms = self.oct_comp(debug=False)
+        if max6 and len(catoms) > 6:
+            _, catoms = self.oct_comp(debug=False)
         fcs = [metalind] + catoms
         return fcs
 
@@ -5727,7 +5729,7 @@ class mol3D:
                 raise ValueError('Multimetal complexes are not yet handled.')
             elif len(first_shell.findMetal(transition_metals_only=transition_metals_only)) == 1:
                 #Use oct=False to ensure coordination number based on radius cutoffs only
-                num_coord = len(first_shell.getBondedAtomsSmart(first_shell.findMetal(transition_metals_only=transition_metals_only)[0]), oct=False)
+                num_coord = len(first_shell.getBondedAtomsSmart(first_shell.findMetal(transition_metals_only=transition_metals_only)[0], oct=False))
             else:
                 raise ValueError('No metal centers exist in this complex.')
         if catoms_arr is not None and len(catoms_arr) != num_coord:
@@ -5799,7 +5801,7 @@ class mol3D:
         elif len(metal_idx) != 1:
             raise ValueError('Multimetal complexes are not yet handled.')
         temp_mol = self.get_first_shell()[0]
-        fcs_indices = temp_mol.get_fcs()
+        fcs_indices = temp_mol.get_fcs(max6=False)
         # remove metal index from first coordination shell
         fcs_indices.remove(temp_mol.findMetal()[0])
 
