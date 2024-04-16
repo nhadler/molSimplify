@@ -31,5 +31,3 @@ dependencies:
   - theochem::iodata
   - xtb
   #- psi4::psi4
-  # molscontrol
-  - scikit-image

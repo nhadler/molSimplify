@@ -30,7 +30,6 @@ Welcome to molSimplify's documentation!
 | ``Ligands``: database of ligands which are used in molSimplify (if your ligand is not found here, there is a tutorial for adding to the ligand database)
 | - ``ligands.dict``: contains mappings between ligand name and corresponding structure
 | ``Scripts``: codes to write and measure geometries, and write input files
-| ``molscontrol``: dynamic classifier files
 | ``python_nn``: bond length information for the very first bond length NN (2017 Chemical Science)
 | ``sklearn_models``: models for static classification of whether a geometry is good or bad
 | ``tf_nn``: published models from the group
