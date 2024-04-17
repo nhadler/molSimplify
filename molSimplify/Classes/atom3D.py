@@ -91,11 +91,13 @@ class atom3D:
     def __repr__(self):
         return f"atom3D(Sym={self.sym}, xyz={self.__xyz})"
 
-    def __eq__(self, other):
-        if isinstance(other, self.__class__):
-            return self.__dict__ == other.__dict__
-        else:
-            return False
+    # TODO: uncomment this once protein3D has a better implementation than
+    # hashing of a mutable object!
+    # def __eq__(self, other):
+    #     if isinstance(other, self.__class__):
+    #         return self.__dict__ == other.__dict__
+    #     else:
+    #         return False
 
     def coords(self):
         """ Get coordinates of a given atom.

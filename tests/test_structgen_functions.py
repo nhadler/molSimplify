@@ -133,11 +133,13 @@ def test_init_template(geometry, coordination):
      corerefatoms) = init_template(args, cpoints_required=6)
 
     assert [a.sym for a in m3D.getAtoms()] == ['Fe'] + coordination * ['X']
-    assert core3D.getAtoms() == [atom3D('Fe')]
+    # Ugly workaround because atom3D can not be compared directly (the __eq__ method
+    # is commented out because of protein3D incompatiblities)
+    assert [a.__dict__ for a in core3D.getAtoms()] == [atom3D('Fe').__dict__]
     assert backbatoms == getbackbcombsall(list(range(1, 1 + coordination)))
     assert geom == geometry
     assert coord == coordination
-    assert corerefatoms.getAtoms() == [atom3D('Fe') for _ in range(coordination)]
+    assert [a.__dict__ for a in corerefatoms.getAtoms()] == [atom3D('Fe').__dict__ for _ in range(coordination)]
 
 
 def test_init_ANN():
