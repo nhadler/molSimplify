@@ -3,7 +3,12 @@ import operator
 import json
 import numpy as np
 from molSimplify.Classes.mol2D import Mol2D
-from molSimplify.Informatics.graph_racs import atom_centered_AC, multi_centered_AC, octahedral_racs
+from molSimplify.Informatics.graph_racs import (
+    atom_centered_AC,
+    multi_centered_AC,
+    octahedral_racs,
+    ligand_racs,
+)
 
 
 @pytest.fixture
@@ -97,7 +102,7 @@ def test_octahedral_racs(
         equatorial_connecting_atoms=eq_atoms,
     )
 
-    # Dictionary encoded the order of the descriptors in the numpy array
+    # Dictionary encoding the order of the descriptors in the numpy array
     start_scopes = {
         0: ("f", "all"),
         1: ("mc", "all"),
@@ -125,3 +130,64 @@ def test_octahedral_racs(
                     abs(descriptors[s, d, p] - ref_dict[f"{start}-{prop}-{d}-{scope}"])
                     < atol
                 )
+
+
+@pytest.mark.parametrize(
+    "mol2_path, ref_path, n_ligs",
+    [
+        ("fe_carbonyl_6.mol2", "lig_racs_fe_carbonyl_6.json", 6),
+        (
+            "mn_furan_water_ammonia_furan_water_ammonia.mol2",
+            "lig_racs_mn_furan_water_ammonia_furan_water_ammonia.json",
+            6,
+        ),
+        (
+            "co_acac_en.mol2",
+            "lig_racs_co_acac_en.json",
+            4,
+        ),
+    ],
+)
+def test_ligand_racs(
+    resource_path_root, mol2_path, ref_path, n_ligs, atol=1e-4
+):
+
+    mol = Mol2D.from_mol2_file(resource_path_root / "inputs" / "informatics" / mol2_path)
+
+    with open(resource_path_root / "refs" / "informatics" / ref_path, "r") as fin:
+        ref_dict = json.load(fin)
+    print(ref_dict)
+
+    depth = 3
+    descriptors = ligand_racs(
+        mol,
+        depth=depth,
+        full_scope=True
+    )
+
+    assert descriptors.shape == (n_ligs, 4, depth + 1, 5)
+
+    starts = {
+        0: "lc_P",
+        1: "lc_D",
+        2: "f_P",
+        3: "f_D",
+    }
+
+    properties = ["Z", "chi", "T", "I", "S"]
+    for lig in range(n_ligs):
+        for s, start in starts.items():
+            for d in range(depth + 1):
+                for p, prop in enumerate(properties):
+                    print(
+                        f"lig_{lig}",
+                        start,
+                        d,
+                        prop,
+                        descriptors[lig, s, d, p],
+                        ref_dict[f"lig_{lig}-{start}-{prop}-{d}"],
+                    )
+                    assert (
+                        abs(descriptors[lig, s, d, p] - ref_dict[f"lig_{lig}-{start}-{prop}-{d}"])
+                        < atol
+                    )
