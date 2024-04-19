@@ -672,10 +672,6 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
     for SBU_idx, atoms_sbu in enumerate(SBU_list):
         # atoms_sbu are the indices of atoms in the SBU with index SBU_idx
 
-        # Two lists to keep track of non-global indices in the surrounded SBU XYZ to be written
-        sbu_indices_local = []
-        linker_indices_local = [] # List of lists
-
         connection_atoms = []  # List of lists of the coordinating atoms of each of the connected linkers. Length is # of connected linkers.
         atoms_connected_linkers = []  # List of lists of the atoms of each of the connected linkers. Length is # of connected linkers.
         for atoms_linker in linker_list:
@@ -792,13 +788,11 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
                     # Only add the new atom if it does not overlap with an atom that is already in surrounded sbu.
                     # If there is overlap, then the atom was already added in the SBU.
                     min_dist = 100  # Starting from a big number that will be replaced in the subsequent lines.
-                    local_idx_closest_atom = None # Index in surrounded_sbu that is closest to the atom
                     num_atoms = surrounded_sbu.getNumAtoms()
                     for i in range(num_atoms):
                         pair_dist = new_atom3D.distance(surrounded_sbu.getAtom(i))
                         if pair_dist < min_dist:
                             min_dist = pair_dist
-                            local_idx_closest_atom = i
                     if min_dist > 0.1:
                         surrounded_sbu.addAtom(new_atom3D)
 
