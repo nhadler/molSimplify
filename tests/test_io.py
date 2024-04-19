@@ -57,7 +57,8 @@ def test_printgeoms(capsys):
         "Coordination: 6, geometry: octahedral,\t short name: oct \n"
         "Coordination: 6, geometry: trigonal_prismatic,\t short name: tpr \n"
         "Coordination: 7, geometry: pentagonal_bipyramidal,\t short name: pbp \n"
-        "Coordination: 8, geometry: square_antiprismatic,\t short name: sqap \n\n"
+        "Coordination: 8, geometry: square_antiprismatic,\t short name: sqap \n"
+        "Coordination: 8, geometry: trigonal_dodecahedral,\t short name: tdhd \n\n"
     )
     assert captured.out == ref
 

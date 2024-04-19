@@ -89,19 +89,15 @@ class atom3D:
         self.line = line
 
     def __repr__(self):
-        """Returns all bound methods of the mol3D class..
+        return f"atom3D(Sym={self.sym}, xyz={self.__xyz})"
 
-        Returns
-        -------
-            method_string : string
-                String of methods available in mol3D class.
-        """
-
-        method_string = "\nClass atom3D has the following methods:\n"
-        for method in dir(self):
-            if callable(getattr(self, method)):
-                method_string += method + '\n'
-        return method_string
+    # TODO: uncomment this once protein3D has a better implementation than
+    # hashing of a mutable object!
+    # def __eq__(self, other):
+    #     if isinstance(other, self.__class__):
+    #         return self.__dict__ == other.__dict__
+    #     else:
+    #         return False
 
     def coords(self):
         """ Get coordinates of a given atom.
