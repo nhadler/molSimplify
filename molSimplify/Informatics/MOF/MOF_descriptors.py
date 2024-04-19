@@ -642,6 +642,7 @@ def bond_information_write(linker_list, linkeranchors_superlist, adj_matrix, mol
 def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_v, allatomtypes, name):
     """
     Writes XYZ files for all SBUs provided, with each SBU surrounded by all linkers coordinated to it.
+    Also generates TXT files indicating indices of SBUs in the XYZs.
 
     Parameters
     ----------
@@ -681,6 +682,8 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
 
         # Generating an XYZ of the SBU surrounded by linkers.
         xyz_path = f'{sbupath}/{name}_sbu_{SBU_idx}_with_linkers.xyz'
+        # Also generating a TXT file of local indices.
+        txt_path = f'{sbupath}/{name}_sbu_{SBU_idx}_with_linkers_idx.txt'
         # For each atom index in an inner list in connection_atoms, build out the corresponding linker (inner list) in atoms_connected_linkers.
 
         ### Start with the atoms of the SBU
@@ -736,6 +739,9 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
                 sbu_atoms_to_branch_from_keys.append(neighbor_idx)
 
         # At this point in the code, all SBU atoms have been added to the mol3D object surrounded_sbu.
+        sbu_indices_local = [*range(len(added_idx))]
+        connection_points_local = [added_idx.index(j) for i in connection_atoms for j in i]
+        connection_points_local.sort()
 
         ### Next, add each of the linkers.
         # Using atom3D_dict, connection_atoms, and atoms_connected_linkers.
@@ -799,6 +805,11 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
                         linker_atoms_to_branch_from_keys.append(neighbor_idx)
 
         surrounded_sbu.writexyz(xyz_path)
+
+        # Write TXT file of index information.
+        with open(txt_path, 'w') as f:
+            f.write(f'SBU indices: {sbu_indices_local}\n')
+            f.write(f'connection indices: {connection_points_local}')
 
 
 def dist_mat_comp(X):
