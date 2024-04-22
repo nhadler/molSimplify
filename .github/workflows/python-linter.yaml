@@ -62,7 +62,6 @@ jobs:
         pip install mypy types-setuptools types-PyYAML types-requests types-tensorflow types-beautifulsoup4 pandas-stubs PyQt5-stubs
     - name: Typecheck with mypy
       run: |
-        # Exclude parts of Informatics for now
         mypy --ignore-missing-imports molSimplify
 
     - name: Report Status
