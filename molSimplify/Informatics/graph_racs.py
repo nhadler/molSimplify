@@ -1,7 +1,7 @@
 import numpy as np
 import networkx as nx
 import operator
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Tuple
 from molSimplify.Classes.mol2D import Mol2D
 from molSimplify.Classes.globalvars import amassdict, endict
 
@@ -137,15 +137,16 @@ def octahedral_racs(
     metals = mol.find_metal()
     if len(metals) != 1:
         raise ValueError("Currently only supports mononuclear TMCs.")
-    connecting_atoms = list(subgraphs.neighbors(metals[0]))
+    metal = metals[0]
+    connecting_atoms = sorted(list(subgraphs.neighbors(metal)))
     # Assert that we are removing 6 edges
     if len(connecting_atoms) != 6:
         raise ValueError(
             "First metal in the graph does not have 6 neighbors "
             "as expected for an octahedral complex."
         )
-    # Then cut the graph by removing all connections to the first atom
-    subgraphs.remove_edges_from([(0, c) for c in connecting_atoms])
+    # Then cut the graph by removing all connections to the metal atom
+    subgraphs.remove_edges_from([(metal, c) for c in connecting_atoms])
 
     if equatorial_connecting_atoms is None:
         # Assume the first 4 connecting atoms belong to the equatorial ligands
@@ -238,5 +239,50 @@ def octahedral_racs(
         ],
         axis=0,
     )
+
+    return output
+
+
+def ligand_racs(
+    mol: Mol2D,
+    depth: int = 3,
+    full_scope: bool = True,
+    property_fun: Callable[[Mol2D, int], np.ndarray] = racs_property_vector,
+) -> np.ndarray:
+
+    # First cut the molecular graph into subgraphs for the metal and the ligands
+    subgraphs = mol.copy()
+    # First find all connecting atoms of the first metal:
+    metals = mol.find_metal()
+    if len(metals) != 1:
+        raise ValueError("Currently only supports mononuclear TMCs.")
+    metal = metals[0]
+    connecting_atoms = sorted(list(subgraphs.neighbors(metal)))
+
+    n_ligands = len(connecting_atoms)
+    n_props = len(property_fun(mol, list(mol.nodes.keys())[0]))
+    n_scopes = 4 if full_scope else 2
+    output = np.zeros((n_ligands, n_scopes, depth + 1, n_props))
+
+    # Then cut the graph by removing all connections to the metal atom
+    subgraphs.remove_edges_from([(metal, c) for c in connecting_atoms])
+    # Build list of tuples for all connecting atoms and corresponding ligand subgraphs
+    # TODO: I am sure there is a better way of doing this than looping over all subgraphs
+    ligand_graphs: List[Tuple[int, Mol2D]] = []
+    for c in connecting_atoms:
+        for gi in nx.connected_components(subgraphs):
+            if c in gi:
+                ligand_graphs.append((c, subgraphs.subgraph(gi)))
+                break
+
+    # Actual calculation of the RACs
+    for i, (c, g) in enumerate(ligand_graphs):
+        # starting with connecting atom centered product RACs
+        output[i, 0] = atom_centered_AC(g, c, depth=depth, operation=operator.mul, property_fun=property_fun)
+        output[i, 1] = atom_centered_AC(g, c, depth=depth, operation=operator.sub, property_fun=property_fun)
+        # Add full scope RACs if requested
+        if full_scope:
+            output[i, 2] = multi_centered_AC(g, depth=depth, operation=operator.mul, property_fun=property_fun)
+            output[i, 3] = multi_centered_AC(g, depth=depth, operation=operator.sub, property_fun=property_fun)
 
     return output
