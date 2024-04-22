@@ -22,7 +22,7 @@ mol3D Class
 Mol2D Class
 --------------------------------
 
-.. automodule:: molSimplify.Classes.mol3D
+.. automodule:: molSimplify.Classes.mol2D
    :members:
    :undoc-members:
    :show-inheritance:
