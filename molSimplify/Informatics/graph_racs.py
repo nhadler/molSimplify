@@ -318,11 +318,11 @@ def ligand_racs_names(depth: int = 3, properties=None, full_scope: bool = True) 
         properties = ["Z", "chi", "T", "I", "S"]
 
     starts = [
-        "lc_P",
-        "lc_D",
+        "lc",
+        "D_lc",
     ]
     if full_scope:
-        starts += ["f_P", "f_D"]
+        starts += ["f", "D_f"]
     return [
         f"{start}-{prop}-{d}"
         for start in starts
