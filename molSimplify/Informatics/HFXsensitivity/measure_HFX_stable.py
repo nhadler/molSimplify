@@ -1,12 +1,9 @@
 import os
-import glob
 import numpy as np
-import sys
 import pandas as pd
 import argparse
 from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import LeaveOneOut, LeavePOut
-from scipy import stats
+from sklearn.model_selection import LeaveOneOut
 
 '''
 This script takes in an absolute path to a CSV file that has
