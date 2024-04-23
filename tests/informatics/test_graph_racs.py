@@ -152,7 +152,7 @@ def test_ligand_racs(
 
     descriptor_names = ligand_racs_names(depth=depth)
 
-    assert descriptors.shape == (n_ligs, 4, depth + 1, 5)
+    assert descriptors.shape == (n_ligs, 3, depth + 1, 5)
 
     for lig in range(n_ligs):
         for name, rac in zip(descriptor_names, descriptors[lig].flatten()):

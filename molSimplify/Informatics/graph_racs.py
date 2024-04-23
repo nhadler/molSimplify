@@ -286,7 +286,7 @@ def ligand_racs(
 
     n_ligands = len(connecting_atoms)
     n_props = len(property_fun(mol, list(mol.nodes.keys())[0]))
-    n_scopes = 4 if full_scope else 2
+    n_scopes = 3 if full_scope else 2
     output = np.zeros((n_ligands, n_scopes, depth + 1, n_props))
 
     # Then cut the graph by removing all connections to the metal atom
@@ -308,7 +308,6 @@ def ligand_racs(
         # Add full scope RACs if requested
         if full_scope:
             output[i, 2] = multi_centered_AC(g, depth=depth, operation=operator.mul, property_fun=property_fun)
-            output[i, 3] = multi_centered_AC(g, depth=depth, operation=operator.sub, property_fun=property_fun)
 
     return output
 
@@ -322,7 +321,7 @@ def ligand_racs_names(depth: int = 3, properties=None, full_scope: bool = True) 
         "D_lc",
     ]
     if full_scope:
-        starts += ["f", "D_f"]
+        starts += ["f"]
     return [
         f"{start}-{prop}-{d}"
         for start in starts
