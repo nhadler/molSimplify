@@ -70,10 +70,10 @@ def atom_centered_AC(
         mol, source=starting_node, cutoff=depth
     )
     p_i = property_fun(mol, starting_node)
-    output = np.zeros((depth + 1, len(p_i)))
+    output = np.zeros((len(p_i), depth + 1))
     for node, d_ij in lengths.items():
         p_j = property_fun(mol, node)
-        output[d_ij] += operation(p_i, p_j)
+        output[:, d_ij] += operation(p_i, p_j)
     return output
 
 
@@ -103,14 +103,14 @@ def multi_centered_AC(
         full-scope autocorrelation vector
     """
     n_props = len(property_fun(mol, list(mol.nodes.keys())[0]))
-    output = np.zeros((depth + 1, n_props))
+    output = np.zeros((n_props, depth + 1))
     # Generate all pairwise path lengths
     lengths = nx.all_pairs_shortest_path_length(mol, cutoff=depth)
     for node_i, lengths_i in lengths:
         p_i = property_fun(mol, node_i)
         for node_j, d_ij in lengths_i.items():
             p_j = property_fun(mol, node_j)
-            output[d_ij] += operation(p_i, p_j)
+            output[:, d_ij] += operation(p_i, p_j)
     return output
 
 
@@ -123,7 +123,7 @@ def octahedral_racs(
     # Following J. Phys. Chem. A 2017, 121, 8939 there are 6 start/scope
     # combinations for product ACs and 3 for difference ACs.
     n_props = len(property_fun(mol, list(mol.nodes.keys())[0]))
-    output = np.zeros((6 + 3, depth + 1, n_props))
+    output = np.zeros((6 + 3, n_props, depth + 1))
 
     # start = f, scope = all, product
     output[0] = multi_centered_AC(mol, depth=depth, property_fun=property_fun)
@@ -263,8 +263,8 @@ def octahedral_racs_names(depth=3, properties=None) -> List[str]:
     return [
         f"{start}-{prop}-{d}-{scope}"
         for start, scope in start_scope
-        for d in range(0, depth + 1)
         for prop in properties
+        for d in range(0, depth + 1)
     ]
 
 
@@ -287,7 +287,7 @@ def ligand_racs(
     n_ligands = len(connecting_atoms)
     n_props = len(property_fun(mol, list(mol.nodes.keys())[0]))
     n_scopes = 3 if full_scope else 2
-    output = np.zeros((n_ligands, n_scopes, depth + 1, n_props))
+    output = np.zeros((n_ligands, n_scopes, n_props, depth + 1))
 
     # Then cut the graph by removing all connections to the metal atom
     subgraphs.remove_edges_from([(metal, c) for c in connecting_atoms])
@@ -325,6 +325,6 @@ def ligand_racs_names(depth: int = 3, properties=None, full_scope: bool = True) 
     return [
         f"{start}-{prop}-{d}"
         for start in starts
-        for d in range(0, depth + 1)
         for prop in properties
+        for d in range(0, depth + 1)
     ]

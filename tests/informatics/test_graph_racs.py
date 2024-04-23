@@ -44,7 +44,7 @@ def test_atom_centered_AC(furan):
         [112.0, 32.68, 16.0, 4.0, 1.6644],
         [16.0, 15.136, 4.0, 2.0, 0.5402],
     ]
-    np.testing.assert_allclose(descriptors, ref)
+    np.testing.assert_allclose(descriptors.T, ref)
 
 
 def test_atom_centered_AC_diff(furan):
@@ -56,7 +56,7 @@ def test_atom_centered_AC_diff(furan):
         [18.0, 4.26, 0.0, 0.0, 0.64],
         [14.0, 2.48, 2.0, 0.0, 0.72],
     ]
-    np.testing.assert_allclose(descriptors, ref)
+    np.testing.assert_allclose(descriptors.T, ref)
 
 
 def test_multi_centered_AC(furan):
@@ -68,7 +68,7 @@ def test_multi_centered_AC(furan):
         [512.0, 171.695, 122.0, 26.0, 10.3050],
         [110.0, 126.632, 50.0, 22.0, 5.3206],
     ]
-    np.testing.assert_allclose(descriptors, ref)
+    np.testing.assert_allclose(descriptors.T, ref)
 
 
 @pytest.mark.parametrize(
@@ -152,7 +152,7 @@ def test_ligand_racs(
 
     descriptor_names = ligand_racs_names(depth=depth)
 
-    assert descriptors.shape == (n_ligs, 3, depth + 1, 5)
+    assert descriptors.shape == (n_ligs, 3, 5, depth + 1)
 
     for lig in range(n_ligs):
         for name, rac in zip(descriptor_names, descriptors[lig].flatten()):
