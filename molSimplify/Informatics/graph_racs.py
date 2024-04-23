@@ -198,6 +198,7 @@ def octahedral_racs(
         axis=0,
     )
 
+    # start = f, scope = ax, product
     output[4] = np.mean(
         [
             multi_centered_AC(g, depth=depth, property_fun=property_fun)
@@ -205,6 +206,7 @@ def octahedral_racs(
         ],
         axis=0,
     )
+    # start = f, scope = ax, product
     output[5] = np.mean(
         [
             multi_centered_AC(g, depth=depth, property_fun=property_fun)
@@ -241,6 +243,29 @@ def octahedral_racs(
     )
 
     return output
+
+
+def octahedral_racs_names(depth=3, properties=None) -> List[str]:
+    if properties is None:
+        properties = ["Z", "chi", "T", "I", "S"]
+
+    start_scope = [
+        ("f", "all"),
+        ("mc", "all"),
+        ("lc", "ax"),
+        ("lc", "eq"),
+        ("f", "ax"),
+        ("f", "eq"),
+        ("D_mc", "all"),
+        ("D_lc", "ax"),
+        ("D_lc", "eq"),
+    ]
+    return [
+        f"{start}-{prop}-{d}-{scope}"
+        for start, scope in start_scope
+        for d in range(0, depth + 1)
+        for prop in properties
+    ]
 
 
 def ligand_racs(
@@ -286,3 +311,21 @@ def ligand_racs(
             output[i, 3] = multi_centered_AC(g, depth=depth, operation=operator.sub, property_fun=property_fun)
 
     return output
+
+
+def ligand_racs_names(depth: int = 3, properties=None, full_scope: bool = True) -> List[str]:
+    if properties is None:
+        properties = ["Z", "chi", "T", "I", "S"]
+
+    starts = [
+        "lc_P",
+        "lc_D",
+    ]
+    if full_scope:
+        starts += ["f_P", "f_D"]
+    return [
+        f"{start}-{prop}-{d}"
+        for start in starts
+        for d in range(0, depth + 1)
+        for prop in properties
+    ]
