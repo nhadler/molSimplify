@@ -5739,9 +5739,10 @@ class mol3D:
             #should we indicate somehow that these are unknown due to a different coordination number?
             results = {
                 "geometry": "unknown",
-                "rmsd": False,
+                "rmsd": np.NAN,
                 "summary": {},
                 "hapticity": hapt,
+		"close_rmsds": False
             }
             return results
 
