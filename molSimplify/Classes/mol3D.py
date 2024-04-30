@@ -16,7 +16,7 @@ try:
     from openbabel import openbabel  # version 3 style import
 except ImportError:
     import openbabel  # fallback to version 2
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict, Any
 from scipy.spatial import ConvexHull
 from molSimplify.utils.decorators import deprecated
 
@@ -26,6 +26,7 @@ from molSimplify.Scripts.geometry import (distance, connectivity_match,
                                           vecangle, rotation_params,
                                           rotate_around_axis)
 from molSimplify.Scripts.rmsd import rigorous_rmsd, kabsch_rmsd, kabsch_rotate
+from itertools import permutations
 
 try:
     import PyQt5  # noqa: F401
@@ -5685,9 +5686,10 @@ class mol3D:
         }
         return results
 
-    def get_geometry_type_distance(self, max_dev=1e6, close_dev=1e-2,
-                          flag_catoms=False, catoms_arr=None,
-                          skip=False, transition_metals_only=False):
+    def get_geometry_type_distance(
+            self, max_dev=1e6, close_dev=1e-2,
+            flag_catoms=False, catoms_arr=None,
+            skip=False, transition_metals_only=False) -> Dict[str, Any]:
         """
         Get the type of the geometry (available options in globalvars all_geometries).
 
@@ -5728,7 +5730,7 @@ class mol3D:
             if len(first_shell.findMetal()) > 1:
                 raise ValueError('Multimetal complexes are not yet handled.')
             elif len(first_shell.findMetal(transition_metals_only=transition_metals_only)) == 1:
-                #Use oct=False to ensure coordination number based on radius cutoffs only
+                # Use oct=False to ensure coordination number based on radius cutoffs only
                 num_coord = len(first_shell.getBondedAtomsSmart(first_shell.findMetal(transition_metals_only=transition_metals_only)[0], oct=False))
             else:
                 raise ValueError('No metal centers exist in this complex.')
@@ -5736,19 +5738,19 @@ class mol3D:
             raise ValueError("num_coord and the length of catoms_arr do not match.")
 
         if num_coord not in list(all_geometries.keys()):
-            #should we indicate somehow that these are unknown due to a different coordination number?
+            # should we indicate somehow that these are unknown due to a different coordination number?
             results = {
                 "geometry": "unknown",
                 "rmsd": np.NAN,
                 "summary": {},
                 "hapticity": hapt,
-		"close_rmsds": False
+                "close_rmsds": False
             }
             return results
 
         possible_geometries = all_geometries[num_coord]
 
-        #for each same-coordinated geometry, get the minimum RMSD and the maximum single-atom deviation in that pairing
+        # for each same-coordinated geometry, get the minimum RMSD and the maximum single-atom deviation in that pairing
         for geotype in possible_geometries:
             rmsd_calc, max_dist = self.dev_from_ideal_geometry(all_polyhedra[geotype])
             summary.update({geotype: [rmsd_calc, max_dist]})
@@ -5756,13 +5758,13 @@ class mol3D:
         close_rmsds = False
         current_rmsd, geometry = max_dev, "unknown"
         for geotype in summary:
-            #if the RMSD for this structure is the lowest seen so far (within a threshold)
+            # if the RMSD for this structure is the lowest seen so far (within a threshold)
             if summary[geotype][0] < (current_rmsd + close_dev):
-                #if the RMSDs are close, flag this in the summary and classify on second criterion
+                # if the RMSDs are close, flag this in the summary and classify on second criterion
                 if np.abs(summary[geotype][0] - current_rmsd) < close_dev:
                     close_rmsds = True
                     if summary[geotype][1] < summary[geometry][1]:
-                        #classify based on largest singular deviation
+                        # classify based on largest singular deviation
                         current_rmsd = summary[geotype][0]
                         geometry = geotype
                 else:
@@ -5778,7 +5780,7 @@ class mol3D:
         }
         return results
 
-    def dev_from_ideal_geometry(self, ideal_polyhedron):
+    def dev_from_ideal_geometry(self, ideal_polyhedron: np.ndarray) -> Tuple[float, float]:
         """
         Return the minimum RMSD between a geometry and an ideal polyhedron (with the same average bond distances).
         Enumerates all possible indexing of the geometry. As such, only recommended for small systems.
@@ -5809,57 +5811,44 @@ class mol3D:
         if len(fcs_indices) != len(ideal_polyhedron):
             raise ValueError('The coordination number differs between the two provided structures.')
 
-        #have to redo getting metal_idx with the new mol after running get_first_shell
-        #want to work with temp_mol since it has the edge and sandwich logic implemented to replace those with centroids
+        # have to redo getting metal_idx with the new mol after running get_first_shell
+        # want to work with temp_mol since it has the edge and sandwich logic implemented to replace those with centroids
         metal_atom = temp_mol.getAtoms()[temp_mol.findMetal()[0]]
         fcs_atoms = [temp_mol.getAtoms()[i] for i in fcs_indices]
-        #construct a np array of the non-metal atoms in the FCS
+        # construct a np array of the non-metal atoms in the FCS
         distances = []
         positions = np.zeros([len(fcs_indices), 3])
         for idx, atom in enumerate(fcs_atoms):
             distance = atom.distance(metal_atom)
             distances.append(distance)
-            positions[idx, :] = np.array(atom.coords()) - np.array(metal_atom.coords()) #shift so the metal is at (0, 0, 0)
-
-        def permutations(list):
-            'Returns all possible permutations of a list.'
-            if len(list) == 0:
-                return []
-            elif len(list) == 1:
-                return [list]
-            l = []
-            for i in range(len(list)):
-                m = list[i]
-                remaining = list[:i] + list[i+1:]
-                for p in permutations(remaining):
-                    l.append([m] + p)
-            return l
+            # shift so the metal is at (0, 0, 0)
+            positions[idx, :] = np.array(atom.coords()) - np.array(metal_atom.coords())
 
         current_min = np.inf
-        orders = permutations(list(range(len(ideal_polyhedron))))
+        orders = permutations(range(len(ideal_polyhedron)))
         max_dist = 0
 
-        #if desired, make it so the ideal polyhedron has same average bond distance as the mol
-        #scaled_polyhedron = ideal_polyhedron * np.mean(np.array(distances))
+        # if desired, make it so the ideal polyhedron has same average bond distance as the mol
+        # scaled_polyhedron = ideal_polyhedron * np.mean(np.array(distances))
 
-        #for all possible assignments, find RMSD between ideal and actual structure
+        # for all possible assignments, find RMSD between ideal and actual structure
         ideal_positions = np.zeros([len(fcs_indices), 3])
         for order in orders:
             for i in range(len(order)):
-                #if you wanted to use the same average bond length for all, use the following
-                #ideal_positions[i, :] = scaled_polyhedron[order[i]]
-                #if you want to let each ligand scale its length independently, uncomment the following
+                # if you wanted to use the same average bond length for all, use the following
+                # ideal_positions[i, :] = scaled_polyhedron[order[i]]
+                # if you want to let each ligand scale its length independently, uncomment the following
                 ideal_positions[i, :] = ideal_polyhedron[order[i]] * distances[i]
             rmsd_calc = kabsch_rmsd(ideal_positions, positions)
             if rmsd_calc < current_min:
                 current_min = rmsd_calc
-                #calculate and store the maximum pairwise distance
+                # calculate and store the maximum pairwise distance
                 rot_ideal = kabsch_rotate(ideal_positions, positions)
                 diff_matrix = rot_ideal - positions
                 pairwise_dists = np.sum(diff_matrix**2, axis=1)
                 max_dist = np.max(pairwise_dists)
 
-        #return minimum RMSD, maximum pairwise distance in that structure
+        # return minimum RMSD, maximum pairwise distance in that structure
         return current_min, max_dist
 
     def get_features(self, lac=True, force_generate=False, eq_sym=False,
