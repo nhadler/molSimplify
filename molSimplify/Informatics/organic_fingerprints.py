@@ -1,6 +1,5 @@
 from rdkit import Chem
 from rdkit.Chem import AllChem
-from rdkit.Chem.AtomPairs import Torsions
 from molSimplify.Classes.mol3D import mol3D
 
 

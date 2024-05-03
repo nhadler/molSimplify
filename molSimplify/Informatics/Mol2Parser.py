@@ -1,5 +1,5 @@
 import numpy as np
-import scipy as sp
+
 
 class Mol2Parser:
     ##### This parser takes in a mol2 file and extracts info.

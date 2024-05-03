@@ -1,6 +1,6 @@
 import networkx as nx
 import numpy as np
-from typing import List
+from typing import List, Union
 from packaging import version
 from molSimplify.Classes.globalvars import globalvars
 from molSimplify.Classes.mol3D import mol3D as Mol3D
@@ -29,7 +29,7 @@ class Mol2D(nx.Graph):
         return f"Mol2D({formula})"
 
     @classmethod
-    def from_smiles(cls, smiles):
+    def from_smiles(cls, smiles: str):
         """Create a Mol2D object from a SMILES string.
 
         Parameters
@@ -45,6 +45,7 @@ class Mol2D(nx.Graph):
         Examples
         --------
         Create a furan molecule from SMILES:
+
         >>> mol = Mol2D.from_smiles("o1cccc1")
         >>> mol
         Mol2D(O1C4H4)
@@ -136,7 +137,7 @@ class Mol2D(nx.Graph):
         mol.add_edges_from(bonds)
         return mol
 
-    def graph_hash(self):
+    def graph_hash(self) -> str:
         """Calculates the node attributed graph hash of the molecule.
 
         Returns
@@ -147,9 +148,11 @@ class Mol2D(nx.Graph):
         Examples
         --------
         Create a furan molecule from SMILES:
+
         >>> mol = Mol2D.from_smiles("o1cccc1")
 
-        and calculate its graph hash:
+        and calculate the node attributed graph hash:
+
         >>> mol.graph_hash()
         'f6090276d7369c0c0a535113ec1d97cf'
         """
@@ -159,7 +162,7 @@ class Mol2D(nx.Graph):
         assert version.parse(nx.__version__) >= version.parse("2.7")
         return nx.weisfeiler_lehman_graph_hash(self, node_attr="symbol")
 
-    def graph_hash_edge_attr(self):
+    def graph_hash_edge_attr(self) -> str:
         """Calculates the edge attributed graph hash of the molecule.
 
         Returns
@@ -170,9 +173,11 @@ class Mol2D(nx.Graph):
         Examples
         --------
         Create a furan molecule from SMILES:
+
         >>> mol = Mol2D.from_smiles("o1cccc1")
 
-        and calculate its graph hash:
+        and calculate the edge attributed graph hash:
+
         >>> mol.graph_hash_edge_attr()
         'a9b6fbc7b5f53613546d5e91a7544ed6'
         """
@@ -189,7 +194,7 @@ class Mol2D(nx.Graph):
 
         return nx.weisfeiler_lehman_graph_hash(G, edge_attr="label")
 
-    def graph_determinant(self, return_string=True):
+    def graph_determinant(self, return_string: bool = True) -> Union[str, float]:
         """Calculates the molecular graph determinant.
 
         Parameters
@@ -199,15 +204,17 @@ class Mol2D(nx.Graph):
 
         Returns
         -------
-        str
-            edge attributed graph hash
+        str | float
+            graph determinant
 
         Examples
         --------
         Create a furan molecule from SMILES:
+
         >>> mol = Mol2D.from_smiles("o1cccc1")
 
-        and calculate its graph hash:
+        and calculate the graph determinant:
+
         >>> mol.graph_determinant()
         '-19404698740'
         """
@@ -239,7 +246,7 @@ class Mol2D(nx.Graph):
 
     def find_metal(self, transition_metals_only: bool = True) -> List[int]:
         """
-        Find metal(s) in a Mol2D class.
+        Find indices of metal(s) in a Mol2D class.
 
         Parameters
         ----------
@@ -254,8 +261,8 @@ class Mol2D(nx.Graph):
         Examples
         --------
         Build Vanadyl acetylacetonate from SMILES:
-        >>> mol = Mol2D.from_smiles("CC(=[O+]1)C=C(C)O[V-3]12(#[O+])OC(C)=CC(C)=[O+]2")
 
+        >>> mol = Mol2D.from_smiles("CC(=[O+]1)C=C(C)O[V-3]12(#[O+])OC(C)=CC(C)=[O+]2")
         >>> mol.find_metal()
         [7]
         """

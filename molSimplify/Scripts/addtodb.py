@@ -67,6 +67,9 @@ def addtoldb(smimol, sminame, smident, smicat, smigrps, smictg, ffopt, smichg=No
         else:
             cats = [int(a)-1 for a in ccats]
         cs = [str(a) for a in cats]
+        # allows for pi-bonded ligands to be added
+        if smident == 1 and len(cs) > 1:
+            cs.append('pi')
         css = ' '.join(cs)
         # convert to unicode
         smimol = unicodedata.normalize(
@@ -94,8 +97,9 @@ def addtoldb(smimol, sminame, smident, smicat, smigrps, smictg, ffopt, smichg=No
             lig.charge = smichg
         # new entry for dictionary
         if '.mol' in smimol:
-            shutil.copy2(smimol, ligands_folder + sminame+'.mol')
-            snew = str(sminame)+':'+str(sminame)+'.mol,'+str(shortname)+','+str(css)+','+str(grp)+','+str(ffopt)+','+str(lig.charge)
+            ext = '.' + smimol.split('.')[-1]
+            shutil.copy2(smimol, ligands_folder + sminame+ ext)
+            snew = str(sminame)+':'+str(sminame)+ext + ','+str(shortname)+','+str(css)+','+str(grp)+','+str(ffopt)+','+str(lig.charge)
         elif '.xyz' in smimol:
             shutil.copy2(smimol, ligands_folder + sminame+'.xyz')
             snew = str(sminame)+':'+str(sminame)+'.xyz,'+str(shortname)+','+str(css)+','+str(grp)+','+str(ffopt)+','+str(lig.charge)
