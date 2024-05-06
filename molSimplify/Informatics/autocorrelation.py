@@ -345,7 +345,7 @@ def deltametric_catoms(mol, prop_vec, orig, d, oct=True, catoms=None):
     active_set = set([orig])
     historical_set = set()
     result_vector[hopped] = 0.00
-    # metal_idx = mol.findMetal()[0]
+    # metal_idx = get_metal_index(mol)
     while hopped < (d):
         hopped += 1
         new_active_set = set()
@@ -417,7 +417,7 @@ def atom_only_autocorrelation_derivative(mol, prop, d, atomIdx, oct=True):
 def metal_only_autocorrelation(mol, prop, d, oct=True, catoms=None,
                                func=autocorrelation, modifier=False):
     try:
-        metal_ind = mol.findMetal()[0]
+        metal_ind = get_metal_index(mol)
         w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
         autocorrelation_vector = func(mol, w, metal_ind, d, oct=oct,
                                       catoms=catoms)
@@ -430,7 +430,7 @@ def metal_only_autocorrelation(mol, prop, d, oct=True, catoms=None,
 def metal_only_autocorrelation_derivative(mol, prop, d, oct=True, catoms=None,
                                           func=autocorrelation_derivative, modifier=False):
     try:
-        metal_ind = mol.findMetal()[0]
+        metal_ind = get_metal_index(mol)
         w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
         autocorrelation_vector_derivative = func(mol, w, metal_ind, d, oct=oct,
                                                  catoms=catoms)
@@ -530,7 +530,7 @@ def atom_only_deltametric_derivative(mol, prop, d, atomIdx, oct=True, modifier=F
 def metal_only_deltametric_derivative(mol, prop, d, oct=True, catoms=None,
                                       func=deltametric_derivative, modifier=False):
     try:
-        metal_ind = mol.findMetal()[0]
+        metal_ind = get_metal_index(mol)
         w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
         deltametric_vector_derivative = func(mol, w, metal_ind, d, oct=oct,
                                              catoms=catoms)
@@ -543,7 +543,7 @@ def metal_only_deltametric_derivative(mol, prop, d, oct=True, catoms=None,
 def metal_only_deltametric(mol, prop, d, oct=True, catoms=None,
                            func=deltametric, modifier=False):
     try:
-        metal_ind = mol.findMetal()[0]
+        metal_ind = get_metal_index(mol)
         w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
         deltametric_vector = func(mol, w, metal_ind, d, oct=oct,
                                   catoms=catoms)
@@ -585,7 +585,7 @@ def multiatom_only_deltametric(mol, prop, d, oct=True, catoms=None,
 
 def metal_only_layer_density(mol, prop, d, oct=True):
     try:
-        metal_ind = mol.findMetal()[0]
+        metal_ind = get_metal_index(mol)
         print(('metal_index is: %d' % metal_ind))
         w = construct_property_vector(mol, prop, oct=oct)
         density_vector = layer_density_in_3D(mol, w, metal_ind, d, oct=oct)
@@ -1928,3 +1928,9 @@ def generate_atomonly_deltametric_derivatives(mol, atomIdx, loud, depth=4, oct=T
             result = np.row_stack([result, atom_only_ac_der])
     results_dictionary = {'colnames': colnames, 'results': result}
     return results_dictionary
+
+def get_metal_index(mol):
+    metal_idx = mol.findMetal()
+    if len(metal_idx) > 1:
+        print('More than one metal in mol object. Choosing the first one.')
+    return metal_idx[0]

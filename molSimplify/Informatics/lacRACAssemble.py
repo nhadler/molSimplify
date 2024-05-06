@@ -1094,7 +1094,7 @@ def metal_only_autocorrelation(mol, prop, d, oct=True, metal_ind=None,
     """
     try:
         if not isinstance(metal_ind, int):
-            metal_ind = mol.findMetal()[0]
+            metal_ind = get_metal_index(mol)
         w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, MRdiag_dict=MRdiag_dict)
         autocorrelation_vector = func(mol, w, metal_ind, d, oct=oct, use_dist=use_dist, size_normalize=size_normalize)
     except IndexError:
@@ -1133,7 +1133,7 @@ def metal_only_autocorrelation_derivative(mol, prop, d, oct=True, metal_ind=None
     """
     try:
         if not isinstance(metal_ind, int):
-            metal_ind = mol.findMetal()[0]
+            metal_ind = get_metal_index(mol)
         w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
         autocorrelation_vector_derivative = func(mol, w, metal_ind, d, oct=oct)
     except IndexError:
@@ -1251,7 +1251,7 @@ def metal_only_deltametric_derivative(mol, prop, d, oct=True, metal_ind=None,
     """
     try:
         if not isinstance(metal_ind, int):
-            metal_ind = mol.findMetal()[0]
+            metal_ind = get_metal_index(mol)
         w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
         deltametric_vector_derivative = func(mol, w, metal_ind, d, oct=oct)
     except IndexError:
@@ -1295,7 +1295,7 @@ def metal_only_deltametric(mol, prop, d, oct=True, metal_ind=None,
     """
     try:
         if not isinstance(metal_ind, int):
-            metal_ind = mol.findMetal()[0]
+            metal_ind = get_metal_index(mol)
         w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, MRdiag_dict=MRdiag_dict)
         deltametric_vector = func(mol, w, metal_ind, d, oct=oct, use_dist=use_dist, size_normalize=size_normalize)
     except IndexError:
@@ -2190,3 +2190,9 @@ def generate_metal_ox_deltametric_derivatives(oxmodifier, mol, loud, depth=4, oc
     result = metal_ox_ac
     results_dictionary = {'colnames': colnames, 'results': result}
     return results_dictionary
+
+def get_metal_index(mol):
+    metal_idx = mol.findMetal()
+    if len(metal_idx) > 1:
+        print('More than one metal in mol object. Choosing the first one.')
+    return metal_idx[0]
