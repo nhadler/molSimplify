@@ -1,5 +1,6 @@
 import pytest
 from molSimplify.Classes.mol2D import Mol2D
+from molSimplify.Classes.mol3D import mol3D as Mol3D
 
 
 def water_Mol2D():
@@ -93,6 +94,14 @@ def test_Mol2D_constructors(resource_path_root, name, smiles, mol_ref):
 
     # From smiles
     mol = Mol2D.from_smiles(smiles)
+
+    assert mol.nodes == mol_ref.nodes
+    assert mol.edges == mol_ref.edges
+
+    # from mol3D
+    mol3d = Mol3D()
+    mol3d.readfrommol2(resource_path_root / "inputs" / "io" / f"{name}.mol2")
+    mol = Mol2D.from_mol3d(mol3d)
 
     assert mol.nodes == mol_ref.nodes
     assert mol.edges == mol_ref.edges

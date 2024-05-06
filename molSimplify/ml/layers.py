@@ -1,7 +1,14 @@
 import tensorflow as tf
 from typing import List, Tuple
 
+# Workaround for moved functionality
+try:
+    from tensorflow.keras.saving import register_keras_serializable
+except ImportError:
+    from tensorflow.keras.utils import register_keras_serializable
 
+
+register_keras_serializable(package="molSimplify")
 class PermutationLayer(tf.keras.layers.Layer):
 
     def __init__(self, permutations: List[Tuple[int]]):
@@ -27,3 +34,6 @@ class PermutationLayer(tf.keras.layers.Layer):
                 )
             )
         return tf.stack(outputs, axis=1)
+
+    def get_config(self):
+        return {"permutations": self.permutations}

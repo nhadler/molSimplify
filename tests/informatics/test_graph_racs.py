@@ -7,7 +7,9 @@ from molSimplify.Informatics.graph_racs import (
     atom_centered_AC,
     multi_centered_AC,
     octahedral_racs,
+    octahedral_racs_names,
     ligand_racs,
+    ligand_racs_names,
 )
 
 
@@ -42,7 +44,7 @@ def test_atom_centered_AC(furan):
         [112.0, 32.68, 16.0, 4.0, 1.6644],
         [16.0, 15.136, 4.0, 2.0, 0.5402],
     ]
-    np.testing.assert_allclose(descriptors, ref)
+    np.testing.assert_allclose(descriptors.T, ref)
 
 
 def test_atom_centered_AC_diff(furan):
@@ -54,7 +56,7 @@ def test_atom_centered_AC_diff(furan):
         [18.0, 4.26, 0.0, 0.0, 0.64],
         [14.0, 2.48, 2.0, 0.0, 0.72],
     ]
-    np.testing.assert_allclose(descriptors, ref)
+    np.testing.assert_allclose(descriptors.T, ref)
 
 
 def test_multi_centered_AC(furan):
@@ -66,7 +68,7 @@ def test_multi_centered_AC(furan):
         [512.0, 171.695, 122.0, 26.0, 10.3050],
         [110.0, 126.632, 50.0, 22.0, 5.3206],
     ]
-    np.testing.assert_allclose(descriptors, ref)
+    np.testing.assert_allclose(descriptors.T, ref)
 
 
 @pytest.mark.parametrize(
@@ -95,41 +97,24 @@ def test_octahedral_racs(
         ref_dict = json.load(fin)
 
     depth = 3
-    properties = ["Z", "chi", "T", "I", "S"]
     descriptors = octahedral_racs(
         mol,
         depth=depth,
         equatorial_connecting_atoms=eq_atoms,
     )
 
-    # Dictionary encoding the order of the descriptors in the numpy array
-    start_scopes = {
-        0: ("f", "all"),
-        1: ("mc", "all"),
-        2: ("lc", "ax"),
-        3: ("lc", "eq"),
-        4: ("f", "ax"),
-        5: ("f", "eq"),
-        6: ("D_mc", "all"),
-        7: ("D_lc", "ax"),
-        8: ("D_lc", "eq"),
-    }
+    descriptor_names = octahedral_racs_names(depth=depth)
 
-    for s, (start, scope) in start_scopes.items():
-        for d in range(depth + 1):
-            for p, prop in enumerate(properties):
-                print(
-                    start,
-                    scope,
-                    d,
-                    prop,
-                    descriptors[s, d, p],
-                    ref_dict[f"{start}-{prop}-{d}-{scope}"],
-                )
-                assert (
-                    abs(descriptors[s, d, p] - ref_dict[f"{start}-{prop}-{d}-{scope}"])
-                    < atol
-                )
+    for name, rac in zip(descriptor_names, descriptors.flatten()):
+        print(
+            name,
+            rac,
+            ref_dict[name],
+        )
+        assert (
+            abs(rac - ref_dict[name])
+            < atol
+        )
 
 
 @pytest.mark.parametrize(
@@ -165,29 +150,17 @@ def test_ligand_racs(
         full_scope=True
     )
 
-    assert descriptors.shape == (n_ligs, 4, depth + 1, 5)
+    descriptor_names = ligand_racs_names(depth=depth)
 
-    starts = {
-        0: "lc_P",
-        1: "lc_D",
-        2: "f_P",
-        3: "f_D",
-    }
+    assert descriptors.shape == (n_ligs, 3, 5, depth + 1)
 
-    properties = ["Z", "chi", "T", "I", "S"]
     for lig in range(n_ligs):
-        for s, start in starts.items():
-            for d in range(depth + 1):
-                for p, prop in enumerate(properties):
-                    print(
-                        f"lig_{lig}",
-                        start,
-                        d,
-                        prop,
-                        descriptors[lig, s, d, p],
-                        ref_dict[f"lig_{lig}-{start}-{prop}-{d}"],
-                    )
-                    assert (
-                        abs(descriptors[lig, s, d, p] - ref_dict[f"lig_{lig}-{start}-{prop}-{d}"])
-                        < atol
-                    )
+        for name, rac in zip(descriptor_names, descriptors[lig].flatten()):
+            print(
+                rac,
+                ref_dict[f"lig_{lig}-{name}"],
+            )
+            assert (
+                abs(rac - ref_dict[f"lig_{lig}-{name}"])
+                < atol
+            )

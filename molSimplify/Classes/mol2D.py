@@ -3,6 +3,7 @@ import numpy as np
 from typing import List, Union
 from packaging import version
 from molSimplify.Classes.globalvars import globalvars
+from molSimplify.Classes.mol3D import mol3D as Mol3D
 
 try:
     from openbabel import openbabel  # version 3 style import
@@ -120,6 +121,20 @@ class Mol2D(nx.Graph):
             # Subtract 1 because of zero indexing vs. one indexing
             mol.add_edge(int(sp[0]) - 1, int(sp[1]) - 1)
 
+        return mol
+
+    @classmethod
+    def from_mol3d(cls, mol3d: Mol3D):
+        if len(mol3d.graph) == 0:
+            raise ValueError("Mol3D object does not have molecular graph attached.")
+
+        mol = cls()
+
+        for i, atom in enumerate(mol3d.atoms):
+            mol.add_node(i, symbol=atom.sym)
+
+        bonds = ((int(e[0]), int(e[1])) for e in zip(*mol3d.graph.nonzero()))
+        mol.add_edges_from(bonds)
         return mol
 
     def graph_hash(self) -> str:
