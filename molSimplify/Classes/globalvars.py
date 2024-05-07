@@ -14,6 +14,7 @@ import sys
 import subprocess
 from typing import Dict, Tuple
 from molSimplify.utils.metaclasses import Singleton
+import numpy as np
 
 # Dictionary containing atomic mass, atomic number, covalent radius, num valence electrons
 # Data from http://www.webelements.com/ (last accessed May 13th 2015)
@@ -463,6 +464,28 @@ all_angle_refs = {
                                     [[70.5, 70.5, 67.7, 67.7, 120, 120, 135.5, 135.5]]
 }
 
+#need each point to be distance 1 from the origin
+deg_to_rad = 2*np.pi / 360
+all_polyhedra = {
+    "linear": np.array([(1, 0, 0), (-1, 0, 0)]),
+    "bent": np.array([(1, 0, 0), (np.cos(120*deg_to_rad), np.sin(120*deg_to_rad), 0)]),
+    "trigonal planar": np.array([(1, 0, 0), (np.cos(120*deg_to_rad), np.sin(120*deg_to_rad), 0), (np.cos(240*deg_to_rad), np.sin(240*deg_to_rad), 0)]),
+    "T shape": np.array([(1, 0, 0), (np.cos(90*deg_to_rad), np.sin(90*deg_to_rad), 0), (np.cos(180*deg_to_rad), np.sin(180*deg_to_rad), 0)]),
+    "trigonal pyramidal": np.array([(1, -1, -1), (-1, 1, -1), (-1, -1, 1)])/np.sqrt(3),
+    "tetrahedral": np.array([(1, 1, 1), (1, -1, -1), (-1, 1, -1), (-1, -1, 1)])/np.sqrt(3),
+    "square planar": np.array([(1, 0, 0), (0, 1, 0), (-1, 0, 0), (0, -1, 0)]),
+    "seesaw": np.array([(1, 0, 0), (np.cos(120*deg_to_rad), np.sin(120*deg_to_rad), 0), (0, 0, 1), (0, 0, -1)]),
+    "trigonal bipyramidal": np.array([(0, 0, 1), (0, 0, -1), (1, 0, 0), (np.cos(120*deg_to_rad), np.sin(120*deg_to_rad), 0), (np.cos(240*deg_to_rad), np.sin(240*deg_to_rad), 0)]),
+    "square pyramidal": np.array([(1, 0, 0), (0, 1, 0), (-1, 0, 0), (0, -1, 0), (0, 0, 1)]),
+    "pentagonal planar": np.array([(1, 0, 0), (np.cos(72*deg_to_rad), np.sin(72*deg_to_rad), 0), (np.cos(144*deg_to_rad), np.sin(144*deg_to_rad), 0), (np.cos(216*deg_to_rad), np.sin(216*deg_to_rad), 0), (np.cos(288*deg_to_rad), np.sin(288*deg_to_rad), 0)]),
+    "octahedral": np.array([(1, 0, 0), (0, 1, 0), (-1, 0, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]),
+    "pentagonal pyramidal": np.array([(1, 0, 0), (np.cos(72*deg_to_rad), np.sin(72*deg_to_rad), 0), (np.cos(144*deg_to_rad), np.sin(144*deg_to_rad), 0), (np.cos(216*deg_to_rad), np.sin(216*deg_to_rad), 0), (np.cos(288*deg_to_rad), np.sin(288*deg_to_rad), 0), (0, 0, 1)]),
+    "trigonal prismatic": np.array([(1, 0, 1), (np.cos(120*deg_to_rad), np.sin(120*deg_to_rad), 1), (np.cos(240*deg_to_rad), np.sin(240*deg_to_rad), 1), (1, 0, -1), (np.cos(120*deg_to_rad), np.sin(120*deg_to_rad), -1), (np.cos(240*deg_to_rad), np.sin(240*deg_to_rad), -1)])/np.sqrt(2),
+    "pentagonal bipyramidal": np.array([(1, 0, 0), (np.cos(72*deg_to_rad), np.sin(72*deg_to_rad), 0), (np.cos(144*deg_to_rad), np.sin(144*deg_to_rad), 0), (np.cos(216*deg_to_rad), np.sin(216*deg_to_rad), 0), (np.cos(288*deg_to_rad), np.sin(288*deg_to_rad), 0), (0, 0, 1), (0, 0, -1)]),
+    "square antiprismatic": np.array([(1, 0, 1), (0, 1, 1), (-1, 0, 1), (0, -1, 1), (np.cos(45*deg_to_rad), np.sin(45*deg_to_rad), -1), (np.cos(135*deg_to_rad), np.sin(135*deg_to_rad), -1), (np.cos(225*deg_to_rad), np.sin(225*deg_to_rad), -1), (np.cos(315*deg_to_rad), np.sin(315*deg_to_rad), -1)])/np.sqrt(2),
+    "tricapped trigonal prismatic": np.array([(1, 0, 1)/np.sqrt(2), (np.cos(120*deg_to_rad), np.sin(120*deg_to_rad), 1)/np.sqrt(2), (np.cos(240*deg_to_rad), np.sin(240*deg_to_rad), 1)/np.sqrt(2), (1, 0, -1)/np.sqrt(2), (np.cos(120*deg_to_rad), np.sin(120*deg_to_rad), -1)/np.sqrt(2), (np.cos(240*deg_to_rad), np.sin(240*deg_to_rad), -1)/np.sqrt(2), (np.cos(60*deg_to_rad), np.sin(60*deg_to_rad), 0), (np.cos(180*deg_to_rad), np.sin(180*deg_to_rad), 0), (np.cos(300*deg_to_rad), np.sin(300*deg_to_rad), 0)])
+}
+
 # Module for running bash commands
 #  @param cmd String containing command to be run
 #  @return bash output string
@@ -719,6 +742,16 @@ class globalvars(metaclass=Singleton):
                 Reference angles for various geometries.
         """
         return all_angle_refs
+
+    def get_all_polyhedra(self):
+        """Get reference polyhedra dict.
+
+        Returns
+        -------
+            all_polyhedra : dict
+                Reference polyhedra for various geometries.
+        """
+        return all_polyhedra
 
     def add_custom_path(self, path):
         """Record custom path in ~/.molSimplify file

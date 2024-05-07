@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Classes.atom3D import atom3D
+from molSimplify.Classes.globalvars import globalvars
 
 
 def test_adding_and_deleting_atoms():
@@ -335,3 +336,68 @@ def test_mol3D_from_smiles_benzene():
 
     np.testing.assert_allclose(mol.graph, ref_graph)
     np.testing.assert_allclose(mol.bo_graph, ref_bo_graph)
+
+
+@pytest.mark.parametrize(
+    "geo_type, key",
+    [
+        ('linear', 'linear'),
+        ('trigonal_planar', 'trigonal planar'),
+        ('t_shape', 'T shape'),
+        ('trigonal_pyramidal', 'trigonal pyramidal'),
+        ('tetrahedral', 'tetrahedral'),
+        ('square_planar', 'square planar'),
+        ('seesaw', 'seesaw'),
+        ('trigonal_bipyramidal', 'trigonal bipyramidal'),
+        ('square_pyramidal', 'square pyramidal'),
+        ('pentagonal_planar', 'pentagonal planar'),
+        ('octahedral', 'octahedral'),
+        ('pentagonal_pyramidal', 'pentagonal pyramidal'),
+        # ('trigonal_prismatic', 'trigonal prismatic'),
+        # ('pentagonal_bipyramidal', 'pentagonal bipyramidal'),
+        # ('square_antiprismatic', 'square antiprismatic'),
+        # ('tricapped_trigonal_prismatic', 'tricapped trigonal prismatic'),
+    ]
+)
+def test_dev_from_ideal_geometry(resource_path_root, geo_type, key):
+    mol = mol3D()
+    mol.readfromxyz(resource_path_root / "inputs" / "geometry_type" / f"{geo_type}.xyz")
+
+    globs = globalvars()
+    polyhedra = globs.get_all_polyhedra()
+    rmsd, max_dev = mol.dev_from_ideal_geometry(polyhedra[key])
+
+    print(polyhedra[key])
+
+    assert rmsd < 1e-3
+    assert max_dev < 1e-3
+
+
+@pytest.mark.parametrize(
+    "geo_type, ref",
+    [
+        ('linear', 'linear'),
+        ('trigonal_planar', 'trigonal planar'),
+        ('t_shape', 'T shape'),
+        ('trigonal_pyramidal', 'trigonal pyramidal'),
+        ('tetrahedral', 'tetrahedral'),
+        ('square_planar', 'square planar'),
+        ('seesaw', 'seesaw'),
+        ('trigonal_bipyramidal', 'trigonal bipyramidal'),
+        ('square_pyramidal', 'square pyramidal'),
+        ('pentagonal_planar', 'pentagonal planar'),
+        ('octahedral', 'octahedral'),
+        ('pentagonal_pyramidal', 'pentagonal pyramidal'),
+        ('trigonal_prismatic', 'trigonal prismatic'),
+        # ('pentagonal_bipyramidal', 'pentagonal bipyramidal'),
+        # ('square_antiprismatic', 'square antiprismatic'),
+        # ('tricapped_trigonal_prismatic', 'tricapped trigonal prismatic'),
+    ]
+)
+def test_geo_geometry_type_distance(resource_path_root, geo_type, ref):
+    mol = mol3D()
+    mol.readfromxyz(resource_path_root / "inputs" / "geometry_type" / f"{geo_type}.xyz")
+
+    result = mol.get_geometry_type_distance()
+    print(result)
+    assert result['geometry'] == ref
