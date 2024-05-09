@@ -6028,7 +6028,7 @@ class mol3D:
         Returns
         -------
             mol_mass : float
-                The molecular mass.
+                The molecular mass. Units of amu.
         """
 
         globs = globalvars()
