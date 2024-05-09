@@ -1593,6 +1593,10 @@ class mol3D:
         """
         Get all atoms within a molecule.
 
+        Parameters
+        ----------
+            None
+
         Returns
         -------
             atom_list : list
@@ -3543,7 +3547,7 @@ class mol3D:
 
     def writemxyz(self, mol, filename):
         """
-        Write standard XYZ file with two molecules
+        Write standard XYZ file with two molecules.
 
         Parameters
         ----------
@@ -4463,7 +4467,7 @@ class mol3D:
               skip=False, flag_deleteH=True,
               silent=False, use_atom_specific_cutoffs=True):
         """
-        Main geometry check method for octahedral structures
+        Main geometry check method for octahedral structures.
 
         Parameters
         ----------
@@ -4595,7 +4599,7 @@ class mol3D:
                     flag_catoms=False, catoms_arr=None, debug=False,
                     skip=False, flag_deleteH=True):
         """
-        Main geometry check method for square pyramidal structures
+        Main geometry check method for square pyramidal structures.
 
         Parameters
         ----------
@@ -4948,7 +4952,7 @@ class mol3D:
 
     def get_bo_dict_from_inds(self, inds):
         """
-        Recreate bo_dict with correct indices
+        Recreate bo_dict with correct indices.
 
         Parameters
         ----------
@@ -5594,7 +5598,7 @@ class mol3D:
         trigonal bipyramidal(5), square pyramidal(5, one-empty-site),
         octahedral(6), pentagonal bipyramidal(7))
 
-        uses hapticity truncated first coordination shell.
+        Uses hapticity truncated first coordination shell.
         Does not require the input of num_coord.
 
         Parameters
@@ -5693,7 +5697,7 @@ class mol3D:
         """
         Get the type of the geometry (available options in globalvars all_geometries).
 
-        uses hapticity truncated first coordination shell.
+        Uses hapticity truncated first coordination shell.
         Does not require the input of num_coord.
 
         Parameters
@@ -5855,7 +5859,7 @@ class mol3D:
                      use_dist=False, NumB=False, Gval=False, size_normalize=False,
                      alleq=False, strict_cutoff=False, catom_list=None, MRdiag_dict={}, depth=3):
         """
-        Get geo-based RAC features for this complex (if octahedral)
+        Get geo-based RAC features for this complex (if octahedral).
 
         Parameters
         ----------
@@ -5977,7 +5981,7 @@ class mol3D:
                 'ERROR: Convex hull calculation failed. Structure will be inaccurate.\n')
         self.hull = hull
 
-    def numRings(self, index):
+    def num_rings(self, index):
         """
         Computes the number of simple rings an atom is in.
 
@@ -6012,3 +6016,26 @@ class mol3D:
                 myNumRings += 1
 
         return myNumRings
+
+    def get_molecular_mass(self):
+        """
+        Computes the molecular mass of a mol3D.
+
+        Parameters
+        ----------
+            None
+
+        Returns
+        -------
+            mol_mass : float
+                The molecular mass.
+        """
+
+        globs = globalvars()
+        amassdict = globs.amass()
+
+        mol_mass = 0
+        for i in self.atoms:
+            mol_mass += amassdict[i.symbol()][0] # atomic mass
+
+        return mol_mass
