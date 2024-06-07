@@ -912,11 +912,6 @@ def detect_1D_rod(molcif, allatomtypes, cpar, logpath, name, adj_matrix, fcoords
             my_shift = compute_image_flag(cell_v, current_pos, fcoords[i])
             shifted_fcoord_neighbor = fcoords[i] + my_shift
 
-            # # Check if, even after a shift, current position is more than a unit cell vector away
-            # if min(current_pos - shifted_fcoord_neighbor) >= 1:
-            #     keep_looking = False
-            #     break
-
             if list(shifted_fcoord_neighbor) not in metal_pos:
                 metal_pos.append(list(shifted_fcoord_neighbor))
 
