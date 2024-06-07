@@ -838,77 +838,107 @@ def dist_mat_comp(X):
     return dist_mat
 
 
-def detect_1D_rod(SBU_list, molcif, allatomtypes, cell_v, logpath, name):
+def detect_1D_rod(molcif, allatomtypes, cpar, logpath, name, adj_matrix, fcoords, cell_v):
     """
     Writes to the log file if the MOF is likely to contain a 1D rod.
+    1D rod: metals ions connected to form an infinite chain. 
+    Metals at most separated by one atom bondwise (e.g., M-O-M)
 
     Parameters
     ----------
-    SBU_list : list of lists of ints
-        Each inner list is its own separate SBU. The ints are the atom indices of that SBU. Length is # of SBUs.
     molcif : molSimplify.Classes.mol3D.mol3D
         The cell of the cif file being analyzed.
     allatomtypes : list of str
         The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms.
-    cell_v : numpy.ndarray
-        The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
+    cpar : numpy.ndarray
+        The parameters (i.e. lattice constants) of the MOF cell. Specifically, A, B, C, alpha, beta, and gamma. Shape is (6,).
     logpath : str
         The path to which log files are written.
     name : str
         The name of the cif being analyzed.
+    adj_matrix : scipy.sparse.csr.csr_matrix
+        1 represents a bond, 0 represents no bond. Shape is (number of atoms, number of atoms).   
+    fcoords : numpy.ndarray
+        The fractional positions of the atoms of the cif file. Shape is (number of atoms, 3).
+    cell_v : numpy.ndarray
+        The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
 
     Returns
     -------
     None
 
     """
+    
+    # Assumption: If a MOF contains 1D rod SBUs, all SBUs in the MOF are 1D rods
+    # Thus, can just branch out from an arbitrary metal in the MOF for the check
 
-    sbu_atom_indices = []
-    for i in SBU_list:
-        # i is the indices in a given SBU
-        sbu_atom_indices.extend(i)
-    sbu_atom_indices.sort()
+    metal_idxs = molcif.findMetal(transition_metals_only=False)
+    current_idx = metal_idxs[0] # arbitrary metal
+    current_pos = fcoords[current_idx]
+    
+    # List of fractional coordinates of metal atoms in the current prospective 1D rod
+    metal_pos = [
+    list(current_pos),
+    ] 
 
-    # allatomtypes_sbus_initial = [i for idx, i in enumerate(allatomtypes) if idx in sbu_atom_indices]
-    cart_coords_sbus_initial = [molcif.getAtom(i).coords() for i in sbu_atom_indices]
-    allatomtypes_sbus_with_shifts = []  # Will contain the symbols of all SBU atoms, across the 8 unit cell shifts
-    cart_coords_sbus_with_shifts = []  # Will contain the cartesian coordinates of all SBU atoms, across the 8 unit cell shifts
+    idxs_to_check = []
 
-    # Applying all possible unit cell shifts in 0, 1, for all SBU atoms
-    for idx, i in enumerate(sbu_atom_indices):
-        supercells = np.array(list(itertools.product((0, 1), repeat=3)))
-        fractional_coords = frac_coord(cart_coords_sbus_initial[idx], cell_v)
-        fractional_coords_shifts = fractional_coords + supercells  # 8 versions of fractional_coords, shifted some cells over in different directions
-        for j in fractional_coords_shifts:
-            allatomtypes_sbus_with_shifts.append(allatomtypes[i])
-            cart_coords_sbus_with_shifts.append(fractional2cart(j, cell_v))
+    keep_looking = True
+    while keep_looking:
+        cur_len = len(metal_pos)
 
-    cart_coords_sbus_with_shifts = np.array(cart_coords_sbus_with_shifts)  # Converting nested list to a numpy array
+        # Get all metals <= 2 bonds away
 
-    distance_mat = dist_mat_comp(cart_coords_sbus_with_shifts)
-    adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes_sbus_with_shifts, handle_overlap=True)  # Ignoring overlap
+        # indices of atoms with bonds to the atom with the index current_idx
+        first_neighbors = np.nonzero(adj_matrix[current_idx, :])[1]
 
-    # For each connected component, see how long it is
-    adj_matrix = sparse.csr_matrix(adj_matrix)
-    n_components, labels_components = sparse.csgraph.connected_components(csgraph=adj_matrix, directed=False, return_labels=True)
+        second_neighbors = [np.nonzero(adj_matrix[j, :])[1] for j in first_neighbors]
+        second_neighbors = [j for i in second_neighbors for j in i]
 
-    # What is the shortest cell vector?
-    min_vec_len = np.min(np.linalg.norm(cell_v, axis=1))  # Equivalent to min(cpar[:3])
+        # Get everything within second shell
+        shell_idxs = list(first_neighbors) + list(second_neighbors)
+        shell_idxs = list(set(shell_idxs))
+        shell_idxs.remove(current_idx)
 
-    is_1d_rod = False
-    for i in range(n_components):
-        component_indices = np.where(labels_components == i)[0]
-        component_cart_coords = cart_coords_sbus_with_shifts[component_indices]
-
-        pairwise_atom_distances = dist_mat_comp(component_cart_coords)
-        if np.max(pairwise_atom_distances) > min_vec_len:
-            # In this case, an SBU likely stretches out longer than a unit cell
-            is_1d_rod = True
+        # Are any of the indices in shell_idxs metals?
+        intersection = [i for i in metal_idxs if i in shell_idxs]
+        if len(intersection) == 0:
+            keep_looking = False
             break
 
-    if is_1d_rod:
-        print('Likely 1D rod')
-        tmpstr = "MOF SBU is likely a 1D rod"
+        # Are any of the indices in shell_idxs at a fractional coordinate that has not been seen before?
+        for i in intersection: # Go over all metals in the 2-bonds-out shell
+
+            my_shift = compute_image_flag(cell_v, current_pos, fcoords[i])
+            shifted_fcoord_neighbor = fcoords[i] + my_shift
+
+            # # Check if, even after a shift, current position is more than a unit cell vector away
+            # if min(current_pos - shifted_fcoord_neighbor) >= 1:
+            #     keep_looking = False
+            #     break
+
+            if list(shifted_fcoord_neighbor) not in metal_pos:
+                metal_pos.append(list(shifted_fcoord_neighbor))
+
+                current_idx = i
+                current_pos = shifted_fcoord_neighbor
+                break
+                # Another assumption: 1D rod has no "dead ends", so can take any neighbor as the next index to examine
+
+        if len(metal_pos) == cur_len:
+            # Did not extend the prospective 1D rod
+            keep_looking = False
+            break
+
+    metal_pos = np.array(metal_pos)
+    max_dist = max(
+        max(metal_pos[:,0]) - min(metal_pos[:,0]), 
+        max(metal_pos[:,1]) - min(metal_pos[:,1]), 
+        max(metal_pos[:,2]) - min(metal_pos[:,2]),
+        )
+
+    if max_dist >= 1:
+        tmpstr = "MOF SBU is a 1D rod"
         write2file(logpath, "/%s.log" % name, tmpstr)
 
 
@@ -1277,7 +1307,7 @@ def get_MOF_descriptors(
             write2file(logpath, "/%s.log" % name, tmpstr)
 
     if detect_1D_rod_sbu:
-        detect_1D_rod(SBU_list, molcif, allatomtypes, cell_v, logpath, name)
+        detect_1D_rod(molcif, allatomtypes, cpar, logpath, name, adj_matrix, fcoords, cell_v)
 
     return full_names, full_descriptors
 
