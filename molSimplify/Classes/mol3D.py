@@ -2889,7 +2889,7 @@ class mol3D:
         with open(filename, 'r') as f:
             contents = f.readlines()
 
-        counts_block_line_idx = None
+        counts_block_line_idx, num_atoms, num_bonds = None, None, None
 
         # Searching for counts block
         for idx, line in enumerate(contents):
@@ -2901,6 +2901,10 @@ class mol3D:
                 num_atoms = int(split_line[0])
                 num_bonds = int(split_line[1])
                 break
+
+        if counts_block_line_idx is None:
+            print(f'Failed to read the .mol file.')
+            return 
 
         # Atoms block
         for idx, line in enumerate(contents[counts_block_line_idx+1:counts_block_line_idx+num_atoms+1]):
@@ -2929,7 +2933,7 @@ class mol3D:
 
             self.bo_dict[tuple(sorted([atom1_idx, atom2_idx]))] = bond_type
 
-    def readfrommol2(self, filename: str, readstring=False, trunc_sym="X"):
+    def readfrommol2(self, filename, readstring=False, trunc_sym="X"):
         """
         Read mol2 into a mol3D class instance. Stores the bond orders and atom types (SYBYL).
 
