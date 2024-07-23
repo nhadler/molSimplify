@@ -2877,14 +2877,66 @@ class mol3D:
                     sys.exit()
                 self.addAtom(atom)
 
-    def readfrommol2(self, filename, readstring=False, trunc_sym="X"):
+    def readfrommol(self, filename: str):
+        """
+        Read mol into a mol3D class instance. Stores the bond orders and atom types.
+
+        Parameters
+        -------
+            filename : string
+                String of path to MOL file. Path may be local or global.
+        """
+        with open(filename, 'r') as f:
+            contents = f.readlines()
+
+        counts_block_line_idx = None
+
+        # Searching for counts block
+        for idx, line in enumerate(contents):
+            split_line = line.split()
+
+            # Counts block
+            if len(split_line) == 11:
+                counts_block_line_idx = idx
+                num_atoms = int(split_line[0])
+                num_bonds = int(split_line[1])
+                break
+
+        # Atoms block
+        for idx, line in enumerate(contents[counts_block_line_idx+1:counts_block_line_idx+num_atoms+1]):
+            split_line = line.split()
+            x_coord = float(split_line[0])
+            y_coord = float(split_line[1])
+            z_coord = float(split_line[2])
+            sym = split_line[3]
+
+            my_atom = atom3D(Sym=sym, xyz=[x_coord,y_coord,z_coord])
+            self.addAtom(my_atom)
+
+        self.graph = np.zeros((num_atoms, num_atoms))
+        self.bo_dict = {}
+
+        # Bonds block
+        for idx, line in enumerate(contents[counts_block_line_idx+num_atoms+1:counts_block_line_idx+num_atoms+num_bonds+1]):
+            split_line = line.split()
+
+            atom1_idx = int(split_line[0])-1
+            atom2_idx = int(split_line[1])-1
+            bond_type = split_line[2]
+
+            self.graph[atom1_idx, atom2_idx] = 1
+            self.graph[atom2_idx, atom1_idx] = 1
+
+            self.bo_dict[tuple(sorted([atom1_idx, atom2_idx]))] = bond_type
+
+    def readfrommol2(self, filename: str, readstring=False, trunc_sym="X"):
         """
         Read mol2 into a mol3D class instance. Stores the bond orders and atom types (SYBYL).
 
         Parameters
         -------
             filename : string
-                String of path to XYZ file. Path may be local or global. May be read in as a string.
+                String of path to MOL2 file. Path may be local or global. May be read in as a string.
             readstring : bool
                 Flag for deciding whether a string of mol2 file is being passed as the filename
             trunc_sym : string
