@@ -2877,7 +2877,7 @@ class mol3D:
                     sys.exit()
                 self.addAtom(atom)
 
-    def readfrommol(self, filename: str):
+    def readfrommol(self, filename):
         """
         Read mol into a mol3D class instance. Stores the bond orders and atom types.
 
@@ -2903,7 +2903,7 @@ class mol3D:
                 break
 
         if counts_block_line_idx is None:
-            print(f'Failed to read the .mol file.')
+            print('Failed to read the .mol file.')
             return 
 
         # Atoms block
