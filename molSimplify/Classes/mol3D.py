@@ -2904,7 +2904,7 @@ class mol3D:
 
         if counts_block_line_idx is None:
             print('Failed to read the .mol file.')
-            return 
+            return
 
         # Atoms block
         for idx, line in enumerate(contents[counts_block_line_idx+1:counts_block_line_idx+num_atoms+1]):
