@@ -556,13 +556,12 @@ def rigorous_rmsd(mol_p, mol_q, rotation: str = "kabsch",
 def align_rmsd_project(mol_p, mol_q, rotation: str = "kabsch",
                reorder: str = "hungarian", verbose=False, iterations=1) -> float:
     """
-    Computes the RMSD between 2 mol3D objects after:
-    - translating them both such that the center of mass is at the origin
-    - projecting the coordinates onto the principal axes
-        Note that the projection may lead to reflections, which will break chirality.
-    - reordering x, y, z such that Ixx < Iyy < Izz
-    (will allow for 180 degree rotations about x, y, z, as well as
-    reflections about the xy, xz, yz, and all three of those planes)
+    Computes the RMSD between 2 mol3D objects after: (1) translating them both such that
+    the center of mass is at the origin, (2) projecting the coordinates onto the principal
+    axes  (Note that the projection may lead to reflections, which will break chirality), and
+    (3) reordering x, y, z such that Ixx < Iyy < Izz. The function will also allow for 180
+    degree rotations about x, y, z, as well as reflections about the xy, xz, yz planes, and
+    combinations of rotations and reflections.
 
     Parameters
     ----------
@@ -587,7 +586,6 @@ def align_rmsd_project(mol_p, mol_q, rotation: str = "kabsch",
         rmsd : float
             Resulting RMSD from aligning and rotating.
     """
-
     molp_atoms = mol_p.symvect()
     molp_coords = project_onto_principal_axes(mol_p)
 
@@ -646,10 +644,10 @@ def align_rmsd_project(mol_p, mol_q, rotation: str = "kabsch",
 def align_rmsd_rotate(mol_p, mol_q, rotation: str = "kabsch",
                reorder: str = "hungarian", verbose=False, iterations=1) -> float:
     """
-    Computes the RMSD between 2 mol objects after:
-    - translating them both such that the center of mass is at the origin
-    - rotating them onto their principal axes
-    (will require 6 evaluations due to possible 180 degree rotations)
+    Computes the RMSD between 2 mol objects after: (1) translating them both
+    such that the center of mass is at the origin, (2) rotating them onto their
+    principal axes such that Izz > Iyy > Ixx. Allows 180 degree rotations
+    about the coordinate axes and combinations of those rotations.
 
     Parameters
     ----------
@@ -674,7 +672,6 @@ def align_rmsd_rotate(mol_p, mol_q, rotation: str = "kabsch",
         best_rmsd : float
             Resulting RMSD from aligning and rotating.
     """
-
     #for the first mol object, get the symbols and atoms
     molp_atoms = mol_p.symvect()
     molp_coords = rotate_onto_principal_axes(mol_p)
