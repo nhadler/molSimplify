@@ -5807,7 +5807,8 @@ class mol3D:
     def get_geometry_type_distance(
             self, max_dev=1e6, close_dev=1e-2,
             flag_catoms=False, catoms_arr=None,
-            skip=False, transition_metals_only=False) -> Dict[str, Any]:
+            skip=False, transition_metals_only=False,
+            cshm=False) -> Dict[str, Any]:
         """
         Get the type of the geometry (available options in globalvars all_geometries).
 
@@ -5829,12 +5830,15 @@ class mol3D:
                 Geometry checks to skip. Default is False.
             transition_metals_only : bool, optional
                 Flag for considering more than just transition metals as metals. Default is False.
+            cshm: bool, optional
+                Whether or not to return continuous shape measures for each geometry.
 
         Returns
         -------
             results : dictionary
                 Contains the classified geometry and the RMSD from an ideal structure.
-                Summary contains a list of the RMSD and the maximum single-atom deviation for all considered geometry types.
+                Summary contains a list of the RMSD, the maximum single-atom deviation,
+                and a continuous shape measure for all considered geometry types.
 
         """
 
@@ -5871,22 +5875,26 @@ class mol3D:
         # for each same-coordinated geometry, get the minimum RMSD and the maximum single-atom deviation in that pairing
         for geotype in possible_geometries:
             rmsd_calc, max_dist = self.dev_from_ideal_geometry(all_polyhedra[geotype])
-            summary.update({geotype: [rmsd_calc, max_dist]})
+            if cshm:
+                cshm = self.continuous_shape_measure(all_polyhedra[geotype])
+                summary.update({geotype: {'rmsd': rmsd_calc, 'max_single_atom_deviation': max_dist, 'continuous_shape_measure': cshm}})
+            else:
+                summary.update({geotype: [rmsd_calc, max_dist]})
 
         close_rmsds = False
         current_rmsd, geometry = max_dev, "unknown"
         for geotype in summary:
             # if the RMSD for this structure is the lowest seen so far (within a threshold)
-            if summary[geotype][0] < (current_rmsd + close_dev):
+            if summary[geotype]['rmsd'] < (current_rmsd + close_dev):
                 # if the RMSDs are close, flag this in the summary and classify on second criterion
-                if np.abs(summary[geotype][0] - current_rmsd) < close_dev:
+                if np.abs(summary[geotype]['rmsd'] - current_rmsd) < close_dev:
                     close_rmsds = True
-                    if summary[geotype][1] < summary[geometry][1]:
+                    if summary[geotype]['max_single_atom_deviation'] < summary[geometry]['max_single_atom_deviation']:
                         # classify based on largest singular deviation
-                        current_rmsd = summary[geotype][0]
+                        current_rmsd = summary[geotype]['rmsd']
                         geometry = geotype
                 else:
-                    current_rmsd = summary[geotype][0]
+                    current_rmsd = summary[geotype]['rmsd']
                     geometry = geotype
 
         results = {
@@ -5897,6 +5905,81 @@ class mol3D:
             "close_rmsds": close_rmsds
         }
         return results
+
+    def continuous_shape_measure(self, ideal_polyhedron):
+        """
+        Return the continuous shape measure for the FCS, defined as:
+        min(sum_i^N (q_i - p_i)^2 / sum_i^N(q_i - q_0)^2)
+        Where q_i, p_i are vertices of the polyhedron and reference,
+        and q_0 is the center of geometry of the real structure.
+        The minimization is over possible pairwise combinations of vertices,
+        and a rotation of the reference polyhedron (which is done with Kabsch).
+        Only works for single-metal center TMCs since the translation is handled
+        by centering on the metal.
+        Scaling is handled by making the average bond lengths the same for the two structures.
+        0 means perfect matching, maximum is 100.
+
+        Parameters
+        ----------
+            ideal_polyhedron: np.array of 3-tuples of coordinates
+                Reference list of points for an ideal geometry
+
+        Returns
+        -------
+            min_cshm: float
+                Continuous Shape Measure between the geometry and ideal_polyhedron
+        """
+
+        metal_idx = self.findMetal()
+        if len(metal_idx) == 0:
+            raise ValueError('No metal centers exist in this complex.')
+        elif len(metal_idx) != 1:
+            raise ValueError('Multimetal complexes are not yet handled.')
+        temp_mol = self.get_first_shell()[0]
+        fcs_indices = temp_mol.get_fcs(max6=False)
+        # remove metal index from first coordination shell
+        fcs_indices.remove(temp_mol.findMetal()[0])
+
+        if len(fcs_indices) != len(ideal_polyhedron):
+            raise ValueError('The coordination number differs between the two provided structures.')
+
+        # have to redo getting metal_idx with the new mol after running get_first_shell
+        # want to work with temp_mol since it has the edge and sandwich logic implemented to replace those with centroids
+        metal_atom = temp_mol.getAtoms()[temp_mol.findMetal()[0]]
+        fcs_atoms = [temp_mol.getAtoms()[i] for i in fcs_indices]
+        # construct a np array of the non-metal atoms in the FCS
+        distances = []
+        positions = np.zeros([len(fcs_indices), 3])
+        for idx, atom in enumerate(fcs_atoms):
+            distance = atom.distance(metal_atom)
+            distances.append(distance)
+            # shift so the metal is at (0, 0, 0)
+            positions[idx, :] = np.array(atom.coords()) - np.array(metal_atom.coords())
+
+        min_cshm = np.inf
+        orders = permutations(range(len(ideal_polyhedron)))
+
+        #make it so the ideal polyhedron has same average bond distance as the mol
+        scaled_polyhedron = ideal_polyhedron * np.mean(np.array(distances))
+
+        # for all possible assignments, find CShM between ideal and actual structure
+        ideal_positions = np.zeros([len(fcs_indices), 3])
+        for order in orders:
+            #Assign reference structure for pairwise matching
+            for i in range(len(order)):
+                ideal_positions[i, :] = scaled_polyhedron[order[i]]
+            #Rotate reference structure onto actual positions
+            ideal_positions = kabsch_rotate(ideal_positions, positions)
+            #Could allow for another global scale factor on ideal_positions here, not done to maintain same avg bond lengths
+            numerator = sum(np.vstack([np.linalg.norm(positions[i] - ideal_positions[i]) for i in range(len(positions))]))[0]
+            centroid = np.mean(positions, axis=0)
+            denominator = sum(np.vstack([np.linalg.norm(positions[i] - centroid) for i in range(len(positions))]))[0]
+            cshm = numerator / denominator * 100
+            if cshm < min_cshm:
+                min_cshm = cshm
+
+        # return minimum CShM
+        return min_cshm
 
     def dev_from_ideal_geometry(self, ideal_polyhedron: np.ndarray) -> Tuple[float, float]:
         """
