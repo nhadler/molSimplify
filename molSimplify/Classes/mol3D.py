@@ -5879,7 +5879,7 @@ class mol3D:
                 cshm = self.continuous_shape_measure(all_polyhedra[geotype])
                 summary.update({geotype: {'rmsd': rmsd_calc, 'max_single_atom_deviation': max_dist, 'continuous_shape_measure': cshm}})
             else:
-                summary.update({geotype: [rmsd_calc, max_dist]})
+                summary.update({geotype: {'rmsd': rmsd_calc, 'max_single_atom_deviation': max_dist}})
 
         close_rmsds = False
         current_rmsd, geometry = max_dev, "unknown"
