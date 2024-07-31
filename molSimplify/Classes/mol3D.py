@@ -6133,7 +6133,7 @@ class mol3D:
 
     def get_molecular_mass(self):
         """
-        Computes the molecular mass of a mol3D.
+        Computes the molecular mass, or weight, of a mol3D.
 
         Parameters
         ----------
@@ -6151,5 +6151,9 @@ class mol3D:
         mol_mass = 0
         for i in self.atoms:
             mol_mass += amassdict[i.symbol()][0] # atomic mass
+
+        # Adjusting the mass attribute if it is incorrect
+        if self.mass != mol_mass:
+            self.mass = mol_mass
 
         return mol_mass
