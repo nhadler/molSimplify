@@ -2967,6 +2967,8 @@ class mol3D:
                 read_atoms = False
             if '<TRIPOS>SUBSTRUCTURE' in line:
                 read_bonds = False
+            if '<TRIPOS>UNITY_ATOM_ATTR' in line:
+                read_atoms = False
             if read_atoms:
                 s_line = line.split()
                 # Check redundancy in Chemical Symbols
