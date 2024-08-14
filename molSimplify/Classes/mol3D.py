@@ -1984,7 +1984,7 @@ class mol3D:
                                 'Error, mol3D could not understand connectivity in mol')
         return nats
 
-    def getBondedAtomsSmart(self, idx, oct=True, strict_cutoff=False, catom_list=None):
+    def getBondedAtomsSmart(self, idx, oct=False, strict_cutoff=False, catom_list=None):
         """
         Get the atoms bonded with the atom specified with the given index, using the molecular graph.
         Creates graph if it does not exist.
@@ -4042,7 +4042,7 @@ class mol3D:
         self.init_mol_trunc.copymol3D(init_mol)
         if flag_lbd:  # Also do ligand breakdown for opt geo
             if not check_whole:
-                # Truncate ligands at 4 bonds away from metal to aviod rotational group.
+                # Truncate ligands at 4 bonds away from metal to avoid rotational group.
                 self.my_mol_trunc = obtain_truncation_metal(self, hops=depth)
                 self.init_mol_trunc = obtain_truncation_metal(
                     init_mol, hops=depth)
@@ -4064,7 +4064,7 @@ class mol3D:
                 print(('liglist_init, ligdents_init, ligcons_init',
                        liglist_init, ligdents_init, ligcons_init))
                 print(('liglist, ligdents, ligcons', liglist, ligdents, ligcons))
-        else:  # ceate/use the liglist, ligdents, ligcons of initial geo as we just wanna track them down
+        else:  # create/use the liglist, ligdents, ligcons of initial geo as we just wanna track them down
             if debug:
                 print('Just inherit the ligand list from init structure.')
             liglist_init, ligdents_init, ligcons_init = ligand_breakdown(init_mol,
@@ -4126,8 +4126,9 @@ class mol3D:
                         flag_match = False
                 except UnboundLocalError:
                     # If there is no match the variable posi is never assigned
-                    print("here2, try, excepted.")
-                    print('Ligands cannot match!')
+                    if debug:
+                        print("here2, try, excepted.")
+                        print('Ligands cannot match!')
                     flag_match = False
         else:
             print("catoms for opt and init geo:", set(catoms), set(catoms_init))
