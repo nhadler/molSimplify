@@ -161,8 +161,6 @@ def comp_angle_pick_one_best(input_arr, target_angle, catoms_map, picked):
     del_arr = []
     picked_inds = [catoms_map[x] for x in picked]
     # print("==============")
-    # print("picked: ", picked, picked_inds)
-    # print("input_arr", input_arr, len(input_arr))
     for ii, input_angle in enumerate(input_arr):
         out_angle, output_ind, sum_del, max_del_angle = comp_two_angle_array(
             input_angle, target_angle, catoms_map, picked_inds)
