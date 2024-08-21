@@ -2196,7 +2196,7 @@ class mol3D:
 
         Returns
         -------
-            hlist : list
+            nHs : list
                 List of indices of hydrogen atoms bound to reference atom3D.
 
         """
@@ -2219,7 +2219,7 @@ class mol3D:
 
         Returns
         -------
-            hlist : list
+            nHs : list
                 List of indices of hydrogen atoms bound to reference atom.
 
         """
