@@ -1,4 +1,4 @@
-.. image:: logo.png
+.. image:: logo_enhanced.png
   :width: 600
 
 Welcome to molSimplify's documentation!
