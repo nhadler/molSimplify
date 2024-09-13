@@ -2768,7 +2768,7 @@ class mol3D:
             ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
         return (ss)
 
-    def readfromxyz(self, filename: str, ligand_unique_id=False, read_final_optim_step=False):
+    def readfromxyz(self, filename: str, ligand_unique_id=False, read_final_optim_step=False, readstring=False):
         """
         Read XYZ into a mol3D class instance.
 
@@ -2783,41 +2783,68 @@ class mol3D:
             read_final_optim_step : boolean
                 if there are multiple geometries in the xyz file
                 (after an optimization run) use only the last one
+            readstring : boolean
+                Flag for deciding whether a string of xyz file is being passed as the filename
         """
 
         globs = globalvars()
         amassdict = globs.amass()
         self.graph = []
         self.xyzfile = filename
-        with open(filename, 'r') as f:
-            s = f.read().splitlines()
-        try:
-            atom_count = int(s[0])
-        except ValueError:
-            atom_count = 0
-        start = 2
-        if read_final_optim_step:
-            start = len(s) - int(s[0])
-        for line in s[start:start+atom_count]:
-            line_split = line.split()
-            # If the split line has more than 4 elements, only elements 0 through 3 will be used.
-            # this means that it should work with any XYZ file that also stores something like mulliken charge
-            # Next, this looks for unique atom IDs in files
-            if len(line_split) > 0:
-                lm = re.search(r'\d+$', line_split[0])
-                # if the string ends in digits m will be a Match object, or None otherwise.
-                if line_split[0] in list(amassdict.keys()) or ligand_unique_id:
-                    atom = atom3D(line_split[0], [float(line_split[1]), float(
-                        line_split[2]), float(line_split[3])])
-                elif lm is not None:
-                    print(line_split)
-                    symb = re.sub(r'\d+', '', line_split[0])
-                    atom = atom3D(symb, [float(line_split[1]), float(line_split[2]), float(line_split[3])],
-                                  name=line_split[0])
-                else:
-                    print('cannot find atom type')
-                    sys.exit()
-                self.addAtom(atom)
+        if not readstring:
+            with open(filename, 'r') as f:
+                s = f.read().splitlines()
+            try:
+                atom_count = int(s[0])
+            except ValueError:
+                atom_count = 0
+            start = 2
+            if read_final_optim_step:
+                start = len(s) - int(s[0])
+            for line in s[start:start+atom_count]:
+                line_split = line.split()
+                # If the split line has more than 4 elements, only elements 0 through 3 will be used.
+                # this means that it should work with any XYZ file that also stores something like mulliken charge
+                # Next, this looks for unique atom IDs in files
+                if len(line_split) > 0:
+                    lm = re.search(r'\d+$', line_split[0])
+                    # if the string ends in digits m will be a Match object, or None otherwise.
+                    if line_split[0] in list(amassdict.keys()) or ligand_unique_id:
+                        atom = atom3D(line_split[0], [float(line_split[1]), float(
+                            line_split[2]), float(line_split[3])])
+                    elif lm is not None:
+                        print(line_split)
+                        symb = re.sub(r'\d+', '', line_split[0])
+                        atom = atom3D(symb, [float(line_split[1]), float(line_split[2]), float(line_split[3])],
+                                      name=line_split[0])
+                    else:
+                        print('cannot find atom type')
+                        sys.exit()
+                    self.addAtom(atom)
+        else:
+            s = filename.split('\n')
+            try:
+                s.remove('')
+            except ValueError:
+                pass
+            s = [str(val) + '\n' for val in s]
+            for line in s[0:]:
+                line_split = line.split()
+                if len(line_split) == 4 and line_split[0]:
+                    # this looks for unique atom IDs in files
+                    lm = re.search(r'\d+$', line_split[0])
+                    # if the string ends in digits m will be a Match object, or None otherwise.
+                    if lm is not None:
+                        symb = re.sub(r'\d+', '', line_split[0])
+                        atom = atom3D(symb, [float(line_split[1]), float(line_split[2]), float(line_split[3])],
+                                      name=line_split[0])
+                    elif line_split[0] in list(amassdict.keys()):
+                        atom = atom3D(line_split[0], [float(line_split[1]), float(
+                            line_split[2]), float(line_split[3])])
+                    else:
+                        print('cannot find atom type')
+                        sys.exit()
+                    self.addAtom(atom)
 
     def readfrommol2(self, filename, readstring=False, trunc_sym="X"):
         """
@@ -2937,7 +2964,7 @@ class mol3D:
                 String of XYZ file.
         """
 
-        # print('!!!!', filename)
+        # print('Deprecated: use readfromxyz(readstring=True)
         globs = globalvars()
         amassdict = globs.amass()
         self.graph = []
