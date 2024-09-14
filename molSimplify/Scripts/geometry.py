@@ -1102,7 +1102,7 @@ def aligntoaxis2(mol, Rr, Rp, u, d):
 
 
 def alignPtoaxis(Rr, Rp, u, d):
-    """Translates point and aligns to axis
+    """Translates point and aligns to axis.
 
     Parameters
     ----------
