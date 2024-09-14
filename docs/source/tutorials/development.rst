@@ -21,7 +21,7 @@ Automated testing
 =================
 
 As a part of the continous integration (CI) pipeline all new code submissions
-are valided using a pytest test-suite. MolSimplify currently uses Github
+are valided using a pytest test-suite. molSimplify currently uses Github
 actions to run these checks (see status
 `here <https://github.com/hjkgrp/molSimplify/actions/workflows/CI.yaml>`_).
 

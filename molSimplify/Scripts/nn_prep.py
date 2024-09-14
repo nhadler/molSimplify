@@ -466,7 +466,7 @@ def ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
     print(('ANN high spin bond length is predicted to be: ' +
            "{0:.2f}".format(float(r_hs)) + ' angstrom'))
 
-    # use ANN to predict fucntional sensitivty
+    # use ANN to predict functional sensitivty
     HFX_slope = 0
     HFX_slope = get_slope(slope_excitation)
     print(('Predicted HFX exchange sensitivity is : ' +
