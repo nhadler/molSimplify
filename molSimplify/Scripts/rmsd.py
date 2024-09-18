@@ -720,7 +720,7 @@ def align_rmsd_rotate(mol_p, mol_q, rotation: str = "kabsch",
             else:
                 transformed_molq_coords = reorder_rotate(molp_atoms, molq_atoms, molp_coords, transformed_molq_coords,
                                                      rotation=rotation, reorder=reorder, translate=True, return_reorder=False)
-            
+
 
             if i == iterations-1:
                 #for the final iteration, compute the RMSD and compare
