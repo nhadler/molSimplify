@@ -293,7 +293,7 @@ def reorder_hungarian(p_atoms, q_atoms, p_coord, q_coord):
     ----------
         p_atoms : np.array
             (N,1) matrix, where N is points holding the atoms' names
-        p_atoms : np.array
+        q_atoms : np.array
             (N,1) matrix, where N is points holding the atoms' names
         p_coord : np.array
             (N,D) matrix, where N is points and D is dimension
@@ -450,7 +450,7 @@ def rmsd_reorder_rotate(p_atoms, q_atoms, p_coord, q_coord,
 
 def reorder_rotate(p_atoms, q_atoms, p_coord, q_coord,
                    rotation="kabsch", reorder="hungarian",
-                   translate=True):
+                   translate=True, return_reorder=False):
     """Reorders atoms pairwise and rotates structures onto one another.
 
     Parameters
@@ -471,6 +471,9 @@ def reorder_rotate(p_atoms, q_atoms, p_coord, q_coord,
             Whether or not the molecules should be translated
             such that their centroid is at the origin.
             Default is True.
+        return_reorder : bool, optional
+            Whether or not the reordering is returned.
+            Default is False.
 
     Returns
     -------
@@ -516,12 +519,15 @@ def reorder_rotate(p_atoms, q_atoms, p_coord, q_coord,
         q_review = reorder_method(p_atoms, q_atoms, p_coord, q_coord)
         q_coord = q_coord[q_review]
         # q_atoms = q_atoms[q_review]
-        # print("q_review", q_review)
+        #print("q_review", q_review)
 
     if rotation_method is not None:
         q_coord = rotation_method(q_coord, p_coord)
 
-    return q_coord
+    if return_reorder:
+        return q_coord, q_review
+    else:
+        return q_coord
 
 
 def rigorous_rmsd(mol_p, mol_q, rotation: str = "kabsch",
@@ -679,6 +685,21 @@ def align_rmsd_rotate(mol_p, mol_q, rotation: str = "kabsch",
     molq_atoms = mol_q.symvect()
     molq_coords = rotate_onto_principal_axes(mol_q)
 
+    if verbose:
+        print('Molecule 1 on principal axes:')
+        print(mol_p.natoms, '\n')
+        for i, atom in enumerate(mol_p.getAtoms()):
+            xyz = molp_coords[i]
+            ss = "%s \t%f\t%f\t%f" % (atom.sym, xyz[0], xyz[1], xyz[2])
+            print(ss)
+
+        print('Molecule 2 on principal axes:')
+        print(mol_q.natoms, '\n')
+        for i, atom in enumerate(mol_q.getAtoms()):
+            xyz = molq_coords[i]
+            ss = "%s \t%f\t%f\t%f" % (atom.sym, xyz[0], xyz[1], xyz[2])
+            print(ss)
+
     #allow 180 degree rotations about each axis to catch if aligned to different sides
     best_rmsd = np.inf
     x_rot = np.array([[1, 0, 0], [0, -1, 0], [0, 0, -1]]) #180 about x
@@ -686,18 +707,20 @@ def align_rmsd_rotate(mol_p, mol_q, rotation: str = "kabsch",
     z_rot = np.array([[-1, 0, 0], [0, -1, 0], [0, 0, 1]]) #180 about z
     transformations = [
         np.eye(3), #no change
-        x_rot, y_rot, z_rot,
-        x_rot@y_rot, x_rot@z_rot, y_rot@z_rot,
-        x_rot@y_rot@z_rot
-    ]
+        x_rot, y_rot, z_rot]
 
     for transformation in transformations:
         transformed_molq_coords = np.vstack([transformation @ molq_coords[i, :] for i in range(len(molq_coords))])
 
         #Iterate for the specified number of iterations
         for i in range(iterations):
-            transformed_molq_coords = reorder_rotate(molp_atoms, molq_atoms, molp_coords, transformed_molq_coords,
-                                                     rotation=rotation, reorder=reorder, translate=True)
+            if verbose:
+                transformed_molq_coords, q_review = reorder_rotate(molp_atoms, molq_atoms, molp_coords, transformed_molq_coords,
+                                                     rotation=rotation, reorder=reorder, translate=True, return_reorder=True)
+            else:
+                transformed_molq_coords = reorder_rotate(molp_atoms, molq_atoms, molp_coords, transformed_molq_coords,
+                                                     rotation=rotation, reorder=reorder, translate=True, return_reorder=False)
+
 
             if i == iterations-1:
                 #for the final iteration, compute the RMSD and compare
@@ -705,6 +728,16 @@ def align_rmsd_rotate(mol_p, mol_q, rotation: str = "kabsch",
 
                 if result_rmsd < best_rmsd:
                     best_rmsd = result_rmsd
+                    if verbose:
+                        print('Aligned molecule 2:')
+                        print(f'The transformation is {transformation}.')
+                        print(f'The RMSD is {result_rmsd}.')
+                        print(mol_q.natoms, '\n')
+                        symbs = molq_atoms[q_review]
+                        for j, atom in enumerate(mol_q.getAtoms()):
+                            xyz = transformed_molq_coords[j]
+                            ss = "%s \t%f\t%f\t%f" % (symbs[j], xyz[0], xyz[1], xyz[2])
+                            print(ss)
 
     if verbose:
         cutoff = 10 #How close moments have to be for a warning
@@ -718,8 +751,6 @@ def align_rmsd_rotate(mol_p, mol_q, rotation: str = "kabsch",
             print('The principal moments of the second mol3D are close in magnitude, and are:')
             print(pmom2)
             print('This may lead to improper orientation in some cases.')
-
-        #Can address improper rotations by also allowing 90 degree rotations, combinations (including 180 rotations as well)
 
     return best_rmsd
 
