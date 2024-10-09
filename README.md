@@ -1,4 +1,4 @@
-![](./molSimplify/icons/logo.png)
+![](./molSimplify/icons/logo_enhanced.png)
 [![Pytest](https://github.com/hjkgrp/molSimplify/actions/workflows/pytest.yaml/badge.svg)](https://github.com/hjkgrp/molSimplify/actions/workflows/pytest.yaml)
 [![Documentation Status](https://readthedocs.org/projects/molsimplify/badge/?version=latest)](http://molsimplify.readthedocs.io/?badge=latest)
 [![Linter](https://github.com/hjkgrp/molSimplify/actions/workflows/python-linter.yaml/badge.svg)](https://github.com/hjkgrp/molSimplify/actions/workflows/python-linter.yaml)
