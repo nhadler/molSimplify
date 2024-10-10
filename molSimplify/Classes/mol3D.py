@@ -4176,6 +4176,7 @@ class mol3D:
         """
 
         from molSimplify.Informatics.graph_analyze import obtain_truncation_metal
+        from molSimplify.Classes.ligand import ligand_breakdown
         flag_match = True
         self.my_mol_trunc = mol3D()
         self.my_mol_trunc.copymol3D(self)
@@ -4316,6 +4317,7 @@ class mol3D:
                 Dictionary containing rmsd_max and atom_dist_max.
         """
         from molSimplify.Scripts.oct_check_mols import readfromtxt
+        from molSimplify.Classes.ligand import ligand_breakdown
         _, _, flag_match = self.match_lig_list(init_mol,
                                                catoms_arr=catoms_arr,
                                                BondedOct=BondedOct,
