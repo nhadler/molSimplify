@@ -28,7 +28,7 @@ from molSimplify.Scripts.geometry import distance
 #
 #  @param ff Force field to use, available MMFF94, UFF, Ghemical, GAFF,
 #  @param mol mol3D of cell to be optimized
-#  @param frozenats List of frozen atom indicies, will usually be the cell
+#  @param frozenats List of frozen atom indices, will usually be the cell
 #  @return FF-calculated energy, mol3D of optimized cell
 
 

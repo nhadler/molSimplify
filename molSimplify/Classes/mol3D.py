@@ -5074,12 +5074,12 @@ class mol3D:
         Parameters
         ----------
             inds : list
-                The indicies of the selected submolecule to SAVE
+                The indices of the selected submolecule to SAVE
 
         Returns
         -------
             new_bo_dict : dict
-                The ported over dictionary with new indicies/bonds deleted
+                The ported over dictionary with new indices/bonds deleted
         """
 
         if not self.bo_dict:
@@ -5106,7 +5106,7 @@ class mol3D:
         Parameters
         ----------
             inds : list
-                The indicies of the selected submolecule to SAVE
+                The indices of the selected submolecule to SAVE
 
         Returns
         -------
