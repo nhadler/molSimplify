@@ -1342,7 +1342,7 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
             ax_lig_list = list(set(allowed)-set(eq_points_max_mw))
             ax_con_list = [ligcons[j] for j in ax_lig_list]
         # ###### Find and put trans species in eq plane in order opposite
-        # ###### from each other [0,2],[1,3] in indicies for monodentates
+        # ###### from each other [0,2],[1,3] in indices for monodentates
         eq_con_coords = [flat_coord_list[x] for x in eq_lig_list]
         combos = [(0, 1), (0, 2), (0, 3)]
         angle_list_eq = list()

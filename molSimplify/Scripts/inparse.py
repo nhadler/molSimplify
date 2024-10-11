@@ -1169,7 +1169,7 @@ def parseinputs_advanced(*p):
         "-calccharge", help="Automatically calculate net complex charge. By default this is ON.", default=True)
     parser.add_argument(
         "-genall", help="Generate complex both with and without FF opt, default False", action="store_true")  # geometry
-    parser.add_argument("-decoration_index", help="list of indicies on each ligand to decorate",
+    parser.add_argument("-decoration_index", help="list of indices on each ligand to decorate",
                         action="store_true")  # decoration indexes, one list per ligand
     parser.add_argument("-decoration", help="list of SMILES for each decoratation",
                         action="store_true")  # decoration, one list ligand

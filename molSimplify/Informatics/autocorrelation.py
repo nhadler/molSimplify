@@ -387,7 +387,7 @@ def full_autocorrelation_derivative(mol, prop, d, oct=oct, modifier=False):
 
 
 def atom_only_autocorrelation(mol, prop, d, atomIdx, oct=True):
-    # atomIdx must be either a list of indicies
+    # atomIdx must be either a list of indices
     # or a single index
     w = construct_property_vector(mol, prop, oct)
     autocorrelation_vector = np.zeros(d + 1)
@@ -401,7 +401,7 @@ def atom_only_autocorrelation(mol, prop, d, atomIdx, oct=True):
 
 
 def atom_only_autocorrelation_derivative(mol, prop, d, atomIdx, oct=True):
-    # atomIdx must b either a list of indicies
+    # atomIdx must b either a list of indices
     # or a single index
     w = construct_property_vector(mol, prop, oct)
     autocorrelation_derivative_mat = np.zeros((d + 1, mol.natoms))
@@ -468,7 +468,7 @@ def multiatom_only_autocorrelation(mol, prop, d, oct=True, catoms=None,
 
 
 def atom_only_ratiometric(mol, prop_num, prop_den, d, atomIdx, oct=True):
-    # atomIdx must b either a list of indicies
+    # atomIdx must b either a list of indices
     # or a single index
     w_num = construct_property_vector(mol, prop_num, oct)
     w_den = construct_property_vector(mol, prop_den, oct)
@@ -483,7 +483,7 @@ def atom_only_ratiometric(mol, prop_num, prop_den, d, atomIdx, oct=True):
 
 
 def atom_only_summetric(mol, prop, d, atomIdx, oct=True):
-    # atomIdx must b either a list of indicies
+    # atomIdx must b either a list of indices
     # or a single index
     w = construct_property_vector(mol, prop, oct)
     autocorrelation_vector = np.zeros(d + 1)
@@ -497,7 +497,7 @@ def atom_only_summetric(mol, prop, d, atomIdx, oct=True):
 
 
 def atom_only_deltametric(mol, prop, d, atomIdx, oct=True, modifier=False):
-    # atomIdx must b either a list of indicies
+    # atomIdx must b either a list of indices
     # or a single index
     w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
 
@@ -512,7 +512,7 @@ def atom_only_deltametric(mol, prop, d, atomIdx, oct=True, modifier=False):
 
 
 def atom_only_deltametric_derivative(mol, prop, d, atomIdx, oct=True, modifier=False):
-    # atomIdx must b either a list of indicies
+    # atomIdx must b either a list of indices
     # or a single index
     w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
 

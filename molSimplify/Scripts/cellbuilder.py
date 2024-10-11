@@ -415,7 +415,7 @@ def align_payload_to_multi_site(payload, surface_coord_list, cand_list, bind_dis
     #   - payload: mol3D class that contains the molecule to place
     #   - align_coord: list of lists of float, positions on surface
     #   - cand_mask: list of int, indices of atoms in payload that will be aligned
-    #               can also contain a string, mask, list of indicies
+    #               can also contain a string, mask, list of indices
     # OUPUT
     #   - newpay_load: mol3D class with the atom in payload(cand_in) directly above
     #                  align_coord. )Does NOT change height
@@ -695,7 +695,7 @@ def combine_multi_aligned_payload_with_cell(super_cell, super_cell_vector, paylo
             print(('begining controlled rotation, targeting angle ' +
                    str(control_angle) + ' to  line ' + str(align_axis)))
             print(('aligning payload  index ' +
-                   str(cand_list[0]) + ' and indicies ' + str(align_ind-1) + ' with slab axes '))
+                   str(cand_list[0]) + ' and indices ' + str(align_ind-1) + ' with slab axes '))
             this_payload = mol3D()
             this_payload.copymol3D(final_payload)
 
