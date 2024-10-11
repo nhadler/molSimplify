@@ -445,7 +445,7 @@ def PointRotateAxis(u, rp, r, theta):
 
     """
     # construct augmented vector rr = [r;1]
-    rr = r
+    rr = r[:] # Making a copy
     rr.append(1)
     # rotation matrix about arbitrary line through rp
     R = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
@@ -1186,11 +1186,12 @@ def connectivity_match(inds1, inds2, mol1, mol2):
 
     """
     match = False
-    if len(inds1) == len(inds2):
-        inds1.sort()
-        inds2.sort()
-        _mol1 = mol1.create_mol_with_inds(inds1)
-        _mol2 = mol2.create_mol_with_inds(inds2)
+    inds1c, inds2c = inds1[:], inds2[:] # Making copies
+    if len(inds1c) == len(inds2c):
+        inds1c.sort()
+        inds2c.sort()
+        _mol1 = mol1.create_mol_with_inds(inds1c)
+        _mol2 = mol2.create_mol_with_inds(inds2c)
         _mol1.createMolecularGraph()
         _mol2.createMolecularGraph()
         match = np.array_equal(_mol1.graph, _mol2.graph)
