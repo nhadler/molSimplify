@@ -807,7 +807,7 @@ class mol3D:
         self.metals = None
         return cmol
 
-    def coords(self):
+    def coords(self, no_tabs=False):
         """
         Method to obtain string of coordinates in molecule.
 
@@ -815,12 +815,16 @@ class mol3D:
         -------
             coord_string : string
                 String of molecular coordinates with atom identities in XYZ format.
+            no_tabs : bool, optional
+                Whether or not to use tabs in coordinate columns.
         """
         coord_string = ''  # initialize returning string
         coord_string += "%d \n\n" % self.natoms
         for atom in self.atoms:
             xyz = atom.coords()
             coord_string += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
+        if no_tabs:
+            coord_string = coord_string.replace('\t', ' ' * 8)
         return coord_string
 
     def coordsvect(self):
@@ -2810,7 +2814,7 @@ class mol3D:
                 temp_dist.writexyz(str(dir_name)+"/rc_"+str(str("{:.4f}".format(dist_val)))+'.xyz')
         return temp_list
 
-    def returnxyz(self):
+    def returnxyz(self, no_tabs=False):
         """
         Print XYZ info of mol3D class instance to stdout. To write to file
         (more common), use writexyz() instead.
@@ -2819,12 +2823,16 @@ class mol3D:
         -------
             XYZ : string
                 String of XYZ information from mol3D class.
+            no_tabs : bool, optional
+                Whether or not to use tabs in coordinate columns.
         """
 
         ss = ''
         for atom in self.atoms:
             xyz = atom.coords()
             ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
+        if no_tabs:
+            ss = ss.replace('\t', ' ' * 8)
         return (ss)
 
     def readfromxyz(self, filename: str, ligand_unique_id=False, read_final_optim_step=False, readstring=False):
@@ -3616,7 +3624,7 @@ class mol3D:
 
     def writexyz(self, filename, symbsonly=False, ignoreX=False,
                  ordering=False, writestring=False, withgraph=False,
-                 specialheader=False):
+                 specialheader=False, no_tabs=False):
         """
         Write standard XYZ file.
 
@@ -3636,6 +3644,8 @@ class mol3D:
                 Flag to write with graph (after XYZ) if True. Default is False. If True, sparse graph written.
             specialheader : str, optional
                 String to write information into header. Default is False. If True, a special string is written.
+            no_tabs : bool, optional
+                Whether or not to use tabs in coordinate columns.
 
         """
 
@@ -3682,6 +3692,9 @@ class mol3D:
                     tempstr += '    '+str(row2)+' S\n'
             ss += tempstr
 
+        if no_tabs:
+            ss = ss.replace('\t', ' ' * 8)
+
         if writestring:
             return ss
         else:
@@ -3689,7 +3702,7 @@ class mol3D:
             with open(fname + '.xyz', 'w') as f:
                 f.write(ss)
 
-    def writemxyz(self, mol, filename):
+    def writemxyz(self, mol, filename, no_tabs=False):
         """
         Write standard XYZ file with two molecules.
 
@@ -3699,6 +3712,8 @@ class mol3D:
                 mol3D instance of second molecule.
             filename : str
                 Path to XYZ file.
+            no_tabs : bool, optional
+                Whether or not to use tabs in coordinate columns.
 
         """
         ss = ''  # initialize returning string
@@ -3710,6 +3725,8 @@ class mol3D:
         for atom in mol.atoms:
             xyz = atom.coords()
             ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
+        if no_tabs:
+            ss = ss.replace('\t', ' ' * 8)
         fname = filename.split('.xyz')[0]
         with open(fname + '.xyz', 'w') as f:
             f.write(ss)
