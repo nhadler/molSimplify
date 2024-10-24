@@ -582,6 +582,8 @@ def parseinputfile(args, inputfile_str=None):
                     args.jobdir = l[1]
                 else:
                     args.jobdirblank = True
+            if (l[0] == '-no_tabs'):
+                args.no_tabs = True
             ### parse structure generation arguments ###
             if (l[0] == '-bind' and len(l[1:]) > 0):
                 l = [_f for _f in re.split(' |,|\t', line) if _f]  # noqa: E741
@@ -1194,6 +1196,8 @@ def parseinputs_advanced(*p):
         "-reportonly", help='add this flag if you just want the report, without actual structure generation. Currently does not support pentadentates.')
     parser.add_argument(
         "-jobmanager", help='use jobmanager naming convention.', default=False)
+    parser.add_argument(
+        "-no_tabs", help="add this flag to use spaces instead of tabs in written xyz files", default=False)
     if len(p) == 1:  # only one input, printing help only
         args = parser.parse_args()
         return args
