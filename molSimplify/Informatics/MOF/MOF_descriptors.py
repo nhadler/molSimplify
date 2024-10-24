@@ -78,7 +78,7 @@ def get_primitive(datapath, writepath, occupancy_tolerance=1):
     from pymatgen.io.cif import CifParser
     s = CifParser(datapath, occupancy_tolerance=occupancy_tolerance).get_structures()[0]
     sprim = s.get_primitive_structure()
-    sprim.to(writepath, "cif")  # Output structure to a file.
+    sprim.to("cif", writepath)  # Output structure to a file.
 
 
 '''<<<< END OF CODE TO COMPUTE PRIMITIVE UNIT CELLS >>>>'''
