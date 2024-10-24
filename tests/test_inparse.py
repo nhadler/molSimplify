@@ -40,7 +40,7 @@ def test_parseinputs_advanced(monkeypatch):
     defaults = dict(MLbonds=False, antigeoisomer=None, calccharge=True,
                     charge=None, decoration=False, decoration_index=False,
                     distort='0', genall=False, isomers=None, langles=False,
-                    ligalign=False, nconfs='1', oldANN=None, pangles=False,
+                    ligalign=False, nconfs='1', no_tabs=False, oldANN=None, pangles=False,
                     reportonly=None, scoreconfs=False, stereos=None,
                     jobmanager=False)
     assert args.__dict__ == defaults
