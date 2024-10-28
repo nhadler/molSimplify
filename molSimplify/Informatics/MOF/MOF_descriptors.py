@@ -249,6 +249,7 @@ def make_MOF_SBU_RACs(
         """""""""
         # lc_descriptors for SBU i
         lc_descriptors_i: List[List[float]] = []
+        first_connecting_linker = True # Boolean that checks for first instance of linker connected to SBU
         for j, linker in enumerate(connections_list):  # Iterating over the different linkers
             if len(set(SBU).intersection(linker)) > 0:
                 descriptor_names = []
@@ -304,8 +305,9 @@ def make_MOF_SBU_RACs(
                         raise AssertionError('Mixed typing creates issues. Please convert your typing.')
 
                 lc_descriptors_i.append(descriptors)
-                if j == 0:
+                if first_connecting_linker: # Assign lc_names if first instance of connected linker
                     lc_names = descriptor_names
+                    first_connecting_linker = False
 
         lc_descriptor_list.extend(lc_descriptors_i)
         averaged_lc_descriptors = np.mean(np.array(lc_descriptor_list), axis=0)  # Average the lc RACs over all of the linkers in the MOF.
