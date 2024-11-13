@@ -41,7 +41,7 @@ def initialize_custom_database(globs):
 #  @param ffopt Flag for ligand FF optimization
 #  @param overwrite Flag for overriding SMILES with OpenBabel Interpretation
 #  @return Error messages
-def addtoldb(smimol, sminame, smident, smicat, smigrps, smictg, ffopt, overwrite, smichg=None):
+def addtoldb(smimol, sminame, smident, smicat, smigrps, smictg, ffopt, overwrite=True, smichg=None):
     emsg = False
     globs = globalvars()
     if not globs.custom_path or not os.path.exists(str(globs.custom_path)):
