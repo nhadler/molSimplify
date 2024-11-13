@@ -1223,3 +1223,31 @@ def best_fit_plane(coordinates):
     # the corresponding left singular vector is the normal vector of the best-fitting plane
     normal_vector_plane = left[:, -1]
     return normal_vector_plane
+
+def move_point(initial_point, vector, distance):
+    """
+    Move a point along a vector by a given distance.
+
+    Parameters:
+    initial_point (array-like): The starting point [x, y, z].
+    vector (array-like): The direction vector [dx, dy, dz].
+    distance (float): The distance to move along the vector.
+
+    Returns:
+    numpy.ndarray: The new point after moving.
+    """
+    # Convert inputs to numpy arrays
+    initial_point = np.array(initial_point)
+    vector = np.array(vector)
+
+    # Normalize the vector
+    norm = np.linalg.norm(vector)
+    if norm == 0:
+        raise ValueError("The vector cannot be zero.")
+    unit_vector = vector / norm
+
+    # Calculate the new point
+    displacement = unit_vector * distance
+    new_point = initial_point + displacement
+
+    return new_point
