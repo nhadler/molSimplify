@@ -39,8 +39,9 @@ def initialize_custom_database(globs):
 #  @param smigrps Ligand groups
 #  @param smictg Ligand category
 #  @param ffopt Flag for ligand FF optimization
+#  @param overwrite Flag for overriding SMILES with OpenBabel Interpretation
 #  @return Error messages
-def addtoldb(smimol, sminame, smident, smicat, smigrps, smictg, ffopt, smichg=None):
+def addtoldb(smimol, sminame, smident, smicat, smigrps, smictg, ffopt, overwrite=True, smichg=None):
     emsg = False
     globs = globalvars()
     if not globs.custom_path or not os.path.exists(str(globs.custom_path)):
@@ -85,8 +86,6 @@ def addtoldb(smimol, sminame, smident, smicat, smigrps, smictg, ffopt, smichg=No
         lig.convert2mol3D()  # convert to mol3D
 
         shortname = sminame
-        print("smimol is "+str(smimol))
-        print("sminame is "+str(sminame))
         # sanitize ff options:
         if ffopt not in ["A", "B", "BA", "N"]:
             print('warning: incompatible ffopt choice. Options are ' +
@@ -108,7 +107,11 @@ def addtoldb(smimol, sminame, smident, smicat, smigrps, smictg, ffopt, smichg=No
             obConversion = openbabel.OBConversion()
             obConversion.SetOutFormat("smi")
             obConversion.Read(lig.OBMol)
-            obConversion.WriteFile(lig.OBMol, ligands_folder + sminame+'.smi')
+            if overwrite == 'True':
+                obConversion.WriteFile(lig.OBMol, ligands_folder + sminame+'.smi')
+            else:
+                with open(ligands_folder + sminame+'.smi', 'w') as f:
+                  f.write(smimol)
             # lig.OBMol.write('smi',ligands_folder + sminame+'.smi')
             snew = str(sminame)+':'+str(sminame)+'.smi,'+str(shortname)+','+str(css)+','+str(grp)+','+str(ffopt)+','+str(lig.charge)
         else:
