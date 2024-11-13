@@ -309,4 +309,3 @@ def removefromDB(sminame, ropt):
                 else:
                     os.remove(bind_folder+sss[1].split(',')[0])
     return emsg
-
