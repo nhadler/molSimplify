@@ -28,7 +28,7 @@ def mol3D_to_networkx(mol,get_symbols:bool=True,get_bond_order:bool=True,get_bon
 
     """
     g = nx.Graph()
-    
+
     # get every index of atoms in mol3D object
     for atom_ind in range(0,mol.natoms):
         # set each atom as a node in the graph, and add symbol information if wanted
@@ -36,7 +36,7 @@ def mol3D_to_networkx(mol,get_symbols:bool=True,get_bond_order:bool=True,get_bon
         if get_symbols:
             data['symbol']=mol.getAtom(atom_ind).symbol()
         g.add_node(atom_ind,**data)
-        
+
     # get every bond in mol3D object
     bond_info=mol.bo_dict
     for bond in bond_info:
