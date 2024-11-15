@@ -6493,7 +6493,7 @@ class mol3D:
                 data['bond_distance']=distance
             g.add_edge(bond[0],bond[1],**data)
         return g
-    
+
     def roland_combine(self, mol, catoms, bond_to_add=[], dirty=False):
         """
         Combines two molecules. Each atom in the second molecule
@@ -6527,7 +6527,7 @@ class mol3D:
         new_bo_dict = copy.deepcopy(bo_dict)
 
         # add ligand connections
-        for bo in mol.bo_dict:    
+        for bo in mol.bo_dict:
             ind1 = bo[0] + len(cmol.atoms)
             ind2 = bo[1] + len(cmol.atoms)
             new_bo_dict[(ind1,ind2)]=mol.bo_dict[(bo[0],bo[1])]
