@@ -12,6 +12,7 @@ try:
     from openbabel import openbabel  # version 3 style import
 except ImportError:
     import openbabel  # fallback to version 2
+from openbabel import pybel
 import random
 import itertools
 import numpy as np
@@ -2306,6 +2307,7 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int]
     emsg = ''
     complex3D: List[mol3D] = []
     occs0 = []      # occurrences of each ligand
+    complex2D = []
     toccs = 0       # total occurrence count (number of ligands)
     smilesligs = 0  # count how many smiles strings
     cats0: List[List[Union[int, str]]] = []  # connection atoms for ligands
@@ -2507,6 +2509,8 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int]
                         lig = decorate_ligand(
                             lig, args.decoration[i], args.decoration_index[i], args.debug)
             lig.convert2mol3D()
+
+
             # initialize ligand
             lig3D, rempi, ligpiatoms = init_ligand(args, lig, tcats, keepHs, i)
             if emsg:
@@ -2710,16 +2714,34 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int]
                 auxm = mol3D()
                 auxm.copymol3D(lig3D)
                 complex3D.append(auxm)
+
+                lig3D_copy = mol3D()
+                lig3D_copy.copymol3D(lig3D)
+                lig3D_copy.populateBOMatrix(bonddict=True)   
+                lig2D = lig3D_copy.mol3D_to_networkx()
+                complex2D.append(lig2D)
+
                 if 'a' not in lig.ffopt.lower():
                     for latdix in range(0, lig3D.natoms):
                         if args.debug:
                             print(('a is not ff.lower, so adding atom:  ' +
                                    str(latdix+core3D.natoms) + ' to freeze'))
                         frozenats.append(latdix+core3D.natoms)
+
+
+                
+                # combine molecules
+                if len(core3D.atoms) == 1:
+                    core3D_copy = mol3D()
+                    core3D_copy.copymol3D(core3D)
+                core3D_copy = core3D_copy.roland_combine(lig3D_copy, catoms)
+        
+
                 # combine molecules
                 core3D = core3D.combine(lig3D)
                 core3D.convert2OBMol()
                 core3D.convert2mol3D()
+
                 # remove dummy cm atom if requested
                 if rempi:
                     # remove the fictitious center atom, for aromatic-bonding ligands like benzene
@@ -2791,6 +2813,8 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int]
                 'saving a final debug copy of the complex named complex_after_final_ff.xyz')
             core3D.writexyz('complex_after_final_ff.xyz')
         # core3D,enc = ffopt(args.ff,core3D,connected,1,frozenats,freezeangles,MLoptbds,'Adaptive',args.debug)
+
+    core3D.bo_dict = core3D_copy.bo_dict
 
     return core3D, complex3D, emsg, this_diag, subcatoms_ext, mligcatoms_ext
 
@@ -2924,7 +2948,7 @@ def generate_report(args: Namespace, ligands: List[str], ligoc: List[int]
 
 
 def structgen(args: Namespace, rootdir: str, ligands: List[str], ligoc: List[int],
-              sernum: int, write_files: bool = True) -> Tuple[List[str], str, run_diag]:
+              sernum: int, write_files: bool = True, smart_generation: bool = True) -> Tuple[List[str], str, run_diag]:
     """Main structure generation routine - multiple structures
 
     Parameters
@@ -3015,7 +3039,129 @@ def structgen(args: Namespace, rootdir: str, ligands: List[str], ligoc: List[int
 
     # write xyz file
     if (not args.reportonly) and (write_files):
-        core3D.writexyz(fname, no_tabs=args.no_tabs)
+        core3D.writexyz(fname)
+        core3D.writemol2(fname)
+        
+        if smart_generation == True:
+            # optimize
+            metal_ind = core3D.findMetal()[0]
+            freeze_inds = []
+            for bond in core3D.bo_dict:
+                if metal_ind in bond:
+                    freeze_inds.append(bond[0]+1)
+                    freeze_inds.append(bond[1]+1)
+            freeze_inds = list(set(list(freeze_inds)))
+
+            obConversion = openbabel.OBConversion()
+            OBMol = openbabel.OBMol()
+            constraints = openbabel.OBFFConstraints()
+            obConversion.SetInAndOutFormats("mol2", "mol2")
+            obConversion.ReadString(OBMol, core3D.writemol2('',writestring = True))
+            for atom in freeze_inds:
+                constraints.AddAtomConstraint(atom)
+            ff = pybel._forcefields["uff"]
+            success = ff.Setup(OBMol, constraints)
+            ff.SetConstraints(constraints)
+            if success:
+                ff.ConjugateGradients(10000)
+                ff.GetCoordinates(OBMol)
+            obConversion.WriteFile(OBMol,fname+'BABEL.mol2')
+            obConversion.SetOutFormat("xyz")
+            obConversion.WriteFile(OBMol,fname+'BABEL.xyz')
+
+            # check if bad
+            mol = mol3D()
+            mol.readfrommol2(fname+'BABEL.mol2')
+            overlap, mind = mol.sanitycheck(silence = True)
+            if overlap:
+                mind = 1000
+                errors_dict = {}
+                for ii, atom1 in enumerate(mol.atoms):
+                    for jj, atom0 in enumerate(mol.atoms):
+                        if jj > ii:
+                            if atom1.ismetal() or atom0.ismetal():
+                                cutoff = 0.6
+                            elif (atom0.sym in ['N', 'O'] and atom1.sym == 'H') or (atom1.sym in ['N', 'O'] and atom0.sym == 'H'):
+                                cutoff = 0.6
+                            else:
+                                cutoff = 0.65
+                            if distance(atom1.coords(), atom0.coords()) < cutoff * (atom1.rad + atom0.rad):
+                                norm = distance(
+                                    atom1.coords(), atom0.coords())/(atom1.rad+atom0.rad)
+                                errors_dict.update(
+                                    {atom1.sym + str(ii)+'-'+atom0.sym+str(jj)+'_normdist': norm})
+                                if distance(atom1.coords(), atom0.coords()) < mind:
+                                    mind = distance(atom1.coords(), atom0.coords())
+                                    if mind == 0.0:
+                                        # move atom0 over a little bit
+                                        atom0.setcoords(np.array(atom1.coords())+0.02)
+                                        obConversion.SetInAndOutFormats("mol2", "mol2")
+                                        OBMol = openbabel.OBMol()
+                                        obConversion.ReadString(OBMol, mol.writemol2('',writestring = True))
+
+                ff = pybel._forcefields["gaff"]
+                success = ff.Setup(OBMol, constraints)
+                ff.SetConstraints(constraints)
+                if success:
+                    ff.ConjugateGradients(10000)
+                    ff.GetCoordinates(OBMol)
+                    ff = pybel._forcefields["uff"]
+                    success = ff.Setup(OBMol, constraints)
+                    ff.SetConstraints(constraints)
+                    if success:
+                        ff.ConjugateGradients(10000)
+                        ff.GetCoordinates(OBMol)
+        
+
+            obConversion.SetOutFormat("mol2")
+            obConversion.WriteFile(OBMol,fname+'BABEL.mol2')
+            obConversion.SetOutFormat("xyz")
+            obConversion.WriteFile(OBMol,fname+'BABEL.xyz')
+
+            # check if overextended H:
+            mol = mol3D()
+            mol.readfrommol2(fname+'BABEL.mol2')
+            changed = False
+            for bond in mol.bo_dict:
+                atom0 = mol.atoms[bond[0]]
+                atom1 = mol.atoms[bond[1]]
+                dist = -100000000000
+                if atom0.sym == 'C' and atom1.sym == 'H':
+                    dist = atom0.distance(atom1)
+                    L1 = np.array(tuple(atom0.coords()))
+                    L2 = np.array(tuple(atom1.coords()))
+                    if dist > 1.15:
+                        vector = L1 - L2
+                        required_dist = dist - 1.15
+                        new_point = move_point(atom1.coords(), vector, required_dist)
+                        atom1.setcoords(new_point)
+                        changed = True
+                elif atom0.sym == 'H' and atom1.sym == 'C':
+                    dist = atom0.distance(atom1)
+                    if dist > 1.15:
+                        L1 = np.array(tuple(atom0.coords()))
+                        L2 = np.array(tuple(atom1.coords()))
+                        vector = L2 - L1
+                        required_dist = dist - 1.15
+                        new_point = move_point(atom0.coords(), vector, required_dist)
+                        atom0.setcoords(new_point)
+                        changed = True
+            if changed:
+                mol.writemol2(fname+'BABEL.mol2')
+                obConversion = openbabel.OBConversion()
+                OBMol = openbabel.OBMol()
+                obConversion.SetInAndOutFormats("mol2", "mol2")
+                obConversion.ReadFile(OBMol, fname+'BABEL.mol2')
+                ff = pybel._forcefields["uff"]
+                success = ff.Setup(OBMol, constraints)
+                ff.SetConstraints(constraints)
+                if success:
+                    ff.ConjugateGradients(10000)
+                    ff.GetCoordinates(OBMol)
+                obConversion.WriteFile(OBMol,fname+'BABEL.mol2')
+                obConversion.SetOutFormat("xyz")
+                obConversion.WriteFile(OBMol,fname+'BABEL.xyz')
+
     strfiles.append(fname)
     if write_files:
         # write report file
