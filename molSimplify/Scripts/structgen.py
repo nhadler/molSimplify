@@ -3040,7 +3040,7 @@ def structgen(args: Namespace, rootdir: str, ligands: List[str], ligoc: List[int
 
     # write xyz file
     if (not args.reportonly) and (write_files):
-        core3D.writexyz(fname)
+        core3D.writexyz(fname, no_tabs=args.no_tabs)
         core3D.writemol2(fname)
         
         if smart_generation == True:
