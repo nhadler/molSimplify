@@ -2718,7 +2718,7 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int]
 
                 lig3D_copy = mol3D()
                 lig3D_copy.copymol3D(lig3D)
-                lig3D_copy.populateBOMatrix(bonddict=True)   
+                lig3D_copy.populateBOMatrix(bonddict=True)
                 lig2D = lig3D_copy.mol3D_to_networkx()
                 complex2D.append(lig2D)
 
@@ -2730,13 +2730,13 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int]
                         frozenats.append(latdix+core3D.natoms)
 
 
-                
+
                 # combine molecules
                 if len(core3D.atoms) == 1:
                     core3D_copy = mol3D()
                     core3D_copy.copymol3D(core3D)
                 core3D_copy = core3D_copy.roland_combine(lig3D_copy, catoms)
-        
+
 
                 # combine molecules
                 core3D = core3D.combine(lig3D)
@@ -3042,7 +3042,7 @@ def structgen(args: Namespace, rootdir: str, ligands: List[str], ligoc: List[int
     if (not args.reportonly) and (write_files):
         core3D.writexyz(fname, no_tabs=args.no_tabs)
         core3D.writemol2(fname)
-        
+
         if smart_generation == True:
             # optimize
             metal_ind = core3D.findMetal()[0]
@@ -3112,7 +3112,7 @@ def structgen(args: Namespace, rootdir: str, ligands: List[str], ligoc: List[int
                     if success:
                         ff.ConjugateGradients(10000)
                         ff.GetCoordinates(OBMol)
-        
+
 
             obConversion.SetOutFormat("mol2")
             obConversion.WriteFile(OBMol,fname+'BABEL.mol2')
