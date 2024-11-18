@@ -3126,7 +3126,7 @@ def structgen(args: Namespace, rootdir: str, ligands: List[str], ligoc: List[int
             for bond in mol.bo_dict:
                 atom0 = mol.atoms[bond[0]]
                 atom1 = mol.atoms[bond[1]]
-                dist = -100000000000
+                dist = -100000000000.0
                 if atom0.sym == 'C' and atom1.sym == 'H':
                     dist = atom0.distance(atom1)
                     L1 = np.array(tuple(atom0.coords()))
