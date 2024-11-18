@@ -2322,6 +2322,7 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int]
     batslist: List[List[int]] = []
     bats: List[int] = []
     ffoption_list = []  # for each ligand, keeps track of what the forcefield option is.
+    copied = False # for determinining if core3D needs to be copied or not
     # load bond data
     MLbonds = loaddata('/Data/ML.dat')
     # calculate occurrences, denticities etc for all ligands
@@ -2732,9 +2733,14 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int]
 
 
                 # combine molecules
-                if len(core3D.atoms) == 1:
+                if len(core3D.atoms) == 1 and copied == False:
                     core3D_copy = mol3D()
                     core3D_copy.copymol3D(core3D)
+                    copied = True
+                elif copied == False:
+                    core3D_copy = mol3D()
+                    core3D_copy.copymol3D(core3D)
+                    copied = True
                 core3D_copy = core3D_copy.roland_combine(lig3D_copy, catoms)
 
 
