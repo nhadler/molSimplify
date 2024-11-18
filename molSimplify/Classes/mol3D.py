@@ -12,6 +12,7 @@ import tempfile
 import time
 import xml.etree.ElementTree as ET
 import numpy as np
+import networkx as nx
 try:
     from openbabel import openbabel  # version 3 style import
 except ImportError:
