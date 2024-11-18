@@ -10,6 +10,7 @@ import re
 import sys
 import tempfile
 import time
+import copy
 import xml.etree.ElementTree as ET
 import numpy as np
 import networkx as nx
