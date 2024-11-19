@@ -2261,7 +2261,7 @@ def align_dent3_lig(args, cpoint, batoms, m3D, core3D, coreref, ligand, lig3D,
     return lig3D_aligned, frozenats, MLoptbds
 
 
-def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int]
+def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generation: bool
              ) -> Tuple[mol3D, List[mol3D], str, run_diag, List[int], List[int]]:
     """Main ligand placement routine
 
@@ -2821,7 +2821,8 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int]
             core3D.writexyz('complex_after_final_ff.xyz')
         # core3D,enc = ffopt(args.ff,core3D,connected,1,frozenats,freezeangles,MLoptbds,'Adaptive',args.debug)
 
-    core3D.bo_dict = core3D_copy.bo_dict
+    if smart_generation == True:
+        core3D.bo_dict = core3D_copy.bo_dict
 
     return core3D, complex3D, emsg, this_diag, subcatoms_ext, mligcatoms_ext
 
@@ -2955,7 +2956,7 @@ def generate_report(args: Namespace, ligands: List[str], ligoc: List[int]
 
 
 def structgen(args: Namespace, rootdir: str, ligands: List[str], ligoc: List[int],
-              sernum: int, write_files: bool = True, smart_generation: bool = True) -> Tuple[List[str], str, run_diag]:
+              sernum: int, write_files: bool = True, smart_generation: bool = False) -> Tuple[List[str], str, run_diag]:
     """Main structure generation routine - multiple structures
 
     Parameters
@@ -2998,7 +2999,7 @@ def structgen(args: Namespace, rootdir: str, ligands: List[str], ligoc: List[int
                 return strfiles, emsg, this_diag
         else:
             core3D, complex3D, emsg, this_diag, subcatoms_ext, mligcatoms_ext = mcomplex(
-                args, ligands, ligoc)
+                args, ligands, ligoc, smart_generation = smart_generation)
             if args.debug:
                 print(('subcatoms_ext are ' + str(subcatoms_ext)))
             if emsg:
