@@ -529,6 +529,7 @@ def parseinputfile(args, inputfile_str=None):
     args.dbvlinks = False
     args.rprompt = False
     set_rundir = False
+    args.overwrite = False
 
     # (we should remove these where posible)
     # THIS NEEDS CLEANING UP TO MINIMIZE DUPLICATION WITH parsecommandline
@@ -582,8 +583,6 @@ def parseinputfile(args, inputfile_str=None):
                     args.jobdir = l[1]
                 else:
                     args.jobdirblank = True
-            if (l[0] == '-no_tabs'):
-                args.no_tabs = True
             ### parse structure generation arguments ###
             if (l[0] == '-bind' and len(l[1:]) > 0):
                 l = [_f for _f in re.split(' |,|\t', line) if _f]  # noqa: E741
@@ -930,6 +929,8 @@ def parseinputfile(args, inputfile_str=None):
                 args.ligcon = list_to_add[0]
             if (l[0] == '-ligffopt'):
                 args.ffopt = l[1]
+            if (l[0] == '-overwrite'):
+                args.overwrite = l[1]
             # parse postprocessing arguments
             if (l[0] == '-postp'):
                 args.postp = True
@@ -1171,7 +1172,7 @@ def parseinputs_advanced(*p):
         "-calccharge", help="Automatically calculate net complex charge. By default this is ON.", default=True)
     parser.add_argument(
         "-genall", help="Generate complex both with and without FF opt, default False", action="store_true")  # geometry
-    parser.add_argument("-decoration_index", help="list of indices on each ligand to decorate",
+    parser.add_argument("-decoration_index", help="list of indicies on each ligand to decorate",
                         action="store_true")  # decoration indexes, one list per ligand
     parser.add_argument("-decoration", help="list of SMILES for each decoratation",
                         action="store_true")  # decoration, one list ligand
@@ -1196,8 +1197,6 @@ def parseinputs_advanced(*p):
         "-reportonly", help='add this flag if you just want the report, without actual structure generation. Currently does not support pentadentates.')
     parser.add_argument(
         "-jobmanager", help='use jobmanager naming convention.', default=False)
-    parser.add_argument(
-        "-no_tabs", help="add this flag to use spaces instead of tabs in written xyz files", default=False)
     if len(p) == 1:  # only one input, printing help only
         args = parser.parse_args()
         return args
