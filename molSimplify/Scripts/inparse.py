@@ -583,6 +583,8 @@ def parseinputfile(args, inputfile_str=None):
                     args.jobdir = l[1]
                 else:
                     args.jobdirblank = True
+            if (l[0] == '-no_tabs'):
+                args.no_tabs = True
             ### parse structure generation arguments ###
             if (l[0] == '-bind' and len(l[1:]) > 0):
                 l = [_f for _f in re.split(' |,|\t', line) if _f]  # noqa: E741
