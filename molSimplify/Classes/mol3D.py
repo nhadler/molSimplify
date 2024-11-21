@@ -10,6 +10,7 @@ import re
 import sys
 import tempfile
 import time
+import copy
 import xml.etree.ElementTree as ET
 import numpy as np
 import networkx as nx
@@ -6471,3 +6472,96 @@ class mol3D:
             self.mass = mol_mass
 
         return mol_mass
+
+    def mol3D_to_networkx(self,get_symbols:bool=True,get_bond_order:bool=True,get_bond_distance:bool=False):
+        g = nx.Graph()
+        # get every index of atoms in mol3D object
+        for atom_ind in range(0,self.natoms):
+            # set each atom as a node in the graph, and add symbol information if wanted
+            data={}
+            if get_symbols:
+                data['Symbol']=self.getAtom(atom_ind).symbol()
+                data['atom3D']=self.getAtom(atom_ind)
+            g.add_node(atom_ind,**data)
+        # get every bond in mol3D object
+        bond_info=self.bo_dict
+        for bond in bond_info:
+            # set each bond as an edge in the graph, and add symbol information if wanted
+            data={}
+            if get_bond_order:
+                data['bond_order']=bond_info[bond]
+            if get_bond_distance:
+                distance=self.getAtom(bond[0]).distance(self.getAtom(bond[1]))
+                data['bond_distance']=distance
+            g.add_edge(bond[0],bond[1],**data)
+        return g
+
+    def roland_combine(self, mol, catoms, bond_to_add=[], dirty=False):
+        """
+        Combines two molecules. Each atom in the second molecule
+        is appended to the first while preserving orders. Assumes
+        operation with a given mol3D instance, when handed a second mol3D instance.
+
+        Parameters
+        ----------
+            mol : mol3D
+                mol3D class instance containing molecule to be added.
+            bond_to_add : list, optional
+                List of tuples (ind1,ind2,order) bonds to add. Default is empty.
+            dirty : bool, optional
+                Add atoms without worrying about bond orders. Default is False.
+
+        Returns
+        -------
+            cmol : mol3D
+                New mol3D class containing the two molecules combined.
+        """
+
+        cmol = self
+        bo_dict = cmol.bo_dict
+
+        print('lig_dict')
+        print(mol.bo_dict)
+
+        if cmol.bo_dict == False:
+            # only central metal
+            bo_dict = {}
+        new_bo_dict = copy.deepcopy(bo_dict)
+
+        # add ligand connections
+        for bo in mol.bo_dict:
+            ind1 = bo[0] + len(cmol.atoms)
+            ind2 = bo[1] + len(cmol.atoms)
+            new_bo_dict[(ind1,ind2)]=mol.bo_dict[(bo[0],bo[1])]
+
+        # connect metal to ligand
+        metal_ind = cmol.findMetal()[0]
+        for atom in catoms:
+            ind1 = metal_ind
+            ind2 = atom + len(cmol.atoms)
+            new_bo_dict[(ind1,ind2)]=1
+
+        for atom in mol.atoms:
+            cmol.addAtom(atom, auto_populate_BO_dict = False)
+
+        cmol.bo_dict = new_bo_dict
+        return cmol
+
+    def graph_from_bodict(self, bo_dict):
+        g = []
+        for i, atom in enumerate(self.atoms):
+            sub_g = []
+            connected = []
+            for tup in bo_dict:
+                if i in tup:
+                    if i != tup[0]:
+                        connected.append(tup[0])
+                    else:
+                        connected.append(tup[1])
+            for j in range(0,len(self.atoms)):
+                if j in connected:
+                    sub_g.append(1.)
+                else:
+                    sub_g.append(0.)
+            g.append(sub_g)
+        return g

@@ -236,7 +236,7 @@ def startgen(argv, flag, gui, inputfile_str=None, write_files=True):
         print(('adding ' + str(args.ligadd) + ' to ligand database  with name ' +
                args.ligname + ' and connection atom(s) ' + str(args.ligcon)))
         addtoldb(smimol=args.ligadd, sminame=args.ligname, smident=len(args.ligcon),
-                 smicat=str(args.ligcon).strip('[]'), smigrps="custom", smictg="custom", ffopt=args.ligffopt)
+                 smicat=str(args.ligcon).strip('[]'), smigrps="custom", smictg="custom", ffopt=args.ligffopt, overwrite=args.overwrite)
 
     # normal structure generation or transition state building
     else:

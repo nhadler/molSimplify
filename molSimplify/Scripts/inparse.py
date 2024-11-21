@@ -529,6 +529,7 @@ def parseinputfile(args, inputfile_str=None):
     args.dbvlinks = False
     args.rprompt = False
     set_rundir = False
+    args.overwrite = False
 
     # (we should remove these where posible)
     # THIS NEEDS CLEANING UP TO MINIMIZE DUPLICATION WITH parsecommandline
@@ -930,6 +931,8 @@ def parseinputfile(args, inputfile_str=None):
                 args.ligcon = list_to_add[0]
             if (l[0] == '-ligffopt'):
                 args.ffopt = l[1]
+            if (l[0] == '-overwrite'):
+                args.overwrite = l[1]
             # parse postprocessing arguments
             if (l[0] == '-postp'):
                 args.postp = True
