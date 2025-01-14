@@ -52,7 +52,7 @@ jobs:
       with:
         # mamba-version: "*" # uncomment to activate mamba
         python-version: ${{ matrix.python-version }}
-        miniforge-variant: Mambaforge
+        miniforge-variant: Miniforge3
         channels: conda-forge,defaults
         environment-file: devtools/conda-envs/mols.yml
 
