@@ -273,3 +273,29 @@ class Mol2D(nx.Graph):
             if sym in globs.metalslist(transition_metals_only=transition_metals_only):
                 metal_list.append(i)
         return metal_list
+
+    def find_simple_paths(self, source, sink, cutoff=None, constraints=None):
+        """
+        Find simple (i.e., no repeated nodes) path(s) between source and sink nodes in Mol2D class.
+
+        Parameters
+        ----------
+            source: int
+                Index of source node
+            sink: int
+                Index of sink node
+            cutoff: int
+                Depth at which to stop path search
+                Default=None
+            constraints: list
+                Nodes which may not be crossed during path
+                Default=None
+
+        Returns
+        -------
+            simple_paths : list
+                List of lists of simple paths
+        """
+        simple_paths = [path for path in nx.all_simple_paths(self, source=source, target=sink, cutoff=cutoff)]
+        simple_paths = [path for path in simple_paths if not np.isin(path, constraints).any()] if constraints else simple_paths
+        return simple_paths
