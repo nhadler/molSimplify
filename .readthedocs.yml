@@ -15,3 +15,5 @@ python:
 sphinx:
   builder: html
   fail_on_warning: true
+  # Path to the Sphinx configuration file.
+  configuration: docs/source/conf.py
