@@ -766,7 +766,7 @@ def find_ligand_autocorrelations_oct(mol, prop, loud, depth, name=False,
     # # equatorial == equatorial)
     # # octahedral complex
     # # and returns autocorrelations for
-    # # the axial an equatorial ligands
+    # # the axial and equatorial ligands
     # # custom_ligand_dict allows the user to skip the breakdown
     # # in cases where 3D geo is not correct/formed
     # # custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list
@@ -832,7 +832,7 @@ def find_ligand_autocorrelation_derivatives_oct(mol, prop, loud, depth, name=Fal
     # # equatorial == equatorial)
     # # octahedral complex
     # # and returns autocorrelations for
-    # # the axial an equatorial ligands
+    # # the axial and equatorial ligands
     # # custom_ligand_dict allows the user to skip the breakdown
     # # in cases where 3D geo is not correct/formed
     # # custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list
@@ -904,7 +904,7 @@ def find_ligand_autocorrs_and_deltametrics_oct_dimers(mol, prop, loud, depth, na
     # # equatorial == equatorial)
     # # octahedral complex
     # # and returns autocorrelations for
-    # # the axial an equatorial ligands
+    # # the axial and equatorial ligands
     # # custom_ligand_dict allows the user to skip the breakdown
     # # in cases where 3D geo is not correct/formed
     # # custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list
@@ -978,7 +978,7 @@ def find_ligand_deltametrics_oct(mol, prop, loud, depth, name=False, oct=True, c
     # # this function takes a
     # # octahedral complex
     # # and returns deltametrics for
-    # # the axial an equatorial ligands
+    # # the axial and equatorial ligands
     if not custom_ligand_dict:
         liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=oct)
         (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list,
@@ -1021,7 +1021,7 @@ def find_ligand_deltametric_derivatives_oct(mol, prop, loud, depth, name=False, 
     # # this function takes a
     # # octahedral complex
     # # and returns deltametrics for
-    # # the axial an equatorial ligands
+    # # the axial and equatorial ligands
     if not custom_ligand_dict:
         liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=oct)
         (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list,
