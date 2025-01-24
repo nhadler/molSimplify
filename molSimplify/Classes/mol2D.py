@@ -4,6 +4,7 @@ from typing import List, Union
 from packaging import version
 from molSimplify.Classes.globalvars import globalvars
 from molSimplify.Classes.mol3D import mol3D as Mol3D
+import itertools
 
 try:
     from openbabel import openbabel  # version 3 style import
@@ -273,3 +274,63 @@ class Mol2D(nx.Graph):
             if sym in globs.metalslist(transition_metals_only=transition_metals_only):
                 metal_list.append(i)
         return metal_list
+
+    def find_simple_paths(self, source, sink, cutoff=None, constraints=None):
+        """
+        Find simple (i.e., no repeated nodes) path(s) between source and sink nodes in Mol2D class.
+
+        Parameters
+        ----------
+            source: int
+                Index of source node
+            sink: int
+                Index of sink node
+            cutoff: int
+                Depth at which to stop path search
+                Default=None
+            constraints: list
+                Nodes which may not be crossed during path
+                Default=None
+
+        Returns
+        -------
+            simple_paths : list
+                List of lists of simple paths
+        """
+        simple_paths = [path for path in nx.all_simple_paths(self, source=source, target=sink, cutoff=cutoff)]
+        simple_paths = [path for path in simple_paths if not np.isin(path, constraints).any()] if constraints else simple_paths
+        return simple_paths
+
+    def denticity_hapticity(self, catoms):
+        """
+        Get denticity and hapticity from molecular graph and known coordinating atoms
+        Number of coordinating atoms = denticity * hapticity
+
+        Parameters
+        ----------
+            catoms: list
+                List of coordinating atom indices
+
+        Returns
+        -------
+            denticity : int
+                Number of independent coordination paths in graph
+            hapticity : list
+                Length of each separate coordination path in graph
+        """
+        non_catoms = [atom for atom in range(len(self.nodes)) if atom not in catoms]
+        # get all pairwise combinations of coordinating atoms
+        catom_pairs = list(itertools.combinations(catoms, 2))
+
+        # get all paths between pairs of coordinating atoms which consist only of other fellow coordinating atoms
+        coordination_paths = []
+        for pair in catom_pairs:
+            coordination_paths.extend(self.find_simple_paths(source=pair[0], sink=pair[1], constraints=non_catoms))
+        # remove all paths which are subsets of other paths
+        coordination_paths = [path for path in coordination_paths if not any(
+            set(path).issubset(set(other_path)) and path != other_path for other_path in coordination_paths)]
+
+        denticity = len(coordination_paths)
+        hapticity = [len(path) for path in coordination_paths]
+
+        return denticity, hapticity
