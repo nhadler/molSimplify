@@ -115,7 +115,7 @@ def gen_and_append_desc(
         temp_mol: mol3D, target_list, depth: int, descriptor_names: List[str],
         descriptors: List[float], Gval: bool, feature_type: str) -> Tuple[Dict, List[str], List[float]]:
     """
-    Generate and append descriptors, both standard and delta.
+    Generates and append descriptors, both standard and delta.
 
     Parameters
     ----------
@@ -174,7 +174,7 @@ def make_MOF_SBU_RACs(
         SBUlist, SBU_subgraph, molcif, depth, name, cell_v, anchoring_atoms, sbupath,
         linkeranchors_superlist, Gval, connections_list=False, connections_subgraphlist=False):
     """
-    Generated RACs on the SBUs of the MOF, as well as on the lc atoms (SBU-connected atoms of linkers).
+    Generates RACs on the SBUs of the MOF, as well as on the lc atoms (SBU-connected atoms of linkers).
 
     Parameters
     ----------
@@ -370,7 +370,7 @@ def make_MOF_linker_RACs(
         linkerlist, linker_subgraphlist, molcif, depth, name, cell_v,
         linkerpath, linkeranchors_superlist, Gval):
     """
-    Generate RACs on the linkers of the MOF.
+    Generates RACs on the linkers of the MOF.
 
     Parameters
     ----------
