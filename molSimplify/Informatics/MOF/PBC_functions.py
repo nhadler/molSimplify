@@ -14,7 +14,6 @@ from molSimplify.Informatics.MOF.atomic import (
 
 # PBC: periodic boundary conditions
 
-deg2rad = np.pi/180.0
 def readcif(name):
     """
     Reads a cif file and returns information about its structure and composition.
@@ -190,7 +189,7 @@ def linker_length(adjmat, anchors):
 
 def slice_mat(mat, atoms):
     """
-    Slice the matrix mat.
+    Slices the matrix mat.
 
     Parameters
     ----------
@@ -253,7 +252,7 @@ def ligand_detect(cell, cart_coords, adj_mat, anchorlist):
 
 def XYZ_connected(cell, cart_coords, adj_mat):
     """
-    Calculate fractional coordinates of atoms for the specified connected component, shifted by cell vectors to make the coordinates close to each other.
+    Calculates fractional coordinates of atoms for the specified connected component, shifted by cell vectors to make the coordinates close to each other.
 
     Parameters
     ----------
@@ -304,7 +303,7 @@ def XYZ_connected(cell, cart_coords, adj_mat):
 
 def writeXYZfcoords(filename, atoms, cell, fcoords):
     """
-    Write an XYZ file using fractional coordinates.
+    Writes an XYZ file using fractional coordinates.
 
     Parameters
     ----------
@@ -331,7 +330,7 @@ def writeXYZfcoords(filename, atoms, cell, fcoords):
 
 def writeXYZandGraph(filename, atoms, cell, fcoords, molgraph):
     """
-    Write the xyz file for the MOF structure, as well as the net file containing the MOF's graph.
+    Writes the xyz file for the MOF structure, as well as the net file containing the MOF's graph.
 
     Parameters
     ----------
@@ -362,7 +361,7 @@ def writeXYZandGraph(filename, atoms, cell, fcoords, molgraph):
 
 def returnXYZandGraph(filename, atoms, cell, fcoords, molgraph):
     """
-    Write the net file for the MOF structure, and returns the Cartesian coordinates of atoms.
+    Writes the net file for the MOF structure, and returns the Cartesian coordinates of atoms.
 
     Parameters
     ----------
@@ -396,7 +395,7 @@ def returnXYZandGraph(filename, atoms, cell, fcoords, molgraph):
 
 def writeXYZcoords(filename, atoms, coords):
     """
-    Write an XYZ file using Cartesian coordinates.
+    Writes an XYZ file using Cartesian coordinates.
 
     Parameters
     ----------
@@ -420,7 +419,7 @@ def writeXYZcoords(filename, atoms, coords):
 
 def writeXYZcoords_withcomment(filename, atoms, coords, comment):
     """
-    Write an XYZ file using Cartesian coordinates, with a comment included.
+    Writes an XYZ file using Cartesian coordinates, with a comment included.
 
     Parameters
     ----------
@@ -522,6 +521,7 @@ def mkcell(cpar):
         The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
 
     """
+    deg2rad = np.pi/180.0
     a_mag, b_mag, c_mag = cpar[:3]
     alpha, beta, gamma = [x * deg2rad for x in cpar[3:]] # Converting the angles to radians from degrees.
     a_vec = np.array([a_mag, 0.0, 0.0]) # a_vec is taken to be along the x axis
@@ -595,7 +595,7 @@ def findPaths(G, u, n):
 
 def fractional2cart(fcoords, cell):
     """
-    Convert from fractional coordinates to Cartesian coordinates.
+    Converts from fractional coordinates to Cartesian coordinates.
 
     Parameters
     ----------
@@ -614,7 +614,7 @@ def fractional2cart(fcoords, cell):
 
 def frac_coord(coord, cell):
     """
-    Convert from Cartesian coordinates to fractional coordinates.
+    Converts from Cartesian coordinates to fractional coordinates.
 
     Parameters
     ----------
@@ -725,7 +725,7 @@ def position_nearest_atom(cell, cart_coords, index_of_interest, num_cells=1):
 
 def make_graph_from_nodes_edges(nodes, edges, attribs):
     """
-    Make a networkx graph from provided nodes and edges.
+    Makes a networkx graph from provided nodes and edges.
 
     Parameters
     ----------
