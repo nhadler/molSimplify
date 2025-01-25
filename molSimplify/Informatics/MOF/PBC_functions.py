@@ -28,6 +28,7 @@ def readcif(name):
     -------
     cpar : numpy.ndarray
         The parameters (i.e. lattice constants) of the MOF cell. Specifically, A, B, C, alpha, beta, and gamma. Shape is (6,).
+        By convention, the angles alpha, beta, and gamma are reported in degrees in cif files.
     atomtypes : list of str
         The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms.
     positions : numpy.ndarray
@@ -505,6 +506,32 @@ def write_cif(fname, cellprm, fcoords, atom_labels):
        for i,atom in enumerate(atom_labels):
            f_cif.write("%-5s %8s %8s %8s %5s\n"%(atom,fcoords[i,0],fcoords[i,1],fcoords[i,2],"%s"%(atom)))
 
+def mkcell(cpar):
+    """
+    Converts lattice constants to cell vectors.
+
+    Parameters
+    ----------
+    cpar : numpy.ndarray
+        The parameters (i.e. lattice constants) of the MOF cell. Specifically, A, B, C, alpha, beta, and gamma. Shape is (6,).
+        By convention, the angles alpha, beta, and gamma are given in degrees.
+
+    Returns
+    -------
+    cell : numpy.ndarray
+        The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
+
+    """
+    a_mag, b_mag, c_mag = cpar[:3]
+    alpha, beta, gamma = [x * deg2rad for x in cpar[3:]] # Converting the angles to radians from degrees.
+    a_vec = np.array([a_mag, 0.0, 0.0]) # a_vec is taken to be along the x axis
+    b_vec = np.array([b_mag * np.cos(gamma), b_mag * np.sin(gamma), 0.0]) # See this depiction of lattice parameters for reasoning behind these equations. https://www.doitpoms.ac.uk/tlplib/crystallography3/parameters.php. b_vec is taken to be in the X-Y plane.
+    c_x = c_mag * np.cos(beta)
+    c_y = c_mag * (np.cos(alpha) - np.cos(gamma) * np.cos(beta)) / np.sin(gamma) # You have to use a matrix to convert. This is derived in most textbooks on crystallography, such as McKie & McKie 'Essentials of Crystallography'. https://chemistry.stackexchange.com/questions/136836/converting-fractional-coordinates-into-cartesian-coordinates-for-crystallography
+    c_vec = np.array([c_x, c_y, (c_mag**2 - c_x**2 - c_y**2)**0.5]) # c_x**2 + c_y**2 + c_z**2 = c_mag**2
+    cell = np.array([a_vec, b_vec, c_vec])
+    return cell
+
 def cell_to_cellpar(cell, radians=False):
     """
     Converts cell vectors to lattice constants.
@@ -720,32 +747,6 @@ def make_graph_from_nodes_edges(nodes, edges, attribs):
     #gr.add_nodes_from(nodes)
     gr.add_edges_from(edges)
     return gr
-
-def mkcell(cpar):
-    """
-    Update the cell representation to match the parameters.
-
-    Parameters
-    ----------
-    cpar : numpy.ndarray
-        The parameters (i.e. lattice constants) of the MOF cell. Specifically, A, B, C, alpha, beta, and gamma. Shape is (6,).
-
-    Returns
-    -------
-    vectors : numpy.ndarray
-        The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
-
-    """
-
-    a_mag, b_mag, c_mag = cpar[:3]
-    alpha, beta, gamma = [x * deg2rad for x in cpar[3:]] # Converting the angles to radians from degrees.
-    a_vec = np.array([a_mag, 0.0, 0.0]) # a_vec is taken to be along the x axis
-    b_vec = np.array([b_mag * np.cos(gamma), b_mag * np.sin(gamma), 0.0]) # See this depiction of lattice parameters for reasoning behind these equations. https://www.doitpoms.ac.uk/tlplib/crystallography3/parameters.php. b_vec is taken to be in the X-Y plane.
-    c_x = c_mag * np.cos(beta)
-    c_y = c_mag * (np.cos(alpha) - np.cos(gamma) * np.cos(beta)) / np.sin(gamma) # You have to use a matrix to convert. This is derived in most textbooks on crystallography, such as McKie & McKie 'Essentials of Crystallography'. https://chemistry.stackexchange.com/questions/136836/converting-fractional-coordinates-into-cartesian-coordinates-for-crystallography
-    c_vec = np.array([c_x, c_y, (c_mag**2 - c_x**2 - c_y**2)**0.5]) # c_x**2 + c_y**2 + c_z**2 = c_mag**2
-    vectors = np.array([a_vec, b_vec, c_vec])
-    return vectors
 
 def make_supercell(cell, atoms, fcoords, exp_coeff):
     """
