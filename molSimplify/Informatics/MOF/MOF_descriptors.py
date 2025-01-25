@@ -56,7 +56,6 @@ from molSimplify.Informatics.MOF.PBC_functions import (
 ### Defining pymatgen function for getting primitive, since molSimplify does not depend on pymatgen.
 # This function is commented out and should be uncommented if used.
 
-
 def get_primitive(datapath, writepath, occupancy_tolerance=1):
     """
     Calculates and writes the primitive cell of the provided structure.
@@ -82,7 +81,6 @@ def get_primitive(datapath, writepath, occupancy_tolerance=1):
 
 
 '''<<<< END OF CODE TO COMPUTE PRIMITIVE UNIT CELLS >>>>'''
-
 
 def load_sbu_lc_descriptors(sbupath: str) -> Tuple[str, pd.DataFrame, pd.DataFrame]:
     """
@@ -112,7 +110,6 @@ def load_sbu_lc_descriptors(sbupath: str) -> Tuple[str, pd.DataFrame, pd.DataFra
         lc_descriptors = pd.DataFrame()
 
     return sbu_descriptor_path, sbu_descriptors, lc_descriptors
-
 
 def gen_and_append_desc(
         temp_mol: mol3D, target_list, depth: int, descriptor_names: List[str],
@@ -145,8 +142,8 @@ def gen_and_append_desc(
         The updated RAC descriptor names.
     descriptors : list
         The updated RAC descriptor values.
-    """
 
+    """
     results_dictionary = generate_atomonly_autocorrelations(
         temp_mol, target_list, depth=depth, loud=False, oct=False,
         polarizability=True, Gval=Gval
@@ -172,7 +169,6 @@ def gen_and_append_desc(
 # because one MOF could have multiple different linkers or multiple SBUs, and we need   #
 # the vector to be of constant dimension so we can correlate the output property.       #
 #########################################################################################
-
 
 def make_MOF_SBU_RACs(
         SBUlist, SBU_subgraph, molcif, depth, name, cell_v, anchoring_atoms, sbupath,
@@ -370,7 +366,6 @@ def make_MOF_SBU_RACs(
     averaged_SBU_descriptors = np.mean(np.array(descriptor_list), axis=0)  # Average the SBU RACs over all of the SBUs in the MOF.
     return names, averaged_SBU_descriptors, lc_names, averaged_lc_descriptors
 
-
 def make_MOF_linker_RACs(
         linkerlist, linker_subgraphlist, molcif, depth, name, cell_v,
         linkerpath, linkeranchors_superlist, Gval):
@@ -406,7 +401,6 @@ def make_MOF_linker_RACs(
         The values of the RAC linker features, averaged over all linkers.
 
     """
-
     #### This function makes full scope linker RACs for MOFs ####
     descriptor_list = []
     descriptors = []
@@ -484,14 +478,13 @@ def make_MOF_linker_RACs(
     averaged_ligand_descriptors = np.mean(np.array(descriptor_list), axis=0)
     return colnames, averaged_ligand_descriptors
 
-
 def mkdir_if_absent(folder_paths):
     """
     Makes a folder at each path in folder_path if it does not yet exist.
 
     Parameters
     ----------
-    folder_path : list of str
+    folder_paths : list of str
         The folder paths to check, and potentially at which to make a folder.
 
     Returns
@@ -499,11 +492,9 @@ def mkdir_if_absent(folder_paths):
     None
 
     """
-
     for folder_path in folder_paths:
         if not os.path.exists(folder_path):
             os.mkdir(folder_path)
-
 
 def make_file_if_absent(path, filenames):
     """
@@ -521,12 +512,10 @@ def make_file_if_absent(path, filenames):
     None
 
     """
-
     for filename in filenames:
         if not os.path.exists(f'{path}/{filename}'):
             with open(f'{path}/{filename}', 'w') as f:
                 f.close()
-
 
 def path_maker(path):
     """
@@ -550,7 +539,6 @@ def path_maker(path):
     required_files = ['sbu_descriptors.csv', 'linker_descriptors.csv', 'lc_descriptors.csv']
     make_file_if_absent(path, required_files)
 
-
 def failure_response(path, failure_str):
     """
     Writes to the log file about the encountered failure.
@@ -559,6 +547,8 @@ def failure_response(path, failure_str):
     ----------
     path : str
         The path to which output will be written.
+    failure_str : str
+        The failure message to be written.
 
     Returns
     -------
@@ -569,7 +559,6 @@ def failure_response(path, failure_str):
     full_descriptors = [0]
     write2file(path, "/FailedStructures.log", failure_str)
     return full_names, full_descriptors
-
 
 def bond_information_write(linker_list, linkeranchors_superlist, adj_matrix, molcif, cell_v, path):
     """
@@ -595,7 +584,6 @@ def bond_information_write(linker_list, linkeranchors_superlist, adj_matrix, mol
     None
 
     """
-
     bond_length_list = []
     scaled_bond_length_list = []
     for linker_idx, linker_atoms_list in enumerate(linker_list):  # Iterate over all linkers
@@ -640,7 +628,6 @@ def bond_information_write(linker_list, linkeranchors_superlist, adj_matrix, mol
         f.write(f'Stdev bond length: {std_bond_len}\n')
         f.write(f'Stdev scaled bond length: {std_scaled_bond_len}')
 
-
 def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_v, allatomtypes, name):
     """
     Writes XYZ files for all SBUs provided, with each SBU surrounded by all linkers coordinated to it.
@@ -670,7 +657,6 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
     None
 
     """
-
     for SBU_idx, atoms_sbu in enumerate(SBU_list):
         # atoms_sbu are the indices of atoms in the SBU with index SBU_idx
 
@@ -813,7 +799,6 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
             f.write(f'SBU indices: {sbu_indices_local}\n')
             f.write(f'connection indices: {connection_points_local}')
 
-
 def dist_mat_comp(X):
     """
     Computes the pairwise distances between the rows of the coordinate information X.
@@ -829,7 +814,6 @@ def dist_mat_comp(X):
         Pairwise distances between all atoms. Shape is (number of atoms, number of atoms).
 
     """
-
     # Assumes X is an np array of shape (number of atoms, 3). The Cartesian coordinates of atoms.
     # Does not do any unit cell shifts
     # Makes use of numpy vectorization to speed things up versus a for loop approach.
@@ -838,7 +822,6 @@ def dist_mat_comp(X):
     Z = X1 - X2
     dist_mat = np.sqrt(np.sum(np.square(Z), axis=-1))  # The pairwise distance matrix. Distances between all atoms.
     return dist_mat
-
 
 def detect_1D_rod(molcif, allatomtypes, cpar, logpath, name, adj_matrix, fcoords, cell_v):
     """
@@ -870,7 +853,6 @@ def detect_1D_rod(molcif, allatomtypes, cpar, logpath, name, adj_matrix, fcoords
     None
 
     """
-
     # Assumption: If a MOF contains 1D rod SBUs, all SBUs in the MOF are 1D rods
     # Thus, can just branch out from an arbitrary metal in the MOF for the check
 
@@ -938,7 +920,6 @@ def detect_1D_rod(molcif, allatomtypes, cpar, logpath, name, adj_matrix, fcoords
         tmpstr = "MOF SBU is a 1D rod"
         write2file(logpath, "/%s.log" % name, tmpstr)
 
-
 def get_MOF_descriptors(
         data, depth, path=False, xyzpath=False, graph_provided=False, wiggle_room=1,
         max_num_atoms=2000, get_sbu_linker_bond_info=False, surrounded_sbu_file_generation=False,
@@ -987,7 +968,6 @@ def get_MOF_descriptors(
         The values of the RAC features.
 
     """
-
     if not path:  # Throw an error if the user did not supply a path to which to write the output.
         print('Need a directory to place all of the linker, SBU, and ligand objects. Exiting now.')
         raise ValueError('Base path must be specified in order to write descriptors.')

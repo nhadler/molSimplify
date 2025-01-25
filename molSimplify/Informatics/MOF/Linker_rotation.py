@@ -31,6 +31,7 @@ def rotate_around_axis(axis, r, p, t):
     Returns
     -------
     new : new coordinates
+
     """
     unit_axis = axis / np.linalg.norm(axis) # normalize axis vector
     a = unit_axis[0]
@@ -57,7 +58,6 @@ def rotate_around_axis(axis, r, p, t):
         new = T_inv.dot(R_x).dot(T).dot(old)
     return (new[0:3])
 
-
 def linker_rotation(molcif, fcoords, linker, rot_angle):
     """
     Finds the rotation axis on the given linker and rotate the linker about the rotation axis.
@@ -79,8 +79,8 @@ def linker_rotation(molcif, fcoords, linker, rot_angle):
     -------
     frac_new_linker : numpy.ndarray
         fractional coordinates of new linker atoms
-    """
 
+    """
     tmp_cart_coords = fractional2cart(fcoords, cell_v)
     fcoords_connected = XYZ_connected(cell_v, tmp_cart_coords, np.array(molcif.graph))
     cart_coords = fractional2cart(fcoords_connected, cell_v)

@@ -36,10 +36,10 @@ def readcif(name):
     """
     with open(name , 'r', errors='ignore') as fi: # ignore takes care of unicode errors in some cifs
         EIF = fi.readlines()
-        cond=False
-        atom_props_count=0
-        atomlines=[]
-        counter=0
+        cond = False
+        atom_props_count = 0
+        atomlines = []
+        counter = 0
         cell_parameter_boundary=[0.0,0.0]
         for line in EIF:
             line_stripped=line.strip()
@@ -50,65 +50,65 @@ def readcif(name):
             if line_stripped.startswith("_cell_length_a"):
                 temp = line_splitted[1].replace(')','')
                 temp = temp.replace('(','')
-                cell_a=float(temp)
-                cell_parameter_boundary[0]=counter+1
+                cell_a = float(temp)
+                cell_parameter_boundary[0] = counter + 1
             elif line_stripped.startswith("_cell_length_b"):
                 temp = line_splitted[1].replace(')','')
                 temp = temp.replace('(','')
-                cell_b=float(temp)
+                cell_b = float(temp)
             elif line_stripped.startswith("_cell_length_c"):
                 temp = line_splitted[1].replace(')','')
                 temp = temp.replace('(','')
-                cell_c=float(temp)
+                cell_c = float(temp)
             elif line_stripped.startswith("_cell_angle_alpha"):
                 temp = line_splitted[1].replace(')','')
                 temp = temp.replace('(','')
-                cell_alpha=float(temp)
+                cell_alpha = float(temp)
             elif line_stripped.startswith("_cell_angle_beta"):
                 temp = line_splitted[1].replace(')','')
                 temp = temp.replace('(','')
-                cell_beta=float(temp)
+                cell_beta = float(temp)
             elif line_stripped.startswith("_cell_angle_gamma"):
                 temp = line_splitted[1].replace(')','')
                 temp = temp.replace('(','')
-                cell_gamma=float(temp)
-                cell_parameter_boundary[1]=counter+1
+                cell_gamma = float(temp)
+                cell_parameter_boundary[1] = counter + 1
             # if cond and line_stripped.startswith("loop_"):
             #     break
             # else:
 
             if line_stripped.startswith("_atom") :
 
-                if line_stripped=="_atom_site_label" or line_stripped == '_atom_site_type_symbol':
+                if line_stripped == "_atom_site_label" or line_stripped == '_atom_site_type_symbol':
                     cond = True # We have entered the block with the desired atom information.
                     # The reason for the or is that the order fo these lines can vary depending on cif
                 if line_stripped == '_atom_site_type_symbol':
-                    type_index=atom_props_count
-                elif line_stripped=="_atom_site_fract_x":
-                    fracx_index=atom_props_count
-                elif line_stripped=="_atom_site_fract_y":
-                    fracy_index=atom_props_count
-                elif line_stripped=="_atom_site_fract_z":
-                    fracz_index=atom_props_count
+                    type_index = atom_props_count
+                elif line_stripped == "_atom_site_fract_x":
+                    fracx_index = atom_props_count
+                elif line_stripped == "_atom_site_fract_y":
+                    fracy_index = atom_props_count
+                elif line_stripped == "_atom_site_fract_z":
+                    fracz_index = atom_props_count
                 # elif "charge" in line_stripped:
                 #     charge_index=atom_props_count
 
                 if cond:
-                    atom_props_count+=1 # Another atom property in the block we are interested in.
+                    atom_props_count += 1 # Another atom property in the block we are interested in.
 
             elif cond:
 
-                if len(line_splitted)==atom_props_count:
+                if len(line_splitted) == atom_props_count:
                     atomlines.append(line)
                 elif line == '\n':
                     continue # Allow for newlines between the _atom_ lines and the lines holding the atom information
                 else:
                     break # Don't need to keep looking through the file, since we've seen all the desired information for all atoms. We left the block.
 
-            counter+=1
+            counter += 1
 
-        positions=[]
-        atomtypes=[]
+        positions = []
+        atomtypes = []
         for cn,at in enumerate(atomlines):
             ln=at.strip().split()
             positions.append([float(ln[fracx_index].replace('(','').replace(')','')),
@@ -123,7 +123,7 @@ def readcif(name):
             at_type = at_type.capitalize()
             atomtypes.append(at_type)
 
-        cpar=np.array([cell_a,cell_b,cell_c,cell_alpha,cell_beta,cell_gamma])
+        cpar = np.array([cell_a,cell_b,cell_c,cell_alpha,cell_beta,cell_gamma])
         positions = np.array(positions)
         return cpar, atomtypes, positions
 
@@ -154,7 +154,6 @@ def compute_image_flag(cell, fcoord1, fcoord2):
     dists = dists[0].tolist()
     image = dists.index(min(dists)) # The image of the closest fcoord2, when considering cell shifts
     return supercells[image]
-
 
 def linker_length(adjmat, anchors):
     """
@@ -207,11 +206,10 @@ def slice_mat(mat, atoms):
     """
     return np.array(mat[np.ix_(list(atoms),list(atoms))])
 
-
 def ligand_detect(cell, cart_coords, adj_mat, anchorlist):
     """
     Calculates how to shift anchor atoms so that they are close to atoms bonded to them.
-    I imagine this tackles the issue of two bonded atoms being on different sides of a crystal cell.
+    This can tackle the issue of two bonded atoms being on different sides of a crystal cell.
 
     Parameters
     ----------
@@ -230,28 +228,27 @@ def ligand_detect(cell, cart_coords, adj_mat, anchorlist):
         The cell shifts that get the anchor atoms closest to an atom (current_node) they are bonded with. Shape is (len(anchorlist), 3).
 
     """
-    invcell=np.linalg.inv(cell)
-    fcoords=np.dot(cart_coords,invcell) # fractional coordinates
-    connected_components=[0] # This list will be grown to include all atoms that are part of the linker or sbu.
-    checked=[] # Keeps tracked of the indices of atoms that have already been checked.
+    invcell = np.linalg.inv(cell)
+    fcoords = np.dot(cart_coords,invcell) # fractional coordinates
+    connected_components = [0] # This list will be grown to include all atoms that are part of the linker or sbu.
+    checked = [] # Keeps tracked of the indices of atoms that have already been checked.
     periodic_images=[]
     if 0 in anchorlist:
         periodic_images.append(np.array([0,0,0]))
-    counter=0
+    counter = 0
     while len(connected_components) < len(cart_coords):
         current_node = connected_components[counter]
         for j,v in enumerate(adj_mat[current_node]):
-            if v==1 and (j not in checked) and (j not in connected_components): # If find a bonded atom that hasn't been checked yet
+            if v == 1 and (j not in checked) and (j not in connected_components): # If find a bonded atom that hasn't been checked yet
                 image_flag = compute_image_flag(cell,fcoords[current_node],fcoords[j])
                 fcoords[j] += image_flag # Shifting fractional coordinates by the number of cells specified by compute_image_flag
                 connected_components.append(j)
                 checked.append(j)
                 if j in anchorlist:
                     periodic_images.append(image_flag)
-        counter+=1
+        counter += 1
 
     return np.array(periodic_images)
-
 
 def XYZ_connected(cell, cart_coords, adj_mat):
     """
@@ -272,11 +269,11 @@ def XYZ_connected(cell, cart_coords, adj_mat):
         Fractional coordinates of the atoms in this component. Shape is (number of atoms, 3).
 
     """
-    invcell=np.linalg.inv(cell)
-    fcoords=np.dot(cart_coords,invcell) # fractional coordinates
-    connected_components=[0] # This list will be grown to include all atoms that are part of the linker or sbu.
-    checked=[] # Keeps tracked of the indices of atoms that have already been checked.
-    counter=0
+    invcell = np.linalg.inv(cell)
+    fcoords = np.dot(cart_coords,invcell) # fractional coordinates
+    connected_components = [0] # This list will be grown to include all atoms that are part of the linker or sbu.
+    checked = [] # Keeps tracked of the indices of atoms that have already been checked.
+    counter = 0
     from scipy import sparse
     n_components, labels_components = sparse.csgraph.connected_components(csgraph=adj_mat, directed=False, return_labels=True)
     # print(n_components,'comp',labels_components)
@@ -296,12 +293,12 @@ def XYZ_connected(cell, cart_coords, adj_mat):
             else:
                 index_counter += 1
         for j,v in enumerate(adj_mat[current_node]):
-            if v==1 and (j not in checked) and (j not in connected_components): # If find a bonded atom that hasn't been checked yet
+            if v == 1 and (j not in checked) and (j not in connected_components): # If find a bonded atom that hasn't been checked yet
                 fcoords[j]+=compute_image_flag(cell,fcoords[current_node],fcoords[j]) # Shifting fractional coordinates by the number of cells specified by compute_image_flag
                 connected_components.append(j)
                 checked.append(j)
             # print(connected_components)
-        counter+=1
+        counter += 1
     return fcoords
 
 def writeXYZfcoords(filename, atoms, cell, fcoords):
@@ -328,7 +325,7 @@ def writeXYZfcoords(filename, atoms, cell, fcoords):
         fo.write("%i\n\n"%len(atoms))
         for i,fcoord in enumerate(fcoords):
             cart_coord=np.dot(fcoord,cell)
-            s="%10.2f %10.2f %10.2f"%(cart_coord[0],cart_coord[1],cart_coord[2])
+            s = "%10.2f %10.2f %10.2f"%(cart_coord[0],cart_coord[1],cart_coord[2])
             fo.write("%s %s\n"%(atoms[i],s))
 
 def writeXYZandGraph(filename, atoms, cell, fcoords, molgraph):
@@ -353,45 +350,45 @@ def writeXYZandGraph(filename, atoms, cell, fcoords, molgraph):
     None
 
     """
-
     with open(filename,"w") as fo:
         fo.write("%i\n\n"%len(atoms)) # The first line indicates the number of atoms in the cell of the structure.
         for i,fcoord in enumerate(fcoords):
             cart_coord=np.dot(fcoord,cell) # Go from fractional coordinates to Cartesian coordinates.
-            s="%10.2f %10.2f %10.2f"%(cart_coord[0],cart_coord[1],cart_coord[2]) # X, Y, Z
+            s = "%10.2f %10.2f %10.2f"%(cart_coord[0],cart_coord[1],cart_coord[2]) # X, Y, Z
             fo.write("%s %s\n"%(atoms[i],s)) # Writing the coordinates of each atom.
-    tmpstr=",".join([at for at in atoms])
+    tmpstr = ",".join([at for at in atoms])
     np.savetxt(filename[:-4]+".net",molgraph,fmt="%i",delimiter=",",header=tmpstr) # Save a net file.
-
 
 def returnXYZandGraph(filename, atoms, cell, fcoords, molgraph):
     """
-    TODO
+    Write the net file for the MOF structure, and returns the Cartesian coordinates of atoms.
 
     Parameters
     ----------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
+    filename : str
+        The path to where the net of the MOF structure will be written.
+    atoms : list of str
+        The atom types of the cif file, indicated by periodic symbols like 'O' and 'Cu'. Length is the number of atoms.
+    cell : numpy.ndarray
+        The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
+    fcoords : numpy.ndarray
+        The fractional positions of the atoms of the cif file. Shape is (number of atoms, 3).
+    molgraph : numpy.matrix or numpy.ndarray
+        The adjacency matrix, which indicates which atoms are connected to which atoms. Shape is (number of atoms, number of atoms).
 
     Returns
     -------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
+    coord_list : list of list of numpy.float64
+        The Cartesian coordinates of the crystal atoms. Length of outer list is the number of atoms.
+    molgraph : numpy.matrix or numpy.ndarray
+        The adjacency matrix, which indicates which atoms are connected to which atoms. Shape is (number of atoms, number of atoms).
 
     """
     coord_list = []
     for i,fcoord in enumerate(fcoords):
         cart_coord=np.dot(fcoord,cell)
         coord_list.append([cart_coord[0],cart_coord[1],cart_coord[2]])
-    tmpstr=",".join([at for at in atoms])
+    tmpstr = ",".join([at for at in atoms])
     if filename is not None:
         np.savetxt(filename[:-4]+".net",molgraph,fmt="%i",delimiter=",",header=tmpstr)
     return coord_list, molgraph
@@ -417,9 +414,8 @@ def writeXYZcoords(filename, atoms, coords):
     with open(filename,"w") as fo:
         fo.write("%i\n\n"%len(atoms))
         for i,cart_coord in enumerate(coords):
-            s="%10.2f %10.2f %10.2f"%(cart_coord[0],cart_coord[1],cart_coord[2])
+            s = "%10.2f %10.2f %10.2f"%(cart_coord[0],cart_coord[1],cart_coord[2])
             fo.write("%s %s\n"%(atoms[i],s))
-    return
 
 def writeXYZcoords_withcomment(filename, atoms, coords, comment):
     """
@@ -436,14 +432,17 @@ def writeXYZcoords_withcomment(filename, atoms, coords, comment):
     comment : str
         The comment to include in the XYZ file.
 
+    Returns
+    -------
+    None
+
     """
     with open(filename,"w") as fo:
         fo.write("%i\n"%len(atoms))
         fo.write("%s\n"%comment)
         for i,cart_coord in enumerate(coords):
-            s="%10.2f %10.2f %10.2f"%(cart_coord[0],cart_coord[1],cart_coord[2])
+            s = "%10.2f %10.2f %10.2f"%(cart_coord[0],cart_coord[1],cart_coord[2])
             fo.write("%s %s\n"%(atoms[i],s))
-    return
 
 def write2file(pt, fn, st):
     """
@@ -508,25 +507,19 @@ def write_cif(fname, cellprm, fcoords, atom_labels):
 
 def cell_to_cellpar(cell, radians=False):
     """
-    TODO
+    Converts cell vectors to lattice constants.
 
     Parameters
     ----------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
+    cell : numpy.ndarray
+        The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
+    radians : bool
+        Whether to represent angles in degrees or radians.
 
     Returns
     -------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
+    cpar : numpy.ndarray
+        The parameters (i.e. lattice constants) of the MOF cell. Specifically, A, B, C, alpha, beta, and gamma. Shape is (6,).
 
     """
     lengths = [np.linalg.norm(v) for v in cell]
@@ -543,7 +536,8 @@ def cell_to_cellpar(cell, radians=False):
         angles.append(angle)
     if radians:
         angles = [angle * np.pi / 180 for angle in angles]
-    return np.array(lengths + angles)
+    cpar = np.array(lengths + angles)
+    return cpar
 
 def findPaths(G, u, n):
     """
@@ -565,7 +559,7 @@ def findPaths(G, u, n):
         Note, may return [[u]] instead if n is zero. [[u]] is a list of list of int.
 
     """
-    if n==0:
+    if n == 0:
         return [[u]]
     paths = [[u]+path for neighbor in G.neighbors(u) for path in findPaths(G,neighbor,n-1) if u not in path] # recursive
         # if u not in path ensures no atom is used twice in a path.
@@ -599,8 +593,8 @@ def frac_coord(coord, cell):
     ----------
     coord : numpy.ndarray
         The Cartesian coordinates of the atoms of the cif file. Shape is (number of atoms, 3).
-    cell : The three Cartesian vectors representing the edges of the crystal cell.
-        Shape is (3,3).
+    cell : numpy.ndarray
+        The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
 
     Returns
     -------
@@ -608,7 +602,7 @@ def frac_coord(coord, cell):
         The fractional positions of the crystal atoms. Shape is (number of atoms, 3).
 
     """
-    invcell=np.linalg.inv(cell)
+    invcell = np.linalg.inv(cell)
     return np.dot(coord,invcell)
 
 def compute_distance_matrix3(cell, cart_coords, num_cells=1):
@@ -704,25 +698,21 @@ def position_nearest_atom(cell, cart_coords, index_of_interest, num_cells=1):
 
 def make_graph_from_nodes_edges(nodes, edges, attribs):
     """
-    TODO
+    Make a networkx graph from provided nodes and edges.
 
     Parameters
     ----------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
+    nodes : list of molSimplify.Classes.atom3D.atom3D
+        The atoms of the structure.
+    edges : list of tuples
+        Edges indicated by atom indices of pairs.
+    attribs : list of str
+        The atom types, indicated by periodic symbols like 'O' and 'Cu'.
 
     Returns
     -------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
+    gr : networkx.classes.graph.Graph
+        networkx graph resulting from the provided inputs.
 
     """
     gr = nx.Graph()
@@ -759,43 +749,51 @@ def mkcell(cpar):
 
 def make_supercell(cell, atoms, fcoords, exp_coeff):
     """
-    TODO
+    Converts a MOF cell into a supercell by duplicating it in the specified directions.
 
     Parameters
     ----------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
+    cell : numpy.ndarray
+        The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
+    atoms : list of molSimplify.Classes.atom3D.atom3D
+        The atoms in the initial structure.
+    fcoords : numpy.ndarray
+        The fractional positions of the atoms of the cell. Shape is (number of atoms, 3).
+    exp_coeff : numpy.ndarray
+        How much to expand the unit cell in the three unit vectors. Shape is (3,).
 
     Returns
     -------
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
-    TODO : TODO
-        TODO
+    supercell : numpy.ndarray
+        The three Cartesian vectors representing the edges of the supercell. Shape is (3,3).
+    superatoms : list of molSimplify.Classes.atom3D.atom3D
+        The atoms in the supercell.
+    superfcoords : numpy.ndarray
+        The fractional positions of the atoms of the supercell.
 
     """
+    # Check shape and entries of exp_coeff.
+    assert exp_coeff.shape == (3,)
+    # All entries should be integers.
+    assert all([i % int(i) == 0 for i in exp_coeff])
+    # All entries should be natrual numbers.
+    assert all([i > 0 for i in exp_coeff])
+
     supercell = np.multiply(cell.T, exp_coeff).T
-    superatoms=[]
-    superfcoords=[]
+    superatoms = []
+    superfcoords = []
     for i in range(exp_coeff[0]):
         for j in range(exp_coeff[1]):
             for k in range(exp_coeff[2]):
                 for na,atom in enumerate(atoms):
-                    fc=fcoords[na]
+                    fc = fcoords[na]
                     fx = fc[0]/exp_coeff[0] + float(i)/exp_coeff[0]
                     fy = fc[1]/exp_coeff[1] + float(j)/exp_coeff[1]
                     fz = fc[2]/exp_coeff[2] + float(k)/exp_coeff[2]
                     superfcoords.append([fx,fy,fz])
                     superatoms.append(atom)
-    superfcoords= np.array(superfcoords)
-    return supercell,superatoms,superfcoords
-
+    superfcoords = np.array(superfcoords)
+    return supercell, superatoms, superfcoords
 
 def compute_adj_matrix(distance_mat, allatomtypes, wiggle_room=1, handle_overlap=False):
     """
@@ -813,7 +811,7 @@ def compute_adj_matrix(distance_mat, allatomtypes, wiggle_room=1, handle_overlap
     wiggle_room : float
         A multiplier that allows for more or less strict bond distance cutoffs.
     handle_overlap : bool
-        Indicates whether to provide diagnostics for atoms that are overlapping, or to just raise an error if it finds overlaps
+        Indicates whether to delete atoms that are overlapping, or to just raise an error if overlaps are detected.
 
     Returns
     -------
@@ -823,9 +821,8 @@ def compute_adj_matrix(distance_mat, allatomtypes, wiggle_room=1, handle_overlap
         Indices of atoms that overlap with any atom of a lower index.
 
     """
-
     overlap_atoms = []
-    adj_matrix=np.zeros(distance_mat.shape)
+    adj_matrix = np.zeros(distance_mat.shape)
     for i,e1 in enumerate(allatomtypes[:-1]): # Iterating through all pairs of atoms.
         for j,e2 in enumerate(allatomtypes[i+1:]):
             elements = set([e1, e2])
@@ -876,7 +873,7 @@ def compute_adj_matrix(distance_mat, allatomtypes, wiggle_room=1, handle_overlap
                 tempsf = 0.95
             if(lanthanides & elements):
                 tempsf = 0.95
-            if(elements ==set(["C"]) ):
+            if(elements == set(["C"]) ):
                 tempsf = 0.85
             if dist*tempsf < rad * wiggle_room: # and not (alkali & elements):
                 # Entering this if statement means there is a bond between the two atoms.
@@ -886,8 +883,6 @@ def compute_adj_matrix(distance_mat, allatomtypes, wiggle_room=1, handle_overlap
         # Removing duplicates and sorting.
         overlap_atoms = [*set(overlap_atoms)]
     return sparse.csr_matrix(adj_matrix), overlap_atoms
-
-
 
 def get_closed_subgraph(linkers, SBUlist, adj_matrix):
     ###############################################################################
@@ -917,7 +912,6 @@ def get_closed_subgraph(linkers, SBUlist, adj_matrix):
         The atom connections in the linker (or SBU) subgraph. Length is # of linkers (or SBUs).
 
     """
-
     linkers_sub = linkers.copy()
     linker_list = []
     linker_subgraphlist = []
@@ -974,9 +968,8 @@ def include_extra_shells(SBUlists, subgraphlists, molcif, adjmat):
         The atom bonding information of the SBUs in the variable `SBUs`. Which atoms are bonded to which.
 
     """
-
-    SBUs=[]
-    subgraphs=[]
+    SBUs = []
+    subgraphs = []
     for SBU in SBUlists:
         for zero_first_shell in copy.deepcopy(SBU):
             for val in molcif.getBondedAtomsSmart(zero_first_shell):
@@ -1008,15 +1001,15 @@ def disorder_detector(name):
     """
     with open(name , 'r', errors='ignore') as fi: # ignore takes care of unicode errors in some cifs
         EIF = fi.readlines()
-        cond=False
-        occupancy_index=False
-        atom_props_count=0
-        atomlines=[]
+        cond = False
+        occupancy_index = False
+        atom_props_count = 0
+        atomlines = []
         for line in EIF:
-            line_stripped=line.strip()
+            line_stripped = line.strip()
             if (not line) or line_stripped.startswith("#"):
                 continue
-            line_splitted=line.split()
+            line_splitted = line.split()
 
             if line_stripped.startswith("_atom") :
 
@@ -1025,14 +1018,14 @@ def disorder_detector(name):
                     # The reason for the or is that the order fo these lines can vary depending on cif
                 if line_stripped == '_atom_site_type_symbol':
                     type_index=atom_props_count
-                elif line_stripped=="_atom_site_occupancy":
-                    occupancy_index=atom_props_count
+                elif line_stripped == "_atom_site_occupancy":
+                    occupancy_index = atom_props_count
 
                 if cond:
-                    atom_props_count+=1 # Another atom property in the block we are interested in.
+                    atom_props_count += 1 # Another atom property in the block we are interested in.
 
             elif cond:
-                if len(line_splitted)==atom_props_count:
+                if len(line_splitted) == atom_props_count:
                     atomlines.append(line)
                 else:
                     break # Don't need to keep looking through the file, since we've seen all the desired information for all atoms. We left the block.
@@ -1083,7 +1076,6 @@ def remove_duplicate_atoms(allatomtypes, fcoords):
         All duplicate atoms removed.
 
     """
-
     # Get the unique fractional coordinate 3-tuples.
     fcoords_trim, indices = np.unique(fcoords, axis=0, return_index=True)
     # Get the atom types of the unique fractional coordinates.
@@ -1121,7 +1113,6 @@ def remove_undesired_atoms(undesired_indices, allatomtypes, fcoords):
 
     return allatomtypes_trim, fcoords_trim
 
-
 def overlap_removal(cif_path, new_cif_path):
     """
     Reads a cif file, removes overlapping atoms, and writes the cif to the provided path.
@@ -1139,7 +1130,6 @@ def overlap_removal(cif_path, new_cif_path):
     None
 
     """
-
     # Much of this code parallels that in the beginning of the MOF_descriptors.get_MOF_descriptors function
 
     # Loading the cif and getting information about the crystal cell.
@@ -1182,7 +1172,6 @@ def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
     None
 
     """
-
     # Much of this code parallels that in the beginning of the MOF_descriptors.get_MOF_descriptors function
 
     # Loading the cif and getting information about the crystal cell.
@@ -1257,12 +1246,12 @@ def compute_distance_matrix(cell, cart_coords):
         The distance of each atom to each other atom. Shape is (number of atoms, number of atoms).
 
     """
-    distance_matrix=np.zeros([len(cart_coords),len(cart_coords)]) # This array will be filled in.
+    distance_matrix = np.zeros([len(cart_coords),len(cart_coords)]) # This array will be filled in.
     for i in range(len(cart_coords)): # Looping through all combinations of atoms.
         for j in range(i+1,len(cart_coords)):
             d=min_img_distance(cart_coords[i],cart_coords[j],cell)
-            distance_matrix[i,j]=d # Filling in the distance numpy array.
-            distance_matrix[j,i]=d
+            distance_matrix[i,j] = d # Filling in the distance numpy array.
+            distance_matrix[j,i] = d
 
     return distance_matrix
 
@@ -1286,7 +1275,7 @@ def min_img_distance(coords1, coords2, cell):
         The distance between the two atoms.
 
     """
-    invcell=np.linalg.inv(cell) # The inverse cell parameters
+    invcell = np.linalg.inv(cell) # The inverse cell parameters
     one = np.dot(coords1,invcell) % 1 # Fractional coordinates. % is modulo.
     two = np.dot(coords2,invcell) % 1 # Fractional coordinates.
     three = np.around(one - two) # numpy array of three entries. Possible values of entries are -1, 0, and 1. Corresponds to the crystal cell shift that gets the two atoms the closest.
@@ -1310,12 +1299,12 @@ def compute_distance_matrix2(cell, cart_coords):
         The distance of each atom to each other atom. Shape is (number of atoms, number of atoms).
 
     """
-    distance_matrix=np.zeros([len(cart_coords),len(cart_coords)]) # This array will be filled in.
+    distance_matrix = np.zeros([len(cart_coords),len(cart_coords)]) # This array will be filled in.
     for i in range(len(cart_coords)): # Looping through all combinations of atoms.
         for j in range(i+1,len(cart_coords)):
-            d=min_img_distance2(cart_coords[i],cart_coords[j],cell)
-            distance_matrix[i,j]=d # Filling in the distance numpy array.
-            distance_matrix[j,i]=d
+            d = min_img_distance2(cart_coords[i],cart_coords[j],cell)
+            distance_matrix[i,j] = d # Filling in the distance numpy array.
+            distance_matrix[j,i] = d
 
     return distance_matrix
 
@@ -1339,7 +1328,7 @@ def min_img_distance2(coords1, coords2, cell):
         The distance between the two atoms.
 
     """
-    invcell=np.linalg.inv(cell) # The inverse cell parameters
+    invcell = np.linalg.inv(cell) # The inverse cell parameters
     supercells = np.array(list(itertools.product((-1, 0, 1), repeat=3))) # 27 possible crystal cell shifts.
     fcoords = np.dot(coords2,invcell) + supercells # Many different versions of coords2, shifted different linear combinations of the crystal cell vectors.
     coords = np.array([np.dot(j,cell) for j in fcoords]) # Converting to Cartesian coordinates.
