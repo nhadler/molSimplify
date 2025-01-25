@@ -478,7 +478,7 @@ def ANN_supervisor(predictor: str,
     if debug:
         print(('ANN activated for ' + str(predictor)))
 
-    ## form the excitation in the corrrect order/variables
+    ## form the excitation in the correct order/variables
     excitation = tf_ANN_excitation_prepare(predictor, descriptors, descriptor_names)
     if debug:
         print(('excitation is ' + str(excitation.shape)))

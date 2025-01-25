@@ -220,7 +220,6 @@ def functionalize_MOF(cif_file, path2write, functional_group='F', functionalizat
 
 	return functionalized_atoms
 
-
 def first_functionalization(molcif,
 	allatomtypes,
 	i,
@@ -296,7 +295,6 @@ def first_functionalization(molcif,
 		The updated chemical symbols of the atoms added through functional groups. Each inner list is a functional group.
 	functionalized_atoms : list of int
 		The updated global indices of atoms that have been functionalized.
-
 
 	"""
 	# Apply the functionalization to the MOF.
@@ -1028,21 +1026,6 @@ def connected_atoms_from_adjmat(adj_matrix, index, allatomtypes):
 
 	return connected_atom_list, connected_atom_types
 
-def apply_monatomic_functionalization(molcif, allatomtypes, atom_to_replace, functional_group, functionalization_counter):
-	"""
-	Deprecated way of executing monatomic functionalization.
-	Does not take into account the different bond lengths of different functional groups, as is done in vector_preparation's calculation of initial_placement.
-
-	"""
-	molcif.getAtom(atom_to_replace).mutate(functional_group) # Replaces one atom3D with another.
-	allatomtypes[atom_to_replace] = functional_group
-	functionalization_counter -= 1
-	if functionalization_counter == 0:
-		functionalized = True
-	else:
-		functionalized = False
-	return molcif, allatomtypes, functionalization_counter, functionalized
-
 def check_support(functional_group):
 	"""
 	Raises a ValueError if the functional_group is not in the pre-defined list of supported functional groups.
@@ -1094,7 +1077,6 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
 	None
 
 	"""
-
 	if not isinstance(additional_atom_offset, list):
 		# Convert to a list.
 		additional_atom_offset = [additional_atom_offset] * len(func_indices)
@@ -1207,7 +1189,6 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
 	mkdir_if_absent(cif_folder)
 	write_cif(f'{path2write}cif/functionalized_{base_mof_name}_{functional_group}_index.cif', cpar, fcoords, allatomtypes)
 
-
 def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_group, func_indices, additional_atom_offset):
 	"""
 	Functionalizes the provided MOF and writes the functionalized version to a cif file.
@@ -1235,7 +1216,6 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 	None
 
 	"""
-
 	### Start of repeat code (in common with functionalize_MOF_at_indices) ###
 	base_mof_name = os.path.basename(cif_file)
 	if base_mof_name.endswith('.cif'):
@@ -1379,7 +1359,6 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 	mkdir_if_absent(cif_folder)
 	write_cif(f'{path2write}cif/functionalized_{base_mof_name}_{functional_group}_index.cif', cpar, fcoords, allatomtypes)
 
-
 def alignment_objective(rotation_vector, molcif_clone, MOF_main_carbon_index, MOF_carbon_neighbor_indices,
 	functional_group_template, fg_main_carbon_index, fg_carbon_neighbor_indices, translation_vector):
 	"""
@@ -1414,7 +1393,6 @@ def alignment_objective(rotation_vector, molcif_clone, MOF_main_carbon_index, MO
 		The main carbon is the carbon at which functionalization occurs. The neighbors are bonded to that main carbon.
 
 	"""
-
 	# Unpacking
 	x_rotation = rotation_vector[0]
 	y_rotation = rotation_vector[1]
@@ -1443,7 +1421,6 @@ def alignment_objective(rotation_vector, molcif_clone, MOF_main_carbon_index, MO
 	objective_function = distance1 + distance2 + distance3 # Want to minimize this.
 	return objective_function
 
-
 def post_functionalization_overlap_and_bonding_check(cell_v, allatomtypes, fcoords, extra_atom_types):
 	"""
 	Prints information on whether the introduced functional group atoms are overlapping with other atoms.
@@ -1465,7 +1442,6 @@ def post_functionalization_overlap_and_bonding_check(cell_v, allatomtypes, fcoor
 	None
 
 	"""
-
 	cart_coords = fractional2cart(fcoords, cell_v)
 	distance_mat = compute_distance_matrix3(cell_v, cart_coords)
 	adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes, handle_overlap=False) # Will throw an error if atoms are overlapping after functionalization.
@@ -1592,6 +1568,21 @@ def mkdir_if_absent(folder_path):
 	"""
 	if not os.path.exists(folder_path):
 		os.mkdir(folder_path)
+
+def apply_monatomic_functionalization(molcif, allatomtypes, atom_to_replace, functional_group, functionalization_counter):
+	"""
+	Deprecated way of executing monatomic functionalization.
+	Does not take into account the different bond lengths of different functional groups, as is done in vector_preparation's calculation of initial_placement.
+
+	"""
+	molcif.getAtom(atom_to_replace).mutate(functional_group) # Replaces one atom3D with another.
+	allatomtypes[atom_to_replace] = functional_group
+	functionalization_counter -= 1
+	if functionalization_counter == 0:
+		functionalized = True
+	else:
+		functionalized = False
+	return molcif, allatomtypes, functionalization_counter, functionalized
 
 ### End of functions ###
 
