@@ -514,7 +514,7 @@ def cell_to_cellpar(cell, radians=False):
     cell : numpy.ndarray
         The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
     radians : bool
-        Whether to represent angles in degrees or radians. 
+        Whether to represent angles in degrees or radians.
 
     Returns
     -------
