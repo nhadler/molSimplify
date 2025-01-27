@@ -25,7 +25,7 @@ def test_fg_addition(resource_path_root, tmpdir, num_func, func_group):
     destination_path = str(tmpdir / "functionalized_MOF")
     if not os.path.isdir(destination_path):
         os.mkdir(destination_path)
-        
+
     functionalize_MOF(
         starting_cif,
         destination_path,
@@ -36,7 +36,7 @@ def test_fg_addition(resource_path_root, tmpdir, num_func, func_group):
 
     # Check the structure with functional groups added
     reference_cif_path = str(resource_path_root / "refs" / "informatics" / "mof" / "cif" / f"functionalized_UiO-66_{func_group}_{num_func}.cif")
-    cpar1, allatomtypes1, fcoords1 = readcif(str(destination_path / "cif" / f"functionalized_UiO-66_{func_group}_{num_func}.cif"))
+    cpar1, allatomtypes1, fcoords1 = readcif(f"{destination_path}/cif/functionalized_UiO-66_{func_group}_{num_func}.cif")
     cpar2, allatomtypes2, fcoords2 = readcif(reference_cif_path)
 
     assert np.array_equal(cpar1, cpar2)
