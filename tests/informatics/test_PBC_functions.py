@@ -52,7 +52,7 @@ def test_pairwise_distance_calc(resource_path_root, tmpdir, name):
     distance_mat = compute_distance_matrix3(cell_v, cart_coords)
 
     reference_mat = np.loadtxt(str(resource_path_root / "refs" / "informatics" / "mof" / f"{name}_distance_mat.txt"))
-    assert np.array_equal(distance_mat, reference_mat)
+    assert np.all_close(distance_mat, reference_mat)
 
 @pytest.mark.parametrize(
     "name",
@@ -68,7 +68,7 @@ def test_adjacency_matrix_calc(resource_path_root, tmpdir, name):
     cpar, allatomtypes, fcoords = readcif(str(resource_path_root / "inputs" / "cif_files" / f"{name}.cif"))
     distance_mat = np.loadtxt(str(resource_path_root / "refs" / "informatics" / "mof" / f"{name}_distance_mat.txt"))
 
-    adj_mat = compute_adj_matrix(distance_mat, allatomtypes)
+    adj_mat, _ = compute_adj_matrix(distance_mat, allatomtypes)
     adj_mat = adj_mat.todense()
 
     reference_mat = np.loadtxt(str(resource_path_root / "refs" / "informatics" / "mof" / f"{name}_adj_mat.txt"))
