@@ -25,7 +25,7 @@ def test_fg_addition(resource_path_root, tmpdir, num_func, func_group):
     destination_path = str(tmpdir / "functionalized_MOF")
     if not os.path.isdir(destination_path):
         os.mkdir(destination_path)
-        
+
     functionalize_MOF(
         starting_cif,
         destination_path,
