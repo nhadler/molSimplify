@@ -2,7 +2,7 @@ import pytest
 from molSimplify.Informatics.MOF.MOF_functionalizer import functionalize_MOF
 
 @pytest.mark.parametrize(
-    "num_func, func_group"
+    "num_func, func_group",
     [
         (1, "CH3"),
         (2, "CH3"),
