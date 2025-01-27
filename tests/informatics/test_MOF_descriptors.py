@@ -68,11 +68,11 @@ def test_get_MOF_descriptors_ODAC(resource_path_root, tmpdir, name, ref_names):
     np.testing.assert_allclose(full_descriptors, ref["descriptors"], atol=1e-6)
 
     lc_descriptors = pd.read_csv(tmpdir / "lc_descriptors.csv")
-    lc_ref = pd.read_csv(resource_path_root / "refs" / "MOF_descriptors" / name / "lc_descriptors.csv")
+    lc_ref = pd.read_csv(resource_path_root / "refs" / "informatics" / "mof" / "MOF_descriptors" / name / "lc_descriptors.csv")
     assert all(lc_descriptors == lc_ref)
 
     sbu_descriptors = pd.read_csv(tmpdir / "sbu_descriptors.csv")
-    sbu_ref = pd.read_csv(resource_path_root / "refs" / "MOF_descriptors" / name / "sbu_descriptors.csv")
+    sbu_ref = pd.read_csv(resource_path_root / "refs" / "informatics" / "mof" / "MOF_descriptors" / name / "sbu_descriptors.csv")
     assert all(sbu_descriptors == sbu_ref)
 
 
@@ -120,9 +120,9 @@ def test_get_MOF_descriptors_JACS(resource_path_root, tmpdir, name, ref_names):
         ref["descriptors"], atol=1e-6)
 
     lc_descriptors = pd.read_csv(tmpdir / "lc_descriptors.csv")
-    lc_ref = pd.read_csv(resource_path_root / "refs" / "MOF_descriptors" / name / "lc_descriptors.csv")
+    lc_ref = pd.read_csv(resource_path_root / "refs" / "informatics" / "mof" / "MOF_descriptors" / name / "lc_descriptors.csv")
     assert all(lc_descriptors == lc_ref)
 
     sbu_descriptors = pd.read_csv(tmpdir / "sbu_descriptors.csv")
-    sbu_ref = pd.read_csv(resource_path_root / "refs" / "MOF_descriptors" / name / "sbu_descriptors.csv")
+    sbu_ref = pd.read_csv(resource_path_root / "refs" / "informatics" / "mof" / "MOF_descriptors" / name / "sbu_descriptors.csv")
     assert all(sbu_descriptors == sbu_ref)
