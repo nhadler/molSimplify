@@ -60,7 +60,7 @@ def test_get_MOF_descriptors_ODAC(resource_path_root, tmpdir, name, ref_names):
             Gval=True,
         )
 
-    with open(resource_path_root / "refs" / "MOF_descriptors"
+    with open(resource_path_root / "refs" / "informatics" / "mof"  / "MOF_descriptors"
               / name / f"{name}.json", "r") as fin:
         ref = json.load(fin)
 
@@ -106,7 +106,7 @@ def test_get_MOF_descriptors_JACS(resource_path_root, tmpdir, name, ref_names):
             Gval=False,
         )
 
-    with open(resource_path_root / "refs" / "MOF_descriptors"
+    with open(resource_path_root / "refs" / "informatics" / "mof"  / "MOF_descriptors"
               / name / f"{name}.json", "r") as fin:
         ref = json.load(fin)
 

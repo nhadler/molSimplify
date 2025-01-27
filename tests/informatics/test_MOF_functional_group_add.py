@@ -2,6 +2,7 @@ import pytest
 from molSimplify.Informatics.MOF.MOF_functionalizer import functionalize_MOF
 from molSimplify.Informatics.MOF.PBC_functions import readcif
 import numpy as np
+import os
 
 @pytest.mark.parametrize(
     "num_func, func_group",
@@ -22,6 +23,9 @@ import numpy as np
 def test_fg_addition(resource_path_root, tmpdir, num_func, func_group):
     starting_cif = str(resource_path_root / "inputs" / "cif_files" / "UiO-66.cif")
     destination_path = str(tmpdir / "functionalized_MOF")
+    if not os.path.isdir(destination_path):
+        os.mkdir(destination_path)
+        
     functionalize_MOF(
         starting_cif,
         destination_path,
