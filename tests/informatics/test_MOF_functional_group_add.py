@@ -1,5 +1,6 @@
 import pytest
 from molSimplify.Informatics.MOF.MOF_functionalizer import functionalize_MOF
+from molSimplify.Informatics.MOF.PBC_functions import readcif
 
 @pytest.mark.parametrize(
     "num_func, func_group",
