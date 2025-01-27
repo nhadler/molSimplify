@@ -52,7 +52,7 @@ def test_pairwise_distance_calc(resource_path_root, tmpdir, name):
     distance_mat = compute_distance_matrix3(cell_v, cart_coords)
 
     reference_mat = np.loadtxt(str(resource_path_root / "refs" / "informatics" / "mof" / f"{name}_distance_mat.txt"))
-    assert np.all_close(distance_mat, reference_mat)
+    assert np.allclose(distance_mat, reference_mat)
 
 @pytest.mark.parametrize(
     "name",
