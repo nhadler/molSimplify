@@ -23,9 +23,9 @@ import json
 def test_cif_reading(resource_path_root, tmpdir, name):
     cpar, allatomtypes, fcoords = readcif(str(resource_path_root / "inputs" / "cif_files" / f"{name}.cif"))
 
-    reference_cpar = np.loadtxt(str(resource_path_root / "refs" / "informatics" / "mof" / f"{name}_cpar.txt"))
-    reference_allatomtypes = str(resource_path_root / "refs" / "informatics" / "mof" / f"{name}_allatomtypes.json")
-    reference_fcoords = np.loadtxt(str(resource_path_root / "refs" / "informatics" / "mof" / f"{name}_fcoords.txt"))
+    reference_cpar = np.loadtxt(str(resource_path_root / "refs" / "informatics" / "mof" / "txt" / f"{name}_cpar.txt"))
+    reference_allatomtypes = str(resource_path_root / "refs" / "informatics" / "mof" / "json" / f"{name}_allatomtypes.json")
+    reference_fcoords = np.loadtxt(str(resource_path_root / "refs" / "informatics" / "mof" / "txt" / f"{name}_fcoords.txt"))
 
     with open(reference_allatomtypes, 'r') as f:
         reference_allatomtypes = json.load(f)
@@ -50,7 +50,7 @@ def test_pairwise_distance_calc(resource_path_root, tmpdir, name):
     cart_coords = fractional2cart(fcoords, cell_v)
     distance_mat = compute_distance_matrix3(cell_v, cart_coords)
 
-    reference_mat = np.loadtxt(str(resource_path_root / "refs" / "informatics" / "mof" / f"{name}_distance_mat.txt"))
+    reference_mat = np.loadtxt(str(resource_path_root / "refs" / "informatics" / "mof" / "txt" / f"{name}_distance_mat.txt"))
     assert np.allclose(distance_mat, reference_mat)
 
 @pytest.mark.parametrize(
@@ -65,12 +65,12 @@ def test_pairwise_distance_calc(resource_path_root, tmpdir, name):
     ])
 def test_adjacency_matrix_calc(resource_path_root, tmpdir, name):
     cpar, allatomtypes, fcoords = readcif(str(resource_path_root / "inputs" / "cif_files" / f"{name}.cif"))
-    distance_mat = np.loadtxt(str(resource_path_root / "refs" / "informatics" / "mof" / f"{name}_distance_mat.txt"))
+    distance_mat = np.loadtxt(str(resource_path_root / "refs" / "informatics" / "mof" / "txt" / f"{name}_distance_mat.txt"))
 
     adj_mat, _ = compute_adj_matrix(distance_mat, allatomtypes)
     adj_mat = adj_mat.todense()
 
-    reference_mat = np.loadtxt(str(resource_path_root / "refs" / "informatics" / "mof" / f"{name}_adj_mat.txt"))
+    reference_mat = np.loadtxt(str(resource_path_root / "refs" / "informatics" / "mof" / "txt" / f"{name}_adj_mat.txt"))
     assert np.array_equal(adj_mat, reference_mat)
 
 @pytest.mark.parametrize(
@@ -85,7 +85,7 @@ def test_solvent_removal(resource_path_root, tmpdir, name):
     solvent_removal(input_geo, output_path)
 
     # Comparing two CIF files for equality
-    reference_cif_path = str(resource_path_root / "refs" / "informatics" / "mof" / f"{name}.cif")
+    reference_cif_path = str(resource_path_root / "refs" / "informatics" / "mof" / "cif" / f"{name}.cif")
     cpar1, allatomtypes1, fcoords1 = readcif(output_path)
     cpar2, allatomtypes2, fcoords2 = readcif(reference_cif_path)
 
