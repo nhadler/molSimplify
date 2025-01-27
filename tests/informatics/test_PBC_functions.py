@@ -8,7 +8,6 @@ from molSimplify.Informatics.MOF.PBC_functions import (
     solvent_removal,
     )
 import numpy as np
-import filecmp
 import json
 
 @pytest.mark.parametrize(
@@ -87,4 +86,10 @@ def test_solvent_removal(resource_path_root, tmpdir, name):
 
     # Comparing two CIF files for equality
     reference_cif_path = str(resource_path_root / "refs" / "informatics" / "mof" / f"{name}.cif")
-    assert filecmp.cmp(output_path, reference_cif_path, shallow=False)
+    cpar1, allatomtypes1, fcoords1 = readcif(output_path)
+    cpar2, allatomtypes2, fcoords2 = readcif(reference_cif_path)
+
+    assert cpar1 == cpar2
+    assert allatomtypes1 == allatomtypes2
+    assert fcoords1 == fcoords2
+    
