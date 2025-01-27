@@ -87,4 +87,4 @@ def test_solvent_removal(resource_path_root, tmpdir, name):
 
     # Comparing two CIF files for equality
     reference_cif_path = str(resource_path_root / "refs" / "informatics" / "mof" / f"{name}.cif")
-    assert filecmp.cmp(output_path, reference_cif_path)
+    assert filecmp.cmp(output_path, reference_cif_path, shallow=False)
