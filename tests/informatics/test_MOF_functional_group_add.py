@@ -21,10 +21,10 @@ def test_fg_addition(resource_path_root, tmpdir, num_func, func_group):
     starting_cif = str(resource_path_root / "inputs" / "cif_files" / "UiO-66.cif")
     destination_path = str(tmpdir / "functionalized_MOF")
     functionalize_MOF(
-        starting_cif, 
-        destination_path, 
-        path_between_functionalizations=3, 
-        functionalization_limit=num_func, 
+        starting_cif,
+        destination_path,
+        path_between_functionalizations=3,
+        functionalization_limit=num_func,
         functional_group=func
         )
 
