@@ -92,4 +92,4 @@ def test_solvent_removal(resource_path_root, tmpdir, name):
     assert cpar1 == cpar2
     assert allatomtypes1 == allatomtypes2
     assert fcoords1 == fcoords2
-    
+
