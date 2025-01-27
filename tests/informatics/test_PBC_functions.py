@@ -8,6 +8,31 @@ from molSimplify.Informatics.MOF.PBC_functions import (
     )
 import numpy as np
 import filecmp
+import json
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "FOKYIP_clean",
+        "SETDUS_clean",
+        "UXUPEK_clean",
+        "NEXXIZ_clean",
+        "YICDAR_clean",
+        "VONBIK_clean",
+    ])
+def test_cif_reading(resource_path_root, tmpdir, name):
+    cpar, allatomtypes, fcoords = readcif(str(resource_path_root / "inputs" / "cif_files" / f"{name}.cif"))
+
+    reference_cpar = np.loadtxt(str(resource_path_root / "refs" / "informatics" / "mof" / f"{name}_cpar.txt"))
+    reference_allatomtypes = str(resource_path_root / "refs" / "informatics" / "mof" / f"{name}_allatomtypes.json")
+    reference_fcoords = np.loadtxt(str(resource_path_root / "refs" / "informatics" / "mof" / f"{name}_fcoords.txt"))
+
+    with open(reference_allatomtypes, 'r') as f:
+        reference_allatomtypes = json.load(f)
+
+    assert np.array_equal(cpar, reference_cpar)
+    assert allatomtypes == reference_allatomtypes
+    assert np.array_equal(fcoords, reference_fcoords)
 
 @pytest.mark.parametrize(
     "name",
