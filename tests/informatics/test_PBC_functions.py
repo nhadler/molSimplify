@@ -1,3 +1,4 @@
+import pytest
 from molSimplify.Informatics.MOF.PBC_functions import (
     compute_adj_matrix,
     compute_distance_matrix3,
