@@ -89,7 +89,6 @@ def test_solvent_removal(resource_path_root, tmpdir, name):
     cpar1, allatomtypes1, fcoords1 = readcif(output_path)
     cpar2, allatomtypes2, fcoords2 = readcif(reference_cif_path)
 
-    assert cpar1 == cpar2
+    assert np.array_equal(cpar1, cpar2)
     assert allatomtypes1 == allatomtypes2
-    assert fcoords1 == fcoords2
-    
+    assert np.array_equal(fcoords1, fcoords2)
