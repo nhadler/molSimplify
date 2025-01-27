@@ -203,9 +203,9 @@ def functionalize_MOF(cif_file, path2write, functional_group='F', functionalizat
 	"""""""""
 	Write the cif.
 	"""""""""
-	cif_folder = f'{path2write}cif/'
+	cif_folder = f'{path2write}/cif/'
 	mkdir_if_absent(cif_folder)
-	write_cif(f'{path2write}cif/functionalized_{base_mof_name}_{functional_group}_{functionalization_limit}.cif', cpar, fcoords, allatomtypes)
+	write_cif(f'{path2write}/cif/functionalized_{base_mof_name}_{functional_group}_{functionalization_limit}.cif', cpar, fcoords, allatomtypes)
 
 	"""""""""
 	Check on how the functionalization affected the symmetry.
@@ -1185,9 +1185,9 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
 	"""""""""
 	Write the cif.
 	"""""""""
-	cif_folder = f'{path2write}cif/'
+	cif_folder = f'{path2write}/cif/'
 	mkdir_if_absent(cif_folder)
-	write_cif(f'{path2write}cif/functionalized_{base_mof_name}_{functional_group}_index.cif', cpar, fcoords, allatomtypes)
+	write_cif(f'{path2write}/cif/functionalized_{base_mof_name}_{functional_group}_index.cif', cpar, fcoords, allatomtypes)
 
 def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_group, func_indices, additional_atom_offset):
 	"""
@@ -1355,9 +1355,9 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 	# """""""""
 	# Write the cif.
 	# """""""""
-	cif_folder = f'{path2write}cif/'
+	cif_folder = f'{path2write}/cif/'
 	mkdir_if_absent(cif_folder)
-	write_cif(f'{path2write}cif/functionalized_{base_mof_name}_{functional_group}_index.cif', cpar, fcoords, allatomtypes)
+	write_cif(f'{path2write}/cif/functionalized_{base_mof_name}_{functional_group}_index.cif', cpar, fcoords, allatomtypes)
 
 def alignment_objective(rotation_vector, molcif_clone, MOF_main_carbon_index, MOF_carbon_neighbor_indices,
 	functional_group_template, fg_main_carbon_index, fg_carbon_neighbor_indices, translation_vector):
@@ -1596,9 +1596,9 @@ def main():
 
 	mofname = 'UiO66'
 	# Defining folder names
-	base_database_path = str(mofname)+'/'
-	base_database_path_primitive = str(mofname)+'_p1/'
-	base_write_path = str(mofname)+'_functionalized/'
+	base_database_path = str(mofname)
+	base_database_path_primitive = str(mofname)+'_p1'
+	base_write_path = str(mofname)+'_functionalized'
 
 	# The way the code is currently set up, the only folder required prior to running this script is a folder of the name `mofname` with the CIF file of the name `mofname` in it.
 	# Functionalization should occur on the primitive cell.
@@ -1607,7 +1607,7 @@ def main():
 		primMOF = primMOF.strip('.cif')
 		mkdir_if_absent(base_database_path_primitive)
 		mkdir_if_absent(base_write_path)
-		get_primitive(base_database_path+primMOF+'.cif', base_database_path_primitive+primMOF+'.cif')
+		get_primitive(f'{base_database_path}/{primMOF}.cif', f'{base_database_path_primitive}/{primMOF}.cif')
 
 	primitive_cifs = DS_remover(os.listdir(base_database_path_primitive))
 	for MOF in primitive_cifs:
@@ -1616,22 +1616,22 @@ def main():
 		path = 3
 		for num_func in num_list:
 			for func in func_group:
-				super_func_folder = f'{base_write_path}{MOF}_{num_func}_functionalization/'
+				super_func_folder = f'{base_write_path}/{MOF}_{num_func}_functionalization/'
 				mkdir_if_absent(super_func_folder)
 
-				func_folder = f'{base_write_path}{MOF}_{num_func}_functionalization/{func}/'
+				func_folder = f'{base_write_path}/{MOF}_{num_func}_functionalization/{func}'
 				if not os.path.exists(func_folder):
 					os.mkdir(func_folder) # Making the folder if it doesn't exist yet.
-					functionalize_MOF(f'{base_database_path_primitive}{MOF}.cif', func_folder,
+					functionalize_MOF(f'{base_database_path_primitive}/{MOF}.cif', func_folder,
 						path_between_functionalizations=path, functionalization_limit=num_func, functional_group=func)
 				else:
 					continue
 
 	# Functionalize by index
-	index_func_folder = f'{mofname}_index_func/'
+	index_func_folder = f'{mofname}_index_func'
 	mkdir_if_absent(index_func_folder)
-	functionalize_MOF_at_indices(f'{base_database_path_primitive}{MOF}.cif', f'{index_func_folder}', 'F', [57])
-	functionalize_MOF_at_indices(f'{base_database_path_primitive}{MOF}.cif', f'{index_func_folder}', 'F', [57, 65])
+	functionalize_MOF_at_indices(f'{base_database_path_primitive}/{MOF}.cif', index_func_folder, 'F', [57])
+	functionalize_MOF_at_indices(f'{base_database_path_primitive}/{MOF}.cif', index_func_folder, 'F', [57, 65])
 
 	### End of example ###
 
