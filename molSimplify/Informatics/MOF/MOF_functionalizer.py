@@ -30,11 +30,11 @@ import os
 
 # This script can only functionalize C-H bonds.
 
-def functionalize_MOF(cif_file, 
-    path2write, 
-    functional_group='F', 
-    functionalization_limit=1, 
-    path_between_functionalizations=3, 
+def functionalize_MOF(cif_file,
+    path2write,
+    functional_group='F',
+    functionalization_limit=1,
+    path_between_functionalizations=3,
     additional_atom_offset=0,
     symm_flag=False,
     ):
