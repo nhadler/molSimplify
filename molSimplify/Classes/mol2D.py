@@ -329,6 +329,9 @@ class Mol2D(nx.Graph):
         # remove all paths which are subsets of other paths
         coordination_paths = [path for path in coordination_paths if not any(
             set(path).issubset(set(other_path)) and path != other_path for other_path in coordination_paths)]
+        # add back in isolated atoms which are not in any paths
+        coordination_paths.extend(
+            [[atom] for atom in set(catoms) - set(atom for path in coordination_paths for atom in path)])
 
         denticity = len(coordination_paths)
         hapticity = [len(path) for path in coordination_paths]
