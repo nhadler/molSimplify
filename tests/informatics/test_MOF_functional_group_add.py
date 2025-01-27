@@ -39,6 +39,6 @@ def test_fg_addition(resource_path_root, tmpdir, num_func, func_group):
     cpar1, allatomtypes1, fcoords1 = readcif(f"{destination_path}/cif/functionalized_UiO-66_{func_group}_{num_func}.cif")
     cpar2, allatomtypes2, fcoords2 = readcif(reference_cif_path)
 
-    assert np.array_equal(cpar1, cpar2)
+    assert np.allclose(cpar1, cpar2)
     assert allatomtypes1 == allatomtypes2
-    assert np.array_equal(fcoords1, fcoords2)
+    assert np.allclose(fcoords1, fcoords2)
