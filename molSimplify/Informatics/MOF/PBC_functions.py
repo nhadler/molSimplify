@@ -81,7 +81,7 @@ def readcif(name):
 
                 if line_stripped == "_atom_site_label" or line_stripped == '_atom_site_type_symbol':
                     cond = True # We have entered the block with the desired atom information.
-                    # The reason for the or is that the order fo these lines can vary depending on cif
+                    # The reason for the or is that the order of these lines can vary depending on cif.
                 if line_stripped == '_atom_site_type_symbol':
                     type_index = atom_props_count
                 elif line_stripped == "_atom_site_fract_x":
@@ -101,7 +101,7 @@ def readcif(name):
                 if len(line_splitted) == atom_props_count:
                     atomlines.append(line)
                 elif line == '\n':
-                    continue # Allow for newlines between the _atom_ lines and the lines holding the atom information
+                    continue # Allow for newlines between the _atom_ lines and the lines holding the atom information.
                 else:
                     break # Don't need to keep looking through the file, since we've seen all the desired information for all atoms. We left the block.
 
@@ -116,10 +116,10 @@ def readcif(name):
                               float(ln[fracz_index].replace('(','').replace(')',''))])
             ln[type_index] = ln[type_index].strip("_")
             at_type = ln[type_index]
-            # for idx, char in enumerate(ln[type_index]): # Looking through the characters of the element symbol in order to remove any numbers
+            # for idx, char in enumerate(ln[type_index]): # Looking through the characters of the element symbol in order to remove any numbers.
             #     if char.isdigit(): # This means one of the characters in the atom type is a number.
             #         at_type = ln[type_index][:idx] # Overwriting. Use the atom element symbol without numbers.
-            #         break # Get the characters up to the number, then stop
+            #         break # Get the characters up to the number, then stop.
             at_type = at_type.capitalize()
             atomtypes.append(at_type)
 
@@ -276,7 +276,6 @@ def XYZ_connected(cell, cart_coords, adj_mat):
     counter = 0
     from scipy import sparse
     n_components, labels_components = sparse.csgraph.connected_components(csgraph=adj_mat, directed=False, return_labels=True)
-    # print(n_components,'comp',labels_components)
     tested_index = 0 # The label for the connected components. 0 indicates the first connected component, etc.
     index_counter = 0
     while len(connected_components) < len(cart_coords):
@@ -285,7 +284,6 @@ def XYZ_connected(cell, cart_coords, adj_mat):
         except:
             indices = [i for i, x in enumerate(labels_components) if x == tested_index] # Indices corresponding to atoms in the component corresponding to tested_index
             current_node = indices[index_counter]
-            # print(current_node,indices)
 
             if index_counter == (len(indices)-1):
                 tested_index += 1
@@ -297,7 +295,6 @@ def XYZ_connected(cell, cart_coords, adj_mat):
                 fcoords[j]+=compute_image_flag(cell,fcoords[current_node],fcoords[j]) # Shifting fractional coordinates by the number of cells specified by compute_image_flag
                 connected_components.append(j)
                 checked.append(j)
-            # print(connected_components)
         counter += 1
     return fcoords
 
@@ -709,14 +706,14 @@ def position_nearest_atom(cell, cart_coords, index_of_interest, num_cells=1):
     # The standard distance formula of square root of x^2 + y^2 + z^2
     dist = np.sqrt(np.sum(np.square(dist), axis=-1)) # Shape is (number of atoms, number of combinations in combos)
 
-    # Want the atom that is closest to index_of_interest, given the ideal shift
+    # Want the atom that is closest to index_of_interest, given the ideal shift.
     # Don't want to consider distance of atom of interest to itself, so I eliminate it from consideration this way.
     dist[index_of_interest,:] = np.array([np.Inf]*np.shape(dist)[1])
     # Find the index of the closest atom.
     index_nearest_atom = np.argmin(dist)
     index_nearest_atom = np.unravel_index(index_nearest_atom, np.shape(dist)) # This is (atom index, shift index)
 
-    # Get the Cartesian coordinates of the nearest atom
+    # Get the Cartesian coordinates of the nearest atom.
     nearest_position = shifted[index_nearest_atom[0], index_nearest_atom[1], :]
     nearest_index = index_nearest_atom[0]
     shift_for_nearest_atom = combos[index_nearest_atom[1],:]
@@ -855,7 +852,6 @@ def compute_adj_matrix(distance_mat, allatomtypes, wiggle_room=1, handle_overlap
                 tempsf = 0.95
             if (set("H") < elements) and  (elements & metals) and (not elements & alkali):
                 tempsf = 0.75
-
             if (set("O") < elements) and (elements & metals):
                 tempsf = 0.85
             if (set("N") < elements) and (elements & metals):
@@ -1016,7 +1012,7 @@ def disorder_detector(name):
 
                 if line_stripped == "_atom_site_label" or line_stripped == '_atom_site_type_symbol':
                     cond=True # We have entered the block with the desired atom information.
-                    # The reason for the or is that the order fo these lines can vary depending on cif
+                    # The reason for the or is that the order of these lines can vary depending on cif.
                 if line_stripped == '_atom_site_type_symbol':
                     type_index=atom_props_count
                 elif line_stripped == "_atom_site_occupancy":
@@ -1036,7 +1032,7 @@ def disorder_detector(name):
         disordered_atom_types = []
         disordered_atom_occupancies = []
 
-        if occupancy_index: # This means that occupancy information is available
+        if occupancy_index: # This means that occupancy information is available.
             for idx, at in enumerate(atomlines): # Go through the lines of the cif with atom specific information. Atom by atom.
                 ln=at.strip().split()
 
@@ -1131,7 +1127,7 @@ def overlap_removal(cif_path, new_cif_path):
     None
 
     """
-    # Much of this code parallels that in the beginning of the MOF_descriptors.get_MOF_descriptors function
+    # Much of this code parallels that in the beginning of the MOF_descriptors.get_MOF_descriptors function.
 
     # Loading the cif and getting information about the crystal cell.
     cpar, allatomtypes, fcoords = readcif(cif_path)
@@ -1173,7 +1169,7 @@ def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
     None
 
     """
-    # Much of this code parallels that in the beginning of the MOF_descriptors.get_MOF_descriptors function
+    # Much of this code parallels that in the beginning of the MOF_descriptors.get_MOF_descriptors function.
 
     # Loading the cif and getting information about the crystal cell.
     cpar, allatomtypes, fcoords = readcif(cif_path)
@@ -1191,7 +1187,7 @@ def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
 
     # Getting the adjacency matrix (bond information).
     adj_matrix = sparse.csr_matrix(adj_matrix)
-    molcif,_,_,_,_ = import_from_cif(cif_path, True) # molcif is a mol3D class of a single unit cell (or the cell of the cif file)
+    molcif,_,_,_,_ = import_from_cif(cif_path, True) # molcif is a mol3D class of a single unit cell (or the cell of the cif file).
     molcif.graph = adj_matrix.todense()
 
     # Finding the connected components
@@ -1213,8 +1209,6 @@ def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
 
     # Removing the atoms corresponding to the solvent.
     allatomtypes, fcoords = remove_undesired_atoms(solvent_indices, allatomtypes, fcoords)
-
-    # print(f'The solvent indices are {solvent_indices}')
 
     # Writing the cif files
     write_cif(new_cif_path,cpar,fcoords,allatomtypes)

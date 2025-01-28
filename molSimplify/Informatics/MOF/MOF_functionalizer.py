@@ -933,9 +933,7 @@ def multiatomic_functionalization(connection_atom_dict,
         counter = 1
         while counter <= num_rotations: # This is where the two extra H's in CH3 are added, for example.
             rotate_by = bond_rotation_dict[functional_group][0]*counter*deg2rad
-            # print('initial coords of CH bond',final_placement)
             rotated_coords = PointRotateAxis(directional_unit_vector.tolist(),initial_placement.tolist(),final_placement.tolist(),rotate_by)
-            # print('rotated coords of CH bond, rotation number',rotated_coords, counter)
             rotated_atom3Ds.append(atom3D(connection_atom_dict[functional_group][1], rotated_coords))
             additions_to_cart = np.concatenate((additions_to_cart, np.array([rotated_coords])))
             atom_types_to_add.append(connection_atom_dict[functional_group][1])
