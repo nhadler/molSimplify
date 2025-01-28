@@ -1043,8 +1043,6 @@ def get_MOF_descriptors(
 
     n_components, labels_components = sparse.csgraph.connected_components(csgraph=adj_matrix, directed=False, return_labels=True)
     metal_list = set([at for at in molcif.findMetal(transition_metals_only=False)])  # the atom indices of the metals
-    # print('##### METAL LIST', metal_list, [molcif.getAtom(val).symbol() for val in list(metal_list)])
-    # print('##### METAL LIST', metal_list, [val.symbol() for val in molcif.atoms])
     if not len(metal_list) > 0:
         failure_str = f"Failed to featurize {name}: no metal found\n"
         full_names, full_descriptors = failure_response(path, failure_str)
@@ -1072,8 +1070,6 @@ def get_MOF_descriptors(
     """""""""
     SBUlist = set()
     metal_list = set([at for at in molcif.findMetal(transition_metals_only=False)]) # the atom indices of the metals
-    # print('##### METAL LIST2', metal_list, [molcif.getAtom(val).symbol() for val in list(metal_list)])
-    # print('##### all LIST2', metal_list, [val.symbol() for val in molcif.atoms])
     [SBUlist.update(set([metal])) for metal in molcif.findMetal(transition_metals_only=False)] # Consider all metals as part of the SBUs.
     [SBUlist.update(set(molcif.getBondedAtomsSmart(metal))) for metal in molcif.findMetal(transition_metals_only=False)] # atoms connected to metals.
     removelist = set()

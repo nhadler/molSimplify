@@ -276,7 +276,6 @@ def XYZ_connected(cell, cart_coords, adj_mat):
     counter = 0
     from scipy import sparse
     n_components, labels_components = sparse.csgraph.connected_components(csgraph=adj_mat, directed=False, return_labels=True)
-    # print(n_components,'comp',labels_components)
     tested_index = 0 # The label for the connected components. 0 indicates the first connected component, etc.
     index_counter = 0
     while len(connected_components) < len(cart_coords):
@@ -285,7 +284,6 @@ def XYZ_connected(cell, cart_coords, adj_mat):
         except:
             indices = [i for i, x in enumerate(labels_components) if x == tested_index] # Indices corresponding to atoms in the component corresponding to tested_index
             current_node = indices[index_counter]
-            # print(current_node,indices)
 
             if index_counter == (len(indices)-1):
                 tested_index += 1
@@ -297,7 +295,6 @@ def XYZ_connected(cell, cart_coords, adj_mat):
                 fcoords[j]+=compute_image_flag(cell,fcoords[current_node],fcoords[j]) # Shifting fractional coordinates by the number of cells specified by compute_image_flag
                 connected_components.append(j)
                 checked.append(j)
-            # print(connected_components)
         counter += 1
     return fcoords
 
@@ -1212,8 +1209,6 @@ def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
 
     # Removing the atoms corresponding to the solvent.
     allatomtypes, fcoords = remove_undesired_atoms(solvent_indices, allatomtypes, fcoords)
-
-    # print(f'The solvent indices are {solvent_indices}')
 
     # Writing the cif files
     write_cif(new_cif_path,cpar,fcoords,allatomtypes)
