@@ -921,7 +921,7 @@ def detect_1D_rod(molcif, allatomtypes, cpar, logpath, name, adj_matrix, fcoords
         write2file(logpath, "/%s.log" % name, tmpstr)
 
 def get_MOF_descriptors(
-        data, depth, path=False, xyzpath=False, graph_provided=False, wiggle_room=1,
+        data, depth, path, xyzpath, graph_provided=False, wiggle_room=1,
         max_num_atoms=2000, get_sbu_linker_bond_info=False, surrounded_sbu_file_generation=False,
         detect_1D_rod_sbu=False, Gval=False):
     """
@@ -932,18 +932,19 @@ def get_MOF_descriptors(
     Parameters
     ----------
     data : str
-        The path to the cif file for which descriptors are generated.
+        The path to the cif file for which descriptors are generated. Should end in ".cif".
     depth : int
         The depth of the RACs that are generated. See https://doi.org/10.1021/acs.jpca.7b08750 for more information.
     path : str
-        The parent path to which output will be written.
+        The parent path (folder) to which output will be written.
         This output includes three csv files.
         This output also includes three folders called ligands, linkers, and sbus.
             These folders contain net and xyz files of the components of the MOF.
         This output also includes a folder called logs.
         This output also includes the xyz and net files for the cif being analyzed, written with the function writeXYZandGraph.
     xyzpath : str
-        The path to where the xyz of the MOF structure will be written.
+        The path to where the xyz and net of the MOF structure will be written.
+        Should end in ".xyz".
     graph_provided : bool
         Whether or not the cif file has graph information of the structure (i.e. what atoms are bonded to what atoms).
         If not, computes the N^2 pairwise distance matrix, which is expensive.
@@ -968,15 +969,19 @@ def get_MOF_descriptors(
         The values of the RAC features.
 
     """
-    if not path:  # Throw an error if the user did not supply a path to which to write the output.
-        print('Need a directory to place all of the linker, SBU, and ligand objects. Exiting now.')
-        raise ValueError('Base path must be specified in order to write descriptors.')
-    else:
-        if path.endswith('/'):
-            path = path[:-1]
+    if type(depth) != int or depth < 0:
+        raise ValueError('Invalid depth value. Must be an integer (0 or greater).')
+    if type(data) != str or type(path) != str or type(xyzpath) != str:
+        raise ValueError('The path to the cif file and generated files must be indicated as strings.')
+    if not data or not path or not xyzpath:
+        raise ValueError('The path to the cif file and generated files cannot be empty.')
+    if not data.endswith('.cif') or not xyzpath.endswith('.xyz'):
+        raise ValueError('Incorrect file extension for data or xyzpath. Should be .cif and .xyz, respectively.')
 
-        # Making the required folders and files.
-        path_maker(path)
+    if path.endswith('/'):
+        path = path[:-1]
+    # Making the required folders and files.
+    path_maker(path)
 
     ligandpath = path+'/ligands'
     linkerpath = path+'/linkers'
