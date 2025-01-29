@@ -968,7 +968,7 @@ def get_MOF_descriptors(
         The values of the RAC features.
 
     """
-    if type(depth) != depth or depth < 0:
+    if type(depth) != int or depth < 0:
         raise ValueError('Invalid depth value. Must be an integer of 0 or more.')
     if type(data) != str or type(path) != str or type(xyzpath) != str:
         raise ValueError('The path to the cif file and destination folders must be indicated as strings.')
