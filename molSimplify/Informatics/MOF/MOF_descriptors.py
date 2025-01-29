@@ -975,6 +975,8 @@ def get_MOF_descriptors(
         raise ValueError('The path to the cif file and generated files must be indicated as strings.')
     if not data or not path or not xyzpath:
         raise ValueError('The path to the cif file and generated files cannot be empty.')
+    if not data.endswith('.cif') or not xyzpath.endswith('.xyz'):
+        raise ValueError('Incorrect file extension for data or xyzpath. Should be .cif and .xyz, respectively.')
 
     if path.endswith('/'):
         path = path[:-1]
