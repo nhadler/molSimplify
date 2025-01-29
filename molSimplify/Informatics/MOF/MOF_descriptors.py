@@ -921,7 +921,7 @@ def detect_1D_rod(molcif, allatomtypes, cpar, logpath, name, adj_matrix, fcoords
         write2file(logpath, "/%s.log" % name, tmpstr)
 
 def get_MOF_descriptors(
-        data, depth, path=False, xyzpath=False, graph_provided=False, wiggle_room=1,
+        data, depth, path, xyzpath, graph_provided=False, wiggle_room=1,
         max_num_atoms=2000, get_sbu_linker_bond_info=False, surrounded_sbu_file_generation=False,
         detect_1D_rod_sbu=False, Gval=False):
     """
@@ -968,19 +968,19 @@ def get_MOF_descriptors(
         The values of the RAC features.
 
     """
+    if type(depth) != depth or depth < 0:
+        raise ValueError('Invalid depth value. Must be an integer of 0 or more.')
+    if type(data) != str or type(path) != str or type(xyzpath) != str:
+        raise ValueError('The path to the cif file and destination folders must be indicated as strings.')
     if not path:  # Throw an error if the user did not supply a path to which to write the output.
-        print('Need a directory to place all of the linker, SBU, and ligand objects. Exiting now.')
-        raise ValueError('Base path must be specified in order to write descriptors.')
-    else:
-        if path.endswith('/'):
-            path = path[:-1]
-
-        # Making the required folders and files.
-        path_maker(path)
-
+        raise ValueError('path must be specified in order to write descriptors and linker, SBU, and ligand objects.')
     if not xyzpath: # Throw an error if the user did not supply a path to which to write the MOF XYZ.
-        print('Need to specify the xyzpath variable.')
         raise ValueError('xyzpath must be specified.')
+
+    if path.endswith('/'):
+        path = path[:-1]
+    # Making the required folders and files.
+    path_maker(path)
 
     ligandpath = path+'/ligands'
     linkerpath = path+'/linkers'
