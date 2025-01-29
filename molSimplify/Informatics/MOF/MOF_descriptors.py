@@ -970,11 +970,11 @@ def get_MOF_descriptors(
 
     """
     if type(depth) != int or depth < 0:
-        raise ValueError('Invalid depth value. Must be an integer of 0 or more.')
+        raise ValueError('Invalid depth value. Must be an integer (0 or greater).')
     if type(data) != str or type(path) != str or type(xyzpath) != str:
-        raise ValueError('The path to the cif file and destination folders must be indicated as strings.')
+        raise ValueError('The path to the cif file and generated files must be indicated as strings.')
     if not data or not path or not xyzpath:
-        raise ValueError('The path to the cif file and destination folders cannot be empty.')
+        raise ValueError('The path to the cif file and generated files cannot be empty.')
 
     if path.endswith('/'):
         path = path[:-1]
