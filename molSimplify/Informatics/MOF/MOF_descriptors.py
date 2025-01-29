@@ -932,11 +932,11 @@ def get_MOF_descriptors(
     Parameters
     ----------
     data : str
-        The path to the cif file for which descriptors are generated.
+        The path to the cif file for which descriptors are generated. Should end in ".cif".
     depth : int
         The depth of the RACs that are generated. See https://doi.org/10.1021/acs.jpca.7b08750 for more information.
     path : str
-        The parent path to which output will be written.
+        The parent path (folder) to which output will be written.
         This output includes three csv files.
         This output also includes three folders called ligands, linkers, and sbus.
             These folders contain net and xyz files of the components of the MOF.
@@ -944,6 +944,7 @@ def get_MOF_descriptors(
         This output also includes the xyz and net files for the cif being analyzed, written with the function writeXYZandGraph.
     xyzpath : str
         The path to where the xyz and net of the MOF structure will be written.
+        Should end in ".xyz".
     graph_provided : bool
         Whether or not the cif file has graph information of the structure (i.e. what atoms are bonded to what atoms).
         If not, computes the N^2 pairwise distance matrix, which is expensive.
@@ -972,10 +973,8 @@ def get_MOF_descriptors(
         raise ValueError('Invalid depth value. Must be an integer of 0 or more.')
     if type(data) != str or type(path) != str or type(xyzpath) != str:
         raise ValueError('The path to the cif file and destination folders must be indicated as strings.')
-    if not path:  # Throw an error if the user did not supply a path to which to write the output.
-        raise ValueError('path must be specified in order to write descriptors and linker, SBU, and ligand objects.')
-    if not xyzpath: # Throw an error if the user did not supply a path to which to write the MOF XYZ.
-        raise ValueError('xyzpath must be specified.')
+    if not data or not path or not xyzpath:
+        raise ValueError('The path to the cif file and destination folders cannot be empty.')
 
     if path.endswith('/'):
         path = path[:-1]
