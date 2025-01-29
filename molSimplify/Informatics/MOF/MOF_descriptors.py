@@ -943,7 +943,7 @@ def get_MOF_descriptors(
         This output also includes a folder called logs.
         This output also includes the xyz and net files for the cif being analyzed, written with the function writeXYZandGraph.
     xyzpath : str
-        The path to where the xyz of the MOF structure will be written.
+        The path to where the xyz and net of the MOF structure will be written.
     graph_provided : bool
         Whether or not the cif file has graph information of the structure (i.e. what atoms are bonded to what atoms).
         If not, computes the N^2 pairwise distance matrix, which is expensive.
@@ -977,6 +977,10 @@ def get_MOF_descriptors(
 
         # Making the required folders and files.
         path_maker(path)
+
+    if not xyzpath: # Throw an error if the user did not supply a path to which to write the MOF XYZ.
+        print('Need to specify the xyzpath variable.')
+        raise ValueError('xyzpath must be specified.')
 
     ligandpath = path+'/ligands'
     linkerpath = path+'/linkers'
