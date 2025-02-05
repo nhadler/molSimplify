@@ -9,7 +9,7 @@ molSimplify is an open source toolkit for the automated, first-principles screen
 
 ### via pip, from PyPI
 
-Starting with version `1.7.4` molSimplify is available on [PyPI](https://pypi.org) enabled by the [openbabel-wheel](https://pypi.org/project/openbabel-wheel/) project.
+Starting with version `1.7.4` molSimplify is available on [PyPI](https://pypi.org) enabled by the [openbabel-wheel](https://pypi.org/project/openbabel-wheel/) project. It is recommended to make a new conda environment with Python 3.8, activate it, and then run the following command:
 
 ```bash
 pip install molSimplify
@@ -25,11 +25,21 @@ To obtain the latest development version or if you plan to modify the code we re
    git clone https://github.com/hjkgrp/molSimplify.git
    cd molSimplify
    ```
-2. Locally install the molSimplify package using pip.
+2. Create a new conda environment and specify the desired Python version (we currently recommend 3.8). You can change the environment name `molsimp` according to your preference.
+
+   ```bash
+   conda create --name molsimp python=3.8
+   ```
+   Then activate the environment.
+   ```bash
+   conda activate molsimp
+   ```
+3. Locally install the molSimplify package using pip.
    ```bash
    pip install -e .[dev]
    ```
-3. To test your installation, you can run the command below at the root directory of molSimplify. You are good to go if all the tests are passed! Note, some test will be skipped because none of the optional dependencies are installed this way.
+   On Mac, the command to use is instead `pip install -e '.[dev]'` or `pip install -e .\[dev\]`.
+4. To test your installation, you can run the command below at the root directory of molSimplify. You are good to go if all the tests are passed! Note, some test will be skipped because none of the optional dependencies are installed this way.
    ```bash
    pytest
    ```
