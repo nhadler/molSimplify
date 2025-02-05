@@ -33,7 +33,7 @@ To obtain the latest development version or if you plan to modify the code we re
    Then activate the environment.
    ```bash
    conda activate molsimp
-   ```   
+   ```
 3. Locally install the molSimplify package using pip.
    ```bash
    pip install -e .[dev]
