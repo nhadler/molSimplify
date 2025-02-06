@@ -30,7 +30,6 @@ from molSimplify.Scripts.rungen import (constrgen,
 def startgen_pythonic(input_dict={'-core': 'fe', '-lig': 'cl,cl,cl,cl,cl,cl'},
                       argv=['main.py', '-i', 'asdfasdfasdfasdf'],
                       flag=True,
-                      gui=False,
                       write=False):
     """This is the main way to generate structures completely within Python.
 
@@ -42,8 +41,6 @@ def startgen_pythonic(input_dict={'-core': 'fe', '-lig': 'cl,cl,cl,cl,cl,cl'},
                 Default argument list used to "fool" startgen into accepting input_dict.
             flag : bool, optional
                 Flag for printing information. Default is True.
-            gui : bool, optional
-                Flag for GUI. Default is False.
             write : bool, optional
                 Flag to generate outputfile from python
 
@@ -61,18 +58,17 @@ def startgen_pythonic(input_dict={'-core': 'fe', '-lig': 'cl,cl,cl,cl,cl,cl'},
     # from molSimplify.Scripts.generator import startgen_pythonic
     inputfile_str = '\n'.join([k + ' ' + v for k, v in list(input_dict.items())])
     if write:
-        startgen(argv, flag, gui, inputfile_str, write_files=write)
+        startgen(argv, flag, inputfile_str, write_files=write)
     else:
-        strfiles, emsg, this_diag = startgen(argv, flag, gui, inputfile_str, write_files=write)
+        strfiles, emsg, this_diag = startgen(argv, flag, inputfile_str, write_files=write)
         return (strfiles, emsg, this_diag)
 
 
 # Coordinates subroutines
 #  @param argv Argument list
 #  @param flag Flag for printing information
-#  @param gui Flag for GUI
 #  @return Error messages
-def startgen(argv, flag, gui, inputfile_str=None, write_files=True):
+def startgen(argv, flag, inputfile_str=None, write_files=True):
     """Coordinates subroutines.
 
         Parameters
@@ -81,8 +77,6 @@ def startgen(argv, flag, gui, inputfile_str=None, write_files=True):
                 Argument list.
             flag : bool
                 Flag for printing information.
-            gui : bool
-                Flag for GUI.
             inputfile_str : str, optional
                 Optional input passed in as a string. Default is None.
             write_files : bool, optional
@@ -135,7 +129,7 @@ def startgen(argv, flag, gui, inputfile_str=None, write_files=True):
         emsg = 'Input file '+args.i+' does not exist. Please specify a valid input file.\n'
         print(emsg)
         return emsg
-    args.gui = gui  # add gui flag
+    args.gui = False
     # parse input file
     if args.i or inputfile_str:
         parseinputfile(args, inputfile_str=inputfile_str)
@@ -170,7 +164,6 @@ def startgen(argv, flag, gui, inputfile_str=None, write_files=True):
             emsg = checkinput(args)
         # check before cleaning input arguments and clean only if checked
         cleaninput(args)
-    args.gui = False  # deepcopy will give error
     if emsg:
         del args
         return emsg
@@ -181,8 +174,6 @@ def startgen(argv, flag, gui, inputfile_str=None, write_files=True):
             os.mkdir(rundir)
     # ################## START MAIN ####################
     args0 = copy.deepcopy(args)  # save initial arguments
-    # add gui flag
-    args.gui = gui
     # postprocessing run?
 
     if (args.postp):
@@ -204,8 +195,6 @@ def startgen(argv, flag, gui, inputfile_str=None, write_files=True):
         corests = args.core
         for cc in corests:
             args = copy.deepcopy(args0)
-            # add gui flag
-            args.gui = gui
             args.core = cc
             if (args.lig or args.coord or args.lignum or args.ligocc):  # constraints given?
                 args, emsg = constrgen(rundir, args)
@@ -242,7 +231,6 @@ def startgen(argv, flag, gui, inputfile_str=None, write_files=True):
     else:
         args = copy.deepcopy(args0)
         # add gui flag
-        args.gui = gui
         corests = args.core
         # if args.tsgen: # goes through multigenruns for maximum interoperability
         #     print('building a transition state')
