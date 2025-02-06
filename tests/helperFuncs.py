@@ -52,12 +52,12 @@ def fuzzy_compare_xyz(xyz1, xyz2, thresh: float) -> bool:
     return fuzzyEqual
 
 
-def getAllLigands(xyz):
+def getAllLigands(xyz, transition_metals_only=True):
     mymol3d = mol3D()
     mymol3d.readfromxyz(xyz)
     # OUTPUT
     #   -mol3D: mol3D of all ligands
-    mm = mymol3d.findMetal()[0]
+    mm = mymol3d.findMetal(transition_metals_only=transition_metals_only)[0]
     mbonded = mymol3d.getBondedAtoms(mm)
     ligands = []
     ligAtoms = []
@@ -87,8 +87,8 @@ def getAllLigands(xyz):
     return ligands
 
 
-def getMetalLigBondLength(mymol3d: mol3D) -> List[float]:
-    mm = mymol3d.findMetal()[0]
+def getMetalLigBondLength(mymol3d: mol3D, transition_metals_only=True) -> List[float]:
+    mm = mymol3d.findMetal(transition_metals_only=transition_metals_only)[0]
     bonded = mymol3d.getBondedAtoms(mm)
     blength = []
     for i in bonded:
@@ -110,15 +110,15 @@ def compareNumAtoms(xyz1, xyz2) -> bool:
     return passNumAtoms
 
 
-def compareMLBL(xyz1, xyz2, thresh: float) -> bool:
+def compareMLBL(xyz1, xyz2, thresh: float, transition_metals_only=True) -> bool:
     """Compare Metal Ligand Bond Length"""
     print("Checking metal-ligand bond length")
     mol1 = mol3D()
     mol1.readfromxyz(xyz1)
     mol2 = mol3D()
     mol2.readfromxyz(xyz2)
-    bl1 = getMetalLigBondLength(mol1)
-    bl2 = getMetalLigBondLength(mol2)
+    bl1 = getMetalLigBondLength(mol1, transition_metals_only=transition_metals_only)
+    bl2 = getMetalLigBondLength(mol2, transition_metals_only=transition_metals_only)
     passMLBL = True
     if len(bl1) != len(bl2):
         print("Error! Number of metal-ligand bonds is different")
@@ -133,12 +133,12 @@ def compareMLBL(xyz1, xyz2, thresh: float) -> bool:
     return passMLBL
 
 
-def compareLG(xyz1, xyz2, thresh: float) -> bool:
+def compareLG(xyz1, xyz2, thresh: float, transition_metals_only=True) -> bool:
     """Compare Ligand Geometry"""
     print("Checking the Ligand Geometries")
     passLG = True
-    ligs1 = getAllLigands(xyz1)
-    ligs2 = getAllLigands(xyz2)
+    ligs1 = getAllLigands(xyz1, transition_metals_only=transition_metals_only)
+    ligs2 = getAllLigands(xyz2, transition_metals_only=transition_metals_only)
     if len(ligs1) != len(ligs2):
         passLG = False
         return passLG
@@ -177,14 +177,14 @@ def runtest_num_atoms_in_xyz(tmpdir, resource_path_root, xyzfile):
         print('Something is wrong with the number of atoms read from the XYZ file!')
 
 
-def compareGeo(xyz1, xyz2, threshMLBL, threshLG, threshOG, slab=False):
+def compareGeo(xyz1, xyz2, threshMLBL, threshLG, threshOG, slab=False, transition_metals_only=True):
     # Compare number of atoms
     passNumAtoms = compareNumAtoms(xyz1, xyz2)
     # Compare Metal ligand bond length
     if not slab:
-        passMLBL = compareMLBL(xyz1, xyz2, threshMLBL)
+        passMLBL = compareMLBL(xyz1, xyz2, threshMLBL, transition_metals_only=transition_metals_only)
         # Compare Single ligand geometry
-        passLG = compareLG(xyz1, xyz2, threshLG)
+        passLG = compareLG(xyz1, xyz2, threshLG, transition_metals_only=transition_metals_only)
     # Compare gross match of overall complex
     passOG = compareOG(xyz1, xyz2, threshOG)
     # FF free test

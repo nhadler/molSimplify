@@ -1,5 +1,6 @@
 from molSimplify.Scripts.generator import startgen_pythonic
-
+from molSimplify.Classes.mol3D import mol3D
+import helperFuncs as hp
 
 def test_joption_pythonic(tmpdir, resource_path_root):
     out_dir = "cr_thd_2_cl_4_s_1/cr_thd_2_cl_4_s_1_conf_1/jobscript"
@@ -25,3 +26,32 @@ def test_joption_pythonic(tmpdir, resource_path_root):
         data2 = f_in.readlines()
     for i, j in zip(data1, data2):
         assert i == j
+
+def test_pythonic_metalloid_structure(tmpdir, resource_path_root):
+    input_dict = {
+        '-core': 'Sn',
+        '-coord': '4',
+        '-oxstate': '4',
+        '-lig': 'nh3',
+        '-ligocc': '4',
+        '-geometry': 'square_planar'
+    }
+    _, _, this_diag = startgen_pythonic(input_dict)
+
+    output_xyz = f'{tmpdir}/tin_complex.xyz'
+    this_diag.mol.writexyz(output_xyz)
+
+    ref_xyz = f'{resource_path_root}/refs/structgen_complex.xyz'
+
+    threshMLBL = 0.1
+    threshLG = 1.0
+    threshOG = 2.0
+
+    pass_xyz = hp.compareGeo(output_xyz, ref_xyz,
+                          threshMLBL, threshLG, threshOG, transition_metals_only=False)
+    [passNumAtoms, passMLBL, passLG, passOG] = pass_xyz
+
+    assert passNumAtoms
+    assert passMLBL
+    assert passLG
+    assert passOG

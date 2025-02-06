@@ -23,6 +23,7 @@ def test_example_1_No_FF(tmpdir, resource_path_root):
     threshOG = 2.0
     [passNumAtoms, passMLBL, passLG, passOG, pass_report, pass_qcin] = hp.runtestNoFF(
         tmpdir, resource_path_root, testName, threshMLBL, threshLG, threshOG)
+    assert passNumAtoms
     assert passMLBL
     assert passLG
     assert passOG
