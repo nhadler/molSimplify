@@ -335,11 +335,10 @@ def readden(inputf):
 # Use Multiwfn to generate cube files from molden files
 #  @param molf Input molden file
 #  @param folder Folder containing runs
-#  @param gui GUI flag
 #  @param flog Log filename
 
 
-def getcubes(molf, folder, gui, flog):
+def getcubes(molf, folder, flog):
     # get Multiwfn
     globs = globalvars()
     Multiwfn = globs.multiwfn
@@ -355,9 +354,6 @@ def getcubes(molf, folder, gui, flog):
         cubedir = folder+'/Cube_files/'
         flog.write('Processing '+resf+'\n')
         print(('Processing ', resf))
-        if gui:
-            gui.iWtxt.setText('Processing '+resf+'\n'+gui.iWtxt.toPlainText())
-            gui.app.processEvents()
         #################################################
         ### generate density cube ###
         inputtxt = '5\n1\n3\n2\n'
@@ -400,11 +396,10 @@ def getcubes(molf, folder, gui, flog):
 # Calculate wavefunction properties from molden file
 #  @param molf Input molden file
 #  @param folder Folder containing runs
-#  @param gui GUI flag
 #  @param flog Log filename
 
 
-def getwfnprops(molf, folder, gui, flog):
+def getwfnprops(molf, folder, flog):
     # analyze results
     flog.write(
         "##################### Getting wavefunction properties ######################\n")
@@ -421,9 +416,6 @@ def getwfnprops(molf, folder, gui, flog):
         #################################################
         print(('Processing ', resf))
         flog.write('Processing '+resf+'\n')
-        if gui:
-            gui.iWtxt.setText('Processing '+resd+'\n'+gui.iWtxt.toPlainText())
-            gui.app.processEvents()
         wfndir = folder+'/Wfn_files/'
         outfile1 = wfndir+resd+'-HELP.txt'
         outfile2 = wfndir+resd+'-denELF.txt'
@@ -461,11 +453,10 @@ def getwfnprops(molf, folder, gui, flog):
 # Calculate charges from molden file
 #  @param molf Input molden file
 #  @param folder Folder containing runs
-#  @param gui GUI flag
 #  @param flog Log filename
 
 
-def getcharges(molf, folder, gui, flog):
+def getcharges(molf, folder, flog):
     # get Multiwfn
     globs = globalvars()
     Multiwfn = globs.multiwfn
@@ -494,9 +485,6 @@ def getcharges(molf, folder, gui, flog):
         outfile1 = folder+'/Charge_files/'+resd+'-chH.txt'
         print(('Processing ', resdp))
         flog.write('Processing '+resdp+'\n')
-        if gui:
-            gui.iWtxt.setText('Processing '+resf+'\n'+gui.iWtxt.toPlainText())
-            gui.app.processEvents()
         # Run multiwfn
         if not glob.glob(outfile1):
             inputtxt = '7\n1\n1\n'  # Hirschfeld
@@ -559,11 +547,10 @@ def getcharges(molf, folder, gui, flog):
 # Calculate delocalization indices from molden file
 #  @param molf Input molden file
 #  @param folder Folder containing runs
-#  @param gui GUI flag
 #  @param flog Log filename
 
 
-def deloc(molf, folder, gui, flog):
+def deloc(molf, folder, flog):
     # get multiwfn exec
     globs = globalvars()
     Multiwfn = globs.multiwfn
@@ -586,9 +573,6 @@ def deloc(molf, folder, gui, flog):
         outfile = folder+'/Deloc_files/'+resd+'-deloc.txt'
         print(('Processing  '+resd+' and writing output to '+outfile))
         flog.write('Processing  '+resd+'\n')
-        if gui:
-            gui.iWtxt.setText('Processing '+resd+'\n'+gui.iWtxt.toPlainText())
-            gui.app.processEvents()
         # get coordinates of metal
         with open(resf, 'r') as f:
             sm = f.read().splitlines()

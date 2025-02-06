@@ -228,11 +228,10 @@ def spinnlmo(s, metal):
 # Parse NBO output
 #  @param resfiles Files to be post-processed
 #  @param folder Folder containing runs
-#  @param gui GUI flag
 #  @param flog Log file name
 
 
-def nbopost(resfiles, folder, gui, flog):
+def nbopost(resfiles, folder, flog):
     t = time.strftime('%c')
     headern = "Date: " + t + \
         "\nHere are the current results for runs in folder '"+folder+"'\n"
@@ -245,9 +244,6 @@ def nbopost(resfiles, folder, gui, flog):
         resfold = os.path.relpath(resd, folder)
         print(('Processing ', resfp))
         flog.write('Processing '+resfp+'\n')
-        if gui:
-            gui.iWtxt.setText('Processing '+resfp+'\n'+gui.iWtxt.toPlainText())
-            gui.app.processEvents()
         with open(resf) as f:
             s = f.read()
         # split output into QC and nbo parts
@@ -276,11 +272,10 @@ def nbopost(resfiles, folder, gui, flog):
 # Parse terachem output
 #  @param resfiles Files to be post-processed
 #  @param folder Folder containing runs
-#  @param gui GUI flag
 #  @param flog Log file name
 
 
-def terapost(resfiles, folder, gui, flog):
+def terapost(resfiles, folder, flog):
     t = time.strftime('%c')
     flog.write(
         '################## Calculating results summary ##################\n\n')
@@ -295,8 +290,6 @@ def terapost(resfiles, folder, gui, flog):
         resfold = os.path.relpath(resd, folder)
         print(('Processing ', resfp))
         flog.write('Processing '+resfp+'\n')
-        if gui:
-            gui.iWtxt.setText('Processing '+resfp+'\n'+gui.iWtxt.toPlainText())
         with open(resf) as f:
             s = f.read()
         # split output into terachem and nbo parts
@@ -372,11 +365,10 @@ def terapost(resfiles, folder, gui, flog):
 # Parse GAMESS output
 #  @param resfiles Files to be post-processed
 #  @param folder Folder containing runs
-#  @param gui GUI flag
 #  @param flog Log file name
 
 
-def gampost(resfiles, folder, gui, flog):
+def gampost(resfiles, folder, flog):
     t = time.strftime('%c')
     header = "Date: " + t + "\nHere are the current results for runs in folder '"+folder+"'\n"
     header += "\nFolder                                            Method   %MGGA   %LDA  Optim  Converged  NoSteps   S-SQ   Spin   Charge    Energy(au)      Time(MIN)\n"
@@ -390,9 +382,6 @@ def gampost(resfiles, folder, gui, flog):
         resfp = os.path.relpath(resf, folder)
         resd = resf.rsplit('/', 1)[0]
         resfold = os.path.relpath(resd, folder)
-        if gui:
-            gui.iWtxt.setText('Processing '+resfp+'\n'+gui.iWtxt.toPlainText())
-            gui.app.processEvents()
         print(('Processing '+resfp))
         flog.write('Processing '+resfp+'\n')
         if len(resfold) > 1:

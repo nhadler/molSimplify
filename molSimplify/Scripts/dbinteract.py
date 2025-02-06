@@ -441,11 +441,6 @@ def dbsearch(rundir, args, globs):
     outf = args.dbfname if args.dbfname else 'simres.smi'  # output file
     # convert to SMILES/SMARTS if file
     if not args.dbbase:
-        if args.gui:
-            from molSimplify.Classes.mWidgets import mQDialogWarn
-            qqb = mQDialogWarn('Warning', "No database file found within " +
-                               globs.chemdbdir + '. Search not possible.')
-            qqb.setParent(args.gui.DBWindow)
         print(("No database file found within " +
               globs.chemdbdir + '. Search not possible.'))
         return True
@@ -545,11 +540,6 @@ def dbsearch(rundir, args, globs):
     # run substructure search #
     nmols = '10000' if not args.dbnsearch else args.dbnsearch
     finger = 'FP2' if not args.dbfinger else args.dbfinger
-    if int(nmols) > 3000 and args.gui:
-        from molSimplify.Classes.mWidgets import mQDialogInf
-        qqb = mQDialogInf(
-            'Warning', "Database search is going to take a few minutes. Please wait..OK?")
-        qqb.setParent(args.gui.DBWindow)
     if args.dbsmarts or args.dbhuman or args.dbsim:
         outputf, flag = getsimilar(
             smistr, nmols, args.dbbase, finger, squery, args)
@@ -561,10 +551,6 @@ def dbsearch(rundir, args, globs):
     if args.debug:
         print(('after similarity search, outf is ' + str(outputf)))
     if flag:
-        if args.gui:
-            from molSimplify.Classes.mWidgets import mQDialogWarn
-            qqb = mQDialogWarn('Warning', "No matches found in search..")
-            qqb.setParent(args.gui.DBWindow)
         print("No matches found in search..")
         return True
     # strip metals and clean-up, remove duplicates etc

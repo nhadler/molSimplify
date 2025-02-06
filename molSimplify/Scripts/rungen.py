@@ -62,10 +62,6 @@ def constrgen(rundir: str, args: Namespace) -> Tuple[Union[Namespace, bool], str
     ligs0 = []
     ligocc0 = []
     coord = False if not args.coord else int(args.coord)
-    if args.gui:
-        args.gui.iWtxt.setText('\n----------------------------------------------------------------------------------\n' +
-                               'Random generation started\nGenerating ligand combinations.\n\n'+args.gui.iWtxt.toPlainText())
-        args.gui.app.processEvents()
     if args.lig:
         for i, li in enumerate(args.lig):
             ligs0.append(li)
@@ -123,15 +119,9 @@ def constrgen(rundir: str, args: Namespace) -> Tuple[Union[Namespace, bool], str
             # run structure generation
             emsg = rungen(rundir, args)
         else:
-            if args.gui:
-                from molSimplify.Classes.mWidgets import mQDialogErr
-                qqb = mQDialogErr(
-                    'Error', 'No suitable ligand sets were found for random generation. Exiting...')
-                qqb.setParent(args.gui.wmain)
-            else:
-                emsg = 'No suitable ligand sets were found for random generation. Exiting...'
-                print(
-                    'No suitable ligand sets were found for random generation. Exiting...\n\n')
+            emsg = 'No suitable ligand sets were found for random generation. Exiting...'
+            print(
+                'No suitable ligand sets were found for random generation. Exiting...\n\n')
             return args, emsg
     # loop over samples
     for combo in samps:
@@ -365,7 +355,6 @@ def checkmultilig(ligs: List[str]) -> Tuple[List[List[str]], List[List[str]], in
 def draw_supervisor(args: Namespace, rundir: str):
     if args.lig:
         print('Due to technical limitations, we will draw only the first ligand.')
-        print('To view multiple ligands at once, consider using the GUI instead.')
         li = args.lig[0]
         lig, emsg = lig_load(li)
         if lig is not None:
@@ -505,9 +494,6 @@ def rungen(rundir, args: Namespace, chspfname=None, write_files: bool = True):
                 else:
                     flagdir = 'replace'
             else:
-                # qqb = qBoxFolder(args.gui.wmain,'Folder exists',
-                #                  'Directory '+rootcheck+' already exists. What do you want to do?')
-                # flagdir = qqb.getaction()
                 flagdir = 'replace'
                 # replace existing directory
             if (flagdir == 'replace'):
@@ -545,9 +531,6 @@ def rungen(rundir, args: Namespace, chspfname=None, write_files: bool = True):
                 else:
                     flagdir = 'replace'
             else:
-                # qqb = qBoxFolder(args.gui.wmain,'Folder exists',
-                #                  'Directory '+rootdir+' already exists. What do you want to do?')
-                # flagdir = qqb.getaction()
                 flagdir = 'replace'
             # replace existing directory
             if (flagdir == 'replace'):
@@ -657,13 +640,7 @@ def rungen(rundir, args: Namespace, chspfname=None, write_files: bool = True):
                     with open(ligfilename + '-good.smi', 'a') as f:
                         f.write(args.lig[0])
         elif not emsg:
-            if args.gui:
-                from Classes.mWidgets import mQDialogInf
-                qq = mQDialogInf('Folder skipped', 'Folder ' +
-                                 rootdir+' was skipped.')
-                qq.setParent(args.gui.wmain)
-            else:
-                print(('Folder '+rootdir+' was skipped..\n'))
+            print(('Folder '+rootdir+' was skipped..\n'))
     if write_files:
         return emsg  # Default behavior
     # else:

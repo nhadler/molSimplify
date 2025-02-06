@@ -76,51 +76,50 @@ def checkinput(args, calctype="base"):
 
             # check coordination number and geometry from ligands if given
             if (not args.coord) and (not args.geometry) and args.lig:
-                if not args.gui:
-                    # calculate occurrences, denticities etc for all ligands
-                    licores = getlicores()
-                    smilesligs = 0
-                    toccs = 0
-                    occs0 = []
-                    dentl = []
-                    cats0 = []
-                    ligoc = args.ligocc
-                    for i, ligname in enumerate(args.lig):
-                        # if not in cores -> smiles/file
-                        if ligname not in list(licores.keys()):
-                            if args.smicat and len(args.smicat) >= (smilesligs+1):
-                                if 'pi' in args.smicat[smilesligs]:
-                                    cats0.append(['c'])
-                                else:
-                                    cats0.append(args.smicat[smilesligs])
+                # calculate occurrences, denticities etc for all ligands
+                licores = getlicores()
+                smilesligs = 0
+                toccs = 0
+                occs0 = []
+                dentl = []
+                cats0 = []
+                ligoc = args.ligocc
+                for i, ligname in enumerate(args.lig):
+                    # if not in cores -> smiles/file
+                    if ligname not in list(licores.keys()):
+                        if args.smicat and len(args.smicat) >= (smilesligs+1):
+                            if 'pi' in args.smicat[smilesligs]:
+                                cats0.append(['c'])
                             else:
-                                cats0.append([0])
-                            dent_i = len(cats0[-1])
-                            smilesligs += 1
+                                cats0.append(args.smicat[smilesligs])
                         else:
-                            cats0.append(False)
-                        # otherwise get denticity from ligands dictionary
-                            if 'pi' in licores[ligname][2]:
+                            cats0.append([0])
+                        dent_i = len(cats0[-1])
+                        smilesligs += 1
+                    else:
+                        cats0.append(False)
+                    # otherwise get denticity from ligands dictionary
+                        if 'pi' in licores[ligname][2]:
+                            dent_i = 1
+                        else:
+                            if isinstance(licores[ligname][2], str):
                                 dent_i = 1
                             else:
-                                if isinstance(licores[ligname][2], str):
-                                    dent_i = 1
-                                else:
-                                    dent_i = int(len(licores[ligname][2]))
-                        # get occurrence for each ligand if specified (default 1)
-                        if ligoc:
-                            oc_i = int(ligoc[i]) if i < len(ligoc) else 1
-                        else:
-                            oc_i = 1
-                        occs0.append(0)         # initialize occurrences list
-                        dentl.append(dent_i)    # append denticity to list
-                        # loop over occurrence of ligand i to check for max coordination
-                        for j in range(0, oc_i):
-                            occs0[i] += 1
-                            toccs += dent_i
-                    print(
-                        ('WARNING: No coordination number specified. Calculating from lig, ligocc, and subcatoms and found ' + str(toccs) + '.'))
-                    args.coord = toccs
+                                dent_i = int(len(licores[ligname][2]))
+                    # get occurrence for each ligand if specified (default 1)
+                    if ligoc:
+                        oc_i = int(ligoc[i]) if i < len(ligoc) else 1
+                    else:
+                        oc_i = 1
+                    occs0.append(0)         # initialize occurrences list
+                    dentl.append(dent_i)    # append denticity to list
+                    # loop over occurrence of ligand i to check for max coordination
+                    for j in range(0, oc_i):
+                        occs0[i] += 1
+                        toccs += dent_i
+                print(
+                    ('WARNING: No coordination number specified. Calculating from lig, ligocc, and subcatoms and found ' + str(toccs) + '.'))
+                args.coord = toccs
             # set default coord if nothing given
             if (not args.coord) and (not args.geometry) and (not args.lig):
                 print(
@@ -129,12 +128,7 @@ def checkinput(args, calctype="base"):
                 args.geometry = 'oct'
             # default ligand if none given
             if not args.lig and not args.rgen:
-                if args.gui:
-                    from molSimplify.Classes.mWidgets import mQDialogWarn
-                    qqb = mQDialogWarn('Warning', 'You specified no ligands.')
-                    qqb.setParent(args.gui.wmain)
-                else:
-                    print('WARNING: No ligands specified. Defaulting to water.')
+                print('WARNING: No ligands specified. Defaulting to water.')
                 args.lig = ['water']
 
             if args.coord and (not args.geometry or (args.geometry not in geomnames and args.geometry not in geomshorts)):
@@ -210,12 +204,7 @@ def checkinput(args, calctype="base"):
                 args.spin = defaultspinstate
             # check ligands
             if not args.lig and not args.rgen:
-                if args.gui:
-                    from molSimplify.Classes.mWidgets import mQDialogWarn
-                    qqb = mQDialogWarn('Warning', 'You specified no ligands.')
-                    qqb.setParent(args.gui.wmain)
-                else:
-                    print('WARNING: No ligands specified. Substrate is placed to core.')
+                print('WARNING: No ligands specified. Substrate is placed to core.')
                 args.lig = ['']
             # if True in [True for i in args.lig if i in args.substrate]:
             #     print('at least one of the ligans is present in the substrate list.')
@@ -232,55 +221,54 @@ def checkinput(args, calctype="base"):
             #     args.ligocc.append(1)
             # check coordination number and geometry
             if not args.coord and not args.geometry:
-                if not args.gui:
-                    # calculate occurrences, denticities etc for all ligands
-                    licores = getlicores()
-                    smilesligs = 0
-                    toccs = 0
-                    occs0 = []
-                    dentl = []
-                    cats0 = []
-                    ligoc = args.ligocc
-                    for i, ligname in enumerate(args.lig):
-                        # if not in cores -> smiles/file
-                        if ligname not in list(licores.keys()):
-                            if args.smicat and len(args.smicat) >= (smilesligs+1):
-                                if 'pi' in args.smicat[smilesligs]:
-                                    cats0.append(['c'])
-                                else:
-                                    cats0.append(args.smicat[smilesligs])
+                # calculate occurrences, denticities etc for all ligands
+                licores = getlicores()
+                smilesligs = 0
+                toccs = 0
+                occs0 = []
+                dentl = []
+                cats0 = []
+                ligoc = args.ligocc
+                for i, ligname in enumerate(args.lig):
+                    # if not in cores -> smiles/file
+                    if ligname not in list(licores.keys()):
+                        if args.smicat and len(args.smicat) >= (smilesligs+1):
+                            if 'pi' in args.smicat[smilesligs]:
+                                cats0.append(['c'])
                             else:
-                                cats0.append([0])
-                            dent_i = len(cats0[-1])
-                            smilesligs += 1
+                                cats0.append(args.smicat[smilesligs])
                         else:
-                            cats0.append(False)
-                        # otherwise get denticity from ligands dictionary
-                            if 'pi' in licores[ligname][2]:
+                            cats0.append([0])
+                        dent_i = len(cats0[-1])
+                        smilesligs += 1
+                    else:
+                        cats0.append(False)
+                    # otherwise get denticity from ligands dictionary
+                        if 'pi' in licores[ligname][2]:
+                            dent_i = 1
+                        else:
+                            if isinstance(licores[ligname][2], str):
                                 dent_i = 1
                             else:
-                                if isinstance(licores[ligname][2], str):
-                                    dent_i = 1
-                                else:
-                                    dent_i = int(len(licores[ligname][2]))
-                        # get occurrence for each ligand if specified (default 1)
-                        oc_i = int(ligoc[i]) if i < len(ligoc) else 1
-                        occs0.append(0)         # initialize occurrences list
-                        dentl.append(dent_i)    # append denticity to list
-                        # loop over occurrence of ligand i to check for max coordination
-                        for j in range(0, oc_i):
-                            occs0[i] += 1
-                            toccs += dent_i
-                    for i, substrate in enumerate(args.substrate):
-                        # if args.core[0].lower() in args.mlig and (substrate not in [lig_i.lower() for lig_i in args.lig]):
-                        if args.core[0].lower() in args.mlig:
-                            suboc_i = len(
-                                [core for core in args.core if core.lower() in args.mlig])
-                            for j in range(suboc_i):
-                                toccs += 1
-                    print(
-                        ('WARNING: No coordination number specified. Calculating from lig, ligocc, and subcatoms and found ' + str(toccs) + '.'))
-                    args.coord = toccs
+                                dent_i = int(len(licores[ligname][2]))
+                    # get occurrence for each ligand if specified (default 1)
+                    oc_i = int(ligoc[i]) if i < len(ligoc) else 1
+                    occs0.append(0)         # initialize occurrences list
+                    dentl.append(dent_i)    # append denticity to list
+                    # loop over occurrence of ligand i to check for max coordination
+                    for j in range(0, oc_i):
+                        occs0[i] += 1
+                        toccs += dent_i
+                for i, substrate in enumerate(args.substrate):
+                    # if args.core[0].lower() in args.mlig and (substrate not in [lig_i.lower() for lig_i in args.lig]):
+                    if args.core[0].lower() in args.mlig:
+                        suboc_i = len(
+                            [core for core in args.core if core.lower() in args.mlig])
+                        for j in range(suboc_i):
+                            toccs += 1
+                print(
+                    ('WARNING: No coordination number specified. Calculating from lig, ligocc, and subcatoms and found ' + str(toccs) + '.'))
+                args.coord = toccs
             if args.coord and (not args.geometry or (args.geometry not in geomnames and args.geometry not in geomshorts)):
                 print(('WARNING: No or unknown coordination geometry specified. Defining coordination geometry based on found coordination number: ' +
                       globs.defaultgeometry[int(args.coord)][1]))

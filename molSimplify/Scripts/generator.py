@@ -129,7 +129,6 @@ def startgen(argv, flag, inputfile_str=None, write_files=True):
         emsg = 'Input file '+args.i+' does not exist. Please specify a valid input file.\n'
         print(emsg)
         return emsg
-    args.gui = False
     # parse input file
     if args.i or inputfile_str:
         parseinputfile(args, inputfile_str=inputfile_str)
@@ -230,7 +229,6 @@ def startgen(argv, flag, inputfile_str=None, write_files=True):
     # normal structure generation or transition state building
     else:
         args = copy.deepcopy(args0)
-        # add gui flag
         corests = args.core
         # if args.tsgen: # goes through multigenruns for maximum interoperability
         #     print('building a transition state')
