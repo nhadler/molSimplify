@@ -1411,7 +1411,6 @@ class mol3D:
         return close_metal
 
     def findMetal(self, transition_metals_only: bool = True) -> List[int]:
-#        transition_metals_only = False
         """
         Find metal(s) in a mol3D class.
 
@@ -7073,7 +7072,7 @@ class mol3D:
             new_bo_dict[(ind1,ind2)]=mol.bo_dict[(bo[0],bo[1])]
 
         # connect metal to ligand
-        metal_ind = cmol.findMetal()[0]
+        metal_ind = cmol.findMetal(transition_metals_only=False)[0]
         for atom in catoms:
             ind1 = metal_ind
             ind2 = atom + len(cmol.atoms)
