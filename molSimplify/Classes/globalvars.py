@@ -510,6 +510,18 @@ def mybash(cmd):
     lines = [line+"\n" for line in lines if line !=""]
     return ''.join(lines)
 
+# Get current version of molSimplify
+#  @return version string
+def get_version():
+    # https://stackoverflow.com/questions/20180543/how-do-i-check-the-versions-of-python-modules
+
+    # If Python >= 3.8
+    if sys.version_info[0] >= 3 and sys.version_info[1] >= 8:
+        from importlib.metadata import version
+        return version('molSimplify')
+    # Otherwise, have an older version of Python
+    else:
+        return '1.7.6+'
 
 # Defines global variables used throughout the code
 class globalvars(metaclass=Singleton):
@@ -518,15 +530,31 @@ class globalvars(metaclass=Singleton):
     def __init__(self):
         # Program name
         self.PROGRAM = 'molSimplify'
-        s = '\nmolSimplify v1.3.3x\nFreely distributed under the GNU GPL license.\n'
-        s += 'Copyright 2017 Kulik Lab @ MIT\n'
-        s += 'Developed by: Efthymios Ioannidis (timis@mit.edu)\n'
-        s += 'Contributions by:\n\tHeather J. Kulik (hjkulik@mit.edu)\n'
-        s += '\t Terry Gani (terryg@mit.edu)\n'
-        s += '\t JP Janet (jpjanet@mit.edu)\n'
-        s += 'E. I. Ioannidis, T. Z. H. Gani, H. J. Kulik. J. Comput. Chem. 2016, 37, 2106-2117.\n'
-        s += 'J.P. Janet, Q. Zhao, E.I. Ioannidis, H.J. Kulik. Mol. Simul. 2017,43(5-6), 327-345.\n'
-        s += 'J.P. Janet, T. Z. H. Gani, A. H. Steeves, E. I. Ioannidis, H. J. Kulik. Ind. Eng. Chem. Res. 2017, 56(17), 4898-4910.\n'
+        program_info = [
+        f'\nmolSimplify v{get_version()}\n',
+        'Freely distributed under the GNU GPL license.\n',
+        'Copyright 2017 Kulik Lab @ MIT\n',
+        'Developed by: Efthymios Ioannidis\n',
+        'Contributions by:\n',
+        '\tHeather J. Kulik (corresponding developer; hjkulik@mit.edu)\n',
+        '\tNaveen Arunachalam\n',
+        '\tChenru Duan\n',
+        '\tFreya Edholm\n',
+        '\tTerry Gani\n',
+        '\tDaniel Harper\n',
+        '\tJP Janet\n',
+        '\tFang Liu\n',
+        '\tRalf Meyer\n',
+        '\tAditya Nandy\n',
+        '\tMichael Taylor\n',
+        '\tGianmarco Terrones\n',
+        '\tTzuhsiung (Nick) Yang\n',
+        'E. I. Ioannidis, T. Z. H. Gani, H. J. Kulik. J. Comput. Chem. 2016, 37, 2106-2117.\n',
+        'J.P. Janet, Q. Zhao, E.I. Ioannidis, H.J. Kulik. Mol. Simul. 2017,43(5-6), 327-345.\n',
+        'J.P. Janet, T. Z. H. Gani, A. H. Steeves, E. I. Ioannidis, H. J. Kulik. Ind. Eng. Chem. Res. 2017, 56(17), 4898-4910.\n',
+        ]
+        s = ''.join(program_info)
+
         # About message
         self.about = s
         # ##### GET INFORMATION ######

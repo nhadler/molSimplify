@@ -89,15 +89,6 @@ DescString_naming = 'Printing custom filename help.'
 # Ligand dictionary help description string
 DescString_ligdict = 'Printing ligand dictionary help.'
 
-
-try:
-    from PyQt5.QtWidgets import QApplication
-    from molSimplify.Classes.mGUI import mGUI
-    qtflag = True
-except ImportError:
-    qtflag = False
-
-
 # Main function
 #  @param args Argument namespace
 def main(args=None):
@@ -105,21 +96,16 @@ def main(args=None):
     # ordering between openbabel and TF calls consistent
     # on some sytems
     if globs.testTF():
-        print('TensorFlow connection successful')
+        print('TensorFlow connection successful.')
         tensorflow_silence()
     else:
-        print('TensorFlow connection failed')
+        print('TensorFlow connection failed.')
 
     if args is None:
         args = sys.argv[1:]
-    # ## run GUI by default ###
-    gui = True
-    if len(args) == 0 and not qtflag:
-        print("\nGUI not supported since PyQt5 can not be loaded. Please use commandline version.\n")
-        exit()
-    ####################################
-    # ## print help ###
-    elif '-h' in args or '-H' in args or '--help' in args:
+    
+    ## print help ###
+    if '-h' in args or '-H' in args or '--help' in args:
         if 'advanced' in args:
             parser = argparse.ArgumentParser(description=DescString_advanced)
             parseinputs_advanced(parser)
@@ -167,30 +153,22 @@ def main(args=None):
                                              formatter_class=argparse.RawDescriptionHelpFormatter)
             parseinputs_basic(parser)
         return
-    # ## run with gui ###
-    elif gui and len(args) == 0:
-        print('molSimplify is starting!')
-        # ## create main application
-        app = QApplication(sys.argv)  # main application
-        _ = mGUI(app)  # main GUI class
-        app.processEvents()
-        app.exec_()
-    # ## if input file is specified run without GUI ###
+    elif len(args) == 0:
+        print('No arguments supplied. GUI is no longer supported. Exiting.')
+    ## if input file is specified ###
     elif '-i' in args:
-        print('Input file detected, reading arguments from input file')
+        print('Input file detected, reading arguments from input file.')
         print('molSimplify is starting!')
-        gui = False
         # run from commandline
-        startgen(sys.argv, False, gui)
-    # ## grab from commandline arguments ###
+        startgen(sys.argv, False)
+    ## grab from commandline arguments ###
     else:
-        print('No input file detected, reading arguments from commandline')
+        print('No input file detected, reading arguments from commandline.')
         print('molSimplify is starting!')
-        gui = False
         # create input file from commandline
         infile = parseCLI([_f for _f in args if _f])
         args = ['main.py', '-i', infile]
-        startgen(args, False, gui)
+        startgen(args, False)
 
 
 if __name__ == '__main__':
