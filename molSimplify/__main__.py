@@ -103,7 +103,7 @@ def main(args=None):
 
     if args is None:
         args = sys.argv[1:]
-    
+
     ## print help ###
     if '-h' in args or '-H' in args or '--help' in args:
         if 'advanced' in args:
