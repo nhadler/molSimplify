@@ -1,5 +1,4 @@
 from molSimplify.Scripts.generator import startgen_pythonic
-from molSimplify.Classes.mol3D import mol3D
 import helperFuncs as hp
 
 def test_joption_pythonic(tmpdir, resource_path_root):
