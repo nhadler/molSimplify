@@ -31,15 +31,6 @@ from molSimplify.Scripts.rmsd import rigorous_rmsd, kabsch_rmsd, kabsch_rotate
 from itertools import permutations
 from collections import Counter
 
-try:
-    import PyQt5  # noqa: F401
-    from molSimplify.Classes.miniGUI import miniGUI
-    # PyQt5 flag
-    qtflag = True
-except ImportError:
-    qtflag = False
-
-
 class mol3D:
     """Holds information about a molecule, used to do manipulations.
     Reads information from structure file (XYZ, mol2) or is directly
@@ -1132,15 +1123,7 @@ class mol3D:
         fname = filename + '.svg'
         with open(fname, "w") as svg_file:
             svg_file.write(newsvg)
-        if qtflag:
-            # Initialize fake gui
-            fakegui = miniGUI(sys.argv)
-            # Add the svg to the window
-            fakegui.addsvg(fname)
-            # Show window
-            fakegui.show()
-        else:
-            print('No PyQt5 found. SVG file written to directory.')
+        print('SVG file written to directory.')
 
     def aromatic_charge(self, bo_graph):
         '''

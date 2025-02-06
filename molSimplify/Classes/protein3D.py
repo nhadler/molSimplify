@@ -22,7 +22,6 @@ import ast
 import time
 from scipy.spatial import ConvexHull
 # from pymol import cmd, stored
-# no GUI support for now
 
 
 class protein3D:

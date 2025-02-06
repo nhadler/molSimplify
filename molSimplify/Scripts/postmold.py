@@ -288,16 +288,12 @@ def getresd(dirf):
 # Post-process all molden files in subdirectory
 #  @param molf Molden file name
 #  @param folder Subdirectory containing molden file
-#  @param gui GUI flag
 #  @param flog Log file name
 
 
-def moldpost(molf, folder, gui, flog):
+def moldpost(molf, folder, flog):
     # parse each file and get MO information
     for f in molf:
-        if gui:
-            gui.iWtxt.setText('Processing '+f+'\n'+gui.iWtxt.toPlainText())
-            gui.app.processEvents()
         flog.write('Processing '+f+'\n')
         parse(folder, f)
     # parse generated _orbs files and get summary

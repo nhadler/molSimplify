@@ -272,10 +272,6 @@ def init_template(args: Namespace, cpoints_required: int) -> Tuple[mol3D, mol3D,
         else:
             emsg = "Requested geometry not available." + \
                 "Defaulting to "+geomgroups[coord-1][0]
-            if args.gui:
-                from Classes.mWidgets import mQDialogWarn
-                qqb = mQDialogWarn('Warning', emsg)
-                qqb.setParent(args.gui.wmain)
             print(emsg)
         # load predefined backbone coordinates
         corexyz = loadcoord(geom)
@@ -312,10 +308,6 @@ def init_template(args: Namespace, cpoints_required: int) -> Tuple[mol3D, mol3D,
         if not args.ccatoms:
             emsg = 'Connection atoms for custom core not specified. Defaulting to 1!\n'
             print(emsg)
-            if args.gui:
-                from Classes.mWidgets import mQDialogWarn
-                qqb = mQDialogWarn('Warning', emsg)
-                qqb.setParent(args.gui.wmain)
         ccatoms = args.ccatoms if args.ccatoms else [0]
         coord = len(ccatoms)
         if args.debug:
@@ -1688,13 +1680,11 @@ def get_MLdist_database(metal: atom3D, oxstate: str, spin: str, lig3D: mol3D,
     return bondl, exact_match
 
 
-def get_batoms(args, batslist, ligsused):
+def get_batoms(batslist, ligsused):
     """Get backbone atoms from template.
 
     Parameters
     ----------
-        args : Namespace
-            Namespace of arguments.
         batslist : list
             List of backbone connecting atoms for each ligand.
         ligsused : int
@@ -1709,10 +1699,6 @@ def get_batoms(args, batslist, ligsused):
     batoms = batslist[ligsused]
     if len(batoms) < 1:
         emsg = 'Connecting all ligands is not possible. Check your input!'
-        if args.gui:
-            from Classes.mWidgets import mQDialogWarn
-            qqb = mQDialogWarn('Warning', emsg)
-            qqb.setParent(args.gui.wmain)
     return batoms
 
 
@@ -2298,12 +2284,6 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
     this_diag = run_diag()
     if globs.debug:
         print(('\nGenerating complex with ligands and occupations:', ligs, ligoc))
-    if args.gui:
-        args.gui.iWtxt.setText('\nGenerating complex with core:'+args.core +
-                               ' and ligands: ' + ' '.join(ligs)+'\n'+args.gui.iWtxt.toPlainText())
-        args.gui.app.processEvents()
-        # import gui options
-        from Classes.mWidgets import mQDialogWarn
     # initialize variables
     emsg = ''
     complex3D: List[mol3D] = []
@@ -2545,7 +2525,7 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
                 atom0 = 0  # initialize variables
                 coreref = corerefatoms.getAtom(totlig)
                 # connecting point in backbone to align ligand to
-                batoms = get_batoms(args, batslist, ligsused)
+                batoms = get_batoms(batslist, ligsused)
                 cpoint = m3D.getAtom(batoms[0])
                 # attach ligand depending on the denticity
                 # optimize geometry by minimizing steric effects
@@ -2579,10 +2559,6 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
                         catoms = catoms[::-1]
                     batoms = batslist[ligsused]
                     if len(batoms) < 1:
-                        if args.gui:
-                            emsg = 'Connecting all ligands is not possible. Check your input!'
-                            qqb = mQDialogWarn('Warning', emsg)
-                            qqb.setParent(args.gui.wmain)
                         break
                     # connection atom
                     atom0 = catoms[0]
@@ -2628,9 +2604,6 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
                     # connection atoms in backbone
                     batoms = batslist[ligsused]
                     if len(batoms) < 1:
-                        if args.gui:
-                            qqb = mQDialogWarn('Warning', emsg)
-                            qqb.setParent(args.gui.wmain)
                         emsg = 'Connecting all ligands is not possible. Check your input!'
                         break
                     # get center of mass
@@ -2697,9 +2670,6 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
                     # connection atoms in backbone
                     batoms = batslist[ligsused]
                     if len(batoms) < 1:
-                        if args.gui:
-                            qqb = mQDialogWarn('Warning', emsg)
-                            qqb.setParent(args.gui.wmain)
                         emsg = 'Connecting all ligands is not possible. Check your input!'
                         break
                     # get center of mass
@@ -3028,13 +2998,6 @@ def structgen(args: Namespace, rootdir: str, ligands: List[str], ligoc: List[int
         if sanity:
             print(('WARNING: Generated complex is not good! Minimum distance between atoms:' +
                   "{0:.2f}".format(d0)+'A\n'))
-            if args.gui:
-                ssmsg = 'Generated complex in folder '+rootdir + \
-                    ' is no good! Minimum distance between atoms:' + \
-                        "{0:.2f}".format(d0)+'A\n'
-                from Classes.mWidgets import mQDialogWarn
-                qqb = mQDialogWarn('Warning', ssmsg)
-                qqb.setParent(args.gui.wmain)
         if args.debug:
             print(('setting sanity diag, min dist at ' +
                    str(d0) + ' (higher is better)'))
@@ -3185,10 +3148,6 @@ def structgen(args: Namespace, rootdir: str, ligands: List[str], ligoc: List[int
     del core3D  # Legacy code, unsure if needed
 
     pfold = rootdir.split('/', 1)[-1]
-    if args.gui:
-        args.gui.iWtxt.setText('In folder '+pfold+' generated ' +
-                               '1 structure!\n'+args.gui.iWtxt.toPlainText())
-        args.gui.app.processEvents()
     print(('\nIn folder '+rootdir+' generated 1 structure!'))
 
     return strfiles, emsg, this_diag

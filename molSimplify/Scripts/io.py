@@ -144,7 +144,6 @@ def getligs() -> str:
 
 # Get ligands cores
 #
-#  This form of the function is used extensively in the GUI so it got it's own call.
 #  This is basically the same as getligs() but returns the full dictionary
 #  @param flip if we want to return flipped versions of bidentates
 #  @return Ligands dictionary
@@ -174,7 +173,6 @@ def getsimpleligs() -> str:
 
 # Get simple ligands cores
 #
-#  This form of the function is used extensively in the GUI so it got it's own call.
 #  This is basically the same as getsimpleligs() but returns the full dictionary
 #  @return Simple ligands dictionary
 
@@ -224,7 +222,6 @@ def getbinds() -> str:
 
 # Get binding species cores
 #
-#  This form of the function is used extensively in the GUI so it got it's own call.
 #  This is basically the same as getbinds() but returns the full dictionary
 #  @return Binding species dictionary
 
@@ -253,7 +250,6 @@ def getcores():
 
 # Get core cores
 #
-#  This form of the function is used extensively in the GUI so it got it's own call.
 #  This is basically the same as getcores() but returns the full dictionary
 #  @return Cores dictionary
 
@@ -282,7 +278,6 @@ def getsubstrates():
 
 # Get substrate cores
 #
-#  This form of the function is used extensively in the GUI so it got it's own call.
 #  This is basically the same as getsubstrates() but returns the full dictionary
 #  @return Substrates dictionary
 
