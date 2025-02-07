@@ -32,7 +32,7 @@ def test_qcgen_defaults(resource_path_root, gen_function, default_name, tmp_path
     if gen_function is gamgen or gen_function is qgen:
         sub_dir = tmp_path / 'FeH2O6/B3LYP'
         ref_dir = f'{ref_dir}/FeH2O6/B3LYP'
-    assert jobdirs[0] == sub_dir
+    assert jobdirs[0] == str(sub_dir)
 
     ref_file = resource_path_root / ref_dir / default_name
     with open(ref_file, 'r') as f:
