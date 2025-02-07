@@ -228,7 +228,7 @@ def main():
         # Rotation of all of the linkers
         for i, rot_angle in enumerate(rot_angle_list):
             for linker_num, linker in enumerate(linker_bdc_list):
-                new_linker=linker_rotation(molcif, fcoords, linker, rot_angle)
+                new_linker=linker_rotation(molcif, fcoords, linker, rot_angle, cell_v, allatomtypes)
                 coords_new[linker_bdc_list[linker_num],:] = new_linker # new_linker
             path_directory = str(path2write)+str(int(rot_angle_degree[i]))
             if not os.path.exists(path_directory):
