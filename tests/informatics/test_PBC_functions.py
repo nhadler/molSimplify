@@ -1,7 +1,7 @@
 import pytest
 from molSimplify.Informatics.MOF.PBC_functions import (
     compute_adj_matrix,
-    compute_distance_matrix3,
+    compute_distance_matrix,
     fractional2cart,
     mkcell,
     readcif,
@@ -48,7 +48,7 @@ def test_pairwise_distance_calc(resource_path_root, tmpdir, name):
     cpar, allatomtypes, fcoords = readcif(str(resource_path_root / "inputs" / "cif_files" / f"{name}.cif"))
     cell_v = mkcell(cpar)
     cart_coords = fractional2cart(fcoords, cell_v)
-    distance_mat = compute_distance_matrix3(cell_v, cart_coords)
+    distance_mat = compute_distance_matrix(cell_v, cart_coords)
 
     reference_mat = np.loadtxt(str(resource_path_root / "refs" / "informatics" / "mof" / "txt" / f"{name}_distance_mat.txt"))
     assert np.allclose(distance_mat, reference_mat)

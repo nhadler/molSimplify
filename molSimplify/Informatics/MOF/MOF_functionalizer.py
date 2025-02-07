@@ -6,7 +6,7 @@ from molSimplify.Informatics.MOF.monofunctionalized_BDC.index_information import
 from molSimplify.Scripts.geometry import checkplanar, PointRotateAxis, distance, rotate_around_axis
 from molSimplify.Informatics.MOF.PBC_functions import (
     compute_adj_matrix,
-    compute_distance_matrix3,
+    compute_distance_matrix,
     compute_image_flag,
     findPaths,
     frac_coord,
@@ -86,7 +86,7 @@ def functionalize_MOF(cif_file,
     cell_v = np.array(cell_vector)
     original_fcoords = fcoords.copy()
     cart_coords = fractional2cart(fcoords, cell_v)
-    distance_mat = compute_distance_matrix3(cell_v, cart_coords)
+    distance_mat = compute_distance_matrix(cell_v, cart_coords)
     adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes)
     molcif.graph = adj_matrix.todense()
 
@@ -1106,7 +1106,7 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
     molcif, cell_vector, alpha, beta, gamma = import_from_cif(cif_file, True)
     cell_v = np.array(cell_vector)
     cart_coords = fractional2cart(fcoords, cell_v)
-    distance_mat = compute_distance_matrix3(cell_v, cart_coords)
+    distance_mat = compute_distance_matrix(cell_v, cart_coords)
     adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes)
     molcif.graph = adj_matrix.todense()
 
@@ -1234,7 +1234,7 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
     molcif, cell_vector, alpha, beta, gamma = import_from_cif(cif_file, True)
     cell_v = np.array(cell_vector)
     cart_coords = fractional2cart(fcoords, cell_v)
-    distance_mat = compute_distance_matrix3(cell_v, cart_coords)
+    distance_mat = compute_distance_matrix(cell_v, cart_coords)
     adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes)
     molcif.graph = adj_matrix.todense()
 
@@ -1451,7 +1451,7 @@ def post_functionalization_overlap_and_bonding_check(cell_v, allatomtypes, fcoor
 
     """
     cart_coords = fractional2cart(fcoords, cell_v)
-    distance_mat = compute_distance_matrix3(cell_v, cart_coords)
+    distance_mat = compute_distance_matrix(cell_v, cart_coords)
     adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes, handle_overlap=False) # Will throw an error if atoms are overlapping after functionalization.
     adj_matrix = adj_matrix.todense()
     adj_matrix = np.squeeze(np.asarray(adj_matrix)) # Converting from numpy.matrix to numpy.array

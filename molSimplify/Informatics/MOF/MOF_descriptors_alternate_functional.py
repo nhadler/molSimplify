@@ -318,7 +318,7 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath = False):
         tmpstr = "Failed to featurize %s: large primitive cell\n"%(name)
         write2file(path,"/FailedStructures.log",tmpstr)
         return full_names, full_descriptors
-    distance_mat = compute_distance_matrix2(cell_v,cart_coords)
+    distance_mat = compute_distance_matrix(cell_v,cart_coords)
     try:
         adj_matrix, _ = compute_adj_matrix(distance_mat,allatomtypes)
     except NotImplementedError:

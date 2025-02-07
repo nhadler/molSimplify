@@ -23,7 +23,7 @@ from molSimplify.Informatics.MOF.atomic import (
     )
 from molSimplify.Informatics.MOF.PBC_functions import (
     compute_adj_matrix,
-    compute_distance_matrix3,
+    compute_distance_matrix,
     compute_image_flag,
     frac_coord,
     fractional2cart,
@@ -1006,7 +1006,7 @@ def get_MOF_descriptors(
     Getting the adjacency matrix.
     """""""""
     if not graph_provided:  # Make the adjacency matrix.
-        distance_mat = compute_distance_matrix3(cell_v, cart_coords)
+        distance_mat = compute_distance_matrix(cell_v, cart_coords)
         try:
             adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes, wiggle_room)
         except NotImplementedError:
