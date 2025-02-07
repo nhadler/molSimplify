@@ -549,9 +549,10 @@ class globalvars(metaclass=Singleton):
         '\tMichael Taylor\n',
         '\tGianmarco Terrones\n',
         '\tTzuhsiung (Nick) Yang\n',
-        'E. I. Ioannidis, T. Z. H. Gani, H. J. Kulik. J. Comput. Chem. 2016, 37, 2106-2117.\n',
-        'J.P. Janet, Q. Zhao, E.I. Ioannidis, H.J. Kulik. Mol. Simul. 2017,43(5-6), 327-345.\n',
-        'J.P. Janet, T. Z. H. Gani, A. H. Steeves, E. I. Ioannidis, H. J. Kulik. Ind. Eng. Chem. Res. 2017, 56(17), 4898-4910.\n',
+        'E.I. Ioannidis, T.Z.H. Gani, H.J. Kulik. J. Comput. Chem. 2016, 37, 2106-2117.\n',
+        'J.P. Janet, Q. Zhao, E.I. Ioannidis, H.J. Kulik. Mol. Simul. 2017, 43(5-6), 327-345.\n',
+        'J.P. Janet, T.Z.H. Gani, A.H. Steeves, E.I. Ioannidis, H.J. Kulik. Ind. Eng. Chem. Res. 2017, 56(17), 4898-4910.\n',
+        'For an extended list of references, please see https://molsimplify.readthedocs.io/en/latest/Citation.html\n'
         ]
         s = ''.join(program_info)
 

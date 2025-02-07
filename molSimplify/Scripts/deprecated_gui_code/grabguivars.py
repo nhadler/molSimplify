@@ -1,7 +1,7 @@
 # # @file grabguivars.py
 # #  Grabs arguments from GUI input
 # #
-# #  Written by Tim Ioannidisfor HJK Group
+# #  Written by Tim Ioannidis for HJK Group
 # #
 # #  Dpt of Chemical Engineering, MIT
 
