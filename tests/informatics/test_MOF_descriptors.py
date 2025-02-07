@@ -47,7 +47,7 @@ def ref_names():
         "odac-21735",
         "odac-21816",
     ])
-def test_get_MOF_descriptors_ODAC(resource_path_root, tmpdir, name, ref_names):
+def test_get_MOF_descriptors_ODAC(resource_path_root, tmp_path, name, ref_names):
     # NOTE All the .cif files were converted to primitive unit cell using the
     # MOF_descriptors.get_primitive() function
 
@@ -55,8 +55,8 @@ def test_get_MOF_descriptors_ODAC(resource_path_root, tmpdir, name, ref_names):
         full_names, full_descriptors = get_MOF_descriptors(
             str(resource_path_root / "inputs" / "cif_files" / f"{name}.cif"),
             depth=3,
-            path=str(tmpdir),
-            xyzpath=str(tmpdir / "test.xyz"),
+            path=str(tmp_path),
+            xyzpath=str(tmp_path / "test.xyz"),
             Gval=True,
         )
 
@@ -67,11 +67,11 @@ def test_get_MOF_descriptors_ODAC(resource_path_root, tmpdir, name, ref_names):
     assert full_names == ref_names()
     np.testing.assert_allclose(full_descriptors, ref["descriptors"], atol=1e-6)
 
-    lc_descriptors = pd.read_csv(tmpdir / "lc_descriptors.csv")
+    lc_descriptors = pd.read_csv(tmp_path / "lc_descriptors.csv")
     lc_ref = pd.read_csv(resource_path_root / "refs" / "informatics" / "mof" / "MOF_descriptors" / name / "lc_descriptors.csv")
     assert all(lc_descriptors == lc_ref)
 
-    sbu_descriptors = pd.read_csv(tmpdir / "sbu_descriptors.csv")
+    sbu_descriptors = pd.read_csv(tmp_path / "sbu_descriptors.csv")
     sbu_ref = pd.read_csv(resource_path_root / "refs" / "informatics" / "mof" / "MOF_descriptors" / name / "sbu_descriptors.csv")
     assert all(sbu_descriptors == sbu_ref)
 
@@ -88,7 +88,7 @@ def test_get_MOF_descriptors_ODAC(resource_path_root, tmpdir, name, ref_names):
         "YICDAR_clean",
         "VONBIK_clean",
     ])
-def test_get_MOF_descriptors_JACS(resource_path_root, tmpdir, name, ref_names):
+def test_get_MOF_descriptors_JACS(resource_path_root, tmp_path, name, ref_names):
     """
     Tests a handful of the MOFs used in
     Nandy et al., J. Am. Chem. Soc. 2021, 143, 42, 17535-17547
@@ -101,8 +101,8 @@ def test_get_MOF_descriptors_JACS(resource_path_root, tmpdir, name, ref_names):
         full_names, full_descriptors = get_MOF_descriptors(
             str(resource_path_root / "inputs" / "cif_files" / f"{name}.cif"),
             depth=3,
-            path=str(tmpdir),
-            xyzpath=str(tmpdir / "test.xyz"),
+            path=str(tmp_path),
+            xyzpath=str(tmp_path / "test.xyz"),
             Gval=False,
         )
 
@@ -119,10 +119,10 @@ def test_get_MOF_descriptors_JACS(resource_path_root, tmpdir, name, ref_names):
         [d for d, n in zip(full_descriptors, full_names) if "alpha" not in n],
         ref["descriptors"], atol=1e-6)
 
-    lc_descriptors = pd.read_csv(tmpdir / "lc_descriptors.csv")
+    lc_descriptors = pd.read_csv(tmp_path / "lc_descriptors.csv")
     lc_ref = pd.read_csv(resource_path_root / "refs" / "informatics" / "mof" / "MOF_descriptors" / name / "lc_descriptors.csv")
     assert all(lc_descriptors == lc_ref)
 
-    sbu_descriptors = pd.read_csv(tmpdir / "sbu_descriptors.csv")
+    sbu_descriptors = pd.read_csv(tmp_path / "sbu_descriptors.csv")
     sbu_ref = pd.read_csv(resource_path_root / "refs" / "informatics" / "mof" / "MOF_descriptors" / name / "sbu_descriptors.csv")
     assert all(sbu_descriptors == sbu_ref)
