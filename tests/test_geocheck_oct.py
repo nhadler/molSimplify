@@ -20,7 +20,7 @@ from molSimplify.Classes.ligand import ligand_breakdown
     "atom_ordering_mismatch",
     "iodide_radius"
 ])
-def test_geocheck_oct(tmpdir, resource_path_root, testName):
+def test_geocheck_oct(tmp_path, resource_path_root, testName):
     thresh = 0.01
-    passGeo = hp.runtestgeo(tmpdir, resource_path_root, testName, thresh)
+    passGeo = hp.runtestgeo(tmp_path, resource_path_root, testName, thresh)
     assert passGeo

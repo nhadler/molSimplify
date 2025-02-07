@@ -20,7 +20,7 @@ import json
         "YICDAR_clean",
         "VONBIK_clean",
     ])
-def test_cif_reading(resource_path_root, tmpdir, name):
+def test_cif_reading(resource_path_root, name):
     cpar, allatomtypes, fcoords = readcif(str(resource_path_root / "inputs" / "cif_files" / f"{name}.cif"))
 
     reference_cpar = np.loadtxt(str(resource_path_root / "refs" / "informatics" / "mof" / "txt" / f"{name}_cpar.txt"))
@@ -44,7 +44,7 @@ def test_cif_reading(resource_path_root, tmpdir, name):
         "YICDAR_clean",
         "VONBIK_clean",
     ])
-def test_pairwise_distance_calc(resource_path_root, tmpdir, name):
+def test_pairwise_distance_calc(resource_path_root, name):
     cpar, allatomtypes, fcoords = readcif(str(resource_path_root / "inputs" / "cif_files" / f"{name}.cif"))
     cell_v = mkcell(cpar)
     cart_coords = fractional2cart(fcoords, cell_v)
@@ -63,7 +63,7 @@ def test_pairwise_distance_calc(resource_path_root, tmpdir, name):
         "YICDAR_clean",
         "VONBIK_clean",
     ])
-def test_adjacency_matrix_calc(resource_path_root, tmpdir, name):
+def test_adjacency_matrix_calc(resource_path_root, name):
     cpar, allatomtypes, fcoords = readcif(str(resource_path_root / "inputs" / "cif_files" / f"{name}.cif"))
     distance_mat = np.loadtxt(str(resource_path_root / "refs" / "informatics" / "mof" / "txt" / f"{name}_distance_mat.txt"))
 
@@ -79,9 +79,9 @@ def test_adjacency_matrix_calc(resource_path_root, tmpdir, name):
         "Zn_MOF",
         "Co_MOF",
     ])
-def test_solvent_removal(resource_path_root, tmpdir, name):
+def test_solvent_removal(resource_path_root, tmp_path, name):
     input_geo = str(resource_path_root / "inputs" / "cif_files" / f"{name}_with_solvent.cif")
-    output_path = str(tmpdir / f"{name}.cif")
+    output_path = str(tmp_path / f"{name}.cif")
     solvent_removal(input_geo, output_path)
 
     # Comparing two CIF files for equality

@@ -163,7 +163,7 @@ def compareOG(xyz1, xyz2, thresh: float) -> bool:
     return passOG
 
 
-def runtest_num_atoms_in_xyz(tmpdir, resource_path_root, xyzfile):
+def runtest_num_atoms_in_xyz(resource_path_root, xyzfile):
     file_path = resource_path_root / "refs" / f"{xyzfile}.xyz"
     xyz_file1 = mol3D()
     xyz_file1.readfromxyz(file_path)
@@ -226,9 +226,9 @@ def jobdir(infile):
     return mydir
 
 
-def parse4test(infile, tmpdir: Path, isMulti: bool = False, extra_args: Dict[str, str] = {}) -> str:
+def parse4test(infile, tmp_path: Path, isMulti: bool = False, extra_args: Dict[str, str] = {}) -> str:
     name = jobname(infile)
-    f = tmpdir.join(os.path.basename(infile))
+    f = tmp_path.join(os.path.basename(infile))
     newname = f.dirname + "/" + os.path.basename(infile)
     print(newname)
     print('&&&&&&&&&')
@@ -247,13 +247,13 @@ def parse4test(infile, tmpdir: Path, isMulti: bool = False, extra_args: Dict[str
             smi = line.strip('\n').split()[1]
             abs_smi = os.path.dirname(infile) + '/' + smi
             newdata += "-lig " + abs_smi + "\n"
-            # fsmi = tmpdir.join(smi)
+            # fsmi = tmp_path.join(smi)
             # oldsmi=os.path.dirname(infile)+"/"+smi
             # with open(oldsmi) as f:
             #     smidata=f.read()
             # fsmi.write(smidata)
             # print "smi file is copied to the temporary running folder!"
-    newdata += f"-rundir {tmpdir}\n"
+    newdata += f"-rundir {tmp_path}\n"
     newdata += "-jobdir " + name + "\n"
     print('=====')
     print(newdata)
@@ -262,15 +262,15 @@ def parse4test(infile, tmpdir: Path, isMulti: bool = False, extra_args: Dict[str
     print(newdata)
     f.write(newdata)
     print("Input file parsed for test is located: ", newname)
-    jobdir = str(tmpdir / name)
+    jobdir = str(tmp_path / name)
     return newname, jobdir
 
 
-def parse4testNoFF(infile, tmpdir: Path, isMulti: bool = False) -> str:
+def parse4testNoFF(infile, tmp_path: Path, isMulti: bool = False) -> str:
     name = jobname(infile)
-    newinfile = str(tmpdir / (name + "_noff.in"))
+    newinfile = str(tmp_path / (name + "_noff.in"))
     shutil.copyfile(infile, newinfile)
-    return parse4test(newinfile, tmpdir, isMulti, extra_args={"-ffoption": "N"})
+    return parse4test(newinfile, tmp_path, isMulti, extra_args={"-ffoption": "N"})
 
 
 def report_to_dict(lines):
@@ -397,14 +397,14 @@ def compare_qc_input(inp, inp_ref):
     return passQcInputCheck
 
 
-def runtest(tmpdir, resource_path_root, name, threshMLBL, threshLG, threshOG, seed=31415):
+def runtest(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG, seed=31415):
     # Set seeds to eliminate randomness from test results
     random.seed(seed)
     np.random.seed(seed)
     infile = resource_path_root / "inputs" / f"{name}.in"
-    newinfile, myjobdir = parse4test(infile, tmpdir)
+    newinfile, myjobdir = parse4test(infile, tmp_path)
     args = ['main.py', '-i', newinfile]
-    with working_directory(tmpdir):
+    with working_directory(tmp_path):
         startgen(args, False, False)
     output_xyz = myjobdir + '/' + name + '.xyz'
     output_report = myjobdir + '/' + name + '.report'
@@ -440,13 +440,13 @@ def runtest(tmpdir, resource_path_root, name, threshMLBL, threshLG, threshOG, se
     return [passNumAtoms, passMLBL, passLG, passOG, pass_report, pass_qcin]
 
 
-def runtest_slab(tmpdir, resource_path_root, name, threshOG, extra_files=None):
+def runtest_slab(tmp_path, resource_path_root, name, threshOG, extra_files=None):
     """
     Performs test for slab builder.
 
     Parameters
     ----------
-        tmpdir : str
+        tmp_path : str
                 tmp folder to run the test
         name : str
                 name of the test
@@ -454,15 +454,15 @@ def runtest_slab(tmpdir, resource_path_root, name, threshOG, extra_files=None):
                 tolerance for RMSD comparison of overall geometries.
     """
     infile = resource_path_root / "inputs" / f"{name}.in"
-    newinfile, _ = parse4test(infile, tmpdir)
+    newinfile, _ = parse4test(infile, tmp_path)
     if extra_files is not None:
         for file_name in extra_files:
             file_path = resource_path_root / "inputs" / f"{file_name}"
-            shutil.copyfile(file_path, tmpdir / file_name)
+            shutil.copyfile(file_path, tmp_path / file_name)
     args = ['main.py', '-i', newinfile]
-    with working_directory(tmpdir):
+    with working_directory(tmp_path):
         startgen(args, False, False)
-    output_xyz = tmpdir / 'slab' / 'super332.xyz'
+    output_xyz = tmp_path / 'slab' / 'super332.xyz'
     ref_xyz = resource_path_root / "refs" / f"{name}.xyz"
     print("Output xyz file: ", output_xyz)
     pass_xyz = compareGeo(output_xyz, ref_xyz, threshMLBL=0, threshLG=0,
@@ -471,13 +471,13 @@ def runtest_slab(tmpdir, resource_path_root, name, threshOG, extra_files=None):
     return [passNumAtoms, passOG]
 
 
-def runtest_molecule_on_slab(tmpdir, resource_path_root, name, threshOG, extra_files=None):
+def runtest_molecule_on_slab(tmp_path, resource_path_root, name, threshOG, extra_files=None):
     """
     Performs test for slab builder with a CO molecule adsorbed.
 
     Parameters
     ----------
-        tmpdir : str
+        tmp_path : str
                 tmp folder to run the test
         name : str
                 name of the test
@@ -485,16 +485,16 @@ def runtest_molecule_on_slab(tmpdir, resource_path_root, name, threshOG, extra_f
                 tolerance for RMSD comparison of overall geometries.
     """
     infile = resource_path_root / "inputs" / f"{name}.in"
-    newinfile, _ = parse4test(infile, tmpdir, extra_args={
+    newinfile, _ = parse4test(infile, tmp_path, extra_args={
         '-unit_cell': 'slab.xyz', '-target_molecule': 'co.xyz'})
     if extra_files is not None:
         for file_name in extra_files:
             file_path = resource_path_root / "inputs" / f"{file_name}"
-            shutil.copyfile(file_path, tmpdir / file_name)
+            shutil.copyfile(file_path, tmp_path / file_name)
     args = ['main.py', '-i', newinfile]
-    with working_directory(tmpdir):
+    with working_directory(tmp_path):
         startgen(args, False, False)
-    output_xyz = tmpdir / 'loaded_slab' / 'loaded.xyz'
+    output_xyz = tmp_path / 'loaded_slab' / 'loaded.xyz'
     ref_xyz = resource_path_root / "refs" / f"{name}.xyz"
     print("Output xyz file: ", output_xyz)
     pass_xyz = compareGeo(output_xyz, ref_xyz, threshMLBL=0, threshLG=0,
@@ -503,7 +503,7 @@ def runtest_molecule_on_slab(tmpdir, resource_path_root, name, threshOG, extra_f
     return [passNumAtoms, passOG]
 
 
-def runtestgeo(tmpdir, resource_path_root, name, thresh, deleteH=True, geo_type="oct"):
+def runtestgeo(tmp_path, resource_path_root, name, thresh, deleteH=True, geo_type="oct"):
     initgeo = resource_path_root / "inputs" / "geocheck" / name / "init.xyz"
     optgeo = resource_path_root / "inputs" / "geocheck" / name / "opt.xyz"
     refjson = resource_path_root / "refs" / "geocheck" / name / "ref.json"
@@ -511,7 +511,7 @@ def runtestgeo(tmpdir, resource_path_root, name, thresh, deleteH=True, geo_type=
     mymol.readfromxyz(optgeo)
     init_mol = mol3D()
     init_mol.readfromxyz(initgeo)
-    with working_directory(tmpdir):
+    with working_directory(tmp_path):
         if geo_type == "oct":
             _, _, dict_struct_info = mymol.IsOct(
                 init_mol=init_mol, debug=False, flag_deleteH=deleteH)
@@ -531,7 +531,7 @@ def runtestgeo(tmpdir, resource_path_root, name, thresh, deleteH=True, geo_type=
     return passGeo
 
 
-def runtestgeo_optonly(tmpdir, resource_path_root, name, thresh, deleteH=True, geo_type="oct"):
+def runtestgeo_optonly(resource_path_root, name, thresh, deleteH=True, geo_type="oct"):
     optgeo = resource_path_root / "inputs" / "geocheck" / name / "opt.xyz"
     refjson = resource_path_root / "refs" / "geocheck" / name / "ref.json"
     mymol = mol3D()
@@ -547,15 +547,15 @@ def runtestgeo_optonly(tmpdir, resource_path_root, name, thresh, deleteH=True, g
         raise NotImplementedError('Only octahedral geometries supported for now')
 
 
-def runtestNoFF(tmpdir, resource_path_root, name, threshMLBL, threshLG, threshOG):
+def runtestNoFF(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG):
     infile = resource_path_root / "inputs" / f"{name}.in"
-    newinfile, myjobdir = parse4testNoFF(infile, tmpdir)
+    newinfile, myjobdir = parse4testNoFF(infile, tmp_path)
     [passNumAtoms, passMLBL, passLG, passOG, pass_report,
      pass_qcin] = [True, True, True, True, True, True]
     if newinfile != "":
         newname = jobname(newinfile)
         args = ['main.py', '-i', newinfile]
-        with working_directory(tmpdir):
+        with working_directory(tmp_path):
             startgen(args, False, False)
         output_xyz = myjobdir + '/' + newname + '.xyz'
         output_report = myjobdir + '/' + newname + '.report'
@@ -588,46 +588,46 @@ def runtestNoFF(tmpdir, resource_path_root, name, threshMLBL, threshLG, threshOG
     return [passNumAtoms, passMLBL, passLG, passOG, pass_report, pass_qcin]
 
 
-def runtest_reportonly(tmpdir, resource_path_root, name, seed=31415):
+def runtest_reportonly(tmp_path, resource_path_root, name, seed=31415):
     # Set seeds to eliminate randomness from test results
     random.seed(seed)
     np.random.seed(seed)
     infile = resource_path_root / "inputs" / f"{name}.in"
     # Copy the input file to the temporary folder
-    shutil.copy(infile, tmpdir/f'{name}_reportonly.in')
+    shutil.copy(infile, tmp_path/f'{name}_reportonly.in')
     # Add the report only flag
-    with open(tmpdir/f'{name}_reportonly.in', 'a') as f:
+    with open(tmp_path/f'{name}_reportonly.in', 'a') as f:
         f.write('-reportonly True\n')
-    newinfile, myjobdir = parse4test(tmpdir/f'{name}_reportonly.in', tmpdir)
+    newinfile, myjobdir = parse4test(tmp_path/f'{name}_reportonly.in', tmp_path)
     args = ['main.py', '-i', newinfile]
     with open(newinfile, 'r') as f:
         print(f.readlines())
-    with working_directory(tmpdir):
+    with working_directory(tmp_path):
         startgen(args, False, False)
     output_report = myjobdir + '/' + name + '_reportonly.report'
     ref_report = resource_path_root / "refs" / f"{name}.report"
     # Copy the reference report to the temporary folder
-    shutil.copy(ref_report, tmpdir/f'{name}_ref.report')
-    with open(tmpdir/f'{name}_ref.report', 'r') as f:
+    shutil.copy(ref_report, tmp_path/f'{name}_ref.report')
+    with open(tmp_path/f'{name}_ref.report', 'r') as f:
         lines = f.read()
     lines = lines.replace('Min_dist (A), 1000', 'Min_dist (A), graph')
-    with open(tmpdir/f'{name}_ref.report', 'w') as f:
+    with open(tmp_path/f'{name}_ref.report', 'w') as f:
         f.write(lines)
 
     print("Test input file: ", newinfile)
     print("Test output files are generated in ", myjobdir)
-    pass_report = compare_report_new(output_report, tmpdir/f'{name}_ref.report')
+    pass_report = compare_report_new(output_report, tmp_path/f'{name}_ref.report')
     print("Test report file: ", output_report)
     print("Reference report file: ", ref_report)
     print("Reference report status: ", pass_report)
     return pass_report
 
 
-def runtestMulti(tmpdir, resource_path_root, name, threshMLBL, threshLG, threshOG):
+def runtestMulti(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG):
     infile = resource_path_root / "inputs" / f"{name}.in"
-    newinfile, myjobdir = parse4test(infile, tmpdir, True)
+    newinfile, myjobdir = parse4test(infile, tmp_path, True)
     args = ['main.py', '-i', newinfile]
-    with working_directory(tmpdir):
+    with working_directory(tmp_path):
         startgen(args, False, False)
     print("Test input file: ", newinfile)
     print("Test output files are generated in ", myjobdir)

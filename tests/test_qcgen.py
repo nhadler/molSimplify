@@ -9,10 +9,10 @@ from molSimplify.Scripts.qcgen import (tcgen, gamgen, qgen,
                          [(tcgen, 'terachem_input'), (gamgen, 'gam.inp'),
                           (qgen, 'qch.inp'), (mlpgen, 'FeH2O6.mop'),
                           (ogen, 'orca.in'), (molcgen, 'molcas.input')])
-def test_qcgen_defaults(resource_path_root, gen_function, default_name, tmpdir):
+def test_qcgen_defaults(resource_path_root, gen_function, default_name, tmp_path):
     """Calls the gen_function with as little parameters as possible to
     test the default input file generated."""
-    args = Namespace(jobdir=str(tmpdir), reportonly=None, spin=None,
+    args = Namespace(jobdir=str(tmp_path), reportonly=None, spin=None,
                      charge=None, runtyp=None, gpus=None, dispersion=None,
                      basis=None, qoption=None, name=None, tc_fix_dihedral=None,
                      method=None, oxstate='II', remoption=None, gbasis=None,
@@ -21,16 +21,16 @@ def test_qcgen_defaults(resource_path_root, gen_function, default_name, tmpdir):
                      ctrloption=None, scfoption=None, statoption=None,
                      jobmanager=False)
     xyzfile = resource_path_root / "inputs" / "qcgen" / "FeH2O6.xyz"
-    # Copy xyz file to tmpdir
-    shutil.copy(xyzfile, tmpdir / 'FeH2O6.xyz')
+    # Copy xyz file to tmp_path
+    shutil.copy(xyzfile, tmp_path / 'FeH2O6.xyz')
 
-    jobdirs = gen_function(args, [str(tmpdir / 'FeH2O6')], 'B3LYP')
+    jobdirs = gen_function(args, [str(tmp_path / 'FeH2O6')], 'B3LYP')
 
-    sub_dir = tmpdir
+    sub_dir = tmp_path
     ref_dir = resource_path_root / "refs" / "qcgen" / f"{gen_function.__name__}"
     # These two generate a different subfolder structure...
     if gen_function is gamgen or gen_function is qgen:
-        sub_dir = tmpdir / 'FeH2O6/B3LYP'
+        sub_dir = tmp_path / 'FeH2O6/B3LYP'
         ref_dir = f'{ref_dir}/FeH2O6/B3LYP'
     assert jobdirs[0] == sub_dir
 

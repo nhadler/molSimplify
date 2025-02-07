@@ -49,12 +49,12 @@ II. Add a test case
 ############ test_yourTestCase.py  #########
 import helperFuncs as hp
 
-def test_example_1(tmpdir):
+def test_example_1(tmp_path):
     testName="yourTestCase"
     threshMLBL = 0.1 #Change this value for your need
     threshLG = 0.1 #Change this value for your need
     threshOG = 2.0 #Change this value for you need
-    [passNumAtoms,passMLBL,passLG,passOG,pass_report] = hp.runtest(tmpdir,testName,threshMLBL,threshLG,threshOG)
+    [passNumAtoms,passMLBL,passLG,passOG,pass_report] = hp.runtest(tmp_path,testName,threshMLBL,threshLG,threshOG)
     assert passNumAtoms
     assert passMLBL
     assert passLG

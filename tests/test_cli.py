@@ -3,10 +3,10 @@ from helperFuncs import compare_report_new
 from molSimplify.__main__ import main
 
 
-def test_main_empty(tmpdir, resource_path_root):
-    main(args=[f"-rundir {tmpdir}"])
+def test_main_empty(tmp_path, resource_path_root):
+    main(args=[f"-rundir {tmp_path}"])
     compare_report_new(
-        tmpdir / "fe_oct_2_water_6_s_5" / "fe_oct_2_water_6_s_5_conf_1" /
+        tmp_path / "fe_oct_2_water_6_s_5" / "fe_oct_2_water_6_s_5_conf_1" /
         "fe_oct_2_water_6_s_5_conf_1.report",
         resource_path_root / "refs" / "test_cli" /
         "fe_oct_2_water_6_s_5_conf_1.report")

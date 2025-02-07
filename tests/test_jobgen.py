@@ -2,14 +2,14 @@ from argparse import Namespace
 from molSimplify.Scripts.jobgen import sgejobgen, slurmjobgen
 
 
-def test_sgejobgen_default(tmpdir):
+def test_sgejobgen_default(tmp_path):
     args = Namespace(
         jname=None, jid=1, wtime=None, memory=None, queue=None, qccode=None,
         cpus=None, gpus=None, joption=None, modules=None, jcommand=None,
         jobmanager=False,
     )
-    sgejobgen(args, [str(tmpdir)])
-    with open(tmpdir / 'jobscript') as fin:
+    sgejobgen(args, [str(tmp_path)])
+    with open(tmp_path / 'jobscript') as fin:
         lines = fin.read()
     lines_ref = ('#$ -S /bin/bash\n'
                  '#$ -N job1\n'
@@ -24,14 +24,14 @@ def test_sgejobgen_default(tmpdir):
     assert lines == lines_ref
 
 
-def test_sgejobgen(tmpdir):
+def test_sgejobgen(tmp_path):
     args = Namespace(
         jname='test', jid=1, wtime='90', memory='4G', queue='gpusbig',
         qccode='terachem', cpus=None, gpus='2', joption=None,
         modules=['openmp'], jcommand=None, jobmanager=False,
     )
-    sgejobgen(args, [str(tmpdir)])
-    with open(tmpdir / 'jobscript') as fin:
+    sgejobgen(args, [str(tmp_path)])
+    with open(tmp_path / 'jobscript') as fin:
         lines = fin.read()
     lines_ref = ('#$ -S /bin/bash\n'
                  '#$ -N test1\n'
@@ -49,7 +49,7 @@ def test_sgejobgen(tmpdir):
     assert lines == lines_ref
 
 
-def test_sgejobgen_jobmanager(tmpdir):
+def test_sgejobgen_jobmanager(tmp_path):
     args = Namespace(
         jname=False, jid=1, wtime='90', memory='4G', queue='gpusbig',
         qccode='terachem', cpus=None, gpus='2', joption=None,
@@ -58,11 +58,11 @@ def test_sgejobgen_jobmanager(tmpdir):
 
     jobname = "test"
     # Put a dummy xyz file into the folder
-    with open(tmpdir / f"{jobname}.xyz", "w") as fout:
+    with open(tmp_path / f"{jobname}.xyz", "w") as fout:
         fout.write("0\n\n")
 
-    sgejobgen(args, [str(tmpdir)])
-    with open(tmpdir / f'{jobname}_jobscript') as fin:
+    sgejobgen(args, [str(tmp_path)])
+    with open(tmp_path / f'{jobname}_jobscript') as fin:
         lines = fin.read()
     lines_ref = ('#$ -S /bin/bash\n'
                  f'#$ -N {jobname}\n'
@@ -80,13 +80,13 @@ def test_sgejobgen_jobmanager(tmpdir):
     assert lines == lines_ref
 
 
-def test_slurmjobgen_default(tmpdir):
+def test_slurmjobgen_default(tmp_path):
     args = Namespace(
         jname=None, jid=1, wtime=None, memory=None, queue=None, qccode=None,
         joption=None, modules=None, jcommand=None, jobmanager=False,
     )
-    slurmjobgen(args, [str(tmpdir)])
-    with open(tmpdir / 'jobscript') as fin:
+    slurmjobgen(args, [str(tmp_path)])
+    with open(tmp_path / 'jobscript') as fin:
         lines = fin.read()
     lines_ref = ('#!/bin/bash\n'
                  '#SBATCH --job-name=job1\n'
@@ -100,14 +100,14 @@ def test_slurmjobgen_default(tmpdir):
     assert lines == lines_ref
 
 
-def test_slurmjobgen(tmpdir):
+def test_slurmjobgen(tmp_path):
     args = Namespace(
         jname='test', jid=1, wtime='90', memory='4G', queue='testqueue',
         qccode='qchem', joption=None, modules=None, jcommand=None,
         jobmanager=False,
     )
-    slurmjobgen(args, [str(tmpdir)])
-    with open(tmpdir / 'jobscript') as fin:
+    slurmjobgen(args, [str(tmp_path)])
+    with open(tmp_path / 'jobscript') as fin:
         lines = fin.read()
     lines_ref = ('#!/bin/bash\n'
                  '#SBATCH --job-name=test1\n'
@@ -122,7 +122,7 @@ def test_slurmjobgen(tmpdir):
     assert lines == lines_ref
 
 
-def test_slurmjobgen_jobmanager(tmpdir):
+def test_slurmjobgen_jobmanager(tmp_path):
     args = Namespace(
         jname=False, jid=1, wtime='90', memory='4G', queue='gpusbig',
         qccode='terachem', cpus=None, gpus='2', joption=None,
@@ -131,11 +131,11 @@ def test_slurmjobgen_jobmanager(tmpdir):
 
     jobname = "test"
     # Put a dummy xyz file into the folder
-    with open(tmpdir / f"{jobname}.xyz", "w") as fout:
+    with open(tmp_path / f"{jobname}.xyz", "w") as fout:
         fout.write("0\n\n")
 
-    slurmjobgen(args, [str(tmpdir)])
-    with open(tmpdir / f'{jobname}_jobscript') as fin:
+    slurmjobgen(args, [str(tmp_path)])
+    with open(tmp_path / f'{jobname}_jobscript') as fin:
         lines = fin.read()
     lines_ref = ('#!/bin/bash\n'
                  f'#SBATCH --job-name={jobname}\n'

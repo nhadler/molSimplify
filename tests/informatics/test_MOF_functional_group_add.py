@@ -20,9 +20,9 @@ import os
         (1, "OH"),
         (2, "OH"),
     ])
-def test_fg_addition(resource_path_root, tmpdir, num_func, func_group):
+def test_fg_addition(resource_path_root, tmp_path, num_func, func_group):
     starting_cif = str(resource_path_root / "inputs" / "cif_files" / "UiO-66.cif")
-    destination_path = str(tmpdir / "functionalized_MOF")
+    destination_path = str(tmp_path / "functionalized_MOF")
     if not os.path.isdir(destination_path):
         os.mkdir(destination_path)
 

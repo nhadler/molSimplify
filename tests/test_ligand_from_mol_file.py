@@ -5,11 +5,11 @@ import shutil
 
 
 @pytest.mark.skip("Loading multidentate ligands from files is currently not supported")
-def test_ligand_from_mol_file(tmpdir, resource_path_root):
+def test_ligand_from_mol_file(tmp_path, resource_path_root):
     input_file = resource_path_root / "inputs" / "ligand_from_mol_file.in"
-    shutil.copyfile(input_file, tmpdir / "ligand_from_mol_file.in")
+    shutil.copyfile(input_file, tmp_path / "ligand_from_mol_file.in")
     mol_file = resource_path_root / "inputs" / "pdp.mol"
-    shutil.copyfile(mol_file, tmpdir / "pdp.mol")
+    shutil.copyfile(mol_file, tmp_path / "pdp.mol")
 
     ref_xyz = resource_path_root / "refs" / "ligand_from_mol_file.xyz"
     ref_report = resource_path_root / "refs" / "ligand_from_mol_file.report"
@@ -18,10 +18,10 @@ def test_ligand_from_mol_file(tmpdir, resource_path_root):
     threshLG = 0.1
     threshOG = 0.1
 
-    with working_directory(tmpdir):
+    with working_directory(tmp_path):
         startgen(['main.py', '-i', 'ligand_from_mol_file.in'], flag=False, gui=False)
 
-        jobdir = tmpdir / 'Runs' / 'ligand_from_mol_file'
+        jobdir = tmp_path / 'Runs' / 'ligand_from_mol_file'
         output_xyz = str(jobdir / 'ligand_from_mol_file.xyz')
         output_report = str(jobdir / 'ligand_from_mol_file.report')
 
