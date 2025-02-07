@@ -158,7 +158,6 @@ def rotate_and_write(input_cif, path2write, rot_angle):
     """
     basename = os.path.basename(input_cif).replace('.cif', '')
     cpar, allatomtypes, fcoords = readcif(input_cif)
-    print(f'fcoords is {fcoords}') # TODO debug
 
     molcif, _, _, _, _ = import_from_cif(input_cif, True)
     cell_v = mkcell(cpar)
@@ -176,10 +175,6 @@ def rotate_and_write(input_cif, path2write, rot_angle):
             continue
         else:
             linkers_to_rotate_list.append(linker)
-
-    # # get linkers to rotate
-    # num_atoms_bdc = 16 # benzene dicarboxylate
-    # linkers_to_rotate_list = [linker for linker in linker_list if len(linker) >= num_atoms_bdc]
 
     # get coordinates of BDC linkers
     linker_coords = [fcoords[val,:] for val in linkers_to_rotate_list]
@@ -222,7 +217,6 @@ def main():
                 continue
             else:
                 linker_bdc_list.append(linker)
-        print(cpar)
 
         # get coordinates of BDC linkers
         linker_coords = [fcoords[val,:] for val in linker_bdc_list]
@@ -240,7 +234,6 @@ def main():
             if not os.path.exists(path_directory):
                    os.mkdir(path_directory)
             write_cif(f'{path_directory}/modified_{elem}_{int(rot_angle_degree[i])}.cif', cpar, coords_new, allatomtypes)
-        print(str(elem) + " done")
 
     ### End of example ###
 
