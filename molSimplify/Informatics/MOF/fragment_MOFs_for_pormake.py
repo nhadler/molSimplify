@@ -2,7 +2,7 @@ from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Classes.atom3D import atom3D
 from molSimplify.Informatics.MOF.PBC_functions import (
     compute_adj_matrix,
-    compute_distance_matrix3,
+    compute_distance_matrix,
     fractional2cart,
     get_closed_subgraph,
     include_extra_shells,
@@ -790,7 +790,7 @@ def make_MOF_fragments(data, path=False, xyzpath=False):
         tmpstr = "Failed to featurize %s: large primitive cell\n"%(name)
         write2file(path,"/FailedStructures.log", tmpstr)
         return None, None
-    distance_mat = compute_distance_matrix3(cell_v, cart_coords)
+    distance_mat = compute_distance_matrix(cell_v, cart_coords)
     try:
         adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes)
     except NotImplementedError:

@@ -629,7 +629,7 @@ def frac_coord(coord, cell):
     invcell = np.linalg.inv(cell)
     return np.dot(coord,invcell)
 
-def compute_distance_matrix3(cell, cart_coords, num_cells=1):
+def compute_distance_matrix(cell, cart_coords, num_cells=1):
     """
     Computes the pairwise distances between all atom pairs in the crystal cell.
 
@@ -1138,7 +1138,7 @@ def overlap_removal(cif_path, new_cif_path):
     #     raise Exception("Too large of a cif file")
 
     # Assuming that the cif does not have graph information of the structure.
-    distance_mat = compute_distance_matrix3(cell_v,cart_coords)
+    distance_mat = compute_distance_matrix(cell_v,cart_coords)
     adj_matrix, overlap_atoms = compute_adj_matrix(distance_mat, allatomtypes, handle_overlap=True)
 
     # Dealing with the case of overlapping atoms.
@@ -1179,7 +1179,7 @@ def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
     #     raise Exception("Too large of a cif file")
 
     # Assuming that the cif does not have graph information of the structure.
-    distance_mat = compute_distance_matrix3(cell_v,cart_coords)
+    distance_mat = compute_distance_matrix(cell_v,cart_coords)
     try:
         adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes, wiggle_room=wiggle_room, handle_overlap=False)
     except NotImplementedError:
@@ -1220,11 +1220,11 @@ def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
 
 ##### Deprecated #####
 
-# The functions compute_distance_matrix, compute_distance_matrix2, and compute_distance_matrix3 all do the same thing.
-# However, compute_distance_matrix3 is significantly faster than compute_distance_matrix2, which in turn is faster than compute_distance_matrix.
-# This is due to the use of for loops in compute_distance_matrix and compute_distance_matrix2, versus the vectorized (pre-compiled C code) numpy functions in compute_distance_matrix3.
+# The functions compute_distance_matrix, compute_distance_matrix_v1, and compute_distance_matrix_v2 all do the same thing.
+# However, compute_distance_matrix is significantly faster than compute_distance_matrix_v2, which in turn is faster than compute_distance_matrix_v1.
+# This is due to the use of for loops in compute_distance_matrix_v1 and compute_distance_matrix_v2, versus the vectorized (pre-compiled C code) numpy functions in compute_distance_matrix.
 
-def compute_distance_matrix(cell, cart_coords):
+def compute_distance_matrix_v1(cell, cart_coords):
     """
     Computes the pairwise distances between all atom pairs in the crystal cell. First version of this function.
 
@@ -1277,7 +1277,7 @@ def min_img_distance(coords1, coords2, cell):
     four = np.dot(one - two - three, cell) # Converting back to Cartesian coordinates from fractional.
     return np.linalg.norm(four)
 
-def compute_distance_matrix2(cell, cart_coords):
+def compute_distance_matrix_v2(cell, cart_coords):
     """
     Computes the pairwise distances between all atom pairs in the crystal cell. Second version of this function.
 
