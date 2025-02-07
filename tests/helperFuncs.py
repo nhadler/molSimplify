@@ -13,6 +13,7 @@ from molSimplify.Classes.ligand import ligand_breakdown
 from typing import Dict
 from contextlib import contextmanager
 from pathlib import Path
+import posixpath
 
 
 def is_number(s: str) -> bool:
@@ -228,8 +229,8 @@ def jobdir(infile):
 
 def parse4test(infile, tmp_path: Path, isMulti: bool = False, extra_args: Dict[str, str] = {}) -> str:
     name = jobname(infile)
-    f = tmp_path.join(os.path.basename(infile))
-    newname = f.dirname + "/" + os.path.basename(infile)
+    f = posixpath.join(tmp_path, os.path.basename(infile))
+    newname = str(tmp_path) + "/" + os.path.basename(infile)
     print(newname)
     print('&&&&&&&&&')
     with open(infile, 'r') as f_in:
@@ -260,7 +261,8 @@ def parse4test(infile, tmp_path: Path, isMulti: bool = False, extra_args: Dict[s
     if not isMulti:
         newdata += "-name " + name + "\n"
     print(newdata)
-    f.write(newdata)
+    with open(newname, 'w') as fi:
+        fi.write(newdata)
     print("Input file parsed for test is located: ", newname)
     jobdir = str(tmp_path / name)
     return newname, jobdir
