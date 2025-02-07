@@ -139,7 +139,7 @@ def rotate_and_write(input_cif, path2write, rot_angle):
     """
     Rotates the linkers in the provided cif by the angle rot_angle.
     Writes the resulting cif to path2write.
-    Currently works for MOFs with Zr as the metal element, 
+    Currently works for MOFs with Zr as the metal element,
     and carboxylate linkers.
 
     Parameters
