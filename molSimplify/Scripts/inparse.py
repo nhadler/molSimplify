@@ -1,7 +1,7 @@
 # @file inparse.py
 #  Processes inputs
 #
-#  Written by Tim Ioannidisfor HJK Group
+#  Written by Tim Ioannidis for HJK Group
 #
 #  Dpt of Chemical Engineering, MIT
 
