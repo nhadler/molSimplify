@@ -1,6 +1,6 @@
 import numpy as np
 from molSimplify.Classes.globalvars import globalvars
-from molSimplify.Classes.ligand import ligand_breakdown, ligand_assign
+from molSimplify.Classes.ligand import ligand_breakdown, ligand_assign_original
 from molSimplify.Scripts.geometry import distance
 
 # UNIT CONVERSION
