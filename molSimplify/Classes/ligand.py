@@ -323,7 +323,7 @@ def ligand_breakdown(mol, BondedOct=False, silent=True, transition_metals_only=T
 
 
 @deprecated('Use ligand_assign_consistent instead.')
-def ligand_assign(mol, liglist, ligdents, ligcons, loud=False, name=False, eq_sym_match=False):
+def ligand_assign_original(mol, liglist, ligdents, ligcons, loud=False, name=False, eq_sym_match=False):
     """Assign axial and equatorial portions. Deprecated. Use ligand_assign_consistent. For octahedral geometries.
 
     Parameters

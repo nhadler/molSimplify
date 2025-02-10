@@ -1,4 +1,4 @@
-from molSimplify.Classes.ligand import ligand_assign, ligand_breakdown
+from molSimplify.Classes.ligand import ligand_assign_original, ligand_breakdown
 from molSimplify.Classes.mol3D import mol3D
 
 
@@ -11,7 +11,7 @@ def test_six_monodentate(resource_path_root):
     liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True)
     (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list,
      ax_con_int_list, eq_con_int_list, ax_con_list, eq_con_list,
-     built_ligand_list) = ligand_assign(mol, liglist, ligdents, ligcons)
+     built_ligand_list) = ligand_assign_original(mol, liglist, ligdents, ligcons)
     # Expecting:
     # ax_ligands: ['water', 'carbonyl']
     # eq_ligands: ['hydrogensulfide', 'ammonia', 'hydrocyanide', 'formaldehyde']
@@ -40,7 +40,7 @@ def test_triple_bidentate(resource_path_root):
     liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True)
     (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list,
      ax_con_int_list, eq_con_int_list, ax_con_list, eq_con_list,
-     built_ligand_list) = ligand_assign(mol, liglist, ligdents, ligcons)
+     built_ligand_list) = ligand_assign_original(mol, liglist, ligdents, ligcons)
 
     print(ax_ligand_list, eq_ligand_list)
     ax_formulas = [lig.mol.make_formula(latex=False) for lig in ax_ligand_list]
