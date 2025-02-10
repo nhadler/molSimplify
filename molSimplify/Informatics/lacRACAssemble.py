@@ -82,7 +82,7 @@ def get_descriptor_vector(this_complex, custom_ligand_dict=False,
             if lacRACs:
                 from molSimplify.Classes.ligand import ligand_assign_consistent as ligand_assign
             else:
-                from molSimplify.Classes.ligand import ligand_assign as ligand_assign
+                from molSimplify.Classes.ligand import ligand_assign_original as ligand_assign
             ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, \
                 ax_con_int_list, eq_con_int_list, ax_con_list, eq_con_list, \
                 built_ligand_list = ligand_assign(this_complex, liglist, ligdents, ligcons, loud, eq_sym_match=eq_sym)
@@ -247,7 +247,7 @@ def get_descriptor_derivatives(this_complex, custom_ligand_dict=False, ox_modifi
         if lacRACs:
             from molSimplify.Classes.ligand import ligand_assign_consistent as ligand_assign
         else:
-            from molSimplify.Classes.ligand import ligand_assign as ligand_assign
+            from molSimplify.Classes.ligand import ligand_assign_original as ligand_assign
         liglist, ligdents, ligcons = ligand_breakdown(this_complex, BondedOct=True) # Complex is assumed to be octahedral
         (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list,
          ax_con_int_list, eq_con_int_list, ax_con_list, eq_con_list,
