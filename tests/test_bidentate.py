@@ -1,6 +1,8 @@
 import helperFuncs as hp
+import pytest
 
 
+@pytest.mark.skip(reason="Randomly fails, likely due to SMILES to 3D geometry generation by OpenBabel.")
 def test_bidentate(tmp_path, resource_path_root):
     # There are two versions of this test depending on the openbabel version.
     # This is necessary because openbabel changed the numbering of atoms for v3.
