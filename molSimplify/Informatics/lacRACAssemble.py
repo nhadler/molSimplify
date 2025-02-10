@@ -8,8 +8,11 @@
 # #########################################################
 from __future__ import print_function
 import numpy as np
-from molSimplify.Classes.ligand import ligand_breakdown
-from molSimplify.Classes.ligand import ligand_assign_consistent as ligand_assign
+from molSimplify.Classes.ligand import (
+    ligand_assign_consistent,
+    ligand_assign_original,
+    ligand_breakdown,
+    )
 from molSimplify.Classes.globalvars import globalvars
 
 globs = globalvars()
@@ -45,7 +48,7 @@ def get_descriptor_vector(this_complex, custom_ligand_dict=False,
             Use group number as RAC, by default False
         lacRACs : bool, optional
             Use ligand_assign_consistent (lac) to represent mol3D given
-            if False, use ligand_assign (older), default True
+            if False, use ligand_assign_original (older), default True
         loud : bool, optional
             Print debugging information, by default False
         metal_ind : bool, optional
@@ -80,12 +83,12 @@ def get_descriptor_vector(this_complex, custom_ligand_dict=False,
         # print(liglist, ligdents, ligcons)
         if not alleq:
             if lacRACs:
-                from molSimplify.Classes.ligand import ligand_assign_consistent as ligand_assign
+                assignment_func = ligand_assign_consistent
             else:
-                from molSimplify.Classes.ligand import ligand_assign_original as ligand_assign
+                assignment_func = ligand_assign_original
             ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, \
                 ax_con_int_list, eq_con_int_list, ax_con_list, eq_con_list, \
-                built_ligand_list = ligand_assign(this_complex, liglist, ligdents, ligcons, loud, eq_sym_match=eq_sym)
+                built_ligand_list = assignment_func(this_complex, liglist, ligdents, ligcons, loud, eq_sym_match=eq_sym)
         else:
             from molSimplify.Classes.ligand import ligand_assign_alleq
             ax_ligand_list, eq_ligand_list, ax_con_int_list, eq_con_int_list = ligand_assign_alleq(
@@ -227,7 +230,7 @@ def get_descriptor_derivatives(this_complex, custom_ligand_dict=False, ox_modifi
             {"Fe":2, "Co": 3} etc, by default False
         lacRACs : bool, optional
             Use ligand_assign_consistent (lac) to represent mol3D given
-            if False, use ligand_assign (older), default True
+            if False, use ligand_assign_original (older), default True
         depth : int, optional
             depth of RACs to calculate, by default 4
         loud : bool, optional
@@ -245,13 +248,13 @@ def get_descriptor_derivatives(this_complex, custom_ligand_dict=False, ox_modifi
     """
     if not custom_ligand_dict:
         if lacRACs:
-            from molSimplify.Classes.ligand import ligand_assign_consistent as ligand_assign
+            assignment_func = ligand_assign_consistent
         else:
-            from molSimplify.Classes.ligand import ligand_assign_original as ligand_assign
+            assignment_func = ligand_assign_original
         liglist, ligdents, ligcons = ligand_breakdown(this_complex, BondedOct=True) # Complex is assumed to be octahedral
         (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list,
          ax_con_int_list, eq_con_int_list, ax_con_list, eq_con_list,
-         built_ligand_list) = ligand_assign(this_complex, liglist, ligdents, ligcons, loud)
+         built_ligand_list) = assignment_func(this_complex, liglist, ligdents, ligcons, loud)
         custom_ligand_dict = {'ax_ligand_list': ax_ligand_list,
                               'eq_ligand_list': eq_ligand_list,
                               'ax_con_int_list': ax_con_int_list,
@@ -1338,7 +1341,7 @@ def generate_all_ligand_misc(mol, loud, custom_ligand_dict=False, smiles_charge=
     if not custom_ligand_dict:
         liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
         ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list, eq_con_int_list, \
-            ax_con_list, eq_con_list, built_ligand_list = ligand_assign(
+            ax_con_list, eq_con_list, built_ligand_list = ligand_assign_consistent(
                 mol, liglist, ligdents, ligcons, loud)
     else:
         ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
@@ -1463,7 +1466,7 @@ def generate_all_ligand_autocorrelations(mol, loud, depth=4, flag_name=False,
     if not custom_ligand_dict:
         liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
         (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list, eq_con_int_list,
-         ax_con_list, eq_con_list, built_ligand_list) = ligand_assign(
+         ax_con_list, eq_con_list, built_ligand_list) = ligand_assign_consistent(
             mol, liglist, ligdents, ligcons, loud)
     else:
         ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
@@ -1582,7 +1585,7 @@ def generate_all_ligand_autocorrelation_derivatives(mol, loud, depth=4, flag_nam
     if not custom_ligand_dict:
         liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
         ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list, eq_con_int_list, \
-            ax_con_list, eq_con_list, built_ligand_list = ligand_assign(
+            ax_con_list, eq_con_list, built_ligand_list = ligand_assign_consistent(
                 mol, liglist, ligdents, ligcons, loud)
     else:
         ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
@@ -1715,7 +1718,7 @@ def generate_all_ligand_deltametrics(mol, loud, depth=4, flag_name=False,
     if not custom_ligand_dict:
         liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
         (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list, eq_con_int_list,
-         ax_con_list, eq_con_list, built_ligand_list) = ligand_assign(mol, liglist, ligdents, ligcons, loud)
+         ax_con_list, eq_con_list, built_ligand_list) = ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud)
     else:
         ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
         eq_ligand_list = custom_ligand_dict["eq_ligand_list"]
@@ -1807,7 +1810,7 @@ def generate_all_ligand_deltametric_derivatives(mol, loud, depth=4, flag_name=Fa
     if not custom_ligand_dict:
         liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
         ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list, eq_con_int_list, \
-            ax_con_list, eq_con_list, built_ligand_list = ligand_assign(
+            ax_con_list, eq_con_list, built_ligand_list = ligand_assign_consistent(
                 mol, liglist, ligdents, ligcons, loud)
     else:
         ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
