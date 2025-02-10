@@ -1,4 +1,5 @@
 import helperFuncs as hp
+import pytest
 
 
 @pytest.mark.skip(reason="Randomly fails, likely due to SMILES to 3D geometry generation by OpenBabel.")

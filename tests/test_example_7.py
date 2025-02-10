@@ -1,4 +1,5 @@
 import helperFuncs as hp
+import pytest
 
 
 def test_example_7(tmp_path, resource_path_root):
