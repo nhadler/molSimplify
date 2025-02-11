@@ -531,30 +531,30 @@ class globalvars(metaclass=Singleton):
         # Program name
         self.PROGRAM = 'molSimplify'
         program_info = [
-        f'\nmolSimplify v{get_version()}\n',
-        'Freely distributed under the GNU GPL license.\n',
-        'Copyright 2017 Kulik Lab @ MIT\n',
-        'Developed by: Efthymios Ioannidis\n',
-        'Contributions by:\n',
-        '\tHeather J. Kulik (corresponding developer; hjkulik@mit.edu)\n',
-        '\tNaveen Arunachalam\n',
-        '\tChenru Duan\n',
-        '\tFreya Edholm\n',
-        '\tTerry Gani\n',
-        '\tDaniel Harper\n',
-        '\tJP Janet\n',
-        '\tFang Liu\n',
-        '\tRalf Meyer\n',
-        '\tAditya Nandy\n',
-        '\tMichael Taylor\n',
-        '\tGianmarco Terrones\n',
-        '\tTzuhsiung (Nick) Yang\n',
-        'E.I. Ioannidis, T.Z.H. Gani, H.J. Kulik. J. Comput. Chem. 2016, 37, 2106-2117.\n',
-        'J.P. Janet, Q. Zhao, E.I. Ioannidis, H.J. Kulik. Mol. Simul. 2017, 43(5-6), 327-345.\n',
-        'J.P. Janet, T.Z.H. Gani, A.H. Steeves, E.I. Ioannidis, H.J. Kulik. Ind. Eng. Chem. Res. 2017, 56(17), 4898-4910.\n',
-        'For an extended list of references, please see https://molsimplify.readthedocs.io/en/latest/Citation.html\n'
+        f'\nmolSimplify v{get_version()}',
+        'Freely distributed under the GNU GPL license.',
+        'Copyright 2017 Kulik Lab @ MIT',
+        'Developed by: Efthymios Ioannidis',
+        'Contributions by:',
+        '\tHeather J. Kulik (corresponding developer; hjkulik@mit.edu)',
+        '\tNaveen Arunachalam',
+        '\tChenru Duan',
+        '\tFreya Edholm',
+        '\tTerry Gani',
+        '\tDaniel Harper',
+        '\tJP Janet',
+        '\tFang Liu',
+        '\tRalf Meyer',
+        '\tAditya Nandy',
+        '\tMichael Taylor',
+        '\tGianmarco Terrones',
+        '\tTzuhsiung (Nick) Yang',
+        'E.I. Ioannidis, T.Z.H. Gani, H.J. Kulik. J. Comput. Chem. 2016, 37, 2106-2117.',
+        'J.P. Janet, Q. Zhao, E.I. Ioannidis, H.J. Kulik. Mol. Simul. 2017, 43(5-6), 327-345.',
+        'J.P. Janet, T.Z.H. Gani, A.H. Steeves, E.I. Ioannidis, H.J. Kulik. Ind. Eng. Chem. Res. 2017, 56(17), 4898-4910.',
+        'For an extended list of references, please see https://molsimplify.readthedocs.io/en/latest/Citation.html'
         ]
-        s = ''.join(program_info)
+        s = '\n'.join(program_info)
 
         # About message
         self.about = s
