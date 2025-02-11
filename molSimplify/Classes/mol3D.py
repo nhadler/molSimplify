@@ -24,6 +24,7 @@ from molSimplify.utils.decorators import deprecated
 
 from molSimplify.Classes.atom3D import atom3D
 from molSimplify.Classes.globalvars import globalvars
+from molSimplify.Informatics.lacRACAssemble import get_descriptor_vector
 from molSimplify.Scripts.geometry import (distance, connectivity_match,
                                           vecangle, rotation_params,
                                           rotate_around_axis)
@@ -6843,7 +6844,6 @@ class mol3D:
                 Dictionary of {'RACname':RAC} for all geo-based RACs
         """
         results = dict()
-        from molSimplify.Informatics.lacRACAssemble import get_descriptor_vector
         if not len(self.graph):
             self.createMolecularGraph(strict_cutoff=strict_cutoff, catom_list=catom_list)
         # print("catoms: ", [self.getAtom(ii).symbol() for ii in self.get_fcs(strict_cutoff=strict_cutoff)])
