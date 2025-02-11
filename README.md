@@ -124,6 +124,6 @@ year = {2018},
 ```
 
 If you use any machine learning (ML) models in molSimplify, please cite the corresponding reference in [this ML model reference page](https://github.com/hjkgrp/molSimplify/blob/master/MLmodel-reference.md).
-For additional reference information, please see [here](https://molsimplify.readthedocs.io/en/latest/Citation.html). 
+For additional reference information, please see [here](https://molsimplify.readthedocs.io/en/latest/Citation.html).
 
 **Note that we have disabled developers' supports for Python 2.7 and will only release conda builds on Python 3.**
