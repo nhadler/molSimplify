@@ -98,13 +98,13 @@ molSimplify is research software. If you use it for work that results in a publi
 ```
 @Article {molSimplify,
 author = {Ioannidis, Efthymios I. and Gani, Terry Z. H. and Kulik, Heather J.},
-title = {molSimplify: A toolkit for automating discovery in inorganic chemistry},
+title = {molSimplify: A Toolkit for Automating Discovery in Inorganic Chemistry},
 journal = {Journal of Computational Chemistry},
 volume = {37},
 number = {22},
-pages = {2106--2117},
+pages = {2106-2117},
 issn = {1096-987X},
-url = {http://dx.doi.org/10.1002/jcc.24437},
+url = {http://doi.org/10.1002/jcc.24437},
 doi = {10.1002/jcc.24437},
 year = {2016},
 }
@@ -123,6 +123,7 @@ year = {2018},
 }
 ```
 
-If you use any machine learning (ML) models in molSimplify that results in a publication, please cite the corresponding reference in [this ML model reference page](https://github.com/hjkgrp/molSimplify/blob/master/MLmodel-reference.md).
+If you use any machine learning (ML) models in molSimplify, please cite the corresponding reference in [this ML model reference page](https://github.com/hjkgrp/molSimplify/blob/master/MLmodel-reference.md).
+For additional reference information, please see [here](https://molsimplify.readthedocs.io/en/latest/Citation.html). 
 
 **Note that we have disabled developers' supports for Python 2.7 and will only release conda builds on Python 3.**
