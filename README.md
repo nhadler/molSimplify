@@ -49,6 +49,8 @@ To obtain the latest development version or if you plan to modify the code we re
 The easiest way of installing molSimplify including optional dependencies such as [xtb](https://github.com/grimme-lab/xtb) is via the [Conda](https://conda.io/docs/) package management system.
 1. Prerequisite: have [Anaconda or miniconda](https://www.anaconda.com/distribution/) installed on your system. **For M1 Macs, please use [Miniforge](https://github.com/conda-forge/miniforge) for Mac OSX arm64.** (We do not recommend simultaneously installing Anaconda and Miniforge - only install Miniforge.)
 
+We recommend use of the libmamba solver: https://conda.github.io/conda-libmamba-solver/user-guide/
+
 2. Clone molSimplify source from github and change into the directory.
 
    ```bash
