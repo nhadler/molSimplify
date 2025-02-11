@@ -121,11 +121,12 @@ class mol3D:
     def __repr__(self):
         return f"mol3D({self.make_formula(latex=False)})"
 
-    @deprecated("Preliminary testing showed this function is unreliable at best")
     def ACM(self, idx1, idx2, idx3, angle):
         """
         Performs angular movement on mol3D class. A submolecule is
         rotated about idx2. Operates directly on class.
+
+        Note: Function is sometimes unreliable in non-simple cases.
 
         Parameters
         ----------
