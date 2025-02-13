@@ -24,10 +24,18 @@ from molSimplify.utils.decorators import deprecated
 
 from molSimplify.Classes.atom3D import atom3D
 from molSimplify.Classes.globalvars import globalvars
-from molSimplify.Scripts.geometry import (distance, connectivity_match,
-                                          vecangle, rotation_params,
-                                          rotate_around_axis)
-from molSimplify.Scripts.rmsd import rigorous_rmsd, kabsch_rmsd, kabsch_rotate
+from molSimplify.Scripts.geometry import (
+    connectivity_match,
+    distance,
+    rotate_around_axis,
+    rotation_params,
+    vecangle,
+    )
+from molSimplify.Scripts.rmsd import (
+    kabsch_rmsd,
+    kabsch_rotate,
+    rigorous_rmsd,
+    )
 from itertools import permutations
 from collections import Counter
 
@@ -300,28 +308,6 @@ class mol3D:
             self.graph = graph
         if return_graph:
             return graph
-
-    @deprecated('Duplicate function will be removed in a future release. '
-                'Use findAtomsbySymbol instead.')
-    def find_atom(self, sym="X"):
-        """
-        Find atoms with a specific symbol.
-
-        Parameters
-        ----------
-            sym: str
-                element symbol, default as X.
-
-        Returns
-        ----------
-            inds: list
-                a list of atom index with the specified symbol.
-        """
-        inds = []
-        for ii, atom in enumerate(self.getAtoms()):
-            if atom.symbol() == sym:
-                inds.append(ii)
-        return inds
 
     def add_bond(self, idx1: int, idx2: int, bond_type: int) -> dict:
         """
@@ -6885,19 +6871,6 @@ class mol3D:
                 rel_bls.append(bl / (m.rad + a.rad))  # append the relative bond length
             bls[m_id] = {"M-L bond lengths": ml_bls, "relative bond lengths": rel_bls}
         return bls
-
-    @deprecated('Using this function might lead to inconsistent behavior.')
-    def setAtoms(self, atoms):
-        """
-        Set atoms of a mol3D class to atoms.
-
-        Parameters
-        ----------
-            atoms : list
-                contains atom3D instances that should be in the molecule
-        """
-        self.atoms = atoms
-        self.natoms = len(atoms)
 
     def setLoc(self, loc):
         """

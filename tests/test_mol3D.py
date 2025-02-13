@@ -30,10 +30,9 @@ def test_finding_and_counting_methods():
         mol.addAtom(atom3D(Sym='C'))
         mol.addAtom(atom3D(Sym='O'))
 
-    # Test find_atom
-    assert mol.find_atom(sym='O') == [2, 4, 6, 8, 10, 12]
     # Test findAtomsbySymbol
     assert mol.findAtomsbySymbol(sym='C') == [1, 3, 5, 7, 9, 11]
+    assert mol.findAtomsbySymbol(sym='O') == [2, 4, 6, 8, 10, 12]
     # Test getAtomwithSyms (allows for multiple symbols)
     ref_indices = [0, 2, 4, 6, 8, 10, 12]
     assert (mol.getAtomwithSyms(syms=['Fe', 'O'])
