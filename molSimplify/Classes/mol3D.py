@@ -1827,12 +1827,15 @@ class mol3D:
         """
         Method to obtain string of coordinates in molecule.
 
+        Parameters
+        ----------
+            no_tabs : bool, optional
+                Whether or not to use tabs in coordinate columns.
+
         Returns
         -------
             coord_string : string
                 String of molecular coordinates with atom identities in XYZ format.
-            no_tabs : bool, optional
-                Whether or not to use tabs in coordinate columns.
         """
 
         coord_string = ''  # initialize returning string
@@ -5647,52 +5650,37 @@ class mol3D:
                     maxd = distance(atom1.coords(), atom0.coords())
         return maxd
 
-    def resetBondOBMol(self):
+    def meanabsdev(self, mol2):
         """
-        Repopulates the bond order matrix via openbabel. Interprets bond order matrix.
+        Compute the mean absolute deviation (MAD) between two molecules.
+        Does not align molecules. For that, use geometry.kabsch().
+
+        Parameters
+        ----------
+            mol2 : mol3D
+                mol3D instance of second molecule.
+
+        Returns
+        -------
+            MAD : float
+                Mean absolute deviation between the two structures.
         """
 
-        if self.OBMol:
-            BO_mat = self.populateBOMatrix()
-            self.cleanBonds()
-            for i in range(0, self.natoms):
-                for j in range(0, self.natoms):
-                    if BO_mat[i][j] > 0:
-                        self.OBMol.AddBond(i + 1, j + 1, int(BO_mat[i][j]))
+        Nat0 = self.natoms
+        Nat1 = mol2.natoms
+        if (Nat0 != Nat1):
+            print(
+                "ERROR: Absolute atom deviations can be calculated only for molecules with the same number of atoms..")
+            return float('NaN')
         else:
-            print("OBmol does not exist")
-
-    def symvect(self):
-        """
-        Method to obtain array of symbol vector of molecule.
-
-        Returns
-        -------
-            symbol_vector : np.array
-                1 dimensional numpy array of atom symbols.
-                (N,) dimension, N is number of atoms.
-        """
-
-        symbol_vector = []
-        for atom in self.atoms:
-            symbol_vector.append(atom.sym)
-        return np.array(symbol_vector)
-
-    def typevect(self):
-        """
-        Method to obtain array of type vector of molecule.
-
-        Returns
-        -------
-            type_vector : np.array
-                1 dimensional numpy array of atom types (by name).
-                (N,) dimension, N is number of atoms.
-        """
-
-        type_vector = []
-        for atom in self.atoms:
-            type_vector.append(atom.name)
-        return np.array(type_vector)
+            dev = 0
+            for atom0, atom1 in zip(self.getAtoms(), mol2.getAtoms()):
+                dev += abs((atom0.distance(atom1)))
+            if Nat0 == 0:
+                dev = 0
+            else:
+                dev /= Nat0
+            return dev
 
     def mindist(self, mol):
         """
@@ -5734,28 +5722,6 @@ class mol3D:
                     mind = distance(atom1.coords(), atom0.coords())
         return mind
 
-    def mindisttopoint(self, point):
-        """
-        Measure the smallest distance between an atom and a point.
-
-        Parameters
-        ----------
-            point : list
-                List of coordinates of reference point.
-
-        Returns
-        -------
-            mind : float
-                Min distance between atoms of two molecules.
-        """
-
-        mind = 1000
-        for atom1 in self.atoms:
-            d = distance(atom1.coords(), point)
-            if (d < mind):
-                mind = d
-        return mind
-
     def mindistnonH(self, mol):
         """
         Measure the smallest distance between an atom and a non H atom in another molecule.
@@ -5779,6 +5745,63 @@ class mol3D:
                         mind = distance(atom1.coords(), atom0.coords())
         return mind
 
+    def mindisttopoint(self, point):
+        """
+        Measure the smallest distance between an atom and a point.
+
+        Parameters
+        ----------
+            point : list
+                List of coordinates of reference point.
+
+        Returns
+        -------
+            mind : float
+                Min distance between atoms of two molecules.
+        """
+
+        mind = 1000
+        for atom1 in self.atoms:
+            d = distance(atom1.coords(), point)
+            if (d < mind):
+                mind = d
+        return mind
+
+    def mol3D_to_networkx(self,get_symbols:bool=True,get_bond_order:bool=True,get_bond_distance:bool=False):
+        g = nx.Graph()
+        # get every index of atoms in mol3D object
+        for atom_ind in range(0,self.natoms):
+            # set each atom as a node in the graph, and add symbol information if wanted
+            data={}
+            if get_symbols:
+                data['Symbol']=self.getAtom(atom_ind).symbol()
+                data['atom3D']=self.getAtom(atom_ind)
+            g.add_node(atom_ind,**data)
+        # get every bond in mol3D object
+        bond_info=self.bo_dict
+        for bond in bond_info:
+            # set each bond as an edge in the graph, and add symbol information if wanted
+            data={}
+            if get_bond_order:
+                data['bond_order']=bond_info[bond]
+            if get_bond_distance:
+                distance=self.getAtom(bond[0]).distance(self.getAtom(bond[1]))
+                data['bond_distance']=distance
+            g.add_edge(bond[0],bond[1],**data)
+        return g
+
+    def mols_symbols(self):
+        """
+        Store symbols and their frequencies in symbols_dict attributes.
+        """
+
+        self.symbols_dict = {}
+        for atom in self.getAtoms():
+            if not atom.symbol() in self.symbols_dict:
+                self.symbols_dict.update({atom.symbol(): 1})
+            else:
+                self.symbols_dict[atom.symbol()] += 1
+
     def molsize(self):
         """
         Measure the size of the molecule, by quantifying the max distance
@@ -5800,12 +5823,12 @@ class mol3D:
     def moments_of_inertia(self):
         """
         Determines the moments of inertia for the object, in the specified coordinates
-        (after centering about the center of mass)
+        (after centering about the center of mass).
 
         Returns
         -------
             I : np.array
-                Moments of inertia tensor
+                Moments of inertia tensor.
         """
 
         copy = mol3D()
@@ -5826,6 +5849,166 @@ class mol3D:
             I[1, 2] -= atom.mass * (atom.coords()[1] * atom.coords()[2]) #yz
             I[2, 1] -= atom.mass * (atom.coords()[1] * atom.coords()[2]) #zy
         return I
+
+    def num_rings(self, index):
+        """
+        Computes the number of simple rings an atom is in.
+
+        Parameters
+        ----------
+            index : int
+                The index of the atom in question. Zero-indexing, so the first atom has an index of zero.
+
+        Returns
+        -------
+            myNumRings : int
+                The number of rings the atom is in.
+        """
+
+        self.convert2OBMol()  # Need to populate the self.OBMol field
+        ringlist = self.OBMol.GetSSSR()  # Get the smallest set of simple rings for a molecule.
+        ringinds = []
+        for obmol_ring in ringlist:  # loop through the simple rings
+            _inds = []
+            for ii in range(1, self.natoms+1):  # loop through all atoms in the mol3D object
+                if obmol_ring.IsInRing(ii):  # check if a given atom is in the current ring
+                    _inds.append(ii-1)
+            ringinds.append(_inds)
+
+        # ringinds is an array of arrays, where each inner array contains the atom indices of the atoms in a simple ring
+        # The length of ringinds is the number of simple rings in the mol3D object calling numRings
+
+        myNumRings = 0  # running tally
+
+        for idx_list in ringinds:
+            if index in idx_list:
+                myNumRings += 1
+
+        return myNumRings
+
+    def oct_comp(self, angle_ref=False, catoms_arr=None, debug=False):
+        """
+        Get the deviation of shape of the catoms from the desired shape,
+        which is defined in angle_ref.
+
+        Parameters
+        ----------
+            angle_ref : bool, optional
+                Reference list of list for the expected angles (A-metal-B) of each connection atom.
+            catoms_arr : Nonetype, optional
+                Uses the catoms of the mol3D by default. User can overwrite this connection atom array by explicit input.
+            debug : bool, optional
+                Flag for extra printout. Default is False.
+
+        Returns
+        -------
+            dict_catoms_shape : dict
+                Dictionary of first coordination sphere shape measures.
+            catoms_arr : list
+                Connection atom array.
+        """
+
+        if not angle_ref:
+            angle_ref = self.oct_angle_ref
+        from molSimplify.Scripts.oct_check_mols import loop_target_angle_arr
+
+        metal_coord = self.getAtomCoords(self.findMetal()[0])
+        catom_coord = []
+        # Note that use this only when you wanna specify the metal connecting atoms.
+        # This will change the attributes of mol3D.
+        if catoms_arr is not None:
+            self.catoms = catoms_arr
+            self.num_coord_metal = len(catoms_arr)
+        else:
+            self.get_num_coord_metal(debug=debug)
+        theta_arr, oct_dist = [], []
+        # print("!!!!catoms", self.catoms, catoms_arr)
+        for atom in self.catoms:
+            coord = self.getAtomCoords(atom)
+            catom_coord.append(coord)
+        th_input_arr = []
+        catoms_map = {}
+        for idx1, coord1 in enumerate(catom_coord):
+            # {atom_ind_in_mol: ind_in_angle_list}
+            catoms_map.update({self.catoms[idx1]: idx1})
+            delr1 = (np.array(coord1) - np.array(metal_coord)).tolist()
+            theta_tmp = []
+            for idx2, coord2 in enumerate(catom_coord):
+                if idx2 != idx1:
+                    delr2 = (np.array(coord2) - np.array(metal_coord)).tolist()
+                    theta = vecangle(delr1, delr2)
+                    theta_tmp.append(theta)
+                else:
+                    theta_tmp.append(-1)
+            th_input_arr.append([self.catoms[idx1], theta_tmp])
+        # This will help pick out 6 catoms that forms the closest shape compared to the desired structure.
+        # When we have the customized catoms_arr, it will not change anything.
+        # print("!!!th_input_arr", th_input_arr, len(th_input_arr))
+        # print("!!!catoms_map: ", catoms_map)
+        th_output_arr, sum_del_angle, catoms_arr, max_del_sig_angle = loop_target_angle_arr(
+            th_input_arr, angle_ref, catoms_map)
+        self.catoms = catoms_arr
+        if debug:
+            print(('th:', th_output_arr))
+            print(('sum_del:', sum_del_angle))
+            print(('catoms_arr:', catoms_arr))
+            print(('catoms_type:', [self.getAtom(x).symbol()
+                                    for x in catoms_arr]))
+            print(('catoms_coord:', [self.getAtom(x).coords()
+                                     for x in catoms_arr]))
+        for idx, ele in enumerate(th_output_arr):
+            theta_arr.append([catoms_arr[idx], sum_del_angle[idx], ele])
+        theta_trunc_arr = theta_arr
+        theta_trunc_arr_T = list(map(list, list(zip(*theta_trunc_arr))))
+        oct_catoms = theta_trunc_arr_T[0]
+        oct_angle_devi = theta_trunc_arr_T[1]
+        oct_angle_all = theta_trunc_arr_T[2]
+        if debug:
+            print(('Summation of deviation angle for catoms:', oct_angle_devi))
+            print(('Angle for catoms:', oct_angle_all))
+        for atom in oct_catoms:
+            coord = self.getAtom(atom).coords()
+            dist = np.linalg.norm(np.array(coord) - np.array(metal_coord))
+            oct_dist.append(dist)
+        oct_dist.sort()
+        # if len(oct_dist) == 6:  # For Oct
+        #     dist_del_arr = np.array(
+        #         [oct_dist[3] - oct_dist[0], oct_dist[4] - oct_dist[1], oct_dist[5] - oct_dist[2]])
+        #     min_posi = np.argmin(dist_del_arr)
+        #     if min_posi == 0:
+        #         dist_eq, dist_ax = oct_dist[:4], oct_dist[4:]
+        #     elif min_posi == 1:
+        #         dist_eq, dist_ax = oct_dist[1:5], [oct_dist[0], oct_dist[5]]
+        #     else:
+        #         dist_eq, dist_ax = oct_dist[2:], oct_dist[:2]
+        #     dist_del_eq = max(dist_eq) - min(dist_eq)
+        # elif len(oct_dist) == 5:  # For one empty site
+        #     if (oct_dist[3] - oct_dist[0]) > (oct_dist[4] - oct_dist[1]):
+        #         # ax dist is smaller
+        #         dist_ax, dist_eq = oct_dist[:1], oct_dist[1:]
+        #     else:
+        #         # eq dist is smaller
+        #         dist_ax, dist_eq = oct_dist[4:], oct_dist[:4]
+        #     dist_del_eq = max(dist_eq) - min(dist_eq)
+        # else:
+        #     dist_eq, dist_ax = -1, -1
+        #     dist_del_eq = -1
+        dist_del_all = oct_dist[-1] - oct_dist[0]
+        oct_dist_relative = [(np.linalg.norm(np.array(self.getAtom(ii).coords()) -
+                                             np.array(metal_coord)))
+                             / (self.globs.amass()[self.getAtom(ii).sym][2]
+                                + self.globs.amass()[self.getAtom(self.findMetal()[0]).sym][2])
+                             for ii in oct_catoms]
+        dict_catoms_shape = dict()
+        dict_catoms_shape['oct_angle_devi_max'] = float(max(oct_angle_devi))
+        dict_catoms_shape['max_del_sig_angle'] = float(max_del_sig_angle)
+        dict_catoms_shape['dist_del_eq'] = 0
+        dict_catoms_shape['dist_del_all'] = float(dist_del_all)
+        dict_catoms_shape['dist_del_all_relative'] = np.max(
+            oct_dist_relative) - np.min(oct_dist_relative)
+        dict_catoms_shape['dist_del_eq_relative'] = 0
+        self.dict_catoms_shape = dict_catoms_shape
+        return dict_catoms_shape, catoms_arr
 
     def overlapcheck(self, mol, silence=False):
         """
@@ -5953,6 +6136,29 @@ class mol3D:
         else:
             return pmom
 
+    def print_geo_dict(self):
+        """
+        Print geometry check info after the check.
+        """
+
+        def print_dict(_dict):
+            for key, value in list(_dict.items()):
+                print(('%s: ' % key, value))
+        print('========Geo_check_results========')
+        print('--------coordination_check-----')
+        print(('num_coord_metal:', self.num_coord_metal))
+        print(('catoms_arr:', self.catoms))
+        print('-------catoms_shape_check-----')
+        _dict = self.dict_catoms_shape
+        print_dict(_dict)
+        print('-------individual_ligand_distortion_check----')
+        _dict = self.dict_lig_distort
+        print_dict(_dict)
+        print('-------linear_ligand_orientation_check-----')
+        _dict = self.dict_orientation
+        print_dict(_dict)
+        print('=======End of printing geo_check_results========')
+
     def printxyz(self):
         """
         Print XYZ info of mol3D class instance to stdout. To write to file
@@ -5964,104 +6170,119 @@ class mol3D:
             ss = "%s \t%f\t%f\t%f" % (atom.sym, xyz[0], xyz[1], xyz[2])
             print(ss)
 
-    def returnxyz(self, no_tabs=False):
-        """
-        Print XYZ info of mol3D class instance to stdout. To write to file
-        (more common), use writexyz() instead.
+    def read_bo_from_mol(self, molfile):
+        with open(molfile, 'r') as fo:
+            for line in fo:
+                ll = line.split()
+                if len(ll) == 7 and all([x.isdigit() for x in ll]):
+                    self.bo_graph_trunc[int(ll[0])-1, int(ll[1])-1] = int(ll[2])
+                    self.bo_graph_trunc[int(ll[1])-1, int(ll[0])-1] = int(ll[2])
 
-        Returns
-        -------
-            XYZ : string
-                String of XYZ information from mol3D class.
-            no_tabs : bool, optional
-                Whether or not to use tabs in coordinate columns.
+    def read_bonder_order(self, bofile):
         """
-
-        ss = ''
-        for atom in self.atoms:
-            xyz = atom.coords()
-            ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
-        if no_tabs:
-            ss = ss.replace('\t', ' ' * 8)
-        return (ss)
-
-    def readfromxyz(self, filename: str, ligand_unique_id=False, read_final_optim_step=False, readstring=False):
-        """
-        Read XYZ into a mol3D class instance.
+        Get bond order information from file.
 
         Parameters
-        -------
-            filename : string
-                String of path to XYZ file. Path may be local or global.
-            ligand_unique_id : string
-                Unique identifier for a ligand. In MR diagnostics, we abstract the atom based graph to a ligand based graph.
-                For ligands, they don't have a natural name, so they are named with a UUID. Hard to attribute MR character to
-                just atoms, so it is attributed ligands instead.
-            read_final_optim_step : boolean
-                if there are multiple geometries in the xyz file
-                (after an optimization run) use only the last one
-            readstring : boolean
-                Flag for deciding whether a string of xyz file is being passed as the filename
+        ----------
+            bofile : str
+                Path to a bond order file.
         """
 
-        globs = globalvars()
-        amassdict = globs.amass()
-        self.graph = []
-        self.xyzfile = filename
-        if not readstring:
-            with open(filename, 'r') as f:
-                s = f.read().splitlines()
-            try:
-                atom_count = int(s[0])
-            except ValueError:
-                atom_count = 0
-            start = 2
-            if read_final_optim_step:
-                start = len(s) - int(s[0])
-            for line in s[start:start+atom_count]:
-                line_split = line.split()
-                # If the split line has more than 4 elements, only elements 0 through 3 will be used.
-                # this means that it should work with any XYZ file that also stores something like mulliken charge
-                # Next, this looks for unique atom IDs in files
-                if len(line_split) > 0:
-                    lm = re.search(r'\d+$', line_split[0])
-                    # if the string ends in digits m will be a Match object, or None otherwise.
-                    if line_split[0] in list(amassdict.keys()) or ligand_unique_id:
-                        atom = atom3D(line_split[0], [float(line_split[1]), float(
-                            line_split[2]), float(line_split[3])])
-                    elif lm is not None:
-                        print(line_split)
-                        symb = re.sub(r'\d+', '', line_split[0])
-                        atom = atom3D(symb, [float(line_split[1]), float(line_split[2]), float(line_split[3])],
-                                      name=line_split[0])
-                    else:
-                        print('cannot find atom type')
-                        sys.exit()
-                    self.addAtom(atom)
+        bonds_organic = {'H': 1, 'C': 4, 'N': 3,
+                         'O': 2, 'F': 1, 'P': 3, 'S': 2}
+        self.bv_dict = {}
+        self.ve_dict = {}
+        self.bvd_dict = {}
+        self.bodstd_dict = {}
+        self.bodavrg_dict = {}
+        self.bo_mat = np.zeros(shape=(self.natoms, self.natoms))
+        if os.path.isfile(bofile):
+            with open(bofile, "r") as fo:
+                for line in fo:
+                    ll = line.split()
+                    if len(ll) == 5 and ll[0].isdigit() and ll[1].isdigit():
+                        self.bo_mat[int(ll[0]), int(ll[1])] = float(ll[2])
+                        self.bo_mat[int(ll[1]), int(ll[0])] = float(ll[2])
+                        if int(ll[0]) == int(ll[1]):
+                            self.bv_dict.update({int(ll[0]): float(ll[2])})
         else:
-            s = filename.split('\n')
-            try:
-                s.remove('')
-            except ValueError:
-                pass
-            s = [str(val) + '\n' for val in s]
-            for line in s[0:]:
-                line_split = line.split()
-                if len(line_split) == 4 and line_split[0]:
-                    # this looks for unique atom IDs in files
-                    lm = re.search(r'\d+$', line_split[0])
-                    # if the string ends in digits m will be a Match object, or None otherwise.
-                    if lm is not None:
-                        symb = re.sub(r'\d+', '', line_split[0])
-                        atom = atom3D(symb, [float(line_split[1]), float(line_split[2]), float(line_split[3])],
-                                      name=line_split[0])
-                    elif line_split[0] in list(amassdict.keys()):
-                        atom = atom3D(line_split[0], [float(line_split[1]), float(
-                            line_split[2]), float(line_split[3])])
-                    else:
-                        print('cannot find atom type')
-                        sys.exit()
-                    self.addAtom(atom)
+            print(("bofile does not exist.", bofile))
+        for ii in range(self.natoms):
+            # self.ve_dict.update({ii: globs.amass()[self.atoms[ii].symbol()][3]})
+            self.ve_dict.update({ii: bonds_organic[self.atoms[ii].symbol()]})
+            self.bvd_dict.update({ii: self.bv_dict[ii] - self.ve_dict[ii]})
+            # neighbors = self.getBondedAtomsSmart(ii, oct=oct)
+            # vec = self.bo_mat[ii, :][neighbors]
+            vec = self.bo_mat[ii, :][self.bo_mat[ii, :] > 0.1]
+            if vec.shape[0] == 0:
+                self.bodstd_dict.update({ii: 0})
+                self.bodavrg_dict.update({ii: 0})
+            else:
+                devi = [abs(v - max(round(v), 1)) for v in vec]
+                self.bodstd_dict.update({ii: np.std(devi)})
+                self.bodavrg_dict.update({ii: np.mean(devi)})
+
+    def read_charge(self, chargefile):
+        """
+        Get charge information from file.
+
+        Parameters
+        ----------
+            chargefile : str
+                Path to a charge file.
+        """
+
+        self.charge_dict = {}
+        if os.path.isfile(chargefile):
+            with open(chargefile, "r") as fo:
+                for line in fo:
+                    ll = line.split()
+                    if len(ll) == 3 and ll[0].isdigit():
+                        self.charge_dict.update({int(ll[0]) - 1: float(ll[2])})
+        else:
+            print(("chargefile does not exist.", chargefile))
+
+    def read_smiles(self, smiles, ff="mmff94", steps=2500):
+        """
+        Read a smiles string and convert it to a mol3D class instance.
+
+        Parameters
+        ----------
+            smiles : str
+                SMILES string to be interpreted by openbabel.
+            ff : str, optional
+                Forcefield to be used by openbabel. Default is mmff94.
+            steps : int, optional
+                Steps to be taken by forcefield. Default is 2500.
+        """
+
+        # used to convert from one formst (ex, SMILES) to another (ex, mol3D )
+        obConversion = openbabel.OBConversion()
+
+        # the input format "SMILES"; Reads the SMILES - all stacked as 2-D - one on top of the other
+        obConversion.SetInFormat("SMILES")
+        OBMol = openbabel.OBMol()
+        obConversion.ReadString(OBMol, smiles)
+
+        # Adds Hydrogens
+        OBMol.AddHydrogens()
+
+        # Get a 3-D structure with H's
+        builder = openbabel.OBBuilder()
+        builder.Build(OBMol)
+
+        # Force field optimization is done in the specified number of "steps" using the specified "ff" force field
+        if ff:
+            forcefield = openbabel.OBForceField.FindForceField(ff)
+            s = forcefield.Setup(OBMol)
+            if not s:
+                print('FF setup failed')
+            forcefield.ConjugateGradients(steps)
+            forcefield.GetCoordinates(OBMol)
+
+        # mol3D structure
+        self.OBMol = OBMol
+        self.convert2mol3D()
 
     def readfrommol(self, filename):
         """
@@ -6220,14 +6441,6 @@ class mol3D:
             self.bo_graph_trunc = []
             self.bo_dict = []
 
-    def read_bo_from_mol(self, molfile):
-        with open(molfile, 'r') as fo:
-            for line in fo:
-                ll = line.split()
-                if len(ll) == 7 and all([x.isdigit() for x in ll]):
-                    self.bo_graph_trunc[int(ll[0])-1, int(ll[1])-1] = int(ll[2])
-                    self.bo_graph_trunc[int(ll[1])-1, int(ll[0])-1] = int(ll[2])
-
     def readfromstring(self, xyzstring):
         """
         Read XYZ from string.
@@ -6303,6 +6516,160 @@ class mol3D:
                     sys.exit()
                 self.addAtom(atom)
 
+    def readfromxyz(self, filename: str, ligand_unique_id=False, read_final_optim_step=False, readstring=False):
+        """
+        Read XYZ into a mol3D class instance.
+
+        Parameters
+        -------
+            filename : string
+                String of path to XYZ file. Path may be local or global.
+            ligand_unique_id : string
+                Unique identifier for a ligand. In MR diagnostics, we abstract the atom based graph to a ligand based graph.
+                For ligands, they don't have a natural name, so they are named with a UUID. Hard to attribute MR character to
+                just atoms, so it is attributed ligands instead.
+            read_final_optim_step : boolean
+                if there are multiple geometries in the xyz file
+                (after an optimization run) use only the last one
+            readstring : boolean
+                Flag for deciding whether a string of xyz file is being passed as the filename
+        """
+
+        globs = globalvars()
+        amassdict = globs.amass()
+        self.graph = []
+        self.xyzfile = filename
+        if not readstring:
+            with open(filename, 'r') as f:
+                s = f.read().splitlines()
+            try:
+                atom_count = int(s[0])
+            except ValueError:
+                atom_count = 0
+            start = 2
+            if read_final_optim_step:
+                start = len(s) - int(s[0])
+            for line in s[start:start+atom_count]:
+                line_split = line.split()
+                # If the split line has more than 4 elements, only elements 0 through 3 will be used.
+                # this means that it should work with any XYZ file that also stores something like mulliken charge
+                # Next, this looks for unique atom IDs in files
+                if len(line_split) > 0:
+                    lm = re.search(r'\d+$', line_split[0])
+                    # if the string ends in digits m will be a Match object, or None otherwise.
+                    if line_split[0] in list(amassdict.keys()) or ligand_unique_id:
+                        atom = atom3D(line_split[0], [float(line_split[1]), float(
+                            line_split[2]), float(line_split[3])])
+                    elif lm is not None:
+                        print(line_split)
+                        symb = re.sub(r'\d+', '', line_split[0])
+                        atom = atom3D(symb, [float(line_split[1]), float(line_split[2]), float(line_split[3])],
+                                      name=line_split[0])
+                    else:
+                        print('cannot find atom type')
+                        sys.exit()
+                    self.addAtom(atom)
+        else:
+            s = filename.split('\n')
+            try:
+                s.remove('')
+            except ValueError:
+                pass
+            s = [str(val) + '\n' for val in s]
+            for line in s[0:]:
+                line_split = line.split()
+                if len(line_split) == 4 and line_split[0]:
+                    # this looks for unique atom IDs in files
+                    lm = re.search(r'\d+$', line_split[0])
+                    # if the string ends in digits m will be a Match object, or None otherwise.
+                    if lm is not None:
+                        symb = re.sub(r'\d+', '', line_split[0])
+                        atom = atom3D(symb, [float(line_split[1]), float(line_split[2]), float(line_split[3])],
+                                      name=line_split[0])
+                    elif line_split[0] in list(amassdict.keys()):
+                        atom = atom3D(line_split[0], [float(line_split[1]), float(
+                            line_split[2]), float(line_split[3])])
+                    else:
+                        print('cannot find atom type')
+                        sys.exit()
+                    self.addAtom(atom)
+
+    def reflect_coords(self, metal_coords, lig1_catom_coords, lig2_catom_coords, atoms_to_move):
+        """
+        Helper function for flip_symmetry to calculate vectors, projections, and update coordinates
+
+        Parameters
+        ----------
+            metal_coords: np.array
+                Coordinates of metal atom
+            lig1_catom_coords: np.array
+                Coordinates of coordinating atom of first ligand to be flipped
+            lig2_catom_coords: np.array
+                Coordinates of coordinating atom of second ligand to be flipped
+            atoms_to_move: list
+                List of atom indices to be moved
+
+        Returns
+        -------
+            self: mol3D
+                returns self, a mol3D object with flipped symmetry
+        """
+
+        # define vector from metal to first coordinating atom of first ligand to be swapped
+        vec1 = lig1_catom_coords - metal_coords
+        # define vector from metal to first coordinating atom of second ligand to be swapped
+        vec2 = lig2_catom_coords - metal_coords
+        # define reflection vector between the two previous vectors and normalize
+        vec_reflect = vec1 / np.linalg.norm(vec1, 2) + vec2 / np.linalg.norm(vec2, 2)
+        vec_reflect = vec_reflect / np.linalg.norm(vec_reflect, 2)
+        # define all atoms to be moved, i.e., all atoms in both ligands that will be moved
+        # move all atoms by flipping coordinates across normalized reflection vector
+        for atom_idx in atoms_to_move:
+            vec_atoms = np.array(self.atoms[atom_idx].coords()) - metal_coords
+            vec_proj = np.dot(vec_atoms, vec_reflect) * vec_reflect
+            reflected_coords = metal_coords + 2 * vec_proj - vec_atoms
+            self.atoms[atom_idx].setcoords(reflected_coords)
+        return self
+
+    def resetBondOBMol(self):
+        """
+        Repopulates the bond order matrix via openbabel. Interprets bond order matrix.
+        """
+
+        if self.OBMol:
+            BO_mat = self.populateBOMatrix()
+            self.cleanBonds()
+            for i in range(0, self.natoms):
+                for j in range(0, self.natoms):
+                    if BO_mat[i][j] > 0:
+                        self.OBMol.AddBond(i + 1, j + 1, int(BO_mat[i][j]))
+        else:
+            print("OBmol does not exist")
+
+    def returnxyz(self, no_tabs=False):
+        """
+        Print XYZ info of mol3D class instance to stdout. To write to file
+        (more common), use writexyz() instead.
+
+        Parameters
+        ----------
+            no_tabs : bool, optional
+                Whether or not to use tabs in coordinate columns.
+
+        Returns
+        -------
+            ss : string
+                String of XYZ information from mol3D class.
+        """
+
+        ss = ''
+        for atom in self.atoms:
+            xyz = atom.coords()
+            ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
+        if no_tabs:
+            ss = ss.replace('\t', ' ' * 8)
+        return (ss)
+
     def rmsd(self, mol2):
         """
         Compute the RMSD between two molecules. Does not align molecules.
@@ -6335,38 +6702,6 @@ class mol3D:
                 rmsd /= Nat0
             return np.sqrt(rmsd)
 
-    def meanabsdev(self, mol2):
-        """
-        Compute the mean absolute deviation (MAD) between two molecules.
-        Does not align molecules. For that, use geometry.kabsch().
-
-        Parameters
-        ----------
-            mol2 : mol3D
-                mol3D instance of second molecule.
-
-        Returns
-        -------
-            MAD : float
-                Mean absolute deviation between the two structures.
-        """
-
-        Nat0 = self.natoms
-        Nat1 = mol2.natoms
-        if (Nat0 != Nat1):
-            print(
-                "ERROR: Absolute atom deviations can be calculated only for molecules with the same number of atoms..")
-            return float('NaN')
-        else:
-            dev = 0
-            for atom0, atom1 in zip(self.getAtoms(), mol2.getAtoms()):
-                dev += abs((atom0.distance(atom1)))
-            if Nat0 == 0:
-                dev = 0
-            else:
-                dev /= Nat0
-            return dev
-
     def rmsd_nonH(self, mol2):
         """
         Compute the RMSD between two molecules, considering heavy atoms only.
@@ -6396,6 +6731,57 @@ class mol3D:
                     rmsd += (atom0.distance(atom1)) ** 2
             rmsd /= Nat0
             return np.sqrt(rmsd)
+
+    def roland_combine(self, mol, catoms, bond_to_add=[], dirty=False):
+        """
+        Combines two molecules. Each atom in the second molecule
+        is appended to the first while preserving orders. Assumes
+        operation with a given mol3D instance, when handed a second mol3D instance.
+
+        Parameters
+        ----------
+            mol : mol3D
+                mol3D class instance containing molecule to be added.
+            bond_to_add : list, optional
+                List of tuples (ind1,ind2,order) bonds to add. Default is empty.
+            dirty : bool, optional
+                Add atoms without worrying about bond orders. Default is False.
+
+        Returns
+        -------
+            cmol : mol3D
+                New mol3D class containing the two molecules combined.
+        """
+
+        cmol = self
+        bo_dict = cmol.bo_dict
+
+        print('lig_dict')
+        print(mol.bo_dict)
+
+        if cmol.bo_dict == False:
+            # only central metal
+            bo_dict = {}
+        new_bo_dict = copy.deepcopy(bo_dict)
+
+        # add ligand connections
+        for bo in mol.bo_dict:
+            ind1 = bo[0] + len(cmol.atoms)
+            ind2 = bo[1] + len(cmol.atoms)
+            new_bo_dict[(ind1,ind2)]=mol.bo_dict[(bo[0],bo[1])]
+
+        # connect metal to ligand
+        metal_ind = cmol.findMetal(transition_metals_only=False)[0]
+        for atom in catoms:
+            ind1 = metal_ind
+            ind2 = atom + len(cmol.atoms)
+            new_bo_dict[(ind1,ind2)]=1
+
+        for atom in mol.atoms:
+            cmol.addAtom(atom, auto_populate_BO_dict = False)
+
+        cmol.bo_dict = new_bo_dict
+        return cmol
 
     def sanitycheck(self, silence=False, debug=False):
         """
@@ -6448,19 +6834,10 @@ class mol3D:
         else:
             return overlap, mind
 
-    # Check that the molecule passes basic angle tests in line with CSD pulls
-
-    # @param self: the object pointer
-    # @param oct bool: if octahedral test
-    # @param  angle1: metal angle cutoff
-    # @param angle2: organics angle cutoff
-    # @param angle3: metal/organic angle cutoff e.g. M-X-X angle
-    # @return sane (bool: if sane octahedral molecule)
-    # @return  error_dict (optional - if debug) dict: {bondidists and angles breaking constraints:values}
-
     def sanitycheckCSD(self, oct=False, angle1=30, angle2=80, angle3=45, debug=False, metals=None):
         """
         Sanity check a CSD molecule.
+        Check that the molecule passes basic angle tests in line with CSD pulls.
 
         Parameters
         ----------
@@ -6480,7 +6857,7 @@ class mol3D:
         Returns
         -------
             sane : bool
-                Whether or not molecule is a sane molecule
+                Whether or not molecule is a sane molecule.
             error_dict : dict
                 Returned if debug, {bondidists and angles breaking constraints:values}
         """
@@ -6535,6 +6912,34 @@ class mol3D:
         else:
             return sane
 
+    def setLoc(self, loc):
+        """
+        Sets the conformation of an amino acid in the chain of a protein.
+
+        Parameters
+        ----------
+            loc : str
+                a one-character string representing the conformation
+        """
+
+        self.loc = loc
+
+    def symvect(self):
+        """
+        Method to obtain array of symbol vector of molecule.
+
+        Returns
+        -------
+            symbol_vector : np.array
+                1 dimensional numpy array of atom symbols.
+                (N,) dimension, N is number of atoms.
+        """
+
+        symbol_vector = []
+        for atom in self.atoms:
+            symbol_vector.append(atom.sym)
+        return np.array(symbol_vector)
+
     def translate(self, dxyz):
         """
         Translate all atoms by a given vector.
@@ -6547,6 +6952,22 @@ class mol3D:
 
         for atom in self.atoms:
             atom.translate(dxyz)
+
+    def typevect(self):
+        """
+        Method to obtain array of type vector of molecule.
+
+        Returns
+        -------
+            type_vector : np.array
+                1 dimensional numpy array of atom types (by name).
+                (N,) dimension, N is number of atoms.
+        """
+
+        type_vector = []
+        for atom in self.atoms:
+            type_vector.append(atom.name)
+        return np.array(type_vector)
 
     def writegxyz(self, filename):
         """
@@ -6567,173 +6988,6 @@ class mol3D:
                                                float(atom.atno), xyz[0], xyz[1], xyz[2])
         fname = filename.split('.gxyz')[0]
         with open(fname + '.gxyz', 'w') as f:
-            f.write(ss)
-
-    def writexyz(self, filename, symbsonly=False, ignoreX=False,
-                 ordering=False, writestring=False, withgraph=False,
-                 specialheader=False, no_tabs=False):
-        """
-        Write standard XYZ file.
-
-        Parameters
-        ----------
-            filename : str
-                Path to XYZ file.
-            symbsonly : bool, optional
-                Only write symbols to file. Default is False.
-            ignoreX : bool, optional
-                Ignore X element when writing. Default is False.
-            ordering : bool, optional
-                If handed a list, will order atoms in a specific order. Default is False.
-            writestring : bool, optional
-                Flag to write to a string if True or file if False. Default is False.
-            withgraph : bool, optional
-                Flag to write with graph (after XYZ) if True. Default is False. If True, sparse graph written.
-            specialheader : str, optional
-                String to write information into header. Default is False. If True, a special string is written.
-            no_tabs : bool, optional
-                Whether or not to use tabs in coordinate columns.
-
-        Returns
-        -------
-            ss : str
-                XYZ contents, if writestring is True.
-        """
-
-        ss = ''  # initialize returning string
-        natoms = self.natoms
-        if not ordering:
-            ordering = list(range(natoms))
-        if ignoreX:
-            natoms -= sum([1 for i in self.atoms if i.sym == "X"])
-
-        if specialheader:
-            ss += str(natoms) + "\n"
-            ss += specialheader + "\n"
-        else:
-            ss += str(natoms) + "\n" + time.strftime(
-                '%m/%d/%Y %H:%M') + ", XYZ structure generated by mol3D Class, " + self.globs.PROGRAM + "\n"
-        for ii in ordering:
-            atom = self.getAtom(ii)
-            if not (ignoreX and atom.sym == 'X'):
-                xyz = atom.coords()
-                if symbsonly:
-                    ss += "%s \t%f\t%f\t%f\n" % (atom.sym,
-                                                 xyz[0], xyz[1], xyz[2])
-                else:
-                    ss += "%s \t%f\t%f\t%f\n" % (atom.name,
-                                                 xyz[0], xyz[1], xyz[2])
-        if withgraph:
-            from scipy.sparse import csgraph
-            csg = csgraph.csgraph_from_dense(self.graph)
-            x, y = csg.nonzero()
-            tempstr = ''
-            for row1, row2 in zip(x, y):
-                if row1 >= 100:
-                    tempstr += ' '+str(row1)
-                elif row1 >= 10:
-                    tempstr += '  '+str(row1)
-                else:
-                    tempstr += '   '+str(row1)
-                if row2 >= 100:
-                    tempstr += '  '+str(row2)+' S\n'
-                elif row2 >= 10:
-                    tempstr += '   '+str(row2)+' S\n'
-                else:
-                    tempstr += '    '+str(row2)+' S\n'
-            ss += tempstr
-
-        if no_tabs:
-            ss = ss.replace('\t', ' ' * 8)
-
-        if writestring:
-            return ss
-        else:
-            fname = filename.split('.xyz')[0]
-            with open(fname + '.xyz', 'w') as f:
-                f.write(ss)
-
-    def writemxyz(self, mol, filename, no_tabs=False):
-        """
-        Write standard XYZ file with two molecules.
-
-        Parameters
-        ----------
-            mol : mol3D
-                mol3D instance of second molecule.
-            filename : str
-                Path to XYZ file.
-            no_tabs : bool, optional
-                Whether or not to use tabs in coordinate columns.
-        """
-
-        ss = ''  # initialize returning string
-        ss += str(self.natoms + mol.natoms) + "\n" + time.strftime(
-            '%m/%d/%Y %H:%M') + ", XYZ structure generated by mol3D Class, " + self.globs.PROGRAM + "\n"
-        for atom in self.atoms:
-            xyz = atom.coords()
-            ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
-        for atom in mol.atoms:
-            xyz = atom.coords()
-            ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
-        if no_tabs:
-            ss = ss.replace('\t', ' ' * 8)
-        fname = filename.split('.xyz')[0]
-        with open(fname + '.xyz', 'w') as f:
-            f.write(ss)
-
-    def writenumberedxyz(self, filename):
-        """
-        Write standard XYZ file with numbers instead of symbols.
-
-        Parameters
-        ----------
-            filename : str
-                Path to XYZ file.
-        """
-
-        ss = ''  # initialize returning string
-        ss += str(self.natoms) + "\n" + time.strftime(
-            '%m/%d/%Y %H:%M') + ", XYZ structure generated by mol3D Class, " + self.globs.PROGRAM + "\n"
-        unique_types = dict()
-
-        for atom in self.atoms:
-            this_sym = atom.symbol()
-            if this_sym not in list(unique_types.keys()):
-                unique_types.update({this_sym: 1})
-            else:
-                unique_types.update({this_sym: unique_types[this_sym] + 1})
-            atom_name = str(atom.symbol()) + str(unique_types[this_sym])
-            xyz = atom.coords()
-            ss += "%s \t%f\t%f\t%f\n" % (atom_name, xyz[0], xyz[1], xyz[2])
-        fname = filename.split('.xyz')[0]
-        with open(fname + '.xyz', 'w') as f:
-            f.write(ss)
-
-    def writesepxyz(self, mol, filename):
-        """
-        Write standard XYZ file with two molecules separated.
-
-        Parameters
-        ----------
-            mol : mol3D
-                mol3D instance of second molecule.
-            filename : str
-                Path to XYZ file.
-        """
-
-        ss = ''  # initialize returning string
-        ss += str(self.natoms) + "\n" + time.strftime(
-            '%m/%d/%Y %H:%M') + ", XYZ structure generated by mol3D Class, " + self.globs.PROGRAM + "\n"
-        for atom in self.atoms:
-            xyz = atom.coords()
-            ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
-        ss += "--\n" + str(mol.natoms) + "\n\n"
-        for atom in mol.atoms:
-            xyz = atom.coords()
-            ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
-        fname = filename.split('.xyz')[0]
-        with open(fname + '.xyz', 'w') as f:
             f.write(ss)
 
     def writemol2(self, filename, writestring=False, ignoreX=False, force=False):
@@ -6846,426 +7100,169 @@ class mol3D:
             with open(filename, 'w') as file1:
                 file1.write(ss)
 
-    def oct_comp(self, angle_ref=False, catoms_arr=None, debug=False):
+    def writemxyz(self, mol, filename, no_tabs=False):
         """
-        Get the deviation of shape of the catoms from the desired shape,
-        which is defined in angle_ref.
-
-        Parameters
-        ----------
-            angle_ref : bool, optional
-                Reference list of list for the expected angles (A-metal-B) of each connection atom.
-            catoms_arr : Nonetype, optional
-                Uses the catoms of the mol3D by default. User can overwrite this connection atom array by explicit input.
-            debug : bool, optional
-                Flag for extra printout. Default is False.
-
-        Returns
-        -------
-            dict_catoms_shape : dict
-                Dictionary of first coordination sphere shape measures.
-            catoms_arr : list
-                Connection atom array.
-        """
-
-        if not angle_ref:
-            angle_ref = self.oct_angle_ref
-        from molSimplify.Scripts.oct_check_mols import loop_target_angle_arr
-
-        metal_coord = self.getAtomCoords(self.findMetal()[0])
-        catom_coord = []
-        # Note that use this only when you wanna specify the metal connecting atoms.
-        # This will change the attributes of mol3D.
-        if catoms_arr is not None:
-            self.catoms = catoms_arr
-            self.num_coord_metal = len(catoms_arr)
-        else:
-            self.get_num_coord_metal(debug=debug)
-        theta_arr, oct_dist = [], []
-        # print("!!!!catoms", self.catoms, catoms_arr)
-        for atom in self.catoms:
-            coord = self.getAtomCoords(atom)
-            catom_coord.append(coord)
-        th_input_arr = []
-        catoms_map = {}
-        for idx1, coord1 in enumerate(catom_coord):
-            # {atom_ind_in_mol: ind_in_angle_list}
-            catoms_map.update({self.catoms[idx1]: idx1})
-            delr1 = (np.array(coord1) - np.array(metal_coord)).tolist()
-            theta_tmp = []
-            for idx2, coord2 in enumerate(catom_coord):
-                if idx2 != idx1:
-                    delr2 = (np.array(coord2) - np.array(metal_coord)).tolist()
-                    theta = vecangle(delr1, delr2)
-                    theta_tmp.append(theta)
-                else:
-                    theta_tmp.append(-1)
-            th_input_arr.append([self.catoms[idx1], theta_tmp])
-        # This will help pick out 6 catoms that forms the closest shape compared to the desired structure.
-        # When we have the customized catoms_arr, it will not change anything.
-        # print("!!!th_input_arr", th_input_arr, len(th_input_arr))
-        # print("!!!catoms_map: ", catoms_map)
-        th_output_arr, sum_del_angle, catoms_arr, max_del_sig_angle = loop_target_angle_arr(
-            th_input_arr, angle_ref, catoms_map)
-        self.catoms = catoms_arr
-        if debug:
-            print(('th:', th_output_arr))
-            print(('sum_del:', sum_del_angle))
-            print(('catoms_arr:', catoms_arr))
-            print(('catoms_type:', [self.getAtom(x).symbol()
-                                    for x in catoms_arr]))
-            print(('catoms_coord:', [self.getAtom(x).coords()
-                                     for x in catoms_arr]))
-        for idx, ele in enumerate(th_output_arr):
-            theta_arr.append([catoms_arr[idx], sum_del_angle[idx], ele])
-        theta_trunc_arr = theta_arr
-        theta_trunc_arr_T = list(map(list, list(zip(*theta_trunc_arr))))
-        oct_catoms = theta_trunc_arr_T[0]
-        oct_angle_devi = theta_trunc_arr_T[1]
-        oct_angle_all = theta_trunc_arr_T[2]
-        if debug:
-            print(('Summation of deviation angle for catoms:', oct_angle_devi))
-            print(('Angle for catoms:', oct_angle_all))
-        for atom in oct_catoms:
-            coord = self.getAtom(atom).coords()
-            dist = np.linalg.norm(np.array(coord) - np.array(metal_coord))
-            oct_dist.append(dist)
-        oct_dist.sort()
-        # if len(oct_dist) == 6:  # For Oct
-        #     dist_del_arr = np.array(
-        #         [oct_dist[3] - oct_dist[0], oct_dist[4] - oct_dist[1], oct_dist[5] - oct_dist[2]])
-        #     min_posi = np.argmin(dist_del_arr)
-        #     if min_posi == 0:
-        #         dist_eq, dist_ax = oct_dist[:4], oct_dist[4:]
-        #     elif min_posi == 1:
-        #         dist_eq, dist_ax = oct_dist[1:5], [oct_dist[0], oct_dist[5]]
-        #     else:
-        #         dist_eq, dist_ax = oct_dist[2:], oct_dist[:2]
-        #     dist_del_eq = max(dist_eq) - min(dist_eq)
-        # elif len(oct_dist) == 5:  # For one empty site
-        #     if (oct_dist[3] - oct_dist[0]) > (oct_dist[4] - oct_dist[1]):
-        #         # ax dist is smaller
-        #         dist_ax, dist_eq = oct_dist[:1], oct_dist[1:]
-        #     else:
-        #         # eq dist is smaller
-        #         dist_ax, dist_eq = oct_dist[4:], oct_dist[:4]
-        #     dist_del_eq = max(dist_eq) - min(dist_eq)
-        # else:
-        #     dist_eq, dist_ax = -1, -1
-        #     dist_del_eq = -1
-        dist_del_all = oct_dist[-1] - oct_dist[0]
-        oct_dist_relative = [(np.linalg.norm(np.array(self.getAtom(ii).coords()) -
-                                             np.array(metal_coord)))
-                             / (self.globs.amass()[self.getAtom(ii).sym][2]
-                                + self.globs.amass()[self.getAtom(self.findMetal()[0]).sym][2])
-                             for ii in oct_catoms]
-        dict_catoms_shape = dict()
-        dict_catoms_shape['oct_angle_devi_max'] = float(max(oct_angle_devi))
-        dict_catoms_shape['max_del_sig_angle'] = float(max_del_sig_angle)
-        dict_catoms_shape['dist_del_eq'] = 0
-        dict_catoms_shape['dist_del_all'] = float(dist_del_all)
-        dict_catoms_shape['dist_del_all_relative'] = np.max(
-            oct_dist_relative) - np.min(oct_dist_relative)
-        dict_catoms_shape['dist_del_eq_relative'] = 0
-        self.dict_catoms_shape = dict_catoms_shape
-        return dict_catoms_shape, catoms_arr
-
-    def print_geo_dict(self):
-        """
-        Print geometry check info after the check.
-        """
-
-        def print_dict(_dict):
-            for key, value in list(_dict.items()):
-                print(('%s: ' % key, value))
-        print('========Geo_check_results========')
-        print('--------coordination_check-----')
-        print(('num_coord_metal:', self.num_coord_metal))
-        print(('catoms_arr:', self.catoms))
-        print('-------catoms_shape_check-----')
-        _dict = self.dict_catoms_shape
-        print_dict(_dict)
-        print('-------individual_ligand_distortion_check----')
-        _dict = self.dict_lig_distort
-        print_dict(_dict)
-        print('-------linear_ligand_orientation_check-----')
-        _dict = self.dict_orientation
-        print_dict(_dict)
-        print('=======End of printing geo_check_results========')
-
-    def read_smiles(self, smiles, ff="mmff94", steps=2500):
-        """
-        Read a smiles string and convert it to a mol3D class instance.
-
-        Parameters
-        ----------
-            smiles : str
-                SMILES string to be interpreted by openbabel.
-            ff : str, optional
-                Forcefield to be used by openbabel. Default is mmff94.
-            steps : int, optional
-                Steps to be taken by forcefield. Default is 2500.
-        """
-
-        # used to convert from one formst (ex, SMILES) to another (ex, mol3D )
-        obConversion = openbabel.OBConversion()
-
-        # the input format "SMILES"; Reads the SMILES - all stacked as 2-D - one on top of the other
-        obConversion.SetInFormat("SMILES")
-        OBMol = openbabel.OBMol()
-        obConversion.ReadString(OBMol, smiles)
-
-        # Adds Hydrogens
-        OBMol.AddHydrogens()
-
-        # Get a 3-D structure with H's
-        builder = openbabel.OBBuilder()
-        builder.Build(OBMol)
-
-        # Force field optimization is done in the specified number of "steps" using the specified "ff" force field
-        if ff:
-            forcefield = openbabel.OBForceField.FindForceField(ff)
-            s = forcefield.Setup(OBMol)
-            if not s:
-                print('FF setup failed')
-            forcefield.ConjugateGradients(steps)
-            forcefield.GetCoordinates(OBMol)
-
-        # mol3D structure
-        self.OBMol = OBMol
-        self.convert2mol3D()
-
-    def mols_symbols(self):
-        """
-        Store symbols and their frequencies in symbols_dict attributes.
-        """
-
-        self.symbols_dict = {}
-        for atom in self.getAtoms():
-            if not atom.symbol() in self.symbols_dict:
-                self.symbols_dict.update({atom.symbol(): 1})
-            else:
-                self.symbols_dict[atom.symbol()] += 1
-
-    def read_bonder_order(self, bofile):
-        """
-        Get bond order information from file.
-
-        Parameters
-        ----------
-            bofile : str
-                Path to a bond order file.
-        """
-
-        bonds_organic = {'H': 1, 'C': 4, 'N': 3,
-                         'O': 2, 'F': 1, 'P': 3, 'S': 2}
-        self.bv_dict = {}
-        self.ve_dict = {}
-        self.bvd_dict = {}
-        self.bodstd_dict = {}
-        self.bodavrg_dict = {}
-        self.bo_mat = np.zeros(shape=(self.natoms, self.natoms))
-        if os.path.isfile(bofile):
-            with open(bofile, "r") as fo:
-                for line in fo:
-                    ll = line.split()
-                    if len(ll) == 5 and ll[0].isdigit() and ll[1].isdigit():
-                        self.bo_mat[int(ll[0]), int(ll[1])] = float(ll[2])
-                        self.bo_mat[int(ll[1]), int(ll[0])] = float(ll[2])
-                        if int(ll[0]) == int(ll[1]):
-                            self.bv_dict.update({int(ll[0]): float(ll[2])})
-        else:
-            print(("bofile does not exist.", bofile))
-        for ii in range(self.natoms):
-            # self.ve_dict.update({ii: globs.amass()[self.atoms[ii].symbol()][3]})
-            self.ve_dict.update({ii: bonds_organic[self.atoms[ii].symbol()]})
-            self.bvd_dict.update({ii: self.bv_dict[ii] - self.ve_dict[ii]})
-            # neighbors = self.getBondedAtomsSmart(ii, oct=oct)
-            # vec = self.bo_mat[ii, :][neighbors]
-            vec = self.bo_mat[ii, :][self.bo_mat[ii, :] > 0.1]
-            if vec.shape[0] == 0:
-                self.bodstd_dict.update({ii: 0})
-                self.bodavrg_dict.update({ii: 0})
-            else:
-                devi = [abs(v - max(round(v), 1)) for v in vec]
-                self.bodstd_dict.update({ii: np.std(devi)})
-                self.bodavrg_dict.update({ii: np.mean(devi)})
-
-    def read_charge(self, chargefile):
-        """
-        Get charge information from file.
-
-        Parameters
-        ----------
-            chargefile : str
-                Path to a charge file.
-        """
-
-        self.charge_dict = {}
-        if os.path.isfile(chargefile):
-            with open(chargefile, "r") as fo:
-                for line in fo:
-                    ll = line.split()
-                    if len(ll) == 3 and ll[0].isdigit():
-                        self.charge_dict.update({int(ll[0]) - 1: float(ll[2])})
-        else:
-            print(("chargefile does not exist.", chargefile))
-
-    def reflect_coords(self, metal_coords, lig1_catom_coords, lig2_catom_coords, atoms_to_move):
-        """
-        Helper function for flip_symmetry to calculate vectors, projections, and update coordinates
-
-        Parameters
-        ----------
-            metal_coords: np.array
-                Coordinates of metal atom
-            lig1_catom_coords: np.array
-                Coordinates of coordinating atom of first ligand to be flipped
-            lig2_catom_coords: np.array
-                Coordinates of coordinating atom of second ligand to be flipped
-            atoms_to_move: list
-                List of atom indices to be moved
-
-        Returns
-        -------
-            self: mol3D
-                returns self, a mol3D object with flipped symmetry
-        """
-
-        # define vector from metal to first coordinating atom of first ligand to be swapped
-        vec1 = lig1_catom_coords - metal_coords
-        # define vector from metal to first coordinating atom of second ligand to be swapped
-        vec2 = lig2_catom_coords - metal_coords
-        # define reflection vector between the two previous vectors and normalize
-        vec_reflect = vec1 / np.linalg.norm(vec1, 2) + vec2 / np.linalg.norm(vec2, 2)
-        vec_reflect = vec_reflect / np.linalg.norm(vec_reflect, 2)
-        # define all atoms to be moved, i.e., all atoms in both ligands that will be moved
-        # move all atoms by flipping coordinates across normalized reflection vector
-        for atom_idx in atoms_to_move:
-            vec_atoms = np.array(self.atoms[atom_idx].coords()) - metal_coords
-            vec_proj = np.dot(vec_atoms, vec_reflect) * vec_reflect
-            reflected_coords = metal_coords + 2 * vec_proj - vec_atoms
-            self.atoms[atom_idx].setcoords(reflected_coords)
-        return self
-
-    def setLoc(self, loc):
-        """
-        Sets the conformation of an amino acid in the chain of a protein.
-
-        Parameters
-        ----------
-            loc : str
-                a one-character string representing the conformation
-        """
-
-        self.loc = loc
-
-    def num_rings(self, index):
-        """
-        Computes the number of simple rings an atom is in.
-
-        Parameters
-        ----------
-            index : int
-                The index of the atom in question. Zero-indexing, so the first atom has an index of zero.
-
-        Returns
-        -------
-            myNumRings : int
-                The number of rings the atom is in.
-        """
-
-        self.convert2OBMol()  # Need to populate the self.OBMol field
-        ringlist = self.OBMol.GetSSSR()  # Get the smallest set of simple rings for a molecule.
-        ringinds = []
-        for obmol_ring in ringlist:  # loop through the simple rings
-            _inds = []
-            for ii in range(1, self.natoms+1):  # loop through all atoms in the mol3D object
-                if obmol_ring.IsInRing(ii):  # check if a given atom is in the current ring
-                    _inds.append(ii-1)
-            ringinds.append(_inds)
-
-        # ringinds is an array of arrays, where each inner array contains the atom indices of the atoms in a simple ring
-        # The length of ringinds is the number of simple rings in the mol3D object calling numRings
-
-        myNumRings = 0  # running tally
-
-        for idx_list in ringinds:
-            if index in idx_list:
-                myNumRings += 1
-
-        return myNumRings
-
-    def mol3D_to_networkx(self,get_symbols:bool=True,get_bond_order:bool=True,get_bond_distance:bool=False):
-        g = nx.Graph()
-        # get every index of atoms in mol3D object
-        for atom_ind in range(0,self.natoms):
-            # set each atom as a node in the graph, and add symbol information if wanted
-            data={}
-            if get_symbols:
-                data['Symbol']=self.getAtom(atom_ind).symbol()
-                data['atom3D']=self.getAtom(atom_ind)
-            g.add_node(atom_ind,**data)
-        # get every bond in mol3D object
-        bond_info=self.bo_dict
-        for bond in bond_info:
-            # set each bond as an edge in the graph, and add symbol information if wanted
-            data={}
-            if get_bond_order:
-                data['bond_order']=bond_info[bond]
-            if get_bond_distance:
-                distance=self.getAtom(bond[0]).distance(self.getAtom(bond[1]))
-                data['bond_distance']=distance
-            g.add_edge(bond[0],bond[1],**data)
-        return g
-
-    def roland_combine(self, mol, catoms, bond_to_add=[], dirty=False):
-        """
-        Combines two molecules. Each atom in the second molecule
-        is appended to the first while preserving orders. Assumes
-        operation with a given mol3D instance, when handed a second mol3D instance.
+        Write standard XYZ file with two molecules.
 
         Parameters
         ----------
             mol : mol3D
-                mol3D class instance containing molecule to be added.
-            bond_to_add : list, optional
-                List of tuples (ind1,ind2,order) bonds to add. Default is empty.
-            dirty : bool, optional
-                Add atoms without worrying about bond orders. Default is False.
+                mol3D instance of second molecule.
+            filename : str
+                Path to XYZ file.
+            no_tabs : bool, optional
+                Whether or not to use tabs in coordinate columns.
+        """
+
+        ss = ''  # initialize returning string
+        ss += str(self.natoms + mol.natoms) + "\n" + time.strftime(
+            '%m/%d/%Y %H:%M') + ", XYZ structure generated by mol3D Class, " + self.globs.PROGRAM + "\n"
+        for atom in self.atoms:
+            xyz = atom.coords()
+            ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
+        for atom in mol.atoms:
+            xyz = atom.coords()
+            ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
+        if no_tabs:
+            ss = ss.replace('\t', ' ' * 8)
+        fname = filename.split('.xyz')[0]
+        with open(fname + '.xyz', 'w') as f:
+            f.write(ss)
+
+    def writenumberedxyz(self, filename):
+        """
+        Write standard XYZ file with numbers instead of symbols.
+
+        Parameters
+        ----------
+            filename : str
+                Path to XYZ file.
+        """
+
+        ss = ''  # initialize returning string
+        ss += str(self.natoms) + "\n" + time.strftime(
+            '%m/%d/%Y %H:%M') + ", XYZ structure generated by mol3D Class, " + self.globs.PROGRAM + "\n"
+        unique_types = dict()
+
+        for atom in self.atoms:
+            this_sym = atom.symbol()
+            if this_sym not in list(unique_types.keys()):
+                unique_types.update({this_sym: 1})
+            else:
+                unique_types.update({this_sym: unique_types[this_sym] + 1})
+            atom_name = str(atom.symbol()) + str(unique_types[this_sym])
+            xyz = atom.coords()
+            ss += "%s \t%f\t%f\t%f\n" % (atom_name, xyz[0], xyz[1], xyz[2])
+        fname = filename.split('.xyz')[0]
+        with open(fname + '.xyz', 'w') as f:
+            f.write(ss)
+
+    def writesepxyz(self, mol, filename):
+        """
+        Write standard XYZ file with two molecules separated.
+
+        Parameters
+        ----------
+            mol : mol3D
+                mol3D instance of second molecule.
+            filename : str
+                Path to XYZ file.
+        """
+
+        ss = ''  # initialize returning string
+        ss += str(self.natoms) + "\n" + time.strftime(
+            '%m/%d/%Y %H:%M') + ", XYZ structure generated by mol3D Class, " + self.globs.PROGRAM + "\n"
+        for atom in self.atoms:
+            xyz = atom.coords()
+            ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
+        ss += "--\n" + str(mol.natoms) + "\n\n"
+        for atom in mol.atoms:
+            xyz = atom.coords()
+            ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
+        fname = filename.split('.xyz')[0]
+        with open(fname + '.xyz', 'w') as f:
+            f.write(ss)
+
+    def writexyz(self, filename, symbsonly=False, ignoreX=False,
+                 ordering=False, writestring=False, withgraph=False,
+                 specialheader=False, no_tabs=False):
+        """
+        Write standard XYZ file.
+
+        Parameters
+        ----------
+            filename : str
+                Path to XYZ file.
+            symbsonly : bool, optional
+                Only write symbols to file. Default is False.
+            ignoreX : bool, optional
+                Ignore X element when writing. Default is False.
+            ordering : bool, optional
+                If handed a list, will order atoms in a specific order. Default is False.
+            writestring : bool, optional
+                Flag to write to a string if True or file if False. Default is False.
+            withgraph : bool, optional
+                Flag to write with graph (after XYZ) if True. Default is False. If True, sparse graph written.
+            specialheader : str, optional
+                String to write information into header. Default is False. If True, a special string is written.
+            no_tabs : bool, optional
+                Whether or not to use tabs in coordinate columns.
 
         Returns
         -------
-            cmol : mol3D
-                New mol3D class containing the two molecules combined.
+            ss : str
+                XYZ contents, if writestring is True.
         """
 
-        cmol = self
-        bo_dict = cmol.bo_dict
+        ss = ''  # initialize returning string
+        natoms = self.natoms
+        if not ordering:
+            ordering = list(range(natoms))
+        if ignoreX:
+            natoms -= sum([1 for i in self.atoms if i.sym == "X"])
 
-        print('lig_dict')
-        print(mol.bo_dict)
+        if specialheader:
+            ss += str(natoms) + "\n"
+            ss += specialheader + "\n"
+        else:
+            ss += str(natoms) + "\n" + time.strftime(
+                '%m/%d/%Y %H:%M') + ", XYZ structure generated by mol3D Class, " + self.globs.PROGRAM + "\n"
+        for ii in ordering:
+            atom = self.getAtom(ii)
+            if not (ignoreX and atom.sym == 'X'):
+                xyz = atom.coords()
+                if symbsonly:
+                    ss += "%s \t%f\t%f\t%f\n" % (atom.sym,
+                                                 xyz[0], xyz[1], xyz[2])
+                else:
+                    ss += "%s \t%f\t%f\t%f\n" % (atom.name,
+                                                 xyz[0], xyz[1], xyz[2])
+        if withgraph:
+            from scipy.sparse import csgraph
+            csg = csgraph.csgraph_from_dense(self.graph)
+            x, y = csg.nonzero()
+            tempstr = ''
+            for row1, row2 in zip(x, y):
+                if row1 >= 100:
+                    tempstr += ' '+str(row1)
+                elif row1 >= 10:
+                    tempstr += '  '+str(row1)
+                else:
+                    tempstr += '   '+str(row1)
+                if row2 >= 100:
+                    tempstr += '  '+str(row2)+' S\n'
+                elif row2 >= 10:
+                    tempstr += '   '+str(row2)+' S\n'
+                else:
+                    tempstr += '    '+str(row2)+' S\n'
+            ss += tempstr
 
-        if cmol.bo_dict == False:
-            # only central metal
-            bo_dict = {}
-        new_bo_dict = copy.deepcopy(bo_dict)
+        if no_tabs:
+            ss = ss.replace('\t', ' ' * 8)
 
-        # add ligand connections
-        for bo in mol.bo_dict:
-            ind1 = bo[0] + len(cmol.atoms)
-            ind2 = bo[1] + len(cmol.atoms)
-            new_bo_dict[(ind1,ind2)]=mol.bo_dict[(bo[0],bo[1])]
-
-        # connect metal to ligand
-        metal_ind = cmol.findMetal(transition_metals_only=False)[0]
-        for atom in catoms:
-            ind1 = metal_ind
-            ind2 = atom + len(cmol.atoms)
-            new_bo_dict[(ind1,ind2)]=1
-
-        for atom in mol.atoms:
-            cmol.addAtom(atom, auto_populate_BO_dict = False)
-
-        cmol.bo_dict = new_bo_dict
-        return cmol
+        if writestring:
+            return ss
+        else:
+            fname = filename.split('.xyz')[0]
+            with open(fname + '.xyz', 'w') as f:
+                f.write(ss)
