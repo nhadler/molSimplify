@@ -14,16 +14,16 @@ class atom3D:
     """
     atom3D class. Base class in molSimplify for representing an element.
 
-        Parameters
-        ----------
-            Sym : str, optional
-                Symbol for atom3D instantiation. Element symbol. Default is 'C'.
-            xyz : list, optional
-                List of coordinates for new atom. Default is [0.0, 0.0, 0.0].
-            name : str, optional
-                Unique identifier for atom 3D instantiation. Default is False.
-            partialcharge : int, optional
-                Charge assigned to atom when added to mol. Default is None.
+    Parameters
+    ----------
+        Sym : str, optional
+            Symbol for atom3D instantiation. Element symbol. Default is 'C'.
+        xyz : list, optional
+            List of coordinates for new atom. Default is [0.0, 0.0, 0.0].
+        name : str, optional
+            Unique identifier for atom 3D instantiation. Default is False.
+        partialcharge : int, optional
+            Charge assigned to atom when added to mol. Default is None.
     """
 
     def __init__(self,
