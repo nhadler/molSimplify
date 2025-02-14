@@ -11,7 +11,8 @@ from molSimplify.Classes.globalvars import globalvars
 
 
 class atom3D:
-    """ atom3D class. Base class in molSimplify for representing an element.
+    """
+    atom3D class. Base class in molSimplify for representing an element.
 
         Parameters
         ----------
@@ -24,6 +25,7 @@ class atom3D:
             partialcharge : int, optional
                 Charge assigned to atom when added to mol. Default is None.
     """
+
     def __init__(self,
                  Sym: str = 'C',
                  xyz: Optional[List[float]] = None,
@@ -100,30 +102,33 @@ class atom3D:
     #         return False
 
     def coords(self):
-        """ Get coordinates of a given atom.
+        """
+        Get coordinates of a given atom.
 
         Returns
         -------
             coords : list
                 List of coordinates in X, Y, Z format.
         """
+
         x, y, z = self.__xyz
         return [x, y, z]
 
     def distance(self, atom2) -> float:
-        """ Get distance from one atom3D class to another.
+        """
+        Get distance from one atom3D class to another.
 
         Parameters
         ----------
             atom2 : atom3D
                 atom3D class of the atom to measure distance from.
 
-
         Returns
         -------
             dist : float
                 Distance in angstroms.
         """
+
         xyz = self.coords()
         point = atom2.coords()
         dx = xyz[0]-point[0]
@@ -132,19 +137,20 @@ class atom3D:
         return sqrt(dx*dx+dy*dy+dz*dz)
 
     def distancev(self, atom2):
-        """ Get distance vector from one atom3D class to another.
+        """
+        Get distance vector from one atom3D class to another.
 
         Parameters
         ----------
             atom2 : atom3D
                 atom3D class of the atom to measure distance from.
 
-
         Returns
         -------
             dist_list : list
                 List of distances in vector form: [dx, dy, dz] with units of Angstroms.
         """
+
         xyz = self.coords()
         point = atom2.coords()
         dx = xyz[0]-point[0]
@@ -153,7 +159,8 @@ class atom3D:
         return [dx, dy, dz]
 
     def ismetal(self, transition_metals_only=True) -> bool:
-        """ Identify whether an atom is a metal.
+        """
+        Identify whether an atom is a metal.
 
         Parameters
         ----------
@@ -165,39 +172,45 @@ class atom3D:
             metal : bool
                 Bool for whether or not an atom is a metal.
         """
+
         return self.sym in globalvars().metalslist(transition_metals_only=transition_metals_only)
 
     def setcoords(self, xyz):
-        """ Set coordinates of an atom3D class to a new location.
+        """
+        Set coordinates of an atom3D class to a new location.
 
         Parameters
         ----------
             xyz : list
                 List of coordinates, has length 3: [X, Y, Z]
         """
+
         self.__xyz[0] = xyz[0]
         self.__xyz[1] = xyz[1]
         self.__xyz[2] = xyz[2]
 
     def symbol(self) -> str:
-        """ Return symbol of atom3D.
+        """
+        Return symbol of atom3D.
 
         Returns
         -------
             symbol : str
                 Element symbol for atom3D class.
         """
+
         return self.sym
 
     def mutate(self, newType='C'):
-        """ Mutate an element to another element in the atom3D.
+        """
+        Mutate an element to another element in the atom3D.
 
         Parameters
         ----------
             newType : str, optional
                 Element name for new element. Default is 'C'.
-
         """
+
         globs = globalvars()
         amass = globs.amass()
         if newType not in list(amass.keys()):
@@ -211,25 +224,28 @@ class atom3D:
             self.sym = newType
 
     def translate(self, dxyz):
-        """ Move the atom3D by a displacement vector.
+        """
+        Move the atom3D by a displacement vector.
 
         Parameters
         ----------
             dxyz : list
                 Displacement vector of length 3: [dx, dy, dz].
-
         """
+
         x, y, z = self.__xyz
         self.__xyz[0] = x + dxyz[0]
         self.__xyz[1] = y + dxyz[1]
         self.__xyz[2] = z + dxyz[2]
 
     def setEDIA(self, score):
-        """ Sets the EDIA score of an individual atom3D.
+        """
+        Sets the EDIA score of an individual atom3D.
 
         Parameters
         ----------
             score : float
                 Desired EDIA score of atom
         """
+
         self.EDIA = score
