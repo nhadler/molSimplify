@@ -1129,7 +1129,7 @@ class mol3D:
                 The order of the new bond.
 
         Returns
-        ----------
+        -------
             self.bo_dict: dict
                 The modified bond order dictionary.
         """
@@ -1268,7 +1268,7 @@ class mol3D:
                 Return the graph in addition to assigning it to self. Default is False.
 
         Returns
-        ----------
+        -------
             graph: np.array
                 a numpy array containing the unattributed molecular graph
         """
@@ -1897,7 +1897,7 @@ class mol3D:
                 list of symbols for atoms to exclude.
 
         Returns
-        ----------
+        -------
             count: integer
                 the number of heavy atoms
         """
@@ -1918,7 +1918,7 @@ class mol3D:
                 Net charge of a molecule. Default is neutral.
 
         Returns
-        ----------
+        -------
             count: integer
                 The number of electrons in the system.
         """
@@ -1934,7 +1934,7 @@ class mol3D:
         Count the number of heavy atoms.
 
         Returns
-        ----------
+        -------
             count: integer
                 the number of heavy atoms
         """
@@ -1955,7 +1955,7 @@ class mol3D:
                 list of symbols for atoms to include.
 
         Returns
-        ----------
+        -------
             count: integer
                 the number of heavy atoms
         """
@@ -3931,7 +3931,7 @@ class mol3D:
                 Whether to update multiheptate ligands to their geometric centroid.
 
         Returns
-        ----------
+        -------
             mol 3D object: First coordination shell with metal (can change based on check_hapticity).
             list: List of hapticity.
         '''
@@ -6065,6 +6065,7 @@ class mol3D:
             return_eigvecs : bool
                 Flag for if the matrices used to diagonalize I should be returned.
                 Default is False.
+
         Returns
         -------
             pmom : np.array
