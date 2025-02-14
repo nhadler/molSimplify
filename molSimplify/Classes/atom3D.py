@@ -42,7 +42,7 @@ class atom3D:
         self.partialcharge = partialcharge
         globs = globalvars()
         amass = globs.amass()
-        if Sym not in amass:  # assign default values if not in dictionary
+        if Sym not in amass:  # Assign default values if not in dictionary.
             print(("We didn't find the atomic mass of %s in the dictionary. Assigning default value of 12!\n" % (Sym)))
             # Atomic mass
             self.mass = 12.0  # default atomic mass
