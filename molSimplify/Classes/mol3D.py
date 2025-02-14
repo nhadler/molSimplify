@@ -2438,10 +2438,10 @@ class mol3D:
         Parameters
         ----------
             verbose: bool
-                Flag for returning warning when TMC exhibits high deviation from closest symmetry
+                Flag for returning warning when TMC exhibits high deviation from closest symmetry.
                 Default=True
             max_allowed_dev: float
-                Maximum allowed deviation before warning is triggered (degrees)
+                Maximum allowed deviation before warning is triggered (degrees).
                 Default=30
             target_symmetry: str
                 Target symmetry for complex to be transformed to, only defined for num_unique_ligands == 3
@@ -3989,7 +3989,6 @@ class mol3D:
         octahedral(6), pentagonal bipyramidal(7)).
 
         Uses hapticity truncated first coordination shell.
-        Does not require the input of num_coord.
 
         Parameters
         ----------
@@ -3997,8 +3996,6 @@ class mol3D:
                 The cutoffs of each geo_check metrics we have. Default is False
             angle_ref : bool, optional
                 Reference list of list for the expected angles (A-metal-B) of each connection atom.
-            num_coord : int, optional
-                Expected coordination number.
             flag_catoms : bool, optional
                 Whether or not to return the catoms arr. Default as False.
             catoms_arr : Nonetype, optional
@@ -6065,7 +6062,7 @@ class mol3D:
 
         Parameters
         ----------
-            return_transform : bool
+            return_eigvecs : bool
                 Flag for if the matrices used to diagonalize I should be returned.
                 Default is False.
         Returns
@@ -6884,7 +6881,8 @@ class mol3D:
         symbol_vector = []
         for atom in self.atoms:
             symbol_vector.append(atom.sym)
-        return np.array(symbol_vector)
+        symbol_vector = np.array(symbol_vector)
+        return symbol_vector
 
     def translate(self, dxyz):
         """
@@ -6913,7 +6911,8 @@ class mol3D:
         type_vector = []
         for atom in self.atoms:
             type_vector.append(atom.name)
-        return np.array(type_vector)
+        type_vector = np.array(type_vector)
+        return type_vector
 
     def writegxyz(self, filename):
         """
