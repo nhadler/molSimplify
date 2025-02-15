@@ -532,7 +532,7 @@ class mol3D:
             print("Warning: your are skipping following geometry checks:")
             print(skip)
         self.get_num_coord_metal(debug=debug)
-        # Note that use this only when you wanna specify the metal connecting atoms.
+        # Note that use this only when you want specify the metal connecting atoms.
         # This will change the attributes of mol3D.
         if catoms_arr is not None:
             self.catoms = catoms_arr
@@ -1129,7 +1129,7 @@ class mol3D:
                 The order of the new bond.
 
         Returns
-        ----------
+        -------
             self.bo_dict: dict
                 The modified bond order dictionary.
         """
@@ -1268,7 +1268,7 @@ class mol3D:
                 Return the graph in addition to assigning it to self. Default is False.
 
         Returns
-        ----------
+        -------
             graph: np.array
                 a numpy array containing the unattributed molecular graph
         """
@@ -1897,7 +1897,7 @@ class mol3D:
                 list of symbols for atoms to exclude.
 
         Returns
-        ----------
+        -------
             count: integer
                 the number of heavy atoms
         """
@@ -1918,7 +1918,7 @@ class mol3D:
                 Net charge of a molecule. Default is neutral.
 
         Returns
-        ----------
+        -------
             count: integer
                 The number of electrons in the system.
         """
@@ -1934,7 +1934,7 @@ class mol3D:
         Count the number of heavy atoms.
 
         Returns
-        ----------
+        -------
             count: integer
                 the number of heavy atoms
         """
@@ -1955,7 +1955,7 @@ class mol3D:
                 list of symbols for atoms to include.
 
         Returns
-        ----------
+        -------
             count: integer
                 the number of heavy atoms
         """
@@ -2438,10 +2438,10 @@ class mol3D:
         Parameters
         ----------
             verbose: bool
-                Flag for returning warning when TMC exhibits high deviation from closest symmetry
+                Flag for returning warning when TMC exhibits high deviation from closest symmetry.
                 Default=True
             max_allowed_dev: float
-                Maximum allowed deviation before warning is triggered (degrees)
+                Maximum allowed deviation before warning is triggered (degrees).
                 Default=30
             target_symmetry: str
                 Target symmetry for complex to be transformed to, only defined for num_unique_ligands == 3
@@ -3931,7 +3931,7 @@ class mol3D:
                 Whether to update multiheptate ligands to their geometric centroid.
 
         Returns
-        ----------
+        -------
             mol 3D object: First coordination shell with metal (can change based on check_hapticity).
             list: List of hapticity.
         '''
@@ -3989,7 +3989,6 @@ class mol3D:
         octahedral(6), pentagonal bipyramidal(7)).
 
         Uses hapticity truncated first coordination shell.
-        Does not require the input of num_coord.
 
         Parameters
         ----------
@@ -3997,8 +3996,6 @@ class mol3D:
                 The cutoffs of each geo_check metrics we have. Default is False
             angle_ref : bool, optional
                 Reference list of list for the expected angles (A-metal-B) of each connection atom.
-            num_coord : int, optional
-                Expected coordination number.
             flag_catoms : bool, optional
                 Whether or not to return the catoms arr. Default as False.
             catoms_arr : Nonetype, optional
@@ -5468,7 +5465,7 @@ class mol3D:
                 print(('liglist_init, ligdents_init, ligcons_init',
                        liglist_init, ligdents_init, ligcons_init))
                 print(('liglist, ligdents, ligcons', liglist, ligdents, ligcons))
-        else:  # create/use the liglist, ligdents, ligcons of initial geo as we just wanna track them down
+        else:  # Create/use the liglist, ligdents, ligcons of initial geo as we just want to track them down.
             if debug:
                 print('Just inherit the ligand list from init structure.')
             liglist_init, ligdents_init, ligcons_init = ligand_breakdown(init_mol,
@@ -6065,9 +6062,10 @@ class mol3D:
 
         Parameters
         ----------
-            return_transform : bool
+            return_eigvecs : bool
                 Flag for if the matrices used to diagonalize I should be returned.
                 Default is False.
+
         Returns
         -------
             pmom : np.array
@@ -6884,7 +6882,8 @@ class mol3D:
         symbol_vector = []
         for atom in self.atoms:
             symbol_vector.append(atom.sym)
-        return np.array(symbol_vector)
+        symbol_vector = np.array(symbol_vector)
+        return symbol_vector
 
     def translate(self, dxyz):
         """
@@ -6913,7 +6912,8 @@ class mol3D:
         type_vector = []
         for atom in self.atoms:
             type_vector.append(atom.name)
-        return np.array(type_vector)
+        type_vector = np.array(type_vector)
+        return type_vector
 
     def writegxyz(self, filename):
         """
