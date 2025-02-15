@@ -532,7 +532,7 @@ class mol3D:
             print("Warning: your are skipping following geometry checks:")
             print(skip)
         self.get_num_coord_metal(debug=debug)
-        # Note that use this only when you wanna specify the metal connecting atoms.
+        # Note: use this only when you want to specify the metal connecting atoms.
         # This will change the attributes of mol3D.
         if catoms_arr is not None:
             self.catoms = catoms_arr
@@ -5465,7 +5465,7 @@ class mol3D:
                 print(('liglist_init, ligdents_init, ligcons_init',
                        liglist_init, ligdents_init, ligcons_init))
                 print(('liglist, ligdents, ligcons', liglist, ligdents, ligcons))
-        else:  # create/use the liglist, ligdents, ligcons of initial geo as we just wanna track them down
+        else:  # Create/use the liglist, ligdents, ligcons of initial geo as we just want to track them down.
             if debug:
                 print('Just inherit the ligand list from init structure.')
             liglist_init, ligdents_init, ligcons_init = ligand_breakdown(init_mol,
