@@ -532,7 +532,7 @@ class mol3D:
             print("Warning: your are skipping following geometry checks:")
             print(skip)
         self.get_num_coord_metal(debug=debug)
-        # Note that use this only when you want specify the metal connecting atoms.
+        # Note: use this only when you want to specify the metal connecting atoms.
         # This will change the attributes of mol3D.
         if catoms_arr is not None:
             self.catoms = catoms_arr
