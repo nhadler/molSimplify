@@ -1364,7 +1364,7 @@ def generate_all_ligand_misc(mol, loud, custom_ligand_dict=False, smiles_charge=
         custom_ligand_dict : bool, optional
             custom_ligand_dictionary if passed, by default False.
         smiles_charge : bool, optional
-            Whether or not to use the smiles charge assignent, default is False.
+            Whether or not to use the smiles charge assignment, default is False.
 
     Returns
     -------
