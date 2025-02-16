@@ -6,8 +6,8 @@
 #  Dpt of Chemical Engineering, MIT
 
 from molSimplify.Informatics.lacRACAssemble import (
-    generate_all_ligand_autocorrelations,
-    generate_all_ligand_deltametrics,
+    generate_all_ligand_autocorrelations_lac,
+    generate_all_ligand_deltametrics_lac,
     generate_full_complex_autocorrelations,
     generate_metal_autocorrelations,
     generate_metal_deltametrics,
@@ -57,7 +57,7 @@ class dft_observation:
         print(('after adding misc descriptors... ' +
                str(len(self.descriptor_names))))
         if self.coord == 6:  # oct only
-            results_dictionary = generate_all_ligand_autocorrelations(
+            results_dictionary = generate_all_ligand_autocorrelations_lac(
                 self.mol, depth=3, loud=loud, flag_name=flag_name)
             self.append_descriptors(
                 results_dictionary['colnames'], results_dictionary['result_ax_full'], 'f', 'ax')
@@ -70,7 +70,7 @@ class dft_observation:
                     results_dictionary['colnames'], results_dictionary['result_ax_con'], 'lc', 'ax')
                 self.append_descriptors(
                     results_dictionary['colnames'], results_dictionary['result_eq_con'], 'lc', 'eq')
-                results_dictionary = generate_all_ligand_deltametrics(
+                results_dictionary = generate_all_ligand_deltametrics_lac(
                     self.mol, depth=3, loud=True, flag_name=flag_name)
                 self.append_descriptors(
                     results_dictionary['colnames'], results_dictionary['result_ax_con'], 'D_lc', 'ax')

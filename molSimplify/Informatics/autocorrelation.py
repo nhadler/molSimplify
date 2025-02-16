@@ -18,6 +18,14 @@ from molSimplify.Informatics.lacRACAssemble import (
     full_autocorrelation_derivative,
     generate_full_complex_autocorrelation_derivatives,
     generate_full_complex_autocorrelations,
+    generate_metal_autocorrelation_derivatives,
+    generate_metal_autocorrelations,
+    generate_metal_deltametric_derivatives,
+    generate_metal_deltametrics,
+    generate_metal_ox_autocorrelation_derivatives,
+    generate_metal_ox_autocorrelations,
+    generate_metal_ox_deltametric_derivatives,
+    generate_metal_ox_deltametrics,
     get_metal_index,
     metal_only_autocorrelation,
     metal_only_autocorrelation_derivative,
@@ -882,63 +890,6 @@ def generate_all_ligand_deltametric_derivatives(mol, loud, depth=4, name=False, 
     return results_dictionary
 
 
-def generate_metal_autocorrelations(mol, loud, depth=4, oct=True, flag_name=False,
-                                    modifier=False, NumB=False, Gval=False):
-    # oct - bool, if complex is octahedral, will use better bond checks
-    result = list()
-    colnames = []
-    allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
-    labels_strings = ['chi', 'Z', 'I', 'T', 'S']
-    if Gval:
-        allowed_strings += ['group_number']
-        labels_strings += ['Gval']
-    if NumB:
-        allowed_strings += ["num_bonds"]
-        labels_strings += ["NumB"]
-    for ii, properties in enumerate(allowed_strings):
-        metal_ac = metal_only_autocorrelation(mol, properties, depth, oct=oct, modifier=modifier)
-        this_colnames = []
-        for i in range(0, depth + 1):
-            this_colnames.append(labels_strings[ii] + '-' + str(i))
-        colnames.append(this_colnames)
-        result.append(metal_ac)
-    if flag_name:
-        results_dictionary = {'colnames': colnames, 'results_mc_ac': result}
-    else:
-        results_dictionary = {'colnames': colnames, 'results': result}
-    return results_dictionary
-
-
-def generate_metal_autocorrelation_derivatives(mol, loud, depth=4, oct=True, flag_name=False,
-                                               modifier=False, NumB=False, Gval=False):
-    # oct - bool, if complex is octahedral, will use better bond checks
-    result = None
-    colnames = []
-    allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
-    labels_strings = ['chi', 'Z', 'I', 'T', 'S']
-    if Gval:
-        allowed_strings += ['group_number']
-        labels_strings += ['Gval']
-    if NumB:
-        allowed_strings += ["num_bonds"]
-        labels_strings += ["NumB"]
-    for ii, properties in enumerate(allowed_strings):
-        metal_ac_der = metal_only_autocorrelation_derivative(mol, properties, depth, oct=oct, modifier=modifier)
-        for i in range(0, depth + 1):
-            colnames.append(['d' + labels_strings[ii] + '-' + str(i) + '/d' + labels_strings[ii] + str(j) for j in
-                             range(0, mol.natoms)])
-
-        if result is None:
-            result = metal_ac_der
-        else:
-            result = np.row_stack([result, metal_ac_der])
-    if flag_name:
-        results_dictionary = {'colnames': colnames, 'results_mc_ac': result}
-    else:
-        results_dictionary = {'colnames': colnames, 'results': result}
-    return results_dictionary
-
-
 def generate_multimetal_autocorrelations(mol, loud, depth=4, oct=True, flag_name=False, polarizability=False, Gval=False):
     # oct - bool, if complex is octahedral, will use better bond checks
     result = list()
@@ -985,71 +936,6 @@ def generate_multiatom_autocorrelations(mol, loud, depth=4, oct=True, flag_name=
     return results_dictionary
 
 
-def generate_metal_ox_autocorrelations(oxmodifier, mol, loud, depth=4, oct=True, flag_name=False):
-    # # oxmodifier - dict, used to modify prop vector (e.g. for adding
-    # #             ONLY used with  ox_nuclear_charge    ox or charge)
-    # #              {"Fe":2, "Co": 3} etc, normally only 1 metal...
-    #   oct - bool, if complex is octahedral, will use better bond checks
-    result = list()
-    colnames = []
-    metal_ox_ac = metal_only_autocorrelation(mol, 'ox_nuclear_charge', depth, oct=oct, modifier=oxmodifier)
-    this_colnames = []
-    for i in range(0, depth + 1):
-        this_colnames.append('O' + '-' + str(i))
-    colnames.append(this_colnames)
-    result.append(metal_ox_ac)
-    results_dictionary = {'colnames': colnames, 'results': result}
-    return results_dictionary
-
-
-def generate_metal_ox_autocorrelation_derivatives(oxmodifier, mol, loud, depth=4, oct=True, flag_name=False):
-    # # oxmodifier - dict, used to modify prop vector (e.g. for adding
-    # #             ONLY used with  ox_nuclear_charge    ox or charge)
-    # #              {"Fe":2, "Co": 3} etc, normally only 1 metal...
-    #   oct - bool, if complex is octahedral, will use better bond checks
-    result = None
-    colnames = []
-    metal_ox_ac = metal_only_autocorrelation_derivative(mol, 'ox_nuclear_charge', depth, oct=oct, modifier=oxmodifier)
-    for i in range(0, depth + 1):
-        colnames.append(['d' + 'O' + '-' + str(i) + '/d' + 'O' + str(j) for j in range(0, mol.natoms)])
-    result = metal_ox_ac
-    results_dictionary = {'colnames': colnames, 'results': result}
-    return results_dictionary
-
-
-def generate_metal_ox_deltametrics(oxmodifier, mol, loud, depth=4, oct=True, flag_name=False):
-    # # oxmodifier - dict, used to modify prop vector (e.g. for adding
-    # #             ONLY used with  ox_nuclear_charge    ox or charge)
-    # #              {"Fe":2, "Co": 3} etc, normally only 1 metal...
-    #   oct - bool, if complex is octahedral, will use better bond checks
-    result = list()
-    colnames = []
-    metal_ox_ac = metal_only_deltametric(mol, 'ox_nuclear_charge', depth, oct=oct, modifier=oxmodifier)
-    this_colnames = []
-    for i in range(0, depth + 1):
-        this_colnames.append('O' + '-' + str(i))
-    colnames.append(this_colnames)
-    result.append(metal_ox_ac)
-    results_dictionary = {'colnames': colnames, 'results': result}
-    return results_dictionary
-
-
-def generate_metal_ox_deltametric_derivatives(oxmodifier, mol, loud, depth=4, oct=True, flag_name=False):
-    # # oxmodifier - dict, used to modify prop vector (e.g. for adding
-    # #             ONLY used with  ox_nuclear_charge    ox or charge)
-    # #              {"Fe":2, "Co": 3} etc, normally only 1 metal...
-    #   oct - bool, if complex is octahedral, will use better bond checks
-    result = list()
-    colnames = []
-    metal_ox_ac = metal_only_deltametric_derivative(mol, 'ox_nuclear_charge', depth, oct=oct, modifier=oxmodifier)
-    for i in range(0, depth + 1):
-        colnames.append(['d' + 'O' + '-' + str(i) + '/d' + 'O' + str(j) for j in range(0, mol.natoms)])
-
-    result = metal_ox_ac
-    results_dictionary = {'colnames': colnames, 'results': result}
-    return results_dictionary
-
-
 def generate_metal_ox_eff_autocorrelations(oxmodifier, mol, loud, depth=4, oct=True, flag_name=False):
     # # oxmodifier - dict, used to modify prop vector (e.g. for adding
     # #             ONLY used with  ox_nuclear_charge    ox or charge)
@@ -1081,62 +967,6 @@ def generate_metal_ox_eff_deltametrics(oxmodifier, mol, loud, depth=4, oct=True,
     colnames.append(this_colnames)
     result.append(metal_ox_ac)
     results_dictionary = {'colnames': colnames, 'results': result}
-    return results_dictionary
-
-
-def generate_metal_deltametrics(mol, loud, depth=4, oct=True, flag_name=False,
-                                modifier=False, NumB=False, Gval=False):
-    #   oct - bool, if complex is octahedral, will use better bond checks
-    result = list()
-    colnames = []
-    allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
-    labels_strings = ['chi', 'Z', 'I', 'T', 'S']
-    if Gval:
-        allowed_strings += ['group_number']
-        labels_strings += ['Gval']
-    if NumB:
-        allowed_strings += ["num_bonds"]
-        labels_strings += ["NumB"]
-    for ii, properties in enumerate(allowed_strings):
-        metal_ac = metal_only_deltametric(mol, properties, depth, oct=oct, modifier=modifier)
-        this_colnames = []
-        for i in range(0, depth + 1):
-            this_colnames.append(labels_strings[ii] + '-' + str(i))
-        colnames.append(this_colnames)
-        result.append(metal_ac)
-    if flag_name:
-        results_dictionary = {'colnames': colnames, 'results_mc_del': result}
-    else:
-        results_dictionary = {'colnames': colnames, 'results': result}
-    return results_dictionary
-
-
-def generate_metal_deltametric_derivatives(mol, loud, depth=4, oct=True, flag_name=False,
-                                           modifier=False, NumB=False, Gval=False):
-    #   oct - bool, if complex is octahedral, will use better bond checks
-    result = None
-    colnames = []
-    allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
-    labels_strings = ['chi', 'Z', 'I', 'T', 'S']
-    if Gval:
-        allowed_strings += ['group_number']
-        labels_strings += ['Gval']
-    if NumB:
-        allowed_strings += ["num_bonds"]
-        labels_strings += ["NumB"]
-    for ii, properties in enumerate(allowed_strings):
-        metal_ac_der = metal_only_deltametric_derivative(mol, properties, depth, oct=oct, modifier=modifier)
-        for i in range(0, depth + 1):
-            colnames.append(['d' + labels_strings[ii] + '-' + str(i) + '/d' + labels_strings[ii] + str(j) for j in
-                             range(0, mol.natoms)])
-        if result is None:
-            result = metal_ac_der
-        else:
-            result = np.row_stack([result, metal_ac_der])
-    if flag_name:
-        results_dictionary = {'colnames': colnames, 'results_mc_del': result}
-    else:
-        results_dictionary = {'colnames': colnames, 'results': result}
     return results_dictionary
 
 

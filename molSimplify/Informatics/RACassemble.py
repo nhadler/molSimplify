@@ -17,6 +17,10 @@ from molSimplify.Informatics.autocorrelation import (
     generate_all_ligand_autocorrelations,
     generate_all_ligand_deltametric_derivatives,
     generate_all_ligand_deltametrics,
+    )
+from molSimplify.Informatics.lacRACAssemble import (
+    generate_full_complex_autocorrelation_derivatives,
+    generate_full_complex_autocorrelations,
     generate_metal_autocorrelation_derivatives,
     generate_metal_autocorrelations,
     generate_metal_deltametric_derivatives,
@@ -25,10 +29,6 @@ from molSimplify.Informatics.autocorrelation import (
     generate_metal_ox_autocorrelations,
     generate_metal_ox_deltametric_derivatives,
     generate_metal_ox_deltametrics,
-    )
-from molSimplify.Informatics.lacRACAssemble import (
-    generate_full_complex_autocorrelation_derivatives,
-    generate_full_complex_autocorrelations,
     )
 from molSimplify.Informatics.misc_descriptors import generate_all_ligand_misc
 from molSimplify.Informatics.rac155_geo import rac155_list

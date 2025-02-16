@@ -6,6 +6,9 @@
 # ####### Defines methods for assembling    ###############
 # #######     RACs from lists of ligands    ###############
 # #########################################################
+
+# lac: ligand assign consistent
+
 from __future__ import print_function
 import numpy as np
 from molSimplify.Classes.ligand import (
@@ -123,7 +126,7 @@ def get_descriptor_vector(this_complex, custom_ligand_dict=False,
                                                        results_dictionary['results'],
                                                        'f', 'all')
     # # ligand ACs
-    results_dictionary = generate_all_ligand_autocorrelations(this_complex, depth=depth,
+    results_dictionary = generate_all_ligand_autocorrelations_lac(this_complex, depth=depth,
                                                               loud=False, flag_name=False,
                                                               custom_ligand_dict=custom_ligand_dict,
                                                               NumB=NumB, Gval=Gval, use_dist=use_dist,
@@ -148,7 +151,7 @@ def get_descriptor_vector(this_complex, custom_ligand_dict=False,
                                                        results_dictionary['result_eq_con'],
                                                        'lc', 'eq')
 
-    results_dictionary = generate_all_ligand_deltametrics(this_complex, depth=depth, loud=False,
+    results_dictionary = generate_all_ligand_deltametrics_lac(this_complex, depth=depth, loud=False,
                                                           custom_ligand_dict=custom_ligand_dict,
                                                           NumB=NumB, Gval=Gval, use_dist=use_dist,
                                                           size_normalize=size_normalize,
@@ -275,7 +278,7 @@ def get_descriptor_derivatives(this_complex, custom_ligand_dict=False, ox_modifi
                                                                                         'f', 'all')
     # ligand ACs
     # print('getting ligand AC derivatives')
-    results_dictionary = generate_all_ligand_autocorrelation_derivatives(this_complex, depth=depth, loud=False,
+    results_dictionary = generate_all_ligand_autocorrelation_derivatives_lac(this_complex, depth=depth, loud=False,
                                                                          custom_ligand_dict=custom_ligand_dict)
     descriptor_derivative_names, descriptor_derivatives = append_descriptor_derivatives(descriptor_derivative_names,
                                                                                         descriptor_derivatives,
@@ -297,7 +300,7 @@ def get_descriptor_derivatives(this_complex, custom_ligand_dict=False, ox_modifi
                                                                                         results_dictionary['colnames'],
                                                                                         results_dictionary['result_eq_con'],
                                                                                         'lc', 'eq')
-    results_dictionary = generate_all_ligand_deltametric_derivatives(this_complex, depth=depth, loud=False,
+    results_dictionary = generate_all_ligand_deltametric_derivatives_lac(this_complex, depth=depth, loud=False,
                                                                      custom_ligand_dict=custom_ligand_dict)
     descriptor_derivative_names, descriptor_derivatives = append_descriptor_derivatives(descriptor_derivative_names,
                                                                                         descriptor_derivatives,
@@ -1427,7 +1430,7 @@ def generate_all_ligand_misc(mol, loud, custom_ligand_dict=False, smiles_charge=
     return results_dictionary
 
 
-def generate_all_ligand_autocorrelations(mol, loud, depth=4, flag_name=False,
+def generate_all_ligand_autocorrelations_lac(mol, loud, depth=4, flag_name=False,
                                          custom_ligand_dict=False, NumB=False, Gval=False,
                                          use_dist=False, size_normalize=False, MRdiag_dict={}):
     """
@@ -1557,7 +1560,7 @@ def generate_all_ligand_autocorrelations(mol, loud, depth=4, flag_name=False,
     return results_dictionary
 
 
-def generate_all_ligand_autocorrelation_derivatives(mol, loud, depth=4, flag_name=False,
+def generate_all_ligand_autocorrelation_derivatives_lac(mol, loud, depth=4, flag_name=False,
                                                     custom_ligand_dict=False, NumB=False, Gval=False):
     """
     Utility for generating all ligand-based autocorrelation derivatives for a complex.
@@ -1683,7 +1686,7 @@ def generate_all_ligand_autocorrelation_derivatives(mol, loud, depth=4, flag_nam
     return results_dictionary
 
 
-def generate_all_ligand_deltametrics(mol, loud, depth=4, flag_name=False,
+def generate_all_ligand_deltametrics_lac(mol, loud, depth=4, flag_name=False,
                                      custom_ligand_dict=False, NumB=False, Gval=False,
                                      use_dist=False, size_normalize=False, MRdiag_dict={}):
     """
@@ -1787,7 +1790,7 @@ def generate_all_ligand_deltametrics(mol, loud, depth=4, flag_name=False,
     return results_dictionary
 
 
-def generate_all_ligand_deltametric_derivatives(mol, loud, depth=4, flag_name=False,
+def generate_all_ligand_deltametric_derivatives_lac(mol, loud, depth=4, flag_name=False,
                                                 custom_ligand_dict=False, NumB=False, Gval=False):
     """
     Utility for generating all ligand-based deltametric derivatives for a complex.
@@ -1895,6 +1898,7 @@ def generate_metal_autocorrelations(mol, loud, depth=4, oct=True, flag_name=Fals
             Depth of RACs to calculate, by default 4.
         oct : bool, optional
             Use octahedral criteria for structure evaluation, by default True.
+            If complex is octahedral, will use better bond checks.
         flag_name : bool, optional
             Shift RAC names slightly, by default False.
         modifier : bool, optional
@@ -1965,6 +1969,7 @@ def generate_metal_autocorrelation_derivatives(mol, loud, depth=4, oct=True, fla
             Depth of RACs to calculate, by default 4.
         oct : bool, optional
             Use octahedral criteria for structure evaluation, by default True.
+            If complex is octahedral, will use better bond checks.
         flag_name : bool, optional
             Shift RAC names slightly, by default False.
         modifier : bool, optional
@@ -2027,6 +2032,7 @@ def generate_metal_deltametrics(mol, loud, depth=4, oct=True, flag_name=False,
             Depth of RACs to calculate, by default 4.
         oct : bool, optional
             Use octahedral criteria for structure evaluation, by default True.
+            If complex is octahedral, will use better bond checks.
         flag_name : bool, optional
             Shift RAC names slightly, by default False.
         modifier : bool, optional
@@ -2098,6 +2104,7 @@ def generate_metal_deltametric_derivatives(mol, loud, depth=4, oct=True, flag_na
             Depth of RACs to calculate, by default 4.
         oct : bool, optional
             Use octahedral criteria for structure evaluation, by default True.
+            If complex is octahedral, will use better bond checks.
         flag_name : bool, optional
             Shift RAC names slightly, by default False.
         modifier : bool, optional
