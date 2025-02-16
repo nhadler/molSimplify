@@ -171,12 +171,24 @@ def multimetal_only_autocorrelation(mol, prop, d, oct=True,
 
     Parameters
     ----------
-        TODO : TODO
+        mol : TODO
+            TODO
+        prop : TODO
+            TODO
+        d : TODO
+            TODO
+        oct : TODO
+            TODO
+        func : TODO
+            TODO
+        modifier : TODO
+            TODO
+        transition_metals_only : TODO
             TODO
 
     Returns
     -------
-        TODO : TODO
+        autocorrelation_vector : TODO
             TODO
 
     """
@@ -242,12 +254,24 @@ def multimetal_only_deltametric(mol, prop, d, oct=True,
 
     Parameters
     ----------
-        TODO : TODO
+        mol : TODO
+            TODO
+        prop : TODO
+            TODO
+        d : TODO
+            TODO
+        oct : TODO
+            TODO
+        func : TODO
+            TODO
+        modifier : TODO
+            TODO
+        transition_metals_only : TODO
             TODO
 
     Returns
     -------
-        TODO : TODO
+        deltametric_vector : TODO
             TODO
 
     """
@@ -456,7 +480,7 @@ def find_ligand_autocorrelation_derivatives_oct(mol, prop, loud, depth, name=Fal
     return ax_full_j, eq_full_j, ax_con_j, eq_con_j
 
 
-def find_ligand_autocorrs_and_deltametrics_oct_dimers(mol, prop, loud, depth, name=False,
+def find_ligand_autocorrs_and_deltametrics_oct_dimers(mol, prop, depth, name=False,
                                                       oct=True, custom_ligand_dict=False):
     # # This function takes a
     # # symmetric (axial == axial,
@@ -870,7 +894,7 @@ def generate_all_ligand_deltametric_derivatives(mol, loud, depth=4, name=False, 
 
 
 def generate_multimetal_autocorrelations(
-    mol, loud, depth=4, oct=True, flag_name=False,
+    mol, depth=4, oct=True, flag_name=False,
     polarizability=False, Gval=False,
     transition_metals_only=True):
     """
@@ -878,12 +902,26 @@ def generate_multimetal_autocorrelations(
 
     Parameters
     ----------
-        TODO : TODO
+        mol : TODO
+            TODO
+        loud : TODO
+            TODO
+        depth : TODO
+            TODO
+        oct : TODO
+            TODO
+        flag_name : TODO
+            TODO
+        polarizability : TODO
+            TODO
+        Gval : TODO
+            TODO
+        transition_metals_only : TODO
             TODO
 
     Returns
     -------
-        TODO : TODO
+        results_dictionary : dict
             TODO
 
     """
@@ -912,7 +950,7 @@ def generate_multimetal_autocorrelations(
     return results_dictionary
 
 
-def generate_multiatom_autocorrelations(mol, loud, depth=4, oct=True, flag_name=False, additional_elements=False):
+def generate_multiatom_autocorrelations(mol, depth=4, oct=True, flag_name=False, additional_elements=False):
     # oct - bool, if complex is octahedral, will use better bond checks
     result = list()
     colnames = []
@@ -932,7 +970,7 @@ def generate_multiatom_autocorrelations(mol, loud, depth=4, oct=True, flag_name=
     return results_dictionary
 
 
-def generate_metal_ox_eff_autocorrelations(oxmodifier, mol, loud, depth=4, oct=True, flag_name=False, transition_metals_only=True):
+def generate_metal_ox_eff_autocorrelations(oxmodifier, mol, depth=4, oct=True, flag_name=False, transition_metals_only=True):
     # # oxmodifier - dict, used to modify prop vector (e.g. for adding
     # #             ONLY used with  ox_nuclear_charge    ox or charge)
     # #              {"Fe":2, "Co": 3} etc, normally only 1 metal...
@@ -949,7 +987,7 @@ def generate_metal_ox_eff_autocorrelations(oxmodifier, mol, loud, depth=4, oct=T
     return results_dictionary
 
 
-def generate_metal_ox_eff_deltametrics(oxmodifier, mol, loud, depth=4, oct=True, flag_name=False, transition_metals_only=True):
+def generate_metal_ox_eff_deltametrics(oxmodifier, mol, depth=4, oct=True, flag_name=False, transition_metals_only=True):
     # # oxmodifier - dict, used to modify prop vector (e.g. for adding
     # #             ONLY used with  ox_nuclear_charge    ox or charge)
     # #              {"Fe":2, "Co": 3} etc, normally only 1 metal...
@@ -967,7 +1005,7 @@ def generate_metal_ox_eff_deltametrics(oxmodifier, mol, loud, depth=4, oct=True,
 
 
 def generate_multimetal_deltametrics(
-    mol, loud, depth=4, oct=True, flag_name=False,
+    mol, depth=4, oct=True, flag_name=False,
     polarizability=False, Gval=False,
     transition_metals_only=True):
     """
@@ -975,12 +1013,24 @@ def generate_multimetal_deltametrics(
 
     Parameters
     ----------
-        TODO : TODO
+        mol : TODO
+            TODO
+        depth : TODO
+            TODO
+        oct : TODO
+            TODO
+        flag_name : TODO
+            TODO
+        polarizability : TODO
+            TODO
+        Gval : TODO
+            TODO
+        transition_metals_only : TODO
             TODO
 
     Returns
     -------
-        TODO : TODO
+        results_dictionary : dict
             TODO
 
     """
@@ -1009,7 +1059,7 @@ def generate_multimetal_deltametrics(
     return results_dictionary
 
 
-def generate_multiatom_deltametrics(mol, loud, depth=4, oct=True, flag_name=False, additional_elements=False):
+def generate_multiatom_deltametrics(mol, depth=4, oct=True, flag_name=False, additional_elements=False):
     #   oct - bool, if complex is octahedral, will use better bond checks
     result = list()
     colnames = []
@@ -1029,7 +1079,7 @@ def generate_multiatom_deltametrics(mol, loud, depth=4, oct=True, flag_name=Fals
     return results_dictionary
 
 
-def generate_full_complex_coulomb_autocorrelations(mol, loud,
+def generate_full_complex_coulomb_autocorrelations(mol,
                                                    depth=3, oct=True,
                                                    flag_name=False, modifier=False,
                                                    use_dist=False, transition_metals_only=True):
@@ -1054,18 +1104,30 @@ def generate_full_complex_coulomb_autocorrelations(mol, loud,
     return results_dictionary
 
 
-def generate_atomonly_autocorrelations(mol, atomIdx, loud, depth=4, oct=True, NumB=False, Gval=False, polarizability=False):
+def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, NumB=False, Gval=False, polarizability=False):
     """
     TODO
 
     Parameters
     ----------
-        TODO : TODO
+        mol : TODO
+            TODO
+        atomIdx : TODO
+            TODO
+        depth : TODO
+            TODO
+        oct : TODO
+            TODO
+        NumB : TODO
+            TODO
+        Gval : TODO
+            TODO
+        polarizability : TODO
             TODO
 
     Returns
     -------
-        TODO : TODO
+        results_dictionary : dict
             TODO
 
     """
@@ -1074,7 +1136,6 @@ def generate_atomonly_autocorrelations(mol, atomIdx, loud, depth=4, oct=True, Nu
     # Inputs:
     #       mol - mol3D class
     #       atomIdx - int, index of atom3D class; or list of indices
-    #       loud - bool, print output
     result = list()
     colnames = []
     allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
@@ -1099,13 +1160,12 @@ def generate_atomonly_autocorrelations(mol, atomIdx, loud, depth=4, oct=True, Nu
     return results_dictionary
 
 
-def generate_atomonly_autocorrelation_derivatives(mol, atomIdx, loud, depth=4, oct=True, NumB=False, Gval=False):
+def generate_atomonly_autocorrelation_derivatives(mol, atomIdx, depth=4, oct=True, NumB=False, Gval=False):
     # # This function gets the d/dx for autocorrelations for a molecule starting
     # # in one single atom only.
     # Inputs:
     #       mol - mol3D class
     #       atomIdx - int, index of atom3D class
-    #       loud - bool, print output
     result = None
     colnames = []
     allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
@@ -1129,27 +1189,33 @@ def generate_atomonly_autocorrelation_derivatives(mol, atomIdx, loud, depth=4, o
     return results_dictionary
 
 
-def generate_atomonly_deltametrics(mol, atomIdx, loud, depth=4, oct=True, NumB=False, Gval=False, polarizability=False):
+def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, NumB=False, Gval=False, polarizability=False):
     """
-    TODO
+    This function gets deltametrics for a molecule starting in one single atom only.
 
     Parameters
     ----------
-        TODO : TODO
+        mol : mol3D
+            mol3D molecule to analyze.
+        atomIdx : int
+            index of atom3D class.
+        depth : TODO
+            TODO
+        oct : TODO
+            TODO
+        NumB : TODO
+            TODO
+        Gval : TODO
+            TODO
+        polarizability : TODO
             TODO
 
     Returns
     -------
-        TODO : TODO
+        results_dictionary : dict
             TODO
 
     """
-    # # This function gets deltametrics for a molecule starting
-    # # in one single atom only.
-    # Inputs:
-    #       mol - mol3D class
-    #       atomIdx - int, index of atom3D class
-    #       loud - bool, print output
     result = list()
     colnames = []
     allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
@@ -1174,13 +1240,12 @@ def generate_atomonly_deltametrics(mol, atomIdx, loud, depth=4, oct=True, NumB=F
     return results_dictionary
 
 
-def generate_atomonly_deltametric_derivatives(mol, atomIdx, loud, depth=4, oct=True, NumB=False, Gval=False):
+def generate_atomonly_deltametric_derivatives(mol, atomIdx, depth=4, oct=True, NumB=False, Gval=False):
     # # This function gets deltametrics for a molecule starting
     # # in one single atom only.
     # Inputs:
     #       mol - mol3D class
     #       atomIdx - int, index of atom3D class
-    #       loud - bool, print output
     result = None
     colnames = []
     allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']

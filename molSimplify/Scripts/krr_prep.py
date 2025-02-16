@@ -1025,13 +1025,13 @@ def get_descriptor_vector_for_atidx(mol, atidx, depth=4, oct=False):
     descriptor_names = []
     descriptors = []
     result_dictionary = generate_atomonly_autocorrelations(
-        mol, atidx, False, depth, oct)
+        mol, atidx, depth, oct)
     for colnames in result_dictionary['colnames']:
         descriptor_names += colnames
     for results in result_dictionary['results']:
         descriptors += results.tolist()
     result_dictionary = generate_atomonly_deltametrics(
-        mol, atidx, False, depth, oct)
+        mol, atidx, depth, oct)
     for colnames in result_dictionary['colnames']:
         for colname in colnames:
             descriptor_names.append('D_' + colname)
