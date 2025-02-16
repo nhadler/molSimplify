@@ -54,7 +54,7 @@ def analysis_supervisor(args, rootdir):
 def accquire_file(path):
     # set display options
     np.set_printoptions(precision=3)
-    # this function reads in values from a correctly formated path
+    # this function reads in values from a correctly formatted path
     # [name],[y],[folder_name]
     file_dict = dict()
     fail_dict = dict()

@@ -2338,7 +2338,7 @@ class mol3D:
 
         Returns
         -------
-            metal_list : list
+            metal_list : list of int
                 List of indices of metal atoms in mol3D.
         """
 

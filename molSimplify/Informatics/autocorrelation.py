@@ -1,126 +1,24 @@
 import numpy as np
 from molSimplify.Classes.mol3D import mol3D
-from molSimplify.Classes.ligand import ligand_breakdown, ligand_assign_original
+from molSimplify.Classes.lacRACAssemble import (
+    autocorrelation,
+    autocorrelation_derivative,
+    construct_property_vector,
+    deltametric,
+    deltametric_derivative,
+    full_autocorrelation,
+    full_autocorrelation_derivative,
+    get_metal_index,
+    )
+from molSimplify.Classes.ligand import (
+    ligand_assign_original,
+    ligand_breakdown,
+    )
 from molSimplify.Scripts.geometry import distance
 from molSimplify.Classes.globalvars import globalvars
 
 # ########## UNIT CONVERSION
 HF_to_Kcal_mol = 627.503
-
-
-def autocorrelation(mol, prop_vec, orig, d, oct=True, catoms=None, use_dist=False):
-    """Calculate and return the products autocorrelation for a single atom
-
-    Parameters
-    ----------
-        mol : mol3D
-            mol3D object to calculate autocorrelation over
-        prop_vec : list
-            property of atoms in mol in order of index
-        orig : int
-            zero-indexed starting atom
-        d : int
-            number of hops to travel
-        oct : bool, optional
-            Flag is octahedral complex, by default True
-        catoms: list, optional
-            List of connecting atoms, by default None (uses mol3D.getBondedAtomsSmart)
-        use_dist : bool, optional
-            Weigh autocorrelation by physical distance of atom from original, by default False
-
-    Returns
-    -------
-        result_vector : list
-            assembled products autocorrelations
-
-    """
-    result_vector = np.zeros(d + 1)
-    hopped = 0
-    active_set = set([orig])
-    historical_set = set()
-    if not use_dist:
-        result_vector[hopped] = prop_vec[orig] * prop_vec[orig]
-    else:
-        result_vector[hopped] = 0.5 * abs(prop_vec[orig]) ** 2.4 / mol.natoms
-    while hopped < (d):
-
-        hopped += 1
-        new_active_set = set()
-        for this_atom in active_set:
-            # prepare all atoms attached to this connection
-            # print('called in AC')
-            this_atoms_neighbors = mol.getBondedAtomsSmart(this_atom, oct=oct)
-            for bound_atoms in this_atoms_neighbors:
-                if (bound_atoms not in historical_set) and (bound_atoms not in active_set):
-                    new_active_set.add(bound_atoms)
-        # print('new active set at hop = ' +str(hopped) + ' is ' +str(new_active_set))
-        for inds in new_active_set:
-            if not use_dist:
-                result_vector[hopped] += prop_vec[orig] * prop_vec[inds]
-            else:
-                this_dist = distance(mol.getAtom(orig).coords(), mol.getAtom(inds).coords())
-                result_vector[hopped] += prop_vec[orig] * prop_vec[inds] / (this_dist * mol.natoms)
-            historical_set.update(active_set)
-        active_set = new_active_set
-    return (result_vector)
-
-
-def autocorrelation_derivative(mol, prop_vec, orig, d, oct=True, catoms=None):
-    """Returns derivative vector of products autocorrelations
-
-    Parameters
-    ----------
-        mol : mol3D
-            mol3D object to calculate derivatives over
-        prop_vec : list
-            property of atoms in mol in order of index
-        orig : int
-            zero-indexed starting atom
-        d : int
-            number of hops to travel
-        oct : bool, optional
-            Flag is octahedral complex, by default True
-        catoms : list, optional
-            List of connecting atom, by default None (use mol3D.getBondedAtomsSmart)
-    Returns
-    -------
-        derivative_mat : list
-            RAC derivatives matrix
-
-    """
-    derivative_mat = np.zeros((d + 1, len(prop_vec)))
-
-    # loop for each atom
-
-    hopped = 0
-    active_set = set([orig])
-    historical_set = set()
-    for derivate_ind in range(0, len(prop_vec)):
-        if derivate_ind == orig:
-            derivative_mat[hopped, derivate_ind] = 2 * prop_vec[orig]
-        else:
-            derivative_mat[hopped, derivate_ind] = 0
-    while hopped < (d):
-
-        hopped += 1
-        new_active_set = set()
-        for this_atom in active_set:
-            # prepare all atoms attached to this connection
-            # print('called in AC')
-            this_atoms_neighbors = mol.getBondedAtomsSmart(this_atom, oct=oct)
-            for bound_atoms in this_atoms_neighbors:
-                if (bound_atoms not in historical_set) and (bound_atoms not in active_set):
-                    new_active_set.add(bound_atoms)
-        # print('new active set at hop = ' +str(hopped) + ' is ' +str(new_active_set))
-        for inds in new_active_set:
-            for derivate_ind in range(0, len(prop_vec)):
-                if derivate_ind == orig:
-                    derivative_mat[hopped, derivate_ind] += prop_vec[inds]
-                elif derivate_ind == inds:
-                    derivative_mat[hopped, derivate_ind] += prop_vec[orig]
-            historical_set.update(active_set)
-        active_set = new_active_set
-    return (derivative_mat)
 
 
 def ratiometric(mol, prop_vec_num, prop_vec_den, orig, d, oct=True, catoms=None):
@@ -215,42 +113,6 @@ def summetric(mol, prop_vec, orig, d, oct=True, catoms=None):
     return (result_vector)
 
 
-def deltametric(mol: mol3D, prop_vec, orig, d: int, oct=True, catoms=None):
-    # # this function returns the deltametric
-    # # over the whole molecule
-    # Inputs:
-    #   mol - mol3D class
-    #   prop_vec - vector, property of atoms in mol in order of index
-    #   orig -  int, zero-indexed starting atom
-    #   d - int, number of hops to travel
-    #   oct - bool, if complex is octahedral, will use better bond checks
-    #   if oct:
-    #       print('using OCT delta autocorrelation')
-    #   else:
-    #       print('NOT using OCT delta autocorrelation')
-    result_vector = np.zeros(d + 1)
-    hopped = 0
-    active_set = set([orig])
-    historical_set = set()
-    result_vector[hopped] = 0.00
-    while hopped < (d):
-        hopped += 1
-        new_active_set = set()
-        for this_atom in active_set:
-            # prepare all atoms attached to this connection
-            # print('called in DAC')
-            this_atoms_neighbors = mol.getBondedAtomsSmart(this_atom, oct=oct)
-            for bound_atoms in this_atoms_neighbors:
-                if (bound_atoms not in historical_set) and (bound_atoms not in active_set):
-                    new_active_set.add(bound_atoms)
-        # print('new active set at hop = ' +str(hopped) + ' is ' +str(new_active_set))
-        for inds in new_active_set:
-            result_vector[hopped] += prop_vec[orig] - prop_vec[inds]
-            historical_set.update(active_set)
-        active_set = new_active_set
-    return (result_vector)
-
-
 def autocorrelation_catoms(mol, prop_vec, orig, d, oct=True, catoms=None):
     # Calculate the autocorrelation for the orig to certain connecting atoms.
     result_vector = np.zeros(d + 1)
@@ -285,59 +147,6 @@ def autocorrelation_catoms(mol, prop_vec, orig, d, oct=True, catoms=None):
     return (result_vector)
 
 
-def deltametric_derivative(mol, prop_vec, orig, d, oct=True, catoms=None):
-    # # this function returns the derivative vector
-    # # of the scalar autocorrelation
-    # # starting at orig with depth d,
-    # # with respect to the atomic properties
-    # # in prop_vec, for all atoms.
-    # # The return type is np.array for
-    # # Be sure to read this carefully!
-    # Inputs:
-    #    mol - mol3D class
-    #    prop_vec - vector, property of atoms in mol in order of index
-    #    orig -  int, zero-indexed starting atom
-    #    d - int, number of hops to travel
-    #    oct - bool, if complex is octahedral, will use better bond checks
-    #    if oct:
-    #        print('using OCT delta autocorrelation')
-    #    else:
-    #        print('NOT using OCT delta autocorrelation')
-
-    derivative_mat = np.zeros((d + 1, len(prop_vec)))
-
-    hopped = 0
-    active_set = set([orig])
-    historical_set = set()
-
-    # the zero-depth element is always zero
-    for derivate_ind in range(0, len(prop_vec)):
-        derivative_mat[hopped, derivate_ind] = 0.0
-
-    while hopped < (d):
-        hopped += 1
-        new_active_set = set()
-        for this_atom in active_set:
-            # prepare all atoms attached to this connection
-            # print('called in DAC')
-            this_atoms_neighbors = mol.getBondedAtomsSmart(this_atom, oct=oct)
-            for bound_atoms in this_atoms_neighbors:
-                if (bound_atoms not in historical_set) and (bound_atoms not in active_set):
-                    new_active_set.add(bound_atoms)
-        # print('new active set at hop = ' +str(hopped) + ' is ' +str(new_active_set))
-        for inds in new_active_set:
-
-            for derivate_ind in range(0, len(prop_vec)):
-                if derivate_ind == orig:
-                    derivative_mat[hopped, derivate_ind] += 1
-                elif derivate_ind == inds:
-                    derivative_mat[hopped, derivate_ind] += -1
-
-        historical_set.update(active_set)
-        active_set = new_active_set
-    return (derivative_mat)
-
-
 def deltametric_catoms(mol, prop_vec, orig, d, oct=True, catoms=None):
     # Calculate the deltametrics for the orig to certain connecting atoms.
     result_vector = np.zeros(d + 1)
@@ -366,24 +175,6 @@ def deltametric_catoms(mol, prop_vec, orig, d, oct=True, catoms=None):
             historical_set.update(active_set)
         active_set = new_active_set
     return (result_vector)
-
-
-def full_autocorrelation(mol, prop, d, oct=oct, modifier=False, use_dist=False, transition_metals_only=True):
-    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, transition_metals_only=transition_metals_only)
-    index_set = list(range(0, mol.natoms))
-    autocorrelation_vector = np.zeros(d + 1)
-    for centers in index_set:
-        autocorrelation_vector += autocorrelation(mol, w, centers, d, oct=oct, use_dist=use_dist)
-    return (autocorrelation_vector)
-
-
-def full_autocorrelation_derivative(mol, prop, d, oct=oct, modifier=False):
-    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
-    index_set = list(range(0, mol.natoms))
-    autocorrelation_derivative_mat = np.zeros((d + 1, mol.natoms))
-    for centers in index_set:
-        autocorrelation_derivative_mat += autocorrelation_derivative(mol, w, centers, d, oct=oct)
-    return (autocorrelation_derivative_mat)
 
 
 def atom_only_autocorrelation(mol, prop, d, atomIdx, oct=True):
@@ -630,133 +421,6 @@ def layer_density_in_3D(mol, prop_vec, orig, d, oct=True):
             historical_set.update(active_set)
         active_set = new_active_set
     return result_vector
-
-
-def construct_property_vector(mol: mol3D, prop: str, oct=True, modifier=False, transition_metals_only=True):
-    # # assigns the value of property
-    # # for atom i (zero index) in mol
-    # # to position i in returned vector
-    # # can be used to create weighted
-    # # graph representations
-    # # oct - bool, if complex is octahedral, will use better bond checks
-    # # modifier - dict, used to modify prop vector (e.g. for adding
-    # #             ONLY used with  ox_nuclear_charge    ox or charge)
-    # #              {"Fe":2, "Co": 3} etc
-    allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology',
-                       'ox_nuclear_charge', 'size', 'vdwrad', 'group_number', 'polarizability',
-                       'bondvalence', 'num_bonds', 'bondvalence_devi', 'bodavrg', 'bodstd', 'charge']
-    # # note that ident just codes every atom as one, this gives
-    # # a purely toplogical index. coord gives the number of
-    # # connecting atom to attom i (similar to Randic index)
-    # if not oct:
-    #     print('NOT using octahedral bonding pattern')
-    globs = globalvars()
-    prop_dict = dict()
-    w = np.zeros(mol.natoms)
-    done = False
-    if prop not in allowed_strings:
-        print(('error, property  ' + str(prop) + ' is not a vaild choice'))
-        print((' options are  ' + str(allowed_strings)))
-        return False
-    if prop == 'electronegativity':
-        prop_dict = globs.endict()
-    elif prop == 'size':
-        at_keys = list(globs.amass().keys())
-        for keys in at_keys:
-            values = globs.amass()[keys][2]
-            prop_dict.update({keys: values})
-    elif prop == 'nuclear_charge':
-        at_keys = list(globs.amass().keys())
-        for keys in at_keys:
-            values = globs.amass()[keys][1]
-            prop_dict.update({keys: values})
-    elif prop == 'group_number':  # Uses number of valence electrons
-        # if not modifier:
-        at_keys = list(globs.amass().keys())
-        for keys in at_keys:
-            values = globs.amass()[keys][-1]
-            prop_dict.update({keys: values})
-        # ###### 11/06/2019 -- Adjusted Gval RACs to not adjust on oxidation state. Confounded with O RACs. #####
-        # # else:
-        #     at_keys = globs.amass().keys()
-        #     for keys in at_keys:
-        #         values = globs.amass()[keys][3]
-        #         if keys in modifier.keys():
-        #             values -= float(modifier[keys]) # assumes oxidation state provided (i.e. Fe(IV))
-        #         prop_dict.update({keys: values})
-    elif prop == 'ox_nuclear_charge':
-        if not modifier:
-            print('Error, must give modifier with ox_nuclear_charge')
-            return False
-        else:
-            at_keys = list(globs.amass().keys())
-            for keys in at_keys:
-                values = globs.amass()[keys][1]
-                if keys in list(modifier.keys()):
-                    values -= float(modifier[keys])  # assumes oxidation state provided (i.e. Fe(IV))
-                prop_dict.update({keys: values})
-    elif prop == 'polarizability':
-        prop_dict = globs.polarizability()
-        for i, atoms in enumerate(mol.getAtoms()):
-            atom_type = atoms.symbol()
-            w[i] = prop_dict[atom_type]
-    elif prop == 'ident':
-        at_keys = list(globs.amass().keys())
-        for keys in at_keys:
-            prop_dict.update({keys: 1})
-    elif prop == 'topology':
-        for i, atoms in enumerate(mol.getAtoms()):
-            # print('atom # ' + str(i) + " symbol =  " + str(atoms.symbol()))
-            w[i] = len(mol.getBondedAtomsSmart(i, oct=oct))
-        done = True
-    elif prop == 'vdwrad':
-        prop_dict = globs.vdwrad()
-        for i, atoms in enumerate(mol.getAtoms()):
-            atom_type = atoms.symbol()
-            if atom_type in globs.metalslist():
-                w[i] = globs.amass()[atoms.symbol()][2]
-            else:
-                w[i] = prop_dict[atoms.symbol()]
-        done = True
-        # for keys in at_keys:
-        #     prop_dict.update({keys: 1})
-    elif prop == 'bondvalence':
-        assert len(mol.getAtoms()) == len(mol.bv_dict)
-        for i, atoms in enumerate(mol.getAtoms()):
-            w[i] = mol.bv_dict[i]
-        done = True
-    elif prop == 'num_bonds':
-        for i, atom in enumerate(mol.getAtoms()):
-            if not atom.ismetal(transition_metals_only):
-                w[i] = globs.bondsdict()[atom.symbol()]
-            else:
-                w[i] = len(mol.getBondedAtomsSmart(i, oct=oct))
-        done = True
-    elif prop == 'bondvalence_devi':
-        assert len(mol.getAtoms()) == len(mol.bvd_dict)
-        for i, atoms in enumerate(mol.getAtoms()):
-            w[i] = mol.bvd_dict[i]
-        done = True
-    elif prop == 'bodavrg':
-        assert len(mol.getAtoms()) == len(mol.bodavrg_dict)
-        for i, atoms in enumerate(mol.getAtoms()):
-            w[i] = mol.bodavrg_dict[i]
-        done = True
-    elif prop == 'bodstd':
-        assert len(mol.getAtoms()) == len(mol.bodstd_dict)
-        for i, atoms in enumerate(mol.getAtoms()):
-            w[i] = mol.bodstd_dict[i]
-        done = True
-    elif prop == 'charge':
-        assert len(mol.getAtoms()) == len(mol.charge_dict)
-        for i, atoms in enumerate(mol.getAtoms()):
-            w[i] = mol.charge_dict[i]
-        done = True
-    if not done:
-        for i, atoms in enumerate(mol.getAtoms()):
-            # print('atom # ' + str(i) + " symbol =  " + str(atoms.symbol()))
-            w[i] = prop_dict[atoms.symbol()]
-    return (w)
 
 
 def find_ligand_autocorrelations_oct(mol, prop, loud, depth, name=False,
@@ -1928,9 +1592,3 @@ def generate_atomonly_deltametric_derivatives(mol, atomIdx, loud, depth=4, oct=T
             result = np.row_stack([result, atom_only_ac_der])
     results_dictionary = {'colnames': colnames, 'results': result}
     return results_dictionary
-
-def get_metal_index(mol):
-    metal_idx = mol.findMetal()
-    if len(metal_idx) > 1:
-        print('More than one metal in mol object. Choosing the first one.')
-    return metal_idx[0]
