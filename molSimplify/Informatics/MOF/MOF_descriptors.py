@@ -147,7 +147,7 @@ def gen_and_append_desc(
 
     """
     results_dictionary = generate_atomonly_autocorrelations(
-        temp_mol, target_list, depth=depth, loud=False, oct=False,
+        temp_mol, target_list, depth=depth, oct=False,
         polarizability=True, Gval=Gval
     )
     descriptor_names, descriptors = append_descriptors(
@@ -156,7 +156,7 @@ def gen_and_append_desc(
     )
 
     results_dictionary = generate_atomonly_deltametrics(
-        temp_mol, target_list, depth=depth, loud=False, oct=False,
+        temp_mol, target_list, depth=depth, oct=False,
         polarizability=True, Gval=Gval
     )
     descriptor_names, descriptors = append_descriptors(
@@ -352,10 +352,10 @@ def make_MOF_SBU_RACs(
         # with findMetal(transition_metals_only=False). So all metals are considered for mc and D_mc, not just
         # transition metals
 
-        results_dictionary = generate_multimetal_autocorrelations(molcif, depth=depth, loud=False, Gval=Gval, transition_metals_only=transition_metals_only)
+        results_dictionary = generate_multimetal_autocorrelations(molcif, depth=depth, Gval=Gval, transition_metals_only=transition_metals_only)
         descriptor_names, descriptors = append_descriptors(
             descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'mc', 'all')
-        results_dictionary = generate_multimetal_deltametrics(molcif, depth=depth, loud=False, Gval=Gval, transition_metals_only=transition_metals_only)
+        results_dictionary = generate_multimetal_deltametrics(molcif, depth=depth, Gval=Gval, transition_metals_only=transition_metals_only)
         descriptor_names, descriptors = append_descriptors(
             descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'D_mc', 'all')
 
