@@ -12,22 +12,26 @@ import sys
 
 from typing import Tuple, Union, List
 from molSimplify.Classes.mol3D import mol3D
-from molSimplify.Informatics.autocorrelation import (generate_all_ligand_autocorrelation_derivatives,
-                                                     generate_all_ligand_autocorrelations,
-                                                     generate_all_ligand_deltametric_derivatives,
-                                                     generate_all_ligand_deltametrics,
-                                                     generate_full_complex_autocorrelation_derivatives,
-                                                     generate_full_complex_autocorrelations,
-                                                     generate_metal_autocorrelation_derivatives,
-                                                     generate_metal_autocorrelations,
-                                                     generate_metal_deltametric_derivatives,
-                                                     generate_metal_deltametrics,
-                                                     generate_metal_ox_autocorrelation_derivatives,
-                                                     generate_metal_ox_autocorrelations,
-                                                     generate_metal_ox_deltametric_derivatives,
-                                                     generate_metal_ox_deltametrics)
-from molSimplify.Informatics.misc_descriptors import (generate_all_ligand_misc)
-from molSimplify.Informatics.rac155_geo import (rac155_list)
+from molSimplify.Informatics.autocorrelation import (
+    generate_all_ligand_autocorrelation_derivatives,
+    generate_all_ligand_autocorrelations,
+    generate_all_ligand_deltametric_derivatives,
+    generate_all_ligand_deltametrics,
+    generate_metal_autocorrelation_derivatives,
+    generate_metal_autocorrelations,
+    generate_metal_deltametric_derivatives,
+    generate_metal_deltametrics,
+    generate_metal_ox_autocorrelation_derivatives,
+    generate_metal_ox_autocorrelations,
+    generate_metal_ox_deltametric_derivatives,
+    generate_metal_ox_deltametrics,
+    )
+from molSimplify.Informatics.lacRACAssemble import (
+    generate_full_complex_autocorrelation_derivatives,
+    generate_full_complex_autocorrelations,    
+    )
+from molSimplify.Informatics.misc_descriptors import generate_all_ligand_misc
+from molSimplify.Informatics.rac155_geo import rac155_list
 import numpy as np
 
 
