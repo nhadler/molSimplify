@@ -174,7 +174,8 @@ def gen_and_append_desc(
 
 def make_MOF_SBU_RACs(
         SBUlist, SBU_subgraph, molcif, depth, name, cell_v, anchoring_atoms, sbupath,
-        linkeranchors_superlist, Gval, connections_list=False, connections_subgraphlist=False):
+        linkeranchors_superlist, Gval, connections_list=False, connections_subgraphlist=False,
+        transition_metals_only=True):
     """
     Generates RACs on the SBUs of the MOF, as well as on the lc atoms (SBU-connected atoms of linkers).
 
@@ -204,6 +205,8 @@ def make_MOF_SBU_RACs(
         Each inner list is its own separate linker. The ints are the atom indices of that linker. Length is # of linkers.
     connections_subgraphlist : list of scipy.sparse.csr.csr_matrix
         The atom connections in the linker subgraph. Length is # of linkers.
+    transition_metals_only : bool
+        Flag if only transition metals counted as metals, by default True.
 
     Returns
     -------
@@ -349,10 +352,10 @@ def make_MOF_SBU_RACs(
         # with findMetal(transition_metals_only=False). So all metals are considered for mc and D_mc, not just
         # transition metals
 
-        results_dictionary = generate_multimetal_autocorrelations(molcif, depth=depth, loud=False, Gval=Gval)
+        results_dictionary = generate_multimetal_autocorrelations(molcif, depth=depth, loud=False, Gval=Gval, transition_metals_only=transition_metals_only)
         descriptor_names, descriptors = append_descriptors(
             descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'mc', 'all')
-        results_dictionary = generate_multimetal_deltametrics(molcif, depth=depth, loud=False, Gval=Gval)
+        results_dictionary = generate_multimetal_deltametrics(molcif, depth=depth, loud=False, Gval=Gval, transition_metals_only=transition_metals_only)
         descriptor_names, descriptors = append_descriptors(
             descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'D_mc', 'all')
 
@@ -562,7 +565,7 @@ def failure_response(path, failure_str):
     write2file(path, "/FailedStructures.log", failure_str)
     return full_names, full_descriptors
 
-def bond_information_write(linker_list, linkeranchors_superlist, adj_matrix, molcif, cell_v, path):
+def bond_information_write(linker_list, linkeranchors_superlist, adj_matrix, molcif, cell_v, path, transition_metals_only=True):
     """
     Attains and writes bond information about the bonds between SBUs and linkers.
 
@@ -580,6 +583,8 @@ def bond_information_write(linker_list, linkeranchors_superlist, adj_matrix, mol
         The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
     path : str
         The parent path to which output will be written.
+    transition_metals_only : bool
+        Flag if only transition metals counted as metals, by default True.
 
     Returns
     -------
@@ -603,7 +608,7 @@ def bond_information_write(linker_list, linkeranchors_superlist, adj_matrix, mol
                 con_atom3D = molcif.getAtom(con_atom)  # atom3D of an atom connected to the connection point
                 con_point3D = molcif.getAtom(con_point)  # atom3D of the connection point on the linker
                 # Check if the atom is a metal
-                if con_atom3D.ismetal(transition_metals_only=False):
+                if con_atom3D.ismetal(transition_metals_only=transition_metals_only):
                     # Finding the optimal unit cell shift
                     molcif_cart_coords = np.array([atom.coords() for atom in molcif.atoms])
                     fcoords = frac_coord(molcif_cart_coords, cell_v)  # fractional coordinates
@@ -825,7 +830,7 @@ def dist_mat_comp(X):
     dist_mat = np.sqrt(np.sum(np.square(Z), axis=-1))  # The pairwise distance matrix. Distances between all atoms.
     return dist_mat
 
-def detect_1D_rod(molcif, allatomtypes, cpar, logpath, name, adj_matrix, fcoords, cell_v):
+def detect_1D_rod(molcif, allatomtypes, cpar, logpath, name, adj_matrix, fcoords, cell_v, transition_metals_only=True):
     """
     Writes to the log file if the MOF is likely to contain a 1D rod.
     1D rod: metals ions connected to form an infinite chain.
@@ -849,6 +854,8 @@ def detect_1D_rod(molcif, allatomtypes, cpar, logpath, name, adj_matrix, fcoords
         The fractional positions of the atoms of the cif file. Shape is (number of atoms, 3).
     cell_v : numpy.ndarray
         The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
+    transition_metals_only : bool
+        Flag if only transition metals counted as metals, by default True.
 
     Returns
     -------
@@ -858,7 +865,7 @@ def detect_1D_rod(molcif, allatomtypes, cpar, logpath, name, adj_matrix, fcoords
     # Assumption: If a MOF contains 1D rod SBUs, all SBUs in the MOF are 1D rods
     # Thus, can just branch out from an arbitrary metal in the MOF for the check
 
-    metal_idxs = molcif.findMetal(transition_metals_only=False)
+    metal_idxs = molcif.findMetal(transition_metals_only=transition_metals_only)
     current_idx = metal_idxs[0] # arbitrary metal
     current_pos = fcoords[current_idx]
 
@@ -925,7 +932,7 @@ def detect_1D_rod(molcif, allatomtypes, cpar, logpath, name, adj_matrix, fcoords
 def get_MOF_descriptors(
         data, depth, path, xyzpath, graph_provided=False, wiggle_room=1,
         max_num_atoms=2000, get_sbu_linker_bond_info=False, surrounded_sbu_file_generation=False,
-        detect_1D_rod_sbu=False, Gval=False):
+        detect_1D_rod_sbu=False, Gval=False, transition_metals_only=False):
     """
     Generates RAC descriptors on a MOF, assuming it has P1 symmetry.
     Writes three files: sbu_descriptors.csv, linker_descriptors.csv, and lc_descriptors.csv
@@ -962,6 +969,8 @@ def get_MOF_descriptors(
         Whether or not to check if SBU is a 1D rod.
     Gval : bool
         Whether to use G value as RAC, by default False.
+    transition_metals_only : bool
+        Flag if only transition metals counted as metals, by default False.
 
     Returns
     -------
@@ -1049,7 +1058,7 @@ def get_MOF_descriptors(
     """""""""
 
     n_components, labels_components = sparse.csgraph.connected_components(csgraph=adj_matrix, directed=False, return_labels=True)
-    metal_list = set([at for at in molcif.findMetal(transition_metals_only=False)])  # the atom indices of the metals
+    metal_list = set([at for at in molcif.findMetal(transition_metals_only=transition_metals_only)])  # the atom indices of the metals
     if not len(metal_list) > 0:
         failure_str = f"Failed to featurize {name}: no metal found\n"
         full_names, full_descriptors = failure_response(path, failure_str)
@@ -1076,11 +1085,11 @@ def get_MOF_descriptors(
     Logs the atom types of the connecting atoms to the metal in logpath.
     """""""""
     SBUlist = set()
-    metal_list = set([at for at in molcif.findMetal(transition_metals_only=False)]) # the atom indices of the metals
-    [SBUlist.update(set([metal])) for metal in molcif.findMetal(transition_metals_only=False)] # Consider all metals as part of the SBUs.
-    [SBUlist.update(set(molcif.getBondedAtomsSmart(metal))) for metal in molcif.findMetal(transition_metals_only=False)] # atoms connected to metals.
+    metal_list = set([at for at in molcif.findMetal(transition_metals_only=transition_metals_only)]) # the atom indices of the metals
+    [SBUlist.update(set([metal])) for metal in molcif.findMetal(transition_metals_only=transition_metals_only)] # Consider all metals as part of the SBUs.
+    [SBUlist.update(set(molcif.getBondedAtomsSmart(metal))) for metal in molcif.findMetal(transition_metals_only=transition_metals_only)] # atoms connected to metals.
     removelist = set()
-    [removelist.update(set([metal])) for metal in molcif.findMetal(transition_metals_only=False)] # Remove all metals as part of the SBUs.
+    [removelist.update(set([metal])) for metal in molcif.findMetal(transition_metals_only=transition_metals_only)] # Remove all metals as part of the SBUs.
     for metal in removelist:
         bonded_atoms = set(molcif.getBondedAtomsSmart(metal))
         bonded_atoms_types = set([str(allatomtypes[at]) for at in set(molcif.getBondedAtomsSmart(metal))]) # The types of elements bonded to metals. E.g. oxygen, carbon, etc.
@@ -1088,7 +1097,7 @@ def get_MOF_descriptors(
         cn_atom = ",".join([at for at in bonded_atoms_types])
         tmpstr = "atom %i with type of %s found to have %i coordinates with atom types of %s\n"%(metal,allatomtypes[metal],cn,cn_atom)
         write2file(logpath, "/%s.log" % name, tmpstr)
-    [removelist.update(set([atom])) for atom in SBUlist if all((molcif.getAtom(val).ismetal() or molcif.getAtom(val).symbol().upper() == 'H') for val in molcif.getBondedAtomsSmart(atom))]
+    [removelist.update(set([atom])) for atom in SBUlist if all((molcif.getAtom(val).ismetal(transition_metals_only=transition_metals_only) or molcif.getAtom(val).symbol().upper() == 'H') for val in molcif.getBondedAtomsSmart(atom))]
     """""""""
     adding hydrogens connected to atoms which are only connected to metals. In particular interstitial OH, like in UiO SBU.
     """""""""
@@ -1252,8 +1261,14 @@ def get_MOF_descriptors(
     """""""""
     if len(linker_subgraphlist) >= 1:  # Featurize cases that did not fail.
         # try:
-            descriptor_names, descriptors, lc_descriptor_names, lc_descriptors = make_MOF_SBU_RACs(SBU_list, SBU_subgraphlist, molcif, depth, name, cell_v, anc_atoms, sbupath, linkeranchors_superlist, Gval, connections_list, connections_subgraphlist)
-            lig_descriptor_names, lig_descriptors = make_MOF_linker_RACs(linker_list, linker_subgraphlist, molcif, depth, name, cell_v, linkerpath, linkeranchors_superlist, Gval)
+            descriptor_names, descriptors, lc_descriptor_names, lc_descriptors = make_MOF_SBU_RACs(
+                SBU_list, SBU_subgraphlist, molcif, depth, name, cell_v, anc_atoms, sbupath,
+                linkeranchors_superlist, Gval, connections_list, connections_subgraphlist, transition_metals_only=transition_metals_only
+                )
+            lig_descriptor_names, lig_descriptors = make_MOF_linker_RACs(
+                linker_list, linker_subgraphlist, molcif, depth, name, cell_v, linkerpath,
+                linkeranchors_superlist, Gval
+                )
             full_names = descriptor_names+lig_descriptor_names+lc_descriptor_names #+ ECFP_names
             full_descriptors = list(descriptors)+list(lig_descriptors)+list(lc_descriptors)
             print(len(full_names), len(full_descriptors))
@@ -1276,7 +1291,7 @@ def get_MOF_descriptors(
 
     # Getting bond information if requested, and writing it to a TXT file.
     if get_sbu_linker_bond_info:
-        bond_information_write(linker_list, linkeranchors_superlist, adj_matrix, molcif, cell_v, path)
+        bond_information_write(linker_list, linkeranchors_superlist, adj_matrix, molcif, cell_v, path, transition_metals_only=transition_metals_only)
 
     # Generating XYZ files of SBUs surrounded by linkers.
     if surrounded_sbu_file_generation:
@@ -1287,7 +1302,7 @@ def get_MOF_descriptors(
             write2file(logpath, "/%s.log" % name, tmpstr)
 
     if detect_1D_rod_sbu:
-        detect_1D_rod(molcif, allatomtypes, cpar, logpath, name, adj_matrix, fcoords, cell_v)
+        detect_1D_rod(molcif, allatomtypes, cpar, logpath, name, adj_matrix, fcoords, cell_v, transition_metals_only=transition_metals_only)
 
     return full_names, full_descriptors
 
