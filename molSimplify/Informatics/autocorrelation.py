@@ -5,6 +5,10 @@ from molSimplify.Classes.ligand import (
     ligand_breakdown,
     )
 from molSimplify.Informatics.lacRACAssemble import (
+    atom_only_autocorrelation,
+    atom_only_autocorrelation_derivative,
+    atom_only_deltametric,
+    atom_only_deltametric_derivative,
     autocorrelation,
     autocorrelation_derivative,
     construct_property_vector,
@@ -12,7 +16,13 @@ from molSimplify.Informatics.lacRACAssemble import (
     deltametric_derivative,
     full_autocorrelation,
     full_autocorrelation_derivative,
+    generate_full_complex_autocorrelation_derivatives,
+    generate_full_complex_autocorrelations,
     get_metal_index,
+    metal_only_autocorrelation,
+    metal_only_autocorrelation_derivative,
+    metal_only_deltametric,
+    metal_only_deltametric_derivative,
     )
 from molSimplify.Scripts.geometry import distance
 from molSimplify.Classes.globalvars import globalvars
@@ -177,58 +187,6 @@ def deltametric_catoms(mol, prop_vec, orig, d, oct=True, catoms=None):
     return (result_vector)
 
 
-def atom_only_autocorrelation(mol, prop, d, atomIdx, oct=True):
-    # atomIdx must be either a list of indices
-    # or a single index
-    w = construct_property_vector(mol, prop, oct)
-    autocorrelation_vector = np.zeros(d + 1)
-    if hasattr(atomIdx, "__len__"): # Indicative of a list of indices
-        for elements in atomIdx:
-            autocorrelation_vector += autocorrelation(mol, w, elements, d, oct=oct)
-        autocorrelation_vector = np.divide(autocorrelation_vector, len(atomIdx)) # averaging
-    else: # Single index
-        autocorrelation_vector += autocorrelation(mol, w, atomIdx, d, oct=oct)
-    return (autocorrelation_vector)
-
-
-def atom_only_autocorrelation_derivative(mol, prop, d, atomIdx, oct=True):
-    # atomIdx must b either a list of indices
-    # or a single index
-    w = construct_property_vector(mol, prop, oct)
-    autocorrelation_derivative_mat = np.zeros((d + 1, mol.natoms))
-    if hasattr(atomIdx, "__len__"):
-        for elements in atomIdx:
-            autocorrelation_derivative_mat += autocorrelation_derivative(mol, w, elements, d, oct=oct)
-        autocorrelation_derivative_mat = np.divide(autocorrelation_derivative_mat, len(atomIdx))
-    else:
-        autocorrelation_derivative_mat += autocorrelation_derivative(mol, w, atomIdx, d, oct=oct)
-    return (autocorrelation_derivative_mat)
-
-
-def metal_only_autocorrelation(mol, prop, d, oct=True,
-                               func=autocorrelation, modifier=False):
-    try:
-        metal_ind = get_metal_index(mol)
-        w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
-        autocorrelation_vector = func(mol, w, metal_ind, d, oct=oct)
-    except IndexError:
-        print('Error, no metal found in mol object!')
-        return False
-    return (autocorrelation_vector)
-
-
-def metal_only_autocorrelation_derivative(mol, prop, d, oct=True,
-                                          func=autocorrelation_derivative, modifier=False):
-    try:
-        metal_ind = get_metal_index(mol)
-        w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
-        autocorrelation_vector_derivative = func(mol, w, metal_ind, d, oct=oct)
-    except IndexError:
-        print('Error, no metal found in mol object!')
-        return False
-    return (autocorrelation_vector_derivative)
-
-
 def multimetal_only_autocorrelation(mol, prop, d, oct=True,
                                     func=autocorrelation, modifier=False):
     autocorrelation_vector = np.zeros(d + 1)
@@ -283,61 +241,6 @@ def atom_only_summetric(mol, prop, d, atomIdx, oct=True):
     else:
         autocorrelation_vector += summetric(mol, w, atomIdx, d, oct=oct)
     return (autocorrelation_vector)
-
-
-def atom_only_deltametric(mol, prop, d, atomIdx, oct=True, modifier=False):
-    # atomIdx must b either a list of indices
-    # or a single index
-    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
-
-    deltametric_vector = np.zeros(d + 1)
-    if hasattr(atomIdx, "__len__"):
-        for elements in atomIdx:
-            deltametric_vector += deltametric(mol, w, elements, d, oct=oct)
-        deltametric_vector = np.divide(deltametric_vector, len(atomIdx))
-    else:
-        deltametric_vector += deltametric(mol, w, atomIdx, d, oct=oct)
-    return (deltametric_vector)
-
-
-def atom_only_deltametric_derivative(mol, prop, d, atomIdx, oct=True, modifier=False):
-    # atomIdx must b either a list of indices
-    # or a single index
-    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
-
-    deltametric_derivative_mat = np.zeros((d + 1, mol.natoms))
-    if hasattr(atomIdx, "__len__"):
-        for elements in atomIdx:
-            deltametric_derivative_mat += deltametric_derivative(mol, w, elements, d, oct=oct)
-        deltametric_derivative_mat = np.divide(deltametric_derivative_mat, len(atomIdx))
-    else:
-
-        deltametric_derivative_mat += deltametric_derivative(mol, w, atomIdx, d, oct=oct)
-    return (deltametric_derivative_mat)
-
-
-def metal_only_deltametric_derivative(mol, prop, d, oct=True,
-                                      func=deltametric_derivative, modifier=False):
-    try:
-        metal_ind = get_metal_index(mol)
-        w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
-        deltametric_vector_derivative = func(mol, w, metal_ind, d, oct=oct)
-    except IndexError:
-        print('Error, no metal found in mol object!')
-        return False
-    return (deltametric_vector_derivative)
-
-
-def metal_only_deltametric(mol, prop, d, oct=True,
-                           func=deltametric, modifier=False):
-    try:
-        metal_ind = get_metal_index(mol)
-        w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
-        deltametric_vector = func(mol, w, metal_ind, d, oct=oct)
-    except IndexError:
-        print('Error, no metal found in mol object!')
-        return False
-    return (deltametric_vector)
 
 
 def multimetal_only_deltametric(mol, prop, d, oct=True,
@@ -1283,39 +1186,6 @@ def generate_multiatom_deltametrics(mol, loud, depth=4, oct=True, flag_name=Fals
     return results_dictionary
 
 
-def generate_full_complex_autocorrelations(mol, loud,
-                                           depth=4, oct=True,
-                                           flag_name=False, modifier=False,
-                                           use_dist=False, NumB=False, Gval=False, polarizability=False):
-    result = list()
-    colnames = []
-    allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
-    labels_strings = ['chi', 'Z', 'I', 'T', 'S']
-    if Gval:
-        allowed_strings += ['group_number']
-        labels_strings += ['Gval']
-    if NumB:
-        allowed_strings += ["num_bonds"]
-        labels_strings += ["NumB"]
-    if polarizability:
-        allowed_strings += ["polarizability"]
-        labels_strings += ["alpha"]
-    for ii, properties in enumerate(allowed_strings):
-        metal_ac = full_autocorrelation(mol, properties, depth,
-                                        oct=oct, modifier=modifier,
-                                        use_dist=use_dist)
-        this_colnames = []
-        for i in range(0, depth + 1):
-            this_colnames.append(labels_strings[ii] + '-' + str(i))
-        colnames.append(this_colnames)
-        result.append(metal_ac)
-    if flag_name:
-        results_dictionary = {'colnames': colnames, 'results_f_all': result}
-    else:
-        results_dictionary = {'colnames': colnames, 'results': result}
-    return results_dictionary
-
-
 def generate_full_complex_coulomb_autocorrelations(mol, loud,
                                                    depth=3, oct=True,
                                                    flag_name=False, modifier=False,
@@ -1337,34 +1207,6 @@ def generate_full_complex_coulomb_autocorrelations(mol, loud,
             this_colnames.append(labels_strings[ii] + '-' + str(i))
         colnames.append(this_colnames)
         result.append(metal_ac)
-    if flag_name:
-        results_dictionary = {'colnames': colnames, 'results_f_all': result}
-    else:
-        results_dictionary = {'colnames': colnames, 'results': result}
-    return results_dictionary
-
-
-def generate_full_complex_autocorrelation_derivatives(mol, loud, depth=4, oct=True, flag_name=False,
-                                                      modifier=False, NumB=False, Gval=False):
-    result = None
-    colnames = []
-    allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
-    labels_strings = ['chi', 'Z', 'I', 'T', 'S']
-    if Gval:
-        allowed_strings += ['group_number']
-        labels_strings += ['Gval']
-    if NumB:
-        allowed_strings += ["num_bonds"]
-        labels_strings += ["NumB"]
-    for ii, properties in enumerate(allowed_strings):
-        f_ac_der = full_autocorrelation_derivative(mol, properties, depth, oct=oct, modifier=modifier)
-        for i in range(0, depth + 1):
-            colnames.append(['d' + labels_strings[ii] + '-' + str(i) + '/d' + labels_strings[ii] + str(j) for j in
-                             range(0, mol.natoms)])
-        if result is None:
-            result = f_ac_der
-        else:
-            result = np.row_stack([result, f_ac_der])
     if flag_name:
         results_dictionary = {'colnames': colnames, 'results_f_all': result}
     else:

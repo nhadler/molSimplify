@@ -13,9 +13,11 @@ from molSimplify.Informatics.RACassemble import append_descriptors
 from molSimplify.Informatics.autocorrelation import (
     generate_atomonly_autocorrelations,
     generate_atomonly_deltametrics,
-    generate_full_complex_autocorrelations,
     generate_multimetal_autocorrelations,
     generate_multimetal_deltametrics,
+    )
+from molSimplify.Informatics.lacRACAssemble import (
+    generate_full_complex_autocorrelations,
     full_autocorrelation,
     )
 from molSimplify.Informatics.MOF.atomic import (

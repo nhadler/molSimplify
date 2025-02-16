@@ -1006,6 +1006,7 @@ def atom_only_autocorrelation(mol, prop, d, atomIdx, oct=True, use_dist=False, s
             Depth to calculate derivatives over.
         atomIdx : int or list
             Atoms from which the autocorrelation vector should be centered.
+            List of indices or a single index.
         oct : bool, optional
             Use octahedral flag, by default True.
         use_dist : bool, optional
@@ -1023,12 +1024,12 @@ def atom_only_autocorrelation(mol, prop, d, atomIdx, oct=True, use_dist=False, s
     """
     w = construct_property_vector(mol, prop, oct, MRdiag_dict=MRdiag_dict)
     autocorrelation_vector = np.zeros(d + 1)
-    if hasattr(atomIdx, "__len__"):
+    if hasattr(atomIdx, "__len__"): # Indicative of a list of indices.
         for elements in atomIdx:
             autocorrelation_vector += autocorrelation(mol, w, elements, d, oct=oct, use_dist=use_dist,
                                                       size_normalize=size_normalize)
-        autocorrelation_vector = np.divide(autocorrelation_vector, len(atomIdx))
-    else:
+        autocorrelation_vector = np.divide(autocorrelation_vector, len(atomIdx)) # Averaging.
+    else: # Single index.
         autocorrelation_vector += autocorrelation(mol, w, atomIdx, d, oct=oct, use_dist=use_dist,
                                                   size_normalize=size_normalize)
     return (autocorrelation_vector)
@@ -1049,6 +1050,7 @@ def atom_only_autocorrelation_derivative(mol, prop, d, atomIdx, oct=True):
             Depth to calculate derivatives over.
         atomIdx : int or list
             Atoms from which the autocorrelation vector should be centered.
+            List of indices or a single index.
         oct : bool, optional
             Use octahedral flag, by default True.
 
@@ -1171,6 +1173,7 @@ def atom_only_deltametric(mol, prop, d, atomIdx, oct=True, modifier=False,
             Depth to calculate derivatives over.
         atomIdx : int or list
             Atoms from which the autocorrelation vector should be centered.
+            List of indices or a single index.
         oct : bool, optional
             Use octahedral flag, by default True.
         modifier : bool, optional
@@ -1215,6 +1218,7 @@ def atom_only_deltametric_derivative(mol, prop, d, atomIdx, oct=True, modifier=F
             Depth to calculate derivatives over.
         atomIdx : int or list
             Atoms from which the autocorrelation vector should be centered.
+            List of indices or a single index.
         oct : bool, optional
             Use octahedral flag, by default True.
         modifier : bool, optional
@@ -1233,7 +1237,6 @@ def atom_only_deltametric_derivative(mol, prop, d, atomIdx, oct=True, modifier=F
             deltametric_derivative_mat += deltametric_derivative(mol, w, elements, d, oct=oct)
         deltametric_derivative_mat = np.divide(deltametric_derivative_mat, len(atomIdx))
     else:
-
         deltametric_derivative_mat += deltametric_derivative(mol, w, atomIdx, d, oct=oct)
     return (deltametric_derivative_mat)
 
