@@ -1370,7 +1370,7 @@ def generate_all_ligand_misc(mol, loud, custom_ligand_dict=False, smiles_charge=
     -------
         results_dictionary : dict
             Labels and results of ligand_misc RACs - {'colnames': colnames,
-                            'result_ax': result_ax, 'result_eq': result_eq}.
+            'result_ax': result_ax, 'result_eq': result_eq}.
             Ax. vs eq. charge (from OBMol) and denticity.
 
     """
