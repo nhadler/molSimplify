@@ -1,6 +1,10 @@
 import numpy as np
 from molSimplify.Classes.mol3D import mol3D
-from molSimplify.Classes.lacRACAssemble import (
+from molSimplify.Classes.ligand import (
+    ligand_assign_original,
+    ligand_breakdown,
+    )
+from molSimplify.Informatics.lacRACAssemble import (
     autocorrelation,
     autocorrelation_derivative,
     construct_property_vector,
@@ -9,10 +13,6 @@ from molSimplify.Classes.lacRACAssemble import (
     full_autocorrelation,
     full_autocorrelation_derivative,
     get_metal_index,
-    )
-from molSimplify.Classes.ligand import (
-    ligand_assign_original,
-    ligand_breakdown,
     )
 from molSimplify.Scripts.geometry import distance
 from molSimplify.Classes.globalvars import globalvars
