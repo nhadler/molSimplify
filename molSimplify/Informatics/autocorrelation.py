@@ -717,24 +717,6 @@ def find_ligand_deltametric_derivatives_oct(mol, prop, loud, depth, name=False, 
     return ax_con_j, eq_con_j
 
 
-def find_mc_eq_ax_deltametrics_oct(mol, prop, loud, depth, name=False, oct=True,
-                                   func=deltametric_catoms):
-    # For octahedral complexes only.
-    # Calculate mc/ax, mc/eq deltametrics.
-    liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=oct)
-    (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list,
-     eq_con_int_list, ax_con_list, eq_con_list, built_ligand_list) = ligand_assign_original(
-        mol, liglist, ligdents, ligcons, loud, name=False)
-    # shape reduce
-    ax_con_list = [x[0] for x in ax_con_list]
-    eq_con_list = [x[0] for x in eq_con_list]
-    ax_ligand_del_mc = metal_only_deltametric(mol, prop, depth, catoms=ax_con_list, func=func)
-    eq_ligand_del_mc = metal_only_deltametric(mol, prop, depth, catoms=eq_con_list, func=func)
-    ax_ligand_del_mc = np.divide(ax_ligand_del_mc, len(ax_con_list))
-    eq_ligand_del_mc = np.divide(eq_ligand_del_mc, len(eq_con_list))
-    return ax_ligand_del_mc, eq_ligand_del_mc
-
-
 def find_mc_eq_ax_autocorrelation_oct(mol, prop, loud, depth, name=False, oct=True,
                                       func=autocorrelation_catoms, modifier=False):
     # For octahedral complexes only.
@@ -751,33 +733,6 @@ def find_mc_eq_ax_autocorrelation_oct(mol, prop, loud, depth, name=False, oct=Tr
     ax_ligand_ac_mc = np.divide(ax_ligand_ac_mc, len(ax_con_list))
     eq_ligand_ac_mc = np.divide(eq_ligand_ac_mc, len(eq_con_list))
     return ax_ligand_ac_mc, eq_ligand_ac_mc
-
-
-def generate_mc_eq_ax_deltametrics(mol, loud, depth=4, name=False,
-                                   func=deltametric_catoms, NumB=False, Gval=False):
-    result_ax_mc = list()
-    result_eq_mc = list()
-    colnames = []
-    allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
-    labels_strings = ['chi', 'Z', 'I', 'T', 'S']
-    if Gval:
-        allowed_strings += ['group_number']
-        labels_strings += ['Gval']
-    if NumB:
-        allowed_strings += ["num_bonds"]
-        labels_strings += ["NumB"]
-    for ii, properties in enumerate(allowed_strings):
-        ax_ligand_ac_con, eq_ligand_ac_con = find_mc_eq_ax_deltametrics_oct(mol, properties, loud, depth, name,
-                                                                            func=func)
-        this_colnames = []
-        for i in range(0, depth + 1):
-            this_colnames.append(labels_strings[ii] + '-' + str(i))
-        colnames.append(this_colnames)
-        result_ax_mc.append(ax_ligand_ac_con)
-        result_eq_mc.append(eq_ligand_ac_con)
-    results_dictionary = {'colnames': colnames, 'result_mc_ax_del': result_ax_mc,
-                          'result_mc_eq_del': result_eq_mc}
-    return results_dictionary
 
 
 def generate_mc_eq_ax_autocorrelation(mol, loud, depth=4, name=False,
