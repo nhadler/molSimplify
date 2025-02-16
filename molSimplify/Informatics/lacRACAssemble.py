@@ -1004,7 +1004,7 @@ def atom_only_autocorrelation(mol, prop, d, atomIdx, oct=True, use_dist=False, s
         mol : mol3D
             Molecule to calculate atom-only autocorrelations from.
         prop : str
-            Property to calculate.
+            Property to evaluate.
         d : int
             Depth to calculate derivatives over.
         atomIdx : int or list
@@ -1048,7 +1048,7 @@ def atom_only_autocorrelation_derivative(mol, prop, d, atomIdx, oct=True):
         mol : mol3D
             Molecule to calculate atom-only autocorrelation derivatives from.
         prop : str
-            Property to calculate.
+            Property to evaluate.
         d : int
             Depth to calculate derivatives over.
         atomIdx : int or list
@@ -1181,7 +1181,7 @@ def atom_only_deltametric(mol, prop, d, atomIdx, oct=True, modifier=False,
         mol : mol3D
             Molecule to calculate atom-only autocorrelations from.
         prop : str
-            Property to calculate.
+            Property to evaluate.
         d : int
             Depth to calculate derivatives over.
         atomIdx : int or list
@@ -1226,7 +1226,7 @@ def atom_only_deltametric_derivative(mol, prop, d, atomIdx, oct=True, modifier=F
         mol : mol3D
             Molecule to calculate atom-only deltametric autocorrelation derivatives from.
         prop : str
-            Property to calculate.
+            Property to evaluate.
         d : int
             Depth to calculate derivatives over.
         atomIdx : int or list
