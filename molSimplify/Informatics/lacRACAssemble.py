@@ -1077,7 +1077,7 @@ def atom_only_autocorrelation_derivative(mol, prop, d, atomIdx, oct=True):
 def metal_only_autocorrelation(
     mol, prop, d, oct=True, metal_ind=None,
     func=autocorrelation, modifier=False,
-    use_dist=False, size_normalize=False, 
+    use_dist=False, size_normalize=False,
     MRdiag_dict={}, transition_metals_only=True
     ):
     """
@@ -1107,7 +1107,7 @@ def metal_only_autocorrelation(
         MRdiag_dict : dict, optional
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
         transition_metals_only : bool, optional
-            Flag if only transition metals counted as metals, by default True.            
+            Flag if only transition metals counted as metals, by default True.
 
     Returns
     -------
@@ -1278,7 +1278,7 @@ def metal_only_deltametric_derivative(
         modifier : bool, optional
             Use ox_modifier, by default False.
         transition_metals_only : bool, optional
-            Flag if only transition metals counted as metals, by default True.            
+            Flag if only transition metals counted as metals, by default True.
 
     Returns
     -------

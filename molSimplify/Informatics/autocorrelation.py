@@ -886,7 +886,7 @@ def generate_multimetal_autocorrelations(
         TODO : TODO
             TODO
 
-    """    
+    """
     # oct - bool, if complex is octahedral, will use better bond checks
     result = list()
     colnames = []
@@ -967,7 +967,7 @@ def generate_metal_ox_eff_deltametrics(oxmodifier, mol, loud, depth=4, oct=True,
 
 
 def generate_multimetal_deltametrics(
-    mol, loud, depth=4, oct=True, flag_name=False, 
+    mol, loud, depth=4, oct=True, flag_name=False,
     polarizability=False, Gval=False,
     transition_metals_only=True):
     """
@@ -1143,7 +1143,7 @@ def generate_atomonly_deltametrics(mol, atomIdx, loud, depth=4, oct=True, NumB=F
         TODO : TODO
             TODO
 
-    """    
+    """
     # # This function gets deltametrics for a molecule starting
     # # in one single atom only.
     # Inputs:
