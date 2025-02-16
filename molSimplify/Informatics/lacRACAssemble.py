@@ -1364,13 +1364,13 @@ def generate_all_ligand_misc(mol, loud, custom_ligand_dict=False, smiles_charge=
         custom_ligand_dict : bool, optional
             custom_ligand_dictionary if passed, by default False.
         smiles_charge : bool, optional
-            Whether or not to use the smiles charge assignent, default is False.
+            Whether or not to use the smiles charge assignment, default is False.
 
     Returns
     -------
         results_dictionary : dict
             Labels and results of ligand_misc RACs - {'colnames': colnames,
-                            'result_ax': result_ax, 'result_eq': result_eq}.
+            'result_ax': result_ax, 'result_eq': result_eq}.
             Ax. vs eq. charge (from OBMol) and denticity.
 
     """
