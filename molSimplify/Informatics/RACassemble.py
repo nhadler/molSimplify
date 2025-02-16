@@ -26,7 +26,7 @@ from molSimplify.Informatics.lacRACAssemble import (
     generate_metal_deltametric_derivatives,
     generate_metal_deltametrics,
     generate_metal_ox_autocorrelation_derivatives,
-    generate_metal_ox_autocorrelations,    
+    generate_metal_ox_autocorrelations,
     generate_metal_ox_deltametric_derivatives,
     generate_metal_ox_deltametrics,
     )
