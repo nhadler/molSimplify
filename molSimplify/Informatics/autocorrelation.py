@@ -171,25 +171,28 @@ def multimetal_only_autocorrelation(mol, prop, d, oct=True,
 
     Parameters
     ----------
-        mol : TODO
-            TODO
-        prop : TODO
-            TODO
-        d : TODO
-            TODO
-        oct : TODO
-            TODO
-        func : TODO
-            TODO
-        modifier : TODO
-            TODO
-        transition_metals_only : TODO
-            TODO
+        mol : mol3D
+            Molecule to calculate multimetal autocorrelation from.
+        prop : str
+            Property to evaluate.
+        d : int
+            Depth of autocorrelation.
+        oct : bool, optional
+            Use octahedral criteria for structure evaluation, by default True.
+            If complex is octahedral, will use better bond checks.
+        func : function, optional
+            Which function to evaluate autocorrelation by. By default autocorrelation.
+        modifier : bool, optional
+            If passed - dict, used to modify prop vector (e.g., for adding
+            ONLY used with  ox_nuclear_charge    ox or charge)
+            {"Fe":2, "Co": 3} etc, by default False.
+        transition_metals_only : bool, optional
+            Flag if only transition metals counted as metals, by default True.
 
     Returns
     -------
-        autocorrelation_vector : TODO
-            TODO
+        autocorrelation_vector : list
+            List of multimetal autocorrelations.
 
     """
     autocorrelation_vector = np.zeros(d + 1)
@@ -250,29 +253,32 @@ def multimetal_only_deltametric(mol, prop, d, oct=True,
                                 func=deltametric, modifier=False,
                                 transition_metals_only=True):
     """
-    TODO
+    Calculate metal-centered deltametric, averaged over all metals.
 
     Parameters
     ----------
-        mol : TODO
-            TODO
-        prop : TODO
-            TODO
-        d : TODO
-            TODO
-        oct : TODO
-            TODO
-        func : TODO
-            TODO
-        modifier : TODO
-            TODO
-        transition_metals_only : TODO
-            TODO
+        mol : mol3D
+            Molecule to calculate multimetal deltametric from.
+        prop : str
+            Property to evaluate.
+        d : int
+            Depth of deltametric.
+        oct : bool, optional
+            Use octahedral criteria for structure evaluation, by default True.
+            If complex is octahedral, will use better bond checks.
+        func : function, optional
+            Which function to evaluate deltametric by. By default deltametric.
+        modifier : bool, optional
+            If passed - dict, used to modify prop vector (e.g., for adding
+            ONLY used with  ox_nuclear_charge    ox or charge)
+            {"Fe":2, "Co": 3} etc, by default False.
+        transition_metals_only : bool, optional
+            Flag if only transition metals counted as metals, by default True.
 
     Returns
     -------
-        deltametric_vector : TODO
-            TODO
+        deltametric_vector : list
+            List of multimetal deltametrics.
 
     """
     deltametric_vector = np.zeros(d + 1)
@@ -897,32 +903,32 @@ def generate_multimetal_autocorrelations(
     polarizability=False, Gval=False,
     transition_metals_only=True):
     """
-    TODO
+    Calculate metal-centered autocorrelations, averaged over all metals.
 
     Parameters
     ----------
-        mol : TODO
-            TODO
-        depth : TODO
-            TODO
-        oct : TODO
-            TODO
-        flag_name : TODO
-            TODO
-        polarizability : TODO
-            TODO
-        Gval : TODO
-            TODO
-        transition_metals_only : TODO
-            TODO
+        mol : mol3D
+            Molecule to calculate multimetal autocorrelations from.
+        depth : int, optional
+            Depth of autocorrelations.
+        oct : bool, optional
+            Use octahedral criteria for structure evaluation, by default True.
+            If complex is octahedral, will use better bond checks.
+        flag_name : bool, optional
+            Shift RAC names slightly, by default False.
+        polarizability : bool, optional
+            Use polarizability (alpha) as RAC, by default False.
+        Gval : bool, optional
+            Use G value as RAC, by default False.
+        transition_metals_only : bool, optional
+            Flag if only transition metals counted as metals, by default True.
 
     Returns
     -------
         results_dictionary : dict
-            TODO
+            Dictionary of multimetal RAC names and values.
 
     """
-    # oct - bool, if complex is octahedral, will use better bond checks
     result = list()
     colnames = []
     allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
@@ -1006,32 +1012,32 @@ def generate_multimetal_deltametrics(
     polarizability=False, Gval=False,
     transition_metals_only=True):
     """
-    TODO
+    Calculate metal-centered deltametrics, averaged over all metals.
 
     Parameters
     ----------
-        mol : TODO
-            TODO
-        depth : TODO
-            TODO
-        oct : TODO
-            TODO
-        flag_name : TODO
-            TODO
-        polarizability : TODO
-            TODO
-        Gval : TODO
-            TODO
-        transition_metals_only : TODO
-            TODO
+        mol : mol3D
+            Molecule to calculate multimetal deltametrics from.
+        depth : int, optional
+            Depth of deltametrics.
+        oct : bool, optional
+            Use octahedral criteria for structure evaluation, by default True.
+            If complex is octahedral, will use better bond checks.
+        flag_name : bool, optional
+            Shift RAC names slightly, by default False.
+        polarizability : bool, optional
+            Use polarizability (alpha) as RAC, by default False.
+        Gval : bool, optional
+            Use G value as RAC, by default False.
+        transition_metals_only : bool, optional
+            Flag if only transition metals counted as metals, by default True.
 
     Returns
     -------
         results_dictionary : dict
-            TODO
+            Dictionary of multimetal deltametric names and values.
 
     """
-    #   oct - bool, if complex is octahedral, will use better bond checks
     result = list()
     colnames = []
     allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
@@ -1103,36 +1109,32 @@ def generate_full_complex_coulomb_autocorrelations(mol,
 
 def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, NumB=False, Gval=False, polarizability=False):
     """
-    TODO
+    This function gets autocorrelations for a molecule starting in one single atom only.
 
     Parameters
     ----------
-        mol : TODO
-            TODO
-        atomIdx : TODO
-            TODO
-        depth : TODO
-            TODO
-        oct : TODO
-            TODO
-        NumB : TODO
-            TODO
-        Gval : TODO
-            TODO
-        polarizability : TODO
-            TODO
+        mol : mol3D
+            mol3D molecule to analyze.
+        atomIdx : int or list of int
+            Index or list of indices of atoms to start autocorrelation from.
+        depth : int, optional
+            Depth of autocorrelations.
+        oct : bool, optional
+            Use octahedral criteria for structure evaluation, by default True.
+            If complex is octahedral, will use better bond checks.
+        NumB : bool, optional
+            Use number of bonds as descriptor property, by default False.
+        Gval : bool, optional
+            Use G value as RAC, by default False.
+        polarizability : bool, optional
+            Use polarizability (alpha) as RAC, by default False.
 
     Returns
     -------
         results_dictionary : dict
-            TODO
+            Dictionary of atom only RAC names and values.
 
     """
-    # # This function gets autocorrelations for a molecule starting
-    # # in one single atom only.
-    # Inputs:
-    #       mol - mol3D class
-    #       atomIdx - int, index of atom3D class; or list of indices
     result = list()
     colnames = []
     allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
@@ -1196,21 +1198,22 @@ def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, NumB=False, 
             mol3D molecule to analyze.
         atomIdx : int
             index of atom3D class.
-        depth : TODO
-            TODO
-        oct : TODO
-            TODO
-        NumB : TODO
-            TODO
-        Gval : TODO
-            TODO
-        polarizability : TODO
-            TODO
+        depth : int, optional
+            Depth of deltametrics.
+        oct : bool, optional
+            Use octahedral criteria for structure evaluation, by default True.
+            If complex is octahedral, will use better bond checks.
+        NumB : bool, optional
+            Use number of bonds as descriptor property, by default False.
+        Gval : bool, optional
+            Use G value as RAC, by default False.
+        polarizability : bool, optional
+            Use polarizability (alpha) as RAC, by default False.
 
     Returns
     -------
         results_dictionary : dict
-            TODO
+            Dictionary of atom only deltametric names and values.
 
     """
     result = list()
