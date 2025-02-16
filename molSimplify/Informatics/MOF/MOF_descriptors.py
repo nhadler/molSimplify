@@ -1187,7 +1187,7 @@ def get_MOF_descriptors(
                     at.coords() for at in [molcif.getAtom(val) for val in sbu_temp]])
                 sbu_adjmat = slice_mat(adj_matrix.todense(), sbu_temp)
                 pr_image_sbu = ligand_detect(cell_v, sbu_cart_coords, sbu_adjmat, set(range(len(linkeranchors_list))))  # Periodic images for the SBU
-                if not (len(np.unique(pr_image_sbu, axis=0)) == 1 and len(np.unique(pr_image_organic, axis=0)) == 1):  # linker. More than one periodic image for sbu or organic component.
+                if not (len(np.unique(pr_image_sbu, axis=0)) == 1 and len(np.unique(pr_image_organic, axis=0)) == 1):  # Linker. More than one periodic image for sbu or organic component.
                     max_min_linker_length = max(min_length, max_min_linker_length)
                     min_max_linker_length = min(max_length, min_max_linker_length)
                     tmpstr = str(name)+','+' Anchors list: '+str(sbuanchors_list) \
