@@ -350,7 +350,7 @@ def create_OHE(metal: str,
     return OHE_names, OHE_values
 
 
-# # utility to build standardly formated RACS
+# # utility to build standardly formatted RACS
 #  @param descriptor_names RAC names, will be appended to
 #  @param descriptors RAC, will be appended to
 #  @param list_of_names names, will be added
@@ -381,7 +381,7 @@ def append_descriptors(descriptor_names, descriptors, list_of_names,
     return descriptor_names, descriptors
 
 
-# # utility to build standardly formated RACS derivatives
+# # utility to build standardly formatted RACS derivatives
 #  @param descriptor_derivative_names RAC names, will be a matrix!
 #  @param descriptor_derivatives RAC, will be appended to
 #  @param mat_of_names names, will be added
