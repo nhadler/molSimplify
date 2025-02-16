@@ -584,7 +584,7 @@ def bond_information_write(linker_list, linkeranchors_superlist, adj_matrix, mol
     path : str
         The parent path to which output will be written.
     transition_metals_only : bool
-        Flag if only transition metals counted as metals, by default True.        
+        Flag if only transition metals counted as metals, by default True.
 
     Returns
     -------
@@ -855,7 +855,7 @@ def detect_1D_rod(molcif, allatomtypes, cpar, logpath, name, adj_matrix, fcoords
     cell_v : numpy.ndarray
         The three Cartesian vectors representing the edges of the crystal cell. Shape is (3,3).
     transition_metals_only : bool
-        Flag if only transition metals counted as metals, by default True.                
+        Flag if only transition metals counted as metals, by default True.
 
     Returns
     -------
