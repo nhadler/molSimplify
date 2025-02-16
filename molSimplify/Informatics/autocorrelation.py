@@ -783,7 +783,6 @@ def generate_all_ligand_autocorrs_and_deltametrics_dimers(mol, loud, depth=4, na
         # lig_autocorrs is a list of length 6 (ax{i}_ligand_ac_fulls, ax{i}_ligand_ac_cons).
         lig_autocorrs = find_ligand_autocorrs_and_deltametrics_oct_dimers(mol,
                                                                           properties,
-                                                                          loud=loud,
                                                                           depth=depth,
                                                                           name=name,
                                                                           oct=True,
