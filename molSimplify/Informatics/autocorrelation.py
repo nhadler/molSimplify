@@ -904,8 +904,6 @@ def generate_multimetal_autocorrelations(
     ----------
         mol : TODO
             TODO
-        loud : TODO
-            TODO
         depth : TODO
             TODO
         oct : TODO
