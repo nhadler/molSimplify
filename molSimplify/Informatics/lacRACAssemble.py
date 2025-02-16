@@ -751,7 +751,7 @@ def construct_property_vector(mol, prop, oct=True, modifier=False, MRdiag_dict={
         done = True
     elif prop == 'num_bonds':
         for i, atom in enumerate(mol.getAtoms()):
-            if not atom.ismetal(transition_metals_only):
+            if not atom.ismetal(transition_metals_only=transition_metals_only):
                 w[i] = globs.bondsdict()[atom.symbol()]
             else:
                 w[i] = len(mol.getBondedAtomsSmart(i, oct=oct))
@@ -1074,8 +1074,12 @@ def atom_only_autocorrelation_derivative(mol, prop, d, atomIdx, oct=True):
     return (autocorrelation_derivative_mat)
 
 
-def metal_only_autocorrelation(mol, prop, d, oct=True, metal_ind=None,
-                               func=autocorrelation, modifier=False, use_dist=False, size_normalize=False, MRdiag_dict={}):
+def metal_only_autocorrelation(
+    mol, prop, d, oct=True, metal_ind=None,
+    func=autocorrelation, modifier=False,
+    use_dist=False, size_normalize=False, 
+    MRdiag_dict={}, transition_metals_only=True
+    ):
     """
     Calculate the metal_only product autocorrelations
     (e.g., metal-centered atom-only RACs).
@@ -1102,6 +1106,8 @@ def metal_only_autocorrelation(mol, prop, d, oct=True, metal_ind=None,
             Whether or not to normalize by the number of atoms.
         MRdiag_dict : dict, optional
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
+        transition_metals_only : bool, optional
+            Flag if only transition metals counted as metals, by default True.            
 
     Returns
     -------
@@ -1111,7 +1117,7 @@ def metal_only_autocorrelation(mol, prop, d, oct=True, metal_ind=None,
     """
     try:
         if not isinstance(metal_ind, int):
-            metal_ind = get_metal_index(mol)
+            metal_ind = get_metal_index(mol, transition_metals_only=transition_metals_only)
         w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, MRdiag_dict=MRdiag_dict)
         autocorrelation_vector = func(mol, w, metal_ind, d, oct=oct, use_dist=use_dist, size_normalize=size_normalize)
     except IndexError:
@@ -1120,8 +1126,10 @@ def metal_only_autocorrelation(mol, prop, d, oct=True, metal_ind=None,
     return (autocorrelation_vector)
 
 
-def metal_only_autocorrelation_derivative(mol, prop, d, oct=True, metal_ind=None,
-                                          func=autocorrelation_derivative, modifier=False):
+def metal_only_autocorrelation_derivative(
+    mol, prop, d, oct=True, metal_ind=None,
+    func=autocorrelation_derivative, modifier=False,
+    transition_metals_only=True):
     """
     Calculate the metal_only product autocorrelation derivatives
     (e.g., metal-centered atom-only RAC derivatives).
@@ -1142,6 +1150,8 @@ def metal_only_autocorrelation_derivative(mol, prop, d, oct=True, metal_ind=None
             Which function to evaluate mc-racs by, by default autocorrelation_derivative.
         modifier : bool, optional
             Use ox_modifier, by default False.
+        transition_metals_only : bool, optional
+            Flag if only transition metals counted as metals, by default True.
 
     Returns
     -------
@@ -1151,7 +1161,7 @@ def metal_only_autocorrelation_derivative(mol, prop, d, oct=True, metal_ind=None
     """
     try:
         if not isinstance(metal_ind, int):
-            metal_ind = get_metal_index(mol)
+            metal_ind = get_metal_index(mol, transition_metals_only=transition_metals_only)
         w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
         autocorrelation_vector_derivative = func(mol, w, metal_ind, d, oct=oct)
     except IndexError:
@@ -1244,8 +1254,10 @@ def atom_only_deltametric_derivative(mol, prop, d, atomIdx, oct=True, modifier=F
     return (deltametric_derivative_mat)
 
 
-def metal_only_deltametric_derivative(mol, prop, d, oct=True, metal_ind=None,
-                                      func=deltametric_derivative, modifier=False):
+def metal_only_deltametric_derivative(
+    mol, prop, d, oct=True, metal_ind=None,
+    func=deltametric_derivative, modifier=False,
+    transition_metals_only=True):
     """
     Gets the metal atom-only deltametric derivatives.
 
@@ -1265,6 +1277,8 @@ def metal_only_deltametric_derivative(mol, prop, d, oct=True, metal_ind=None,
             Which function to evaluate mc-racs by, by default deltametric_derivative.
         modifier : bool, optional
             Use ox_modifier, by default False.
+        transition_metals_only : bool, optional
+            Flag if only transition metals counted as metals, by default True.            
 
     Returns
     -------
@@ -1274,7 +1288,7 @@ def metal_only_deltametric_derivative(mol, prop, d, oct=True, metal_ind=None,
     """
     try:
         if not isinstance(metal_ind, int):
-            metal_ind = get_metal_index(mol)
+            metal_ind = get_metal_index(mol, transition_metals_only=transition_metals_only)
         w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
         deltametric_vector_derivative = func(mol, w, metal_ind, d, oct=oct)
     except IndexError:
@@ -1283,8 +1297,11 @@ def metal_only_deltametric_derivative(mol, prop, d, oct=True, metal_ind=None,
     return (deltametric_vector_derivative)
 
 
-def metal_only_deltametric(mol, prop, d, oct=True, metal_ind=None,
-                           func=deltametric, modifier=False, use_dist=False, size_normalize=False, MRdiag_dict={}):
+def metal_only_deltametric(
+    mol, prop, d, oct=True, metal_ind=None,
+    func=deltametric, modifier=False,
+    use_dist=False, size_normalize=False,
+    MRdiag_dict={}, transition_metals_only=True):
     """
     Gets the metal atom-only deltametric RAC.
 
@@ -1310,6 +1327,8 @@ def metal_only_deltametric(mol, prop, d, oct=True, metal_ind=None,
             Whether or not to normalize by the number of atoms.
         MRdiag_dict : dict, optional
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
+        transition_metals_only : bool, optional
+            Flag if only transition metals counted as metals, by default True.
 
     Returns
     -------
@@ -1319,7 +1338,7 @@ def metal_only_deltametric(mol, prop, d, oct=True, metal_ind=None,
     """
     try:
         if not isinstance(metal_ind, int):
-            metal_ind = get_metal_index(mol)
+            metal_ind = get_metal_index(mol, transition_metals_only=transition_metals_only)
         w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, MRdiag_dict=MRdiag_dict)
         deltametric_vector = func(mol, w, metal_ind, d, oct=oct, use_dist=use_dist, size_normalize=size_normalize)
     except IndexError:
@@ -2226,7 +2245,7 @@ def generate_metal_ox_deltametric_derivatives(oxmodifier, mol, loud, depth=4, oc
     results_dictionary = {'colnames': colnames, 'results': result}
     return results_dictionary
 
-def get_metal_index(mol):
+def get_metal_index(mol, transition_metals_only=True):
     """
     Utility for getting metal index of molecule, and printing warning
     if more than one metal index found.
@@ -2235,6 +2254,8 @@ def get_metal_index(mol):
     ----------
         mol : mol3D
             Molecule to get metal index for.
+        transition_metals_only : bool, optional
+            Flag if only transition metals counted as metals, by default True.
 
     Returns
     -------
@@ -2242,7 +2263,7 @@ def get_metal_index(mol):
             Index of the first metal atom.
 
     """
-    metal_idx = mol.findMetal()
+    metal_idx = mol.findMetal(transition_metals_only=transition_metals_only)
     if len(metal_idx) > 1:
         print('Warning: More than one metal in mol object. Choosing the first one.')
     f_metal_idx = metal_idx[0]
