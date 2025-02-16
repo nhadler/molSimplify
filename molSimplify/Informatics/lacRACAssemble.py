@@ -2231,7 +2231,7 @@ def get_metal_index(mol):
         f_metal_idx: int
             Index of the first metal atom.
 
-    """    
+    """
     metal_idx = mol.findMetal()
     if len(metal_idx) > 1:
         print('Warning: More than one metal in mol object. Choosing the first one.')
