@@ -2037,7 +2037,8 @@ def generate_metal_autocorrelation_derivatives(mol, loud, depth=4, oct=True, fla
 
 def generate_metal_deltametrics(mol, loud, depth=4, oct=True, flag_name=False,
                                 modifier=False, NumB=False, Gval=False, metal_ind=None,
-                                use_dist=False, size_normalize=False, MRdiag_dict={}):
+                                use_dist=False, size_normalize=False, MRdiag_dict={},
+                                transition_metals_only=True):
     """
     Utility for generating all metal-centered deltametric autocorrelations for a complex.
 
@@ -2068,6 +2069,8 @@ def generate_metal_deltametrics(mol, loud, depth=4, oct=True, flag_name=False,
             Whether or not to normalize by the number of atoms.
         MRdiag_dict : dict, optional
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
+        transition_metals_only : bool, optional
+            Flag if only transition metals counted as metals, by default True.
 
     Returns
     -------
@@ -2094,7 +2097,9 @@ def generate_metal_deltametrics(mol, loud, depth=4, oct=True, flag_name=False,
     for ii, properties in enumerate(allowed_strings):
         metal_ac = metal_only_deltametric(mol, properties, depth, oct=oct,
                                           modifier=modifier, metal_ind=metal_ind,
-                                          use_dist=use_dist, size_normalize=size_normalize, MRdiag_dict=MRdiag_dict)
+                                          use_dist=use_dist, size_normalize=size_normalize,
+                                          MRdiag_dict=MRdiag_dict,
+                                          transition_metals_only=transition_metals_only)
         this_colnames = []
         for i in range(0, depth + 1):
             this_colnames.append(labels_strings[ii] + '-' + str(i))
