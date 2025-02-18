@@ -349,8 +349,9 @@ def make_MOF_SBU_RACs(
         # Now starts at every metal on the graph and autocorrelates
 
         # Note, by this point in the code, molcif has had self.metals assigned to all metals in the structure
-        # with findMetal(transition_metals_only=False). So all metals are considered for mc and D_mc, not just
-        # transition metals
+        # with findMetal(transition_metals_only=False) if the user has specified transition_metals_only to be
+        # False. So all metals are considered for mc and D_mc, not just transition metals, unless the user has
+        # specified transition_metals_only to be True.
 
         results_dictionary = generate_multimetal_autocorrelations(molcif, depth=depth, Gval=Gval,
             transition_metals_only=transition_metals_only, oct=False)
