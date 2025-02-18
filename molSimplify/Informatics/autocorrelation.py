@@ -196,9 +196,11 @@ def multimetal_only_autocorrelation(mol, prop, d, oct=True,
 
     """
     autocorrelation_vector = np.zeros(d + 1)
-    n_met = len(mol.findMetal())
+    metal_idxs = mol.findMetal(transition_metals_only=transition_metals_only)
+    n_met = len(metal_idxs)
+
     w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
-    for metal_ind in mol.findMetal(transition_metals_only=transition_metals_only):
+    for metal_ind in metal_idxs:
         autocorrelation_vector += func(mol, w, metal_ind, d, oct=oct)
     autocorrelation_vector = np.divide(autocorrelation_vector, n_met)
     return (autocorrelation_vector)
