@@ -20,11 +20,12 @@ def decorate_molecule(mol: mol3D, dec_list, dec_idxs,
 
     Parameters
     ----------
-        mol : mol3D
+        mol : mol3D or str
             Molecule to add functional groups to.
-        dec_list : list
-            List of SMILES or ligands defined in molSimplify.
-        dec_idxs : list
+            If provided as a string, will trigger lig_load.
+        dec_list : list of str
+            List of SMILES or ligand names defined in molSimplify.
+        dec_idxs : list of int
             List of indices of molecule atoms to replace.
         debug: bool
             Debugging flag for additional printed information.
