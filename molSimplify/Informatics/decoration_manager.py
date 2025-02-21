@@ -39,7 +39,7 @@ def decorate_molecule(mol: mol3D, decoration, decoration_index,
     # Thus, this import needs to be placed here to avoid a circular dependence.
     from molSimplify.Scripts.structgen import ffopt
 
-    mol.ob_dict = False # To avoid errors.
+    mol.bo_dict = False # To avoid errors.
 
     # Reorder to ensure highest atom index is removed first.
     sort_order = [i[0] for i in sorted(enumerate(decoration_index), key=lambda x:x[1])]
