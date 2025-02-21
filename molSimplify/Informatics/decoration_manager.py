@@ -12,7 +12,7 @@ from molSimplify.Scripts.geometry import (checkcolinear,
 from molSimplify.Scripts.io import getlicores, lig_load
 
 
-def decorate_molecule(mol: mol3D, decoration, decoration_index,
+def decorate_molecule(mol: mol3D, dec_list, dec_idxs,
                     debug: bool = False) -> mol3D:
     """
     This function is useful for functionalization.
@@ -22,10 +22,10 @@ def decorate_molecule(mol: mol3D, decoration, decoration_index,
     ----------
         mol : mol3D
             Molecule to add functional groups to.
-        decoration : list
+        dec_list : list
             List of SMILES or ligands defined in molSimplify.
-        decoration_index : list
-            List of ligand atoms to replace.
+        dec_idxs : list
+            List of indices of molecule atoms to replace.
         debug: bool
             Debugging flag for additional printed information.
 
@@ -42,13 +42,13 @@ def decorate_molecule(mol: mol3D, decoration, decoration_index,
     mol.bo_dict = False # To avoid errors.
 
     # Reorder to ensure highest atom index is removed first.
-    sort_order = [i[0] for i in sorted(enumerate(decoration_index), key=lambda x:x[1])]
+    sort_order = [i[0] for i in sorted(enumerate(dec_idxs), key=lambda x:x[1])]
     sort_order = sort_order[::-1]  # Reverse the list.
 
-    decoration_index = [decoration_index[i] for i in sort_order]
-    decoration = [decoration[i] for i in sort_order]
+    dec_idxs = [dec_idxs[i] for i in sort_order]
+    dec_list = [dec_list[i] for i in sort_order]
     if debug:
-        print(f'decoration_index is {decoration_index}')
+        print(f'dec_idxs is {dec_idxs}')
     licores = getlicores()
     if not isinstance(mol, mol3D):
         mol, emsg = lig_load(mol, licores)
@@ -60,16 +60,16 @@ def decorate_molecule(mol: mol3D, decoration, decoration_index,
     # Create the new molecule.
     merged_mol = mol3D()
     merged_mol.copymol3D(mol)
-    for i, dec in enumerate(decoration):
-        print(f'** decoration number {i} attaching {dec} at site {decoration_index[i]} **\n')
+    for i, dec in enumerate(dec_list):
+        print(f'** decoration number {i} attaching {dec} at site {dec_idxs[i]} **\n')
         dec, emsg = lig_load(dec, licores)
         dec.convert2mol3D()  # Convert to mol3D.
         if debug:
             print(i)
-            print(decoration_index)
+            print(dec_idxs)
 
-            print(merged_mol.getAtom(decoration_index[i]).symbol())
-            print(merged_mol.getAtom(decoration_index[i]).coords())
+            print(merged_mol.getAtom(dec_idxs[i]).symbol())
+            print(merged_mol.getAtom(dec_idxs[i]).coords())
             merged_mol.writexyz('basic.xyz')
         Hs = dec.getHsbyIndex(0)
         if len(Hs) > 0 and (not len(dec.cat)):
@@ -80,7 +80,7 @@ def decorate_molecule(mol: mol3D, decoration, decoration_index,
             decind = dec.cat[0]
         else:
             decind = 0
-        dec.alignmol(dec.getAtom(decind), merged_mol.getAtom(decoration_index[i]))
+        dec.alignmol(dec.getAtom(decind), merged_mol.getAtom(dec_idxs[i]))
         r1 = dec.getAtom(decind).coords()
         r2 = dec.centermass()
         rrot = r1
@@ -115,12 +115,12 @@ def decorate_molecule(mol: mol3D, decoration, decoration_index,
             r1 = auxm.getAtom(0).coords()
             r2 = auxm.getAtom(1).coords()
             if checkcolinear(r1, r0, r2):
-                theta, urot = rotation_params(r1, merged_mol.getAtom(decoration_index[i]).coords(), r2)
-                theta = vecangle(vecdiff(r0, merged_mol.getAtom(decoration_index[i]).coords()), urot)
+                theta, urot = rotation_params(r1, merged_mol.getAtom(dec_idxs[i]).coords(), r2)
+                theta = vecangle(vecdiff(r0, merged_mol.getAtom(dec_idxs[i]).coords()), urot)
                 dec = rotate_around_axis(dec, r0, urot, theta)
 
         # Get the default distance between atoms in question.
-        connection_neighbours = merged_mol.getAtom(merged_mol.getBondedAtomsnotH(decoration_index[i])[0])
+        connection_neighbours = merged_mol.getAtom(merged_mol.getBondedAtomsnotH(dec_idxs[i])[0])
         new_atom = dec.getAtom(decind)
         target_distance = connection_neighbours.rad + new_atom.rad
         position_to_place = vecdiff(new_atom.coords(), connection_neighbours.coords())
@@ -129,7 +129,7 @@ def decorate_molecule(mol: mol3D, decoration, decoration_index,
         dec.translate([missing*position_to_place[j] for j in [0, 1, 2]])
 
         r1 = dec.getAtom(decind).coords()
-        u = vecdiff(r1, merged_mol.getAtom(decoration_index[i]).coords())
+        u = vecdiff(r1, merged_mol.getAtom(dec_idxs[i]).coords())
         dtheta = 2
         optmax = -9999
         totiters = 0
@@ -150,10 +150,10 @@ def decorate_molecule(mol: mol3D, decoration, decoration_index,
         if debug:
             dec.writexyz(f'dec_aligned {i}.xyz')
             print(f'natoms before delete {merged_mol.natoms}')
-            print(f'obmol before delete at {decoration_index[i]} is {merged_mol.OBMol.NumAtoms()}')
+            print(f'obmol before delete at {dec_idxs[i]} is {merged_mol.OBMol.NumAtoms()}')
         # Store connectivity for deleted H.
         BO_mat = merged_mol.populateBOMatrix()
-        row_deleted = BO_mat[decoration_index[i]]
+        row_deleted = BO_mat[dec_idxs[i]]
         bonds_to_add = []
 
         # Find where to put the new bonds ->>> Issue here.
@@ -162,7 +162,7 @@ def decorate_molecule(mol: mol3D, decoration, decoration_index,
                 # If there is a bond with an atom number
                 # before the deleted atom, all is fine.
                 # Else, we subtract one as the row will be be removed.
-                if j < decoration_index[i]:
+                if j < dec_idxs[i]:
                     bond_partner = j
                 else:
                     bond_partner = j - 1
@@ -172,7 +172,7 @@ def decorate_molecule(mol: mol3D, decoration, decoration_index,
                     bonds_to_add.append((bond_partner, merged_mol.natoms-1, els))
 
         # Perform deletion.
-        merged_mol.deleteatom(decoration_index[i])
+        merged_mol.deleteatom(dec_idxs[i])
 
         merged_mol.convert2OBMol()
         if debug:
