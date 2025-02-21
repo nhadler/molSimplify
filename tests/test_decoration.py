@@ -14,6 +14,8 @@ def test_molecule_dec(tmp_path, resource_path_root):
 	d_atoms = decorated_mol.getAtoms()
 	c_atoms = comparison_mol.getAtoms()
 
+	assert decorated_mol.getNumAtoms() == comparison_mol.getNumAtoms()
+
 	# Compare atoms one by one.
 	for d_atom, c_atom in zip(d_atoms, c_atoms):
 		assert np.allclose(d_atom.coords(), c_atom.coords(), atol=1e-6)
