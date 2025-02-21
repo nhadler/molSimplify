@@ -222,7 +222,7 @@ def test_is_edge_compound(resource_path_root, name, con_atoms):
 
 
 def test_readfromxyzfile(resource_path_root):
-    xyz_file = resource_path_root / "inputs" / "cr3_f6_optimization.xyz"
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / "cr3_f6_optimization.xyz"
     mol = mol3D()
     mol.readfromxyz(xyz_file)
 
