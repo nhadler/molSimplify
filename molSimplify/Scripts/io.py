@@ -144,9 +144,9 @@ def getligs() -> str:
 
 # Get ligands cores
 #
-#  This is basically the same as getligs() but returns the full dictionary
-#  @param flip if we want to return flipped versions of bidentates
-#  @return Ligands dictionary
+#  This is basically the same as getligs() but returns the full dictionary.
+#  @param flip Whether we want to return flipped versions of bidentates.
+#  @return Ligands dictionary.
 
 
 def getlicores(flip: bool = True) -> Dict[str, Any]:
@@ -638,13 +638,12 @@ def substr_load(usersubstrate: str,
     return sub, subcatoms, emsg
 
 
-# TODO: Output currently typed as any instead of Union[mol3D, None] because many other
+# Output currently typed as any instead of Union[mol3D, None] because many other
 # scripts depend on a mol3D as first return value.
 def lig_load(userligand: str, licores: Optional[dict] = None) -> Tuple[Any, str]:
 
     if licores is None:
         licores = getlicores()
-        # @licores.pop("x", None)
     globs = globalvars()
     # ## get groups ###
     groups = []
@@ -760,7 +759,7 @@ def lig_load(userligand: str, licores: Optional[dict] = None) -> Tuple[Any, str]
             print('Ligand successfully interpreted as SMILES')
         except IOError:
             emsg = f"We tried converting the string '{userligand}' to a molecule but it wasn't a valid SMILES string.\n"
-            emsg += f"Furthermore, we couldn't find the ligand structure: '{userligand}' in the ligands dictionary. "
+            emsg += f"Furthermore, we couldn't find the ligand structure: '{userligand}' in the ligands dictionary.\n"
             emsg += f"Try again!\n\nAvailable ligands are: {getligs()}\n"
             emsg += f"\nAnd available groups are: {getligroups(licores)}\n"
             print(emsg)
@@ -879,36 +878,6 @@ def plugin_defs() -> str:
     plugin_path = str(resource_files("molSimplify").joinpath("plugindefines_reference.txt"))
     return plugin_path
 
-# def get_name(args,rootdir,core,ligname,bind = False,bsmi = False):
-    # DEPRECIATED, USE NAME_COMPLEX instead
-    # reads in argument namespace
-    # and chooses an appropriate name
-    # bind_ident is used to pass binding
-    # species information
-    # print('the root directory for this calc is '+ (rootdir))
-    # check if smiles string in binding species
-    # if args.bind:
-    # if bsmi:
-    # if args.nambsmi: # if name specified use it in file
-    # fname = rootdir+'/'+core.ident[0:3]+ligname+args.nambsmi[0:2]
-    # if args.name:
-    # fname = rootdir+'/'+args.name+args.nambsmi[0:2]
-    # else: # else use default
-    # fname = rootdir+'/'+core.ident[0:3]+ligname+'bsm'
-    # if args.name:
-    # fname = rootdir+'/'+args.name+'bsm'
-    # else: # else use name from binding in dictionary
-    # fname = rootdir+'/'+core.ident[0:3]+ligname+bind.ident[0:2]
-    # if args.name:
-    # fname = rootdir+'/'+args.name + bind.ident[0:2]
-    # else:
-    # if globs.debug:
-    # print('the root calculation directory is' + str(rootdir))
-    # fname = rootdir+'/'+core.ident[0:3]+ligname
-    # if args.name:
-    # fname = rootdir+'/'+args.name
-
-    # return fname
 
 # Generate complex name (this is actually used instead of namegen.py)
 #  @param rootdir Root directory
@@ -1064,45 +1033,6 @@ def name_ts_complex(rootdir, core, geometry, ligs, ligoc, substrate, subcatoms,
                     name += "_" + +args.nambsmi[0:2]
     return name
 
-# ## Generate transition state name
-# #  @param rootdir Root directory
-# #  @param core mol3D of core
-# #  @param subst mol3D of substrate
-# #  @param args Namespace of arguments
-# #  @param bind Flag for binding species (default False)
-# #  @param bsmi Flag for SMILES binding species (default False)
-# #  @return Transition state name
-# def name_TS(rootdir,core,subst,args,bind= False,bsmi=False):
-#     ## new version of the above, designed to
-#     ## produce more human and machine-readable formats
-#     globs = globalvars()
-#     if args.name: # if set externerally
-#         name = rootdir+'/'+args.name
-#     else:
-#         try:
-#             center = core.getAtom(0).symbol().lower()
-#         except AttributeError:
-#             center = str(core).lower()
-#         name = rootdir + '/' + center
-#         #if args.oxstate:
-#             #if args.oxstate in romans.keys():
-#                 #ox = str(romans[args.oxstate])
-#             #else:
-#                 #ox = str(args.oxstate)
-#         #else:
-#             #ox = "0"
-#         #name += "_" + str(ox)
-#         if args.spin:
-#             spin = str(args.spin)
-#         else:
-#             spin = "0"
-#         name += "_s_"+str(spin)
-#         name += "_" + str(subst.ident) + "_TS"
-#         if args.bind:
-#             if bsmi:
-#                 if args.nambsmi: # if name specified use it in file
-#                     name += "_" + +args.nambsmi[0:2]
-#     return name
 
 # Copies ligands, binding species and cores to user-specified path
 

@@ -9,9 +9,9 @@ import os
 import subprocess
 import tempfile
 try:
-    from openbabel import openbabel  # version 3 style import
+    from openbabel import openbabel  # Version 3 style import.
 except ImportError:
-    import openbabel  # fallback to version 2
+    import openbabel  # Fall back to version 2.
 from openbabel import pybel
 import random
 import itertools
@@ -19,39 +19,44 @@ import numpy as np
 from typing import Any, List, Tuple, Dict, Union, Optional
 from argparse import Namespace
 from molSimplify.Scripts.distgeom import GetConf
-from molSimplify.Scripts.geometry import (aligntoaxis2,
-                                          best_fit_plane,
-                                          checkcolinear,
-                                          distance,
-                                          getPointu,
-                                          kabsch,
-                                          midpt,
-                                          move_point,
-                                          norm,
-                                          PointTranslateSph,
-                                          reflect_through_plane,
-                                          rotate_around_axis,
-                                          rotate_mat,
-                                          rotation_params,
-                                          setPdistance,
-                                          vecangle,
-                                          vecdiff)
-from molSimplify.Scripts.io import (core_load,
-                                    getgeoms,
-                                    getinputargs,
-                                    getlicores,
-                                    lig_load,
-                                    loadcoord,
-                                    loaddata,
-                                    name_complex)
+from molSimplify.Scripts.geometry import (
+    aligntoaxis2,
+    best_fit_plane,
+    checkcolinear,
+    distance,
+    getPointu,
+    kabsch,
+    midpt,
+    move_point,
+    norm,
+    PointTranslateSph,
+    reflect_through_plane,
+    rotate_around_axis,
+    rotate_mat,
+    rotation_params,
+    setPdistance,
+    vecangle,
+    vecdiff,
+    )
+from molSimplify.Scripts.io import (
+    core_load,
+    getgeoms,
+    getinputargs,
+    getlicores,
+    lig_load,
+    loadcoord,
+    loaddata,
+    name_complex,
+    )
 from molSimplify.Classes.atom3D import atom3D
 from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Classes.rundiag import run_diag
-from molSimplify.Classes.globalvars import (elementsbynum,
-                                            globalvars,
-                                            romans,
-                                            )
-from molSimplify.Informatics.decoration_manager import (decorate_ligand)
+from molSimplify.Classes.globalvars import (
+    elementsbynum,
+    globalvars,
+    romans,
+    )
+from molSimplify.Informatics.decoration_manager import decorate_molecule
 from molSimplify.Classes.ligand import ligand as ligand_class
 import logging
 
@@ -2488,7 +2493,7 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
                         if args.debug:
                             print(('decorating ' + str(ligand) + ' with ' + str(
                                 args.decoration[i]) + ' at sites ' + str(args.decoration_index)))
-                        lig = decorate_ligand(
+                        lig = decorate_molecule(
                             lig, args.decoration[i], args.decoration_index[i], args.debug)
             lig.convert2mol3D()
 

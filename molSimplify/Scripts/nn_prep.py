@@ -7,7 +7,7 @@
 
 from typing import List, Tuple, Union, Dict, Any
 from molSimplify.Scripts.io import lig_load
-from molSimplify.Informatics.decoration_manager import (decorate_ligand)
+from molSimplify.Informatics.decoration_manager import decorate_molecule
 from molSimplify.Informatics.graph_analyze import (get_lig_EN,
                                                    get_truncated_kier)
 from molSimplify.python_nn.ANN import (find_eu_dist,
@@ -282,7 +282,7 @@ def ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
     # check decoration index
     if newdecs:
         if newdecs[axial_ind_list[0]]:
-            ax_lig3D = decorate_ligand(
+            ax_lig3D = decorate_molecule(
                 axial_ligs[0], newdecs[axial_ind_list[0]], newdec_inds[axial_ind_list[0]], args.debug)
 
     ax_lig3D.convert2mol3D()  # mol3D representation of ligand
@@ -290,7 +290,7 @@ def ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
     eq_lig3D, r_emsg = lig_load(equatorial_ligs[0], licores)  # load ligand
     if newdecs:
         if newdecs[equatorial_ind_list[0]]:
-            eq_lig3D = decorate_ligand(
+            eq_lig3D = decorate_molecule(
                 equatorial_ligs[0], newdecs[equatorial_ind_list[0]], newdec_inds[equatorial_ind_list[0]], args.debug)
     if r_emsg:
         emsg += r_emsg
