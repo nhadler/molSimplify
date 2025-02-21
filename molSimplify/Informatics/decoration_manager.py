@@ -39,8 +39,6 @@ def decorate_molecule(mol: mol3D, dec_list, dec_idxs,
     # Thus, this import needs to be placed here to avoid a circular dependence.
     from molSimplify.Scripts.structgen import ffopt
 
-    mol.bo_dict = False # To avoid errors.
-
     # Reorder to ensure highest atom index is removed first.
     sort_order = [i[0] for i in sorted(enumerate(dec_idxs), key=lambda x:x[1])]
     sort_order = sort_order[::-1]  # Reverse the list.
@@ -53,6 +51,7 @@ def decorate_molecule(mol: mol3D, dec_list, dec_idxs,
     if not isinstance(mol, mol3D):
         mol, emsg = lig_load(mol, licores)
     else:
+        mol.bo_dict = False # To avoid errors.
         mol.convert2OBMol()
         mol.charge = mol.OBMol.GetTotalCharge()
     mol.convert2mol3D()  # Convert to mol3D.
