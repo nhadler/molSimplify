@@ -12,6 +12,18 @@ from molSimplify.Scripts.geometry import (checkcolinear,
 from molSimplify.Scripts.io import getlicores, lig_load
 
 
+'''
+Example usage:
+
+my_mol = mol3D()
+my_mol.readfromxyz('benzene.xyz')
+# Assuming that indices 8 and 9 in benzene.xyz are hydrogen atoms.
+# Provide one SMILES group and one ligand group defined in molSimplify/Ligands.
+decorated_mol = decorate_molecule(my_mol, ['Cl', 'ammonia'], [8, 9])
+decorated_mol.writexyz('mod_benzene.xyz')
+
+'''
+
 def decorate_molecule(mol: mol3D, dec_list, dec_idxs,
                     debug: bool = False) -> mol3D:
     """
@@ -27,6 +39,8 @@ def decorate_molecule(mol: mol3D, dec_list, dec_idxs,
             List of SMILES or ligand names defined in molSimplify.
         dec_idxs : list of int
             List of indices of molecule atoms to replace.
+            For example, can be indices of hydrogen atoms.
+            Zero-indexed.
         debug: bool
             Debugging flag for additional printed information.
 
