@@ -8,7 +8,7 @@ import shutil
 def test_ligand_from_mol_file(tmp_path, resource_path_root):
     input_file = resource_path_root / "inputs" / "ligand_from_mol_file.in"
     shutil.copyfile(input_file, tmp_path / "ligand_from_mol_file.in")
-    mol_file = resource_path_root / "inputs" / "pdp.mol"
+    mol_file = resource_path_root / "inputs" / "mol_files" / "pdp.mol"
     shutil.copyfile(mol_file, tmp_path / "pdp.mol")
 
     ref_xyz = resource_path_root / "refs" / "ligand_from_mol_file.xyz"

@@ -221,7 +221,6 @@ def jobname(infile: str) -> str:
 
 def jobdir(infile):
     name = jobname(infile)
-    # homedir = os.path.expanduser("~")
     homedir = os.getcwd()
     mydir = homedir + '/Runs/' + name
     return mydir
@@ -243,17 +242,11 @@ def parse4test(infile, tmp_path: Path, isMulti: bool = False, extra_args: Dict[s
             continue
         if not (("-jobdir" in line) or ("-name" in line)):
             newdata += line
-        # Check if we need to parse the dir of smi file
+        # Check if we need to parse the dir of smi file.
         if ("-lig " in line) and (".smi" in line):
             smi = line.strip('\n').split()[1]
             abs_smi = os.path.dirname(infile) + '/' + smi
             newdata += "-lig " + abs_smi + "\n"
-            # fsmi = tmp_path.join(smi)
-            # oldsmi=os.path.dirname(infile)+"/"+smi
-            # with open(oldsmi) as f:
-            #     smidata=f.read()
-            # fsmi.write(smidata)
-            # print "smi file is copied to the temporary running folder!"
     newdata += f"-rundir {tmp_path}\n"
     newdata += "-jobdir " + name + "\n"
     print('=====')
@@ -403,7 +396,7 @@ def runtest(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG, 
     # Set seeds to eliminate randomness from test results
     random.seed(seed)
     np.random.seed(seed)
-    infile = resource_path_root / "inputs" / f"{name}.in"
+    infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
     newinfile, myjobdir = parse4test(infile, tmp_path)
     args = ['main.py', '-i', newinfile]
     with working_directory(tmp_path):
@@ -455,11 +448,11 @@ def runtest_slab(tmp_path, resource_path_root, name, threshOG, extra_files=None)
         axis : threshOG
                 tolerance for RMSD comparison of overall geometries.
     """
-    infile = resource_path_root / "inputs" / f"{name}.in"
+    infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
     newinfile, _ = parse4test(infile, tmp_path)
     if extra_files is not None:
         for file_name in extra_files:
-            file_path = resource_path_root / "inputs" / f"{file_name}"
+            file_path = resource_path_root / "inputs" / "cif_files" / f"{file_name}"
             shutil.copyfile(file_path, tmp_path / file_name)
     args = ['main.py', '-i', newinfile]
     with working_directory(tmp_path):
@@ -486,17 +479,19 @@ def runtest_molecule_on_slab(tmp_path, resource_path_root, name, threshOG, extra
         axis : threshOG
                 tolerance for RMSD comparison of overall geometries.
     """
-    infile = resource_path_root / "inputs" / f"{name}.in"
+    infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
     newinfile, _ = parse4test(infile, tmp_path, extra_args={
-        '-unit_cell': 'slab.xyz', '-target_molecule': 'co.xyz'})
+        '-unit_cell': "../xyz_files/slab.xyz",
+        '-target_molecule': "../xyz_files/co.xyz",
+        })
     if extra_files is not None:
         for file_name in extra_files:
             file_path = resource_path_root / "inputs" / f"{file_name}"
             shutil.copyfile(file_path, tmp_path / file_name)
-    args = ['main.py', '-i', newinfile]
+    args = ["main.py", "-i", newinfile]
     with working_directory(tmp_path):
         startgen(args, False, False)
-    output_xyz = tmp_path / 'loaded_slab' / 'loaded.xyz'
+    output_xyz = tmp_path / "loaded_slab" / "loaded.xyz"
     ref_xyz = resource_path_root / "refs" / f"{name}.xyz"
     print("Output xyz file: ", output_xyz)
     pass_xyz = compareGeo(output_xyz, ref_xyz, threshMLBL=0, threshLG=0,
@@ -550,7 +545,7 @@ def runtestgeo_optonly(resource_path_root, name, thresh, deleteH=True, geo_type=
 
 
 def runtestNoFF(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG):
-    infile = resource_path_root / "inputs" / f"{name}.in"
+    infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
     newinfile, myjobdir = parse4testNoFF(infile, tmp_path)
     [passNumAtoms, passMLBL, passLG, passOG, pass_report,
      pass_qcin] = [True, True, True, True, True, True]
@@ -594,7 +589,7 @@ def runtest_reportonly(tmp_path, resource_path_root, name, seed=31415):
     # Set seeds to eliminate randomness from test results
     random.seed(seed)
     np.random.seed(seed)
-    infile = resource_path_root / "inputs" / f"{name}.in"
+    infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
     # Copy the input file to the temporary folder
     shutil.copy(infile, tmp_path/f'{name}_reportonly.in')
     # Add the report only flag
@@ -626,7 +621,7 @@ def runtest_reportonly(tmp_path, resource_path_root, name, seed=31415):
 
 
 def runtestMulti(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG):
-    infile = resource_path_root / "inputs" / f"{name}.in"
+    infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
     newinfile, myjobdir = parse4test(infile, tmp_path, True)
     args = ['main.py', '-i', newinfile]
     with working_directory(tmp_path):
