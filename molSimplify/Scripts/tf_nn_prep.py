@@ -12,17 +12,21 @@ from molSimplify.Classes.ligand import ligand
 from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Classes.atom3D import atom3D
 from molSimplify.Scripts.io import lig_load
-from molSimplify.Informatics.RACassemble import (assemble_connectivity_from_parts,
-                                                 create_OHE)
+from molSimplify.Informatics.RACassemble import (
+    assemble_connectivity_from_parts,
+    create_OHE,
+    )
 from molSimplify.Informatics.lacRACAssemble import get_descriptor_vector
-from molSimplify.Informatics.decoration_manager import (decorate_ligand)
+from molSimplify.Informatics.decoration_manager import decorate_molecule
 from molSimplify.utils.tensorflow import tensorflow_silence
 from molSimplify.utils.timer import DebugTimer
 from molSimplify.python_nn.clf_analysis_tool import lse_trust
-from molSimplify.python_nn.tf_ANN import (ANN_supervisor,
-                                          find_ANN_10_NN_normalized_latent_dist,
-                                          find_ANN_latent_dist,
-                                          find_true_min_eu_dist)
+from molSimplify.python_nn.tf_ANN import (
+    ANN_supervisor,
+    find_ANN_10_NN_normalized_latent_dist,
+    find_ANN_latent_dist,
+    find_true_min_eu_dist,
+    )
 
 
 def spin_classify(metal: str, spin: Union[int, str], ox: int) -> Tuple[bool, List[int]]:
@@ -422,7 +426,7 @@ def tf_ANN_preproc(metal: str, oxstate, spin, ligs: List[str], occs: List[int], 
             if newdecs[axial_ind_list[ii]]:
                 print(('decorating ' + str(axl) + ' with ' + str(newdecs[axial_ind_list[ii]]) + ' at sites ' + str(
                     newdec_inds[axial_ind_list[ii]])))
-                ax_lig3D = decorate_ligand(
+                ax_lig3D = decorate_molecule(
                     axl, newdecs[axial_ind_list[ii]], newdec_inds[axial_ind_list[ii]], debug)
         ax_lig3D.convert2mol3D()  # mol3D representation of ligand
         for jj in range(0, ax_occs[ii]):
@@ -456,7 +460,7 @@ def tf_ANN_preproc(metal: str, oxstate, spin, ligs: List[str], occs: List[int], 
                 if debug:
                     print(('decorating ' + str(eql) + ' with ' + str(
                         newdecs[equatorial_ind_list[ii]]) + ' at sites ' + str(newdec_inds[equatorial_ind_list[ii]])))
-                eq_lig3D = decorate_ligand(eql, newdecs[equatorial_ind_list[ii]],
+                eq_lig3D = decorate_molecule(eql, newdecs[equatorial_ind_list[ii]],
                                            newdec_inds[equatorial_ind_list[ii]], debug)
                 c += 1
 
