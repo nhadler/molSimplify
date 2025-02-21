@@ -7,7 +7,6 @@ def test_molecule_dec(tmp_path, resource_path_root):
 	my_mol = mol3D()
 	my_mol.readfromxyz(str(resource_path_root / "inputs" / "xyz_files" / "benzene.xyz"))
 	decorated_mol = decorate_molecule(my_mol, ['Cl', 'ammonia'], [8, 9])
-	# decorated_mol.writexyz(str(tmp_path / 'mod_benzene.xyz'))
 
 	comparison_mol = mol3D()
 	comparison_mol.readfromxyz(str(resource_path_root / "refs" / "decorated_xyz" / "mod_benzene.xyz"))
