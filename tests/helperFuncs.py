@@ -23,7 +23,7 @@ def is_number(s: str) -> bool:
     Parameters
     ----------
         s : str
-            The string to be assessed..
+            The string to be assessed.
 
     Returns
     -------
@@ -456,17 +456,26 @@ def jobdir(infile):
 
 def parse4test(infile, tmp_path: Path, isMulti: bool = False, extra_args: Dict[str, str] = {}) -> str:
     """
-    TODO.
+    Parse the in file and rewrite it, 
+    taking into account isMulti and extra_args.
 
     Parameters
     ----------
-        TODO : TODO
-            TODO.
+        infile : str
+            The path to the in file.
+        tmp_path : pathlib.PosixPath
+            Pre-defined pytest fixture. Temporary folder path to run the test.
+        isMulti : bool
+            Whether or not this is a multi test.
+        extra_args : dict
+            Extra arguments to be written to the new job in file.
 
     Returns
     -------
-        TODO : TODO
-            TODO.
+        newname : str
+            The path to the new job in file.
+        jobdir : str
+            The job directory.
     """
     name = jobname(infile)
     f = posixpath.join(tmp_path, os.path.basename(infile))
@@ -478,8 +487,8 @@ def parse4test(infile, tmp_path: Path, isMulti: bool = False, extra_args: Dict[s
     newdata = ""
     for line in data:
         if line.split()[0] in extra_args.keys():
-            newdata += (line.split()[0] + ' ' + str(os.path.dirname(infile))
-                        + '/' + str(extra_args[line.split()[0]]) + '\n')
+            newdata += (f'{line.split()[0]} {os.path.dirname(infile)}\
+                        /{extra_args[line.split()[0]]}\n')
             continue
         if not (("-jobdir" in line) or ("-name" in line)):
             newdata += line
@@ -504,41 +513,47 @@ def parse4test(infile, tmp_path: Path, isMulti: bool = False, extra_args: Dict[s
 
 def parse4testNoFF(infile, tmp_path: Path, isMulti: bool = False) -> str:
     """
-    TODO.
+    Parse the in file and rewrite it, 
+    taking into account isMulti.
+    Similar to parse4test, but with
+    ffoption set to no.
 
     Parameters
     ----------
-        TODO : TODO
-            TODO.
+        infile : str
+            The path to the in file.
+        tmp_path : pathlib.PosixPath
+            Pre-defined pytest fixture. Temporary folder path to run the test.
+        isMulti : bool
+            Whether or not this is a multi test.
 
     Returns
     -------
-        TODO : TODO
-            TODO.
+        newname : str
+            The path to the new job in file.
+        jobdir : str
+            The job directory.
     """
     name = jobname(infile)
     newinfile = str(tmp_path / (name + "_noff.in"))
     shutil.copyfile(infile, newinfile)
-    return parse4test(newinfile, tmp_path, isMulti, extra_args={"-ffoption": "N"})
+    newname, jobdir = parse4test(newinfile, tmp_path, isMulti, extra_args={"-ffoption": "N"})
+    return newname, jobdir
 
 
 def report_to_dict(lines):
     """
-    TODO.
+    Create a dictionary from comma-separated files.
 
     Parameters
     ----------
-        TODO : TODO
-            TODO.
+        lines : list of str
+            Contents of a file, obtained with readlines().
 
     Returns
     -------
-        TODO : TODO
-            TODO.
-    """
-    """
-    create a dictionary from comma
-    separated files
+        d : dict
+            Dictionary reflecting the contents of lines.
     """
     d = dict()
     for line in lines:
@@ -547,101 +562,103 @@ def report_to_dict(lines):
             d[key] = float(val.strip('[]'))
         except ValueError:
             d[key] = str(val.strip('[]'))
-    # extra proc for ANN_bond list:
+    # Extra step for ANN_bond list:
     if 'ANN_bondl' in d.keys():
         d['ANN_bondl'] = [float(i.strip('[]')) for i in d['ANN_bondl'].split()]
     return d
 
 
-# compare the report, split key and values, do
-# fuzzy comparison on the values
-
-
 def compare_report_new(report1, report2):
     """
-    TODO.
+    Compare the reports, split key and values, do
+    fuzzy comparison on the values.
 
     Parameters
     ----------
-        TODO : TODO
-            TODO.
+        report1 : str
+            Path to first report file.
+        report2 : str
+            Path to second report file.
 
     Returns
     -------
-        TODO : TODO
-            TODO.
+        are_equal : bool
+            Verdict on whether the reports are equal.
     """
     with open(report1, 'r') as f_in:
         data1 = f_in.readlines()
     with open(report2, 'r') as f_in:
         data2 = f_in.readlines()
+
     if data1 and data2:
-        Equal = True
+        are_equal = True
         dict1 = report_to_dict(data1)
         dict2 = report_to_dict(data2)
     else:
-        Equal = False
-        print('File not found:')
+        are_equal = False
+        print('File not found.')
         if not data1:
-            print(f'missing: {report1}')
+            print(f'Missing: {report1}')
         if not data2:
-            print(f'missing: {report2}')
-    if Equal:
+            print(f'Missing: {report2}')
 
+    if are_equal:
         for k in dict1.keys():
-            if Equal:
+            if are_equal:
                 val1 = dict1[k]
                 if k not in dict2.keys():
-                    Equal = False
+                    are_equal = False
                     print("Report compare failed for ", report1, report2)
                     print(f"keys {k} not present in {report2}")
                 else:
                     val2 = dict2[k]
 
                     if not k == "ANN_bondl":
-                        # see whether the values are numbers or text
+                        # See whether the values are numbers or text.
                         if is_number(val1) and is_number(val2):
-                            Equal = fuzzy_equal(val1, val2, 1e-4)
+                            are_equal = fuzzy_equal(val1, val2, 1e-4)
                         else:
-                            Equal = (val1 == val2)
-                        if not Equal:
+                            are_equal = (val1 == val2)
+                        if not are_equal:
                             print("Report compare failed for ",
                                   report1, report2)
                             print("Values don't match for key", k)
                             print([val1, val2])
                     else:
-                        # loop over ANN bonds?
-                        # see whether the values are numbers or text
-                        for ii, v in enumerate(val1):
-                            Equal = fuzzy_equal(v, val2[ii], 1e-4)
-                        if not Equal:
+                        # Loop over ANN bonds?
+                        # See whether the values are numbers or text.
+                        for v1, v2 in zip(val1, val2):
+                            are_equal = fuzzy_equal(v1, v2, 1e-4)
+                        if not are_equal:
                             print("Report compare failed for ",
                                   report1, report2)
                             print("Values don't match for key", k)
                             print([val1, val2])
             else:
                 break
-    return Equal
 
-
-# When generating multiple files from the 1 input file
-# Compare the test directory and reference directory for
-# Number of xyz file, xyz file names
+    return are_equal
 
 
 def checkMultiFileGen(myjobdir, refdir):
     """
-    TODO.
+    When generating multiple files from the one input file,
+    compare the test directory and reference directory for
+    number of xyz files, xyz file names.
 
     Parameters
     ----------
-        TODO : TODO
-            TODO.
+        myjobdir : str
+            The job directory.
+        refdir : pathlib.PosixPath
+            The path to the refs folder.
 
     Returns
     -------
-        TODO : TODO
-            TODO.
+        passMultiFileCheck : bool
+            Verdict on whether all files are accounted for.
+        myfiles : list of str
+            xyz files in the job directory.
     """
     passMultiFileCheck = True
     myfiles = [i for i in os.listdir(myjobdir) if ".xyz" in i]
@@ -650,38 +667,41 @@ def checkMultiFileGen(myjobdir, refdir):
     print(f"Generated xyz: {myfiles}")
     print(f"Reference directory: {refdir}")
     print(f"Ref xyz: {reffiles}")
-    print(f"Generated {len(myfiles)} files, expecting {len(reffiles)}")
+    print(f"Generated {len(myfiles)} files, expecting {len(reffiles)}.")
     if len(myfiles) != len(reffiles):
         passMultiFileCheck = False
         print("Error! Numbers don't match!")
     else:
         for ref in reffiles:
             if ref not in myfiles:
-                print(f"xyz file {ref} is missing in generated file folder")
+                print(f"xyz file {ref} is missing in generated file folder.")
                 passMultiFileCheck = False
     return passMultiFileCheck, myfiles
 
 
 def compare_qc_input(inp, inp_ref):
     """
-    TODO.
+    Compare two quantum chemistry code input files
+    to determine if they are equal.
 
     Parameters
     ----------
-        TODO : TODO
-            TODO.
+        inp : str
+            The path to the quantum chemistry (qc) code input file.
+        inp_ref : pathlib.PosixPath
+            The path to the reference qc code input file.
 
     Returns
     -------
-        TODO : TODO
-            TODO.
+        passQcInputCheck : bool
+            Verdict on whether qc input files are equal.
     """
     passQcInputCheck = True
     if not os.path.exists(inp_ref):
         return passQcInputCheck
     elif os.path.exists(inp_ref) and (not os.path.exists(inp)):
         passQcInputCheck = False
-        print(f"{inp} not found")
+        print(f"{inp} not found.")
         return passQcInputCheck
 
     with open(inp, 'r') as f_in:
@@ -700,17 +720,46 @@ def compare_qc_input(inp, inp_ref):
 
 def runtest(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG, seed=31415):
     """
-    TODO.
+    Performs test for specified test name.
 
     Parameters
     ----------
-        TODO : TODO
-            TODO.
+        tmp_path : pathlib.PosixPath
+            Pre-defined pytest fixture. Temporary folder path to run the test.
+        resource_path_root : pathlib.PosixPath
+            Variable from pytest-resource-path.
+            Points to molSimplify/tests/testresources.
+        name : str
+            The name of the test.
+        threshMLBL : float
+            The tolerance used for bond length comparison.
+        threshLG : float
+            The RMSD tolerance used for ligand comparison.
+        threshOG : float
+            The RMSD tolerance used for overall geometry comparison.
+        seed : int
+            The random seed.
 
     Returns
     -------
-        TODO : TODO
-            TODO.
+        passNumAtoms : bool
+            Whether the number of atoms is the same
+            between the output and reference structures.
+        passMLBL : bool
+            Verdict on whether M-L bond lengths between
+            the output and reference structures are equal.
+        passLG : bool
+            Verdict on whether ligand geometries between
+            the output and reference structures are equal.
+        passOG : bool
+            Verdict on whether the geometries of the
+            output and reference are roughly equal overall.
+        pass_report : bool
+            Verdict on whether the output and reference
+            reports are equal.
+        pass_qcin : bool
+            Verdict on whether the output and reference
+            qc input files are equal.
     """
     # Set seeds to eliminate randomness from test results.
     random.seed(seed)
@@ -760,16 +809,26 @@ def runtest_slab(tmp_path, resource_path_root, name, threshOG, extra_files=None)
 
     Parameters
     ----------
-        tmp_path : str
-            tmp folder to run the test.
-        resource_path_root : TODO
-            TODO.
+        tmp_path : pathlib.PosixPath
+            Pre-defined pytest fixture. Temporary folder path to run the test.
+        resource_path_root : pathlib.PosixPath
+            Variable from pytest-resource-path.
+            Points to molSimplify/tests/testresources.
         name : str
-            name of the test
-        threshOG : TODO
+            The name of the test.
+        threshOG : float
             Tolerance for RMSD comparison of overall geometries.
-        extra_files : TODO
-            TODO.
+        extra_files : list of str
+            Extra files to be copied to the test directory.
+
+    Returns
+    -------
+        passNumAtoms : bool
+            Whether the number of atoms is the same
+            between the output and reference structures.
+        passOG : bool
+            Verdict on whether the geometries of the
+            output and reference are roughly equal overall.
     """
     infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
     newinfile, _ = parse4test(infile, tmp_path)
@@ -796,16 +855,26 @@ def runtest_molecule_on_slab(tmp_path, resource_path_root, name, threshOG, extra
 
     Parameters
     ----------
-        tmp_path : str
-            tmp folder to run the test.
-        resource_path_root : TODO
-            TODO.
+        tmp_path : pathlib.PosixPath
+            Pre-defined pytest fixture. Temporary folder path to run the test.
+        resource_path_root : pathlib.PosixPath
+            Variable from pytest-resource-path.
+            Points to molSimplify/tests/testresources.
         name : str
-            name of the test
-        threshOG : TODO
+            The name of the test.
+        threshOG : float
             Tolerance for RMSD comparison of overall geometries.
-        extra_files : TODO
-            TODO.
+        extra_files : list of str
+            Extra files to be copied to the test directory.
+
+    Returns
+    -------
+        passNumAtoms : bool
+            Whether the number of atoms is the same
+            between the output and reference structures.
+        passOG : bool
+            Verdict on whether the geometries of the
+            output and reference are roughly equal overall.
     """
     infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
     newinfile, _ = parse4test(infile, tmp_path, extra_args={
@@ -831,17 +900,31 @@ def runtest_molecule_on_slab(tmp_path, resource_path_root, name, threshOG, extra
 
 def runtestgeo(tmp_path, resource_path_root, name, thresh, deleteH=True, geo_type="oct"):
     """
-    TODO.
+    Performs test comparing dictionary of measurements of geometry
+    generated by IsOct or IsStructure against a reference.
 
     Parameters
     ----------
-        TODO : TODO
-            TODO.
+        tmp_path : pathlib.PosixPath
+            Pre-defined pytest fixture. Temporary folder path to run the test.
+        resource_path_root : pathlib.PosixPath
+            Variable from pytest-resource-path.
+            Points to molSimplify/tests/testresources.
+        name : str
+            The name of the test.
+        thresh : float
+            The threshold for float comparison,
+            for numerical dictionary items.
+        deleteH : bool, optional
+            Flag to delete Hs in ligand comparison. Default is True.
+        geo_type : str
+            The geometry type.
 
     Returns
     -------
-        TODO : TODO
-            TODO.
+        passGeo : bool
+            Whether the dictionaries of the reference and the output
+            are found to be equivalent.
     """
     initgeo = resource_path_root / "inputs" / "geocheck" / name / "init.xyz"
     optgeo = resource_path_root / "inputs" / "geocheck" / name / "opt.xyz"
@@ -871,17 +954,44 @@ def runtestgeo(tmp_path, resource_path_root, name, thresh, deleteH=True, geo_typ
 
 def runtestNoFF(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG):
     """
-    TODO.
+    Performs test for specified test name, with no force field applied.
 
     Parameters
     ----------
-        TODO : TODO
-            TODO.
+        tmp_path : pathlib.PosixPath
+            Pre-defined pytest fixture. Temporary folder path to run the test.
+        resource_path_root : pathlib.PosixPath
+            Variable from pytest-resource-path.
+            Points to molSimplify/tests/testresources.
+        name : str
+            The name of the test.
+        threshMLBL : float
+            The tolerance used for bond length comparison.
+        threshLG : float
+            The RMSD tolerance used for ligand comparison.
+        threshOG : float
+            The RMSD tolerance used for overall geometry comparison.
 
     Returns
     -------
-        TODO : TODO
-            TODO.
+        passNumAtoms : bool
+            Whether the number of atoms is the same
+            between the output and reference structures.
+        passMLBL : bool
+            Verdict on whether M-L bond lengths between
+            the output and reference structures are equal.
+        passLG : bool
+            Verdict on whether ligand geometries between
+            the output and reference structures are equal.
+        passOG : bool
+            Verdict on whether the geometries of the
+            output and reference are roughly equal overall.
+        pass_report : bool
+            Verdict on whether the output and reference
+            reports are equal.
+        pass_qcin : bool
+            Verdict on whether the output and reference
+            qc input files are equal.
     """
     infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
     newinfile, myjobdir = parse4testNoFF(infile, tmp_path)
@@ -926,17 +1036,24 @@ def runtestNoFF(tmp_path, resource_path_root, name, threshMLBL, threshLG, thresh
 
 def runtest_reportonly(tmp_path, resource_path_root, name, seed=31415):
     """
-    TODO.
+    Performs test for specified test name, only looking at report files.
 
     Parameters
     ----------
-        TODO : TODO
-            TODO.
+        tmp_path : pathlib.PosixPath
+            Pre-defined pytest fixture. Temporary folder path to run the test.
+        resource_path_root : pathlib.PosixPath
+            Variable from pytest-resource-path.
+            Points to molSimplify/tests/testresources.
+        name : str
+            The name of the test.
+        seed : int
+            The random seed.
 
     Returns
     -------
-        TODO : TODO
-            TODO.
+        pass_report : bool
+            Verdict on whether the reports are equal.
     """
     # Set seeds to eliminate randomness from test results.
     random.seed(seed)
@@ -975,17 +1092,33 @@ def runtest_reportonly(tmp_path, resource_path_root, name, seed=31415):
 
 def runtestMulti(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG):
     """
-    TODO.
+    Performs test for specified test name, where multiple files are 
+    generated by the test.
 
     Parameters
     ----------
-        TODO : TODO
-            TODO.
+        tmp_path : pathlib.PosixPath
+            Pre-defined pytest fixture. Temporary folder path to run the test.
+        resource_path_root : pathlib.PosixPath
+            Variable from pytest-resource-path.
+            Points to molSimplify/tests/testresources.
+        name : str
+            The name of the test.
+        threshMLBL : float
+            The tolerance used for bond length comparison.
+        threshLG : float
+            The RMSD tolerance used for ligand comparison.
+        threshOG : float
+            The RMSD tolerance used for overall geometry comparison.
 
     Returns
     -------
-        TODO : TODO
-            TODO.
+        passMultiFileCheck : bool
+            Verdict on whether all files are accounted for.
+        pass_structures : list of lists
+            Each inner list contains the file name,
+            and many booleans indicating results of 
+            comparison between the output and reference.
     """
     infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
     newinfile, myjobdir = parse4test(infile, tmp_path, True)
@@ -995,11 +1128,11 @@ def runtestMulti(tmp_path, resource_path_root, name, threshMLBL, threshLG, thres
     print("Test input file: ", newinfile)
     print("Test output files are generated in ", myjobdir)
     refdir = resource_path_root / "refs" / name
-    [passMultiFileCheck, myfiles] = checkMultiFileGen(myjobdir, refdir)
+    passMultiFileCheck, myfiles = checkMultiFileGen(myjobdir, refdir)
     pass_structures = []
     if not passMultiFileCheck:
-        print("Test failed for checking number and names of generated files. "
-              "Test ends")
+        print("Test failed for checking number and names of generated files.\n"
+              "Test ends.")
     else:
         print("Checking each generated structure...")
         for f in myfiles:
