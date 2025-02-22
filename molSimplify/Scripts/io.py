@@ -15,9 +15,9 @@ import time
 import difflib
 
 try:
-    from openbabel import openbabel  # version 3 style import
+    from openbabel import openbabel  # Version 3 style import.
 except ImportError:
-    import openbabel  # fallback to version 2
+    import openbabel  # Fall back to version 2.
 from typing import Any, List, Dict, Tuple, Union, Optional
 from importlib_resources import files as resource_files
 
@@ -26,9 +26,7 @@ from molSimplify.Classes.globalvars import (globalvars,
 from molSimplify.Classes.mol3D import mol3D
 
 
-# Print available geometries
-
-
+# Print available geometries.
 def printgeoms():
     globs = globalvars()
     if globs.custom_path:
@@ -51,13 +49,10 @@ def printgeoms():
     for i, g in enumerate(coords):
         geomgroups[int(g)-1].append(geomshorts[i])
     for i, g in enumerate(geomnames):
-        print("Coordination: %s, geometry: %s,\t short name: %s " %
-              (coords[i], g, geomshorts[i]))
+        print(f"Coordination: {coords[i]}, geometry: {g},\t short name: {geomshorts[i]}")
     print('')
 
-# Get available geometries
-
-
+# Get available geometries.
 def getgeoms():
     globs = globalvars()
     if globs.custom_path:
@@ -85,11 +80,9 @@ def getgeoms():
         geomgroups[count].append(geomshorts[i])
     return coords, geomnames, geomshorts, geomgroups
 
-# Read data into dictionary
+# Read data into dictionary.
 #  @param fname Filename containing dictionary data
 #  @return Dictionary
-
-
 def readdict(fname):
     d = dict()
     with open(fname, 'r') as f:
@@ -109,11 +102,9 @@ def readdict(fname):
             d[key] = vv
     return d
 
-# Read data into dictionary for substrate
+# Read data into dictionary for substrate.
 #  @param fname Filename containing dictionary data
 #  @return Dictionary
-
-
 def readdict_sub(fname):
     d = dict()
     with open(fname, 'r') as f:
@@ -134,21 +125,16 @@ def readdict_sub(fname):
             d[key] = vv
     return d
 
-# Get ligands in dictionary
+# Get ligands in dictionary.
 #  @return List of ligands in dictionary
-
-
 def getligs() -> str:
     licores = getlicores()
     return ' '.join(sorted(licores.keys()))
 
-# Get ligands cores
-#
+# Get ligands cores.
 #  This is basically the same as getligs() but returns the full dictionary.
 #  @param flip Whether we want to return flipped versions of bidentates.
 #  @return Ligands dictionary.
-
-
 def getlicores(flip: bool = True) -> Dict[str, Any]:
     globs = globalvars()
     if globs.custom_path:  # test if a custom path is used:
@@ -163,20 +149,15 @@ def getlicores(flip: bool = True) -> Dict[str, Any]:
                 licores[ligand+'_flipped'][2].reverse()
     return licores
 
-# Get simple ligands in dictionary
+# Get simple ligands in dictionary.
 #  @return List of ligands in simple ligands dictionary
-
-
 def getsimpleligs() -> str:
     slicores = getslicores()
     return ' '.join(sorted(slicores.keys()))
 
-# Get simple ligands cores
-#
+# Get simple ligands cores.
 #  This is basically the same as getsimpleligs() but returns the full dictionary
 #  @return Simple ligands dictionary
-
-
 def getslicores() -> Dict[str, Any]:
     globs = globalvars()
     if globs.custom_path:  # test if a custom path is used:
@@ -187,11 +168,9 @@ def getslicores() -> Dict[str, Any]:
     slicores = readdict(slicores_path)
     return slicores
 
-# Get ligand groups
+# Get ligand groups.
 #  @param licores Ligand dictionary
 #  @return Ligand groups
-
-
 def getligroups(licores: dict) -> str:
     groups = []
     for entry in licores:
@@ -200,11 +179,9 @@ def getligroups(licores: dict) -> str:
     a = ' '.join(groups)
     return a
 
-# Enclose metal elements in SMILES string with square brackets
+# Enclose metal elements in SMILES string with square brackets.
 #  @param smi SMILES string
 #  @return Processed SMILES string
-
-
 def checkTMsmiles(smi: str) -> str:
     g = globalvars()
     for m in g.metalslist():
@@ -212,20 +189,15 @@ def checkTMsmiles(smi: str) -> str:
             smi = smi.replace(m, '['+m+']')
     return smi
 
-# Get binding species in dictionary
+# Get binding species in dictionary.
 #  @return List of binding species in dictionary
-
-
 def getbinds() -> str:
     bindcores = getbcores()
     return ' '.join(sorted(bindcores.keys()))
 
-# Get binding species cores
-#
+# Get binding species cores.
 #  This is basically the same as getbinds() but returns the full dictionary
 #  @return Binding species dictionary
-
-
 def getbcores() -> dict:
     globs = globalvars()
     if globs.custom_path:  # test if a custom path is used:
@@ -235,10 +207,8 @@ def getbcores() -> dict:
     bcores = readdict(bcores_path)
     return bcores
 
-# Get cores in dictionary
+# Get cores in dictionary.
 #  @return List of cores in dictionary
-
-
 def getcores():
     mcores = getmcores()
     a = []
@@ -248,12 +218,9 @@ def getcores():
     a = ' '.join(a)
     return a
 
-# Get core cores
-#
+# Get core cores.
 #  This is basically the same as getcores() but returns the full dictionary
 #  @return Cores dictionary
-
-
 def getmcores():
     globs = globalvars()
     if globs.custom_path:  # test if a custom path is used:
@@ -263,10 +230,8 @@ def getmcores():
     mcores = readdict(mcores)
     return mcores
 
-# Get substrates in dictionary
+# Get substrates in dictionary.
 #  @return List of substrates in dictionary
-
-
 def getsubstrates():
     subcores = getsubcores()
     a = []
@@ -276,12 +241,9 @@ def getsubstrates():
     a = ' '.join(a)
     return a
 
-# Get substrate cores
-#
+# Get substrate cores.
 #  This is basically the same as getsubstrates() but returns the full dictionary
 #  @return Substrates dictionary
-
-
 def getsubcores():
     globs = globalvars()
     if globs.custom_path:  # test if a custom path is used:
@@ -292,11 +254,9 @@ def getsubcores():
     subcores = readdict_sub(subcores)
     return subcores
 
-# Load M-L bond length dictionary from data
+# Load M-L bond length dictionary from data.
 #  @param path to data file
 #  @return M-L bond length dictionary
-
-
 def loaddata(path: str) -> dict:
     globs = globalvars()
     # loads ML data from ML.dat file and
@@ -316,11 +276,9 @@ def loaddata(path: str) -> dict:
             d[(s[0], s[1], s[2], s[3], s[4])] = s[5]  # read dictionary
     return d
 
-# Load M-L bond length dictionary from data
+# Load M-L bond length dictionary from data.
 #  @param path to data file
 #  @return M-L bond length dictionary
-
-
 def loaddata_ts(path: str) -> dict:
     globs = globalvars()
     # loads ML data from ML.dat file and
@@ -340,11 +298,9 @@ def loaddata_ts(path: str) -> dict:
             d[(s[0], s[1], s[2], s[3])] = s[4:]  # read dictionary
     return d
 
-# Load a chemdraw cdxml file and write out xyz
+# Load a chemdraw cdxml file and write out xyz.
 # @param cdxml a cdxml file
 # return fname the xyz fname for the read-in cdxml
-
-
 def loadcdxml(cdxml: str) -> Tuple[str, str]:
     # try importing pybel
     try:
@@ -421,11 +377,9 @@ def loadcdxml(cdxml: str) -> Tuple[str, str]:
 
     return fname, msg
 
-# Load backbone coordinates
+# Load backbone coordinates.
 #  @param coord Name of coordination geometry
 #  @return List of backbone coordinates
-
-
 def loadcoord(coord: str) -> List[List[float]]:
     globs = globalvars()
     if globs.custom_path:
@@ -440,12 +394,10 @@ def loadcoord(coord: str) -> List[List[float]]:
         b.append([float(s[0]), float(s[1]), float(s[2])])
     return b
 
-# Load core and convert to mol3D
+# Load core and convert to mol3D.
 #  @param usercore Name of core
 #  @param mcores Cores dictionary (reloads if not specified - default, useful when using an externally modified dictionary)
 #  @return mol3D of core, error messages
-
-
 def core_load(usercore: str, mcores: Optional[dict] = None) -> Tuple[Union[mol3D, None], str]:
     if mcores is None:
         mcores = getmcores()
@@ -466,7 +418,7 @@ def core_load(usercore: str, mcores: Optional[dict] = None) -> Tuple[Union[mol3D
             fcore = str(resource_files("molSimplify").joinpath(f"Cores/{dbentry[0]}"))
         # check if core xyz/mol file exists
         if not glob.glob(fcore):
-            emsg = "We can't find the core structure file %s right now! Something is amiss. Exiting.\n" % fcore
+            emsg = f"We can't find the core structure file {fcore} right now! Something is amiss. Exiting.\n"
             print(emsg)
             return None, emsg
         if ('.xyz' in fcore):
@@ -482,20 +434,20 @@ def core_load(usercore: str, mcores: Optional[dict] = None) -> Tuple[Union[mol3D
     elif ('.mol' in usercore or '.xyz' in usercore or '.smi' in usercore):
         if glob.glob(usercore):
             ftype = usercore.split('.')[-1]
-            print('Core is a '+ftype+' file')
+            print(f'Core is a {ftype} file')
             # try and catch error if conversion doesn't work
             try:
                 core.OBMol = core.getOBMol(
                     usercore, ftype+'f')  # convert from file
                 print('Core successfully converted to OBMol')
             except IOError:
-                emsg = 'Failed converting file ' + usercore+' to molecule. Check your file.\n'
+                emsg = f'Failed converting file {usercore} to molecule. Check your file.\n'
                 print(emsg)
                 return None, emsg
             core.ident = usercore.split('.')[0]
             core.ident = core.ident.rsplit('/')[-1]
         else:
-            emsg = 'Core file '+usercore+' does not exist. Exiting.\n'
+            emsg = f'Core file {usercore} does not exist. Exiting.\n'
             print(emsg)
             return None, emsg
     # if not, try converting from SMILES
@@ -508,9 +460,9 @@ def core_load(usercore: str, mcores: Optional[dict] = None) -> Tuple[Union[mol3D
                 usercore, 'smistring', True)  # convert from smiles
             print('Core successfully interpreted as smiles')
         except IOError:
-            emsg = "We tried converting the string '%s' to a molecule but it wasn't a valid SMILES string.\n" % usercore
-            emsg += "Furthermore, we couldn't find the core structure: '%s' in the cores dictionary. Try again!\n" % usercore
-            emsg += "\nAvailable cores are: %s\n" % getcores()
+            emsg = f"We tried converting the string '{usercore}' to a molecule but it wasn't a valid SMILES string.\n"
+            emsg += f"Furthermore, we couldn't find the core structure: '{usercore}' in the cores dictionary. Try again!\n"
+            emsg += f"\nAvailable cores are: {getcores()}\n"
             print(emsg)
             return None, emsg
         core.cat = [0]
@@ -518,15 +470,13 @@ def core_load(usercore: str, mcores: Optional[dict] = None) -> Tuple[Union[mol3D
         core.ident = 'core'
     return core, emsg
 
-# Load substrate and convert to mol3D
+# Load substrate and convert to mol3D.
 #  @param usersubstrate Name of substrate
 #  @param subcores Substrates dictionary
 #       (reloads if not specified - default, useful when using an externally modified dictionary)
 #  @return mol3D of substrate, subscatom, error messages
 #  attributes of substrate: OBMol, denticity, ident (identity), charge,
 #                           cat (connection atom index), and grps (substrate group)
-
-
 def substr_load(usersubstrate: str,
                 sub_i: int,
                 subcatoms: List[int],
@@ -562,7 +512,7 @@ def substr_load(usersubstrate: str,
             fsubst = str(resource_files("molSimplify").joinpath(f"Substrates/{var_list_sub_i[0]}"))
         # check if substrate xyz/mol file exists
         if not glob.glob(fsubst):
-            emsg = "We can't find the substrate structure file %s right now! Something is amiss. Exiting.\n" % fsubst
+            emsg = f"We can't find the substrate structure file {fsubst} right now! Something is amiss. Exiting.\n"
             print(emsg)
             return None, subcatoms, emsg
         if ('.xyz' in fsubst):
@@ -608,13 +558,12 @@ def substr_load(usersubstrate: str,
                 print('Substrate successfully converted to OBMol')
 
             except IOError:
-                emsg = 'Failed converting file ' + usersubstrate + \
-                    ' to molecule. Check your file.\n'
+                emsg = f'Failed converting file {usersubstrate} to molecule. Check your file.\n'
                 print(emsg)
                 return None, subcatoms, emsg
             sub.ident = usersubstrate.split('/')[-1].split('.')[0]
         else:
-            emsg = 'Substrate file '+usersubstrate+' does not exist. Exiting.\n'
+            emsg = f'Substrate file {usersubstrate} does not exist. Exiting.\n'
             print(emsg)
             return None, subcatoms, emsg
     # if not, try converting from SMILES
@@ -812,13 +761,11 @@ def lig_load(userligand: str, licores: Optional[dict] = None) -> Tuple[Any, str]
     lig.name = userligand
     return lig, emsg
 
-# Load binding species and convert to mol3D
+# Load binding species and convert to mol3D.
 #  @param userbind Name of binding species
 #  @param bindcores Binding species dictionary
 #      (reloads if not specified - default, useful when using an externally modified dictionary)
 #  @return mol3D of binding species, error messages
-
-
 def bind_load(userbind: str, bindcores: dict) -> Tuple[Union[mol3D, None], bool, str]:
     globs = globalvars()
     if '~' in userbind:
@@ -830,14 +777,13 @@ def bind_load(userbind: str, bindcores: dict) -> Tuple[Union[mol3D, None], bool,
     # check if binding molecule exists in dictionary
     if userbind in list(bindcores.keys()):
         # load bind mol file (with hydrogens)
-        #        fbind = installdir+'Bind/'+bindcores[userbind][0]
         if globs.custom_path:
             fbind = globs.custom_path + "/Bind/" + bindcores[userbind][0]
         else:
             fbind = str(resource_files("molSimplify").joinpath(f"Bind/{bindcores[userbind][0]}"))
         # check if bind xyz/mol file exists
         if not glob.glob(fbind):
-            emsg = "We can't find the binding species structure file %s right now! Something is amiss. Exiting.\n" % fbind
+            emsg = f"We can't find the binding species structure file {fbind} right now! Something is amiss. Exiting.\n"
             print(emsg)
             return None, False, emsg
         if ('.xyz' in fbind):
@@ -857,12 +803,12 @@ def bind_load(userbind: str, bindcores: dict) -> Tuple[Union[mol3D, None], bool,
                     userbind, ftype+'f')  # convert from file
                 bind.charge = bind.OBMol.GetTotalCharge()
             except IOError:
-                emsg = 'Failed converting file ' + userbind+' to molecule. Check your file.\n'
+                emsg = f'Failed converting file {userbind} to molecule. Check your file.\n'
                 return None, False, emsg
             bind.ident = userbind.rsplit('/')[-1]
             bind.ident = bind.ident.split('.'+ftype)[0]
         else:
-            emsg = 'Binding species file '+userbind+' does not exist. Exiting.\n'
+            emsg = f'Binding species file {userbind} does not exist. Exiting.\n'
             return None, False, emsg
     # if not, try converting from SMILES
     else:
@@ -875,18 +821,16 @@ def bind_load(userbind: str, bindcores: dict) -> Tuple[Union[mol3D, None], bool,
             bsmi = True
             bind.ident = 'smi'
         except IOError:
-            emsg = "We tried converting the string '%s' to a molecule but it wasn't a valid SMILES string.\n" % userbind
+            emsg = f"We tried converting the string '{userbind}' to a molecule but it wasn't a valid SMILES string.\n"
             emsg += "Furthermore, we couldn't find the binding species structure: "
-            emsg += "'%s' in the binding species dictionary. Try again!\n" % userbind
+            emsg += f"'{userbind}' in the binding species dictionary. Try again!\n"
             print(emsg)
             return None, False, emsg
     return bind, bsmi, emsg
 
-# Write input file from arguments
+# Write input file from arguments.
 #  @param args Namespace of arguments
 #  @param fname File name
-
-
 def getinputargs(args, fname: str):
     # list with arguments
     # write input args
@@ -914,15 +858,13 @@ def getinputargs(args, fname: str):
                         f.write(str(getattr(args, arg)))
                     f.write('\n')
 
-# Load plugin definitions
-
-
+# Load plugin definitions.
 def plugin_defs() -> str:
     plugin_path = str(resource_files("molSimplify").joinpath("plugindefines_reference.txt"))
     return plugin_path
 
 
-# Generate complex name (this is actually used instead of namegen.py)
+# Generate complex name (this is actually used instead of namegen.py).
 #  @param rootdir Root directory
 #  @param core mol3D of core
 #  @param ligs List of ligand names
@@ -932,8 +874,6 @@ def plugin_defs() -> str:
 #  @param bind Flag for binding species (default False)
 #  @param bsmi Flag for SMILES binding species (default False)
 #  @return Complex name
-
-
 def name_complex(rootdir: str, core, geometry, ligs, ligoc, sernum: int,
                  args, nconf=False, sanity=False, bind=False, bsmi=False) -> str:
     # new version of the above, designed to
@@ -995,7 +935,7 @@ def name_complex(rootdir: str, core, geometry, ligs, ligoc, sernum: int,
             name += '_antigeoisomer'
     return name
 
-# Generate complex name (this is actually used instead of namegen.py)
+# Generate complex name (this is actually used instead of namegen.py).
 #  @param rootdir Root directory
 #  @param core mol3D of core
 #  @param ligs List of ligand names
@@ -1005,8 +945,6 @@ def name_complex(rootdir: str, core, geometry, ligs, ligoc, sernum: int,
 #  @param bind Flag for binding species (default False)
 #  @param bsmi Flag for SMILES binding species (default False)
 #  @return Complex name
-
-
 def name_ts_complex(rootdir, core, geometry, ligs, ligoc, substrate, subcatoms,
                     mlig, mligcatoms, sernum, args, nconf=False, sanity=False,
                     bind=False, bsmi=False) -> str:
@@ -1038,27 +976,17 @@ def name_ts_complex(rootdir, core, geometry, ligs, ligoc, substrate, subcatoms,
         sminum = 0
         for i, lig in enumerate(ligs):
             if lig not in licores:
-                # unused:
-                # lig = lig.split('\t')[0]
                 sminum += 1
                 name += '_smi' + str(int(sernum)+int(sminum)
                                      ) + '_' + str(ligoc[i])
             else:
                 name += '_' + str(lig) + '_' + str(ligoc[i])
-        # for i,sub in enumerate(substrate):
-        #     name += "_" + str(sub)
-        #     for i,subcatom in enumerate(str(subcatoms))):
-        #         name += "_" + str(subcatom)
         for sub in substrate:
             if '.' in sub:
                 sub = sub.split('.')[0]
             name += "_" + str(sub)
         for subcatom in subcatoms:
             name += "_" + str(subcatom)
-        # for i,mlig_i in enumerate(mlig):
-        #     name += "_" + str(mlig)
-        #     for j,mligcatom in enumerate(mligcatoms):
-        #         name += "_" + str(mligcatom)
         if mlig:
             name += "_" + str(mlig[0])
         if mligcatoms:
@@ -1077,9 +1005,7 @@ def name_ts_complex(rootdir, core, geometry, ligs, ligoc, substrate, subcatoms,
     return name
 
 
-# Copies ligands, binding species and cores to user-specified path
-
-
+# Copies ligands, binding species, and cores to user-specified path.
 def copy_to_custom_path():
     globs = globalvars()
     if not globs.custom_path:
