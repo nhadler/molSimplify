@@ -1053,7 +1053,8 @@ def runtest_reportonly(tmp_path, resource_path_root, name, seed=31415):
     Returns
     -------
         pass_report : bool
-            Verdict on whether the reports are equal.
+            Verdict on whether the output and reference
+            reports are equal.
     """
     # Set seeds to eliminate randomness from test results.
     random.seed(seed)
