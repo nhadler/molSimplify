@@ -17,15 +17,42 @@ import posixpath
 
 
 def is_number(s: str) -> bool:
-    """check whether the string is a integral/float/scientific"""
+    """
+    Check whether the string is a integral/float/scientific.
+
+    Parameters
+    ----------
+        s : str
+            The string to be assessed..
+
+    Returns
+    -------
+        is_num : bool
+            Flag indicating whether s is a number.
+    """    
     try:
         float(s)
-        return True
+        is_num = True
     except ValueError:
-        return False
+        is_num = False
+    return is_num
 
 
 def get_parent_folder(test_name):
+    """
+    Determine the parent folder name based on the test name.
+
+    Parameters
+    ----------
+        test_name : str
+            The name of the test.
+            E.g., "example_1".
+
+    Returns
+    -------
+        f : str
+            The name of the parent folder.
+    """
     # Getting the name of the parent folder for reference results.
     # Parent folders are named in line with test names.
     possible_folders = [
@@ -48,6 +75,7 @@ def get_parent_folder(test_name):
     # no parent folder was identified.
     raise Exception('No parent folder identified.')
 
+
 @contextmanager
 def working_directory(path: Path):
     prev_cwd = os.getcwd()
@@ -63,6 +91,23 @@ def fuzzy_equal(x1, x2, thresh: float) -> bool:
 
 
 def fuzzy_compare_xyz(xyz1, xyz2, thresh: float) -> bool:
+    """
+    Compare that two geometries are roughly equal.
+
+    Parameters
+    ----------
+        xyz1 : str
+            Path to the first xyz file.
+        xyz2 : str
+            Path to the second xyz file.
+        thresh : float
+            The RMSD tolerance used for comparison.
+
+    Returns
+    -------
+        fuzzyEqual : bool
+            Verdict on whether the two geometries are roughly equal.
+    """
     fuzzyEqual = False
     mol1 = mol3D()
     mol1.readfromxyz(xyz1)
@@ -77,41 +122,81 @@ def fuzzy_compare_xyz(xyz1, xyz2, thresh: float) -> bool:
 
 
 def getAllLigands(xyz, transition_metals_only=True):
+    """
+    Get all the ligands of a transition metal complex.
+
+    Parameters
+    ----------
+        xyz : str
+            Path to the xyz file.
+            Assumed to be a transition metal complex.
+        transition_metals_only : bool
+            Whether to only consider transition metals as metals.
+
+    Returns
+    -------
+        ligands : list of mol3D
+            mol3D objects of all ligands.
+    """
     mymol3d = mol3D()
     mymol3d.readfromxyz(xyz)
-    # OUTPUT
-    #   -mol3D: mol3D of all ligands
+    # Assumes only one metal in the molecule,
+    # so [0] is used.
     mm = mymol3d.findMetal(transition_metals_only=transition_metals_only)[0]
     mbonded = mymol3d.getBondedAtoms(mm)
-    ligands = []
-    ligAtoms = []
-    # Get the 1st atom of one ligand
+    ligands = []  # mol3D objects of ligands.
+    ligAtoms = [] # Atom indices identified to be part of a ligand.
+
+    # Get the 1st atom of one ligand.
     for iatom in mbonded:
         if iatom not in ligAtoms:
             lig = [iatom]
             oldlig = []
+
+            # Keep branching out by getting bonded atoms
+            # until ligand does not grow any more.
             while len(lig) > len(oldlig):
-                # make a copy of lig
+                # Make a copy of lig
                 oldlig = lig[:]
                 for i in oldlig:
                     lbonded = mymol3d.getBondedAtoms(i)
                     for j in lbonded:
                         if (j != mm) and (j not in lig):
                             lig.append(j)
+
             newlig = mol3D()
             for i in lig:
                 newlig.addAtom(mymol3d.atoms[i])
                 ligAtoms.append(i)
             ligands.append(newlig)
-    print("Ligand analysis of xyz file: ", xyz)
-    print("There are ", len(ligands), " ligand(s) bonded with metal center\
-            ", mm, " in the complex")
+
+    print(f"Ligand analysis of xyz file: {xyz}")
+    print(f"There are {len(ligands)} ligand(s) bonded with metal center\
+            {mm} in the complex")
     for i in range(0, len(ligands)):
-        print("Number of atoms in ligand # ", i, " : ", ligands[i].natoms)
+        print(f"Number of atoms in ligand # {i} : {ligands[i].natoms}")
     return ligands
 
 
 def getMetalLigBondLength(mymol3d: mol3D, transition_metals_only=True) -> List[float]:
+    """
+    Get all the metal-ligand bond lengths of a transition metal complex.
+
+    Parameters
+    ----------
+        mymol3d : mol3D
+            The molecule to be analyzed.
+            Assumed to be a transition metal complex.
+        transition_metals_only : bool
+            Whether to only consider transition metals as metals.
+
+    Returns
+    -------
+        blength : list of float
+            The bond lengths between the metal and the ligands.
+    """
+    # Assumes only one metal in the molecule, 
+    # so [0] is used.
     mm = mymol3d.findMetal(transition_metals_only=transition_metals_only)[0]
     bonded = mymol3d.getBondedAtoms(mm)
     blength = []
@@ -122,21 +207,57 @@ def getMetalLigBondLength(mymol3d: mol3D, transition_metals_only=True) -> List[f
 
 
 def compareNumAtoms(xyz1, xyz2) -> bool:
-    """Compare number of atoms"""
-    print("Checking total number of atoms")
+    """
+    Compare number of atoms of two geometries.
+
+    Parameters
+    ----------
+        xyz1 : str
+            Path to the first xyz file.
+        xyz2 : str
+            Path to the second xyz file.
+
+    Returns
+    -------
+        passNumAtoms : bool
+            Whether the number of atoms is the same
+            between structures.
+    """
+    print("Checking total number of atoms.")
     mol1 = mol3D()
     mol1.readfromxyz(xyz1)
     mol2 = mol3D()
     mol2.readfromxyz(xyz2)
     # Compare number of atoms
     passNumAtoms = (mol1.natoms == mol2.natoms)
-    print("Pass total number of atoms check: ", passNumAtoms)
+    print(f"Pass total number of atoms check: {passNumAtoms}")
     return passNumAtoms
 
 
 def compareMLBL(xyz1, xyz2, thresh: float, transition_metals_only=True) -> bool:
-    """Compare Metal Ligand Bond Length"""
-    print("Checking metal-ligand bond length")
+    """
+    Compare metal-ligand bond length between two transition metal complexes.
+
+    Parameters
+    ----------
+        xyz1 : str
+            Path to the first xyz file.
+            Assumed to be a transition metal complex.
+        xyz2 : str
+            Path to the second xyz file.
+            Assumed to be a transition metal complex.
+        thresh : float
+            The tolerance used for bond length comparison.
+        transition_metals_only : bool
+            Whether to only consider transition metals as metals.
+
+    Returns
+    -------
+        passMLBL : bool
+            Verdict on whether M-L bond lengths between
+            the two geometries are equal.
+    """
+    print("Checking metal-ligand bond length.")
     mol1 = mol3D()
     mol1.readfromxyz(xyz1)
     mol2 = mol3D()
@@ -144,22 +265,46 @@ def compareMLBL(xyz1, xyz2, thresh: float, transition_metals_only=True) -> bool:
     bl1 = getMetalLigBondLength(mol1, transition_metals_only=transition_metals_only)
     bl2 = getMetalLigBondLength(mol2, transition_metals_only=transition_metals_only)
     passMLBL = True
+
     if len(bl1) != len(bl2):
         print("Error! Number of metal-ligand bonds is different")
         passMLBL = False
     else:
+        # Check each metal-ligand bond length.
+        # Failure on any leads to overall test failure.
         for i in range(0, len(bl1)):
             if not fuzzy_equal(bl1[i], bl2[i], thresh):
-                print("Error! Metal-Ligand bondlength mismatch for bond # ", i)
+                print(f"Error! Metal-ligand bond length mismatch for bond # {i}")
                 passMLBL = False
-    print("Pass metal-ligand bond length check: ", passMLBL)
-    print("Threshold for bondlength difference: ", thresh)
+
+    print(f"Pass metal-ligand bond length check: {passMLBL}")
+    print(f"Threshold for bondlength difference: {thresh}")
+
     return passMLBL
 
 
 def compareLG(xyz1, xyz2, thresh: float, transition_metals_only=True) -> bool:
-    """Compare Ligand Geometry"""
-    print("Checking the Ligand Geometries")
+    """
+    Compare ligand geometries between two transition metal complexes.
+
+    Parameters
+    ----------
+        xyz1 : str
+            Path to the first xyz file.
+            Assumed to be a transition metal complex.
+        xyz2 : str
+            Path to the second xyz file.
+            Assumed to be a transition metal complex.
+        thresh : float
+            The tolerance used for bond length comparison.
+        transition_metals_only : bool
+            Whether to only consider transition metals as metals.
+
+    Returns
+    -------
+        passLG : bool
+            TODO.
+    """
     passLG = True
     ligs1 = getAllLigands(xyz1, transition_metals_only=transition_metals_only)
     ligs2 = getAllLigands(xyz2, transition_metals_only=transition_metals_only)
@@ -180,6 +325,23 @@ def compareLG(xyz1, xyz2, thresh: float, transition_metals_only=True) -> bool:
 
 
 def compareOG(xyz1, xyz2, thresh: float) -> bool:
+    """
+    Comparison of overall geometries of two structures.
+
+    Parameters
+    ----------
+        xyz1 : str
+            Path to the first xyz file.
+        xyz2 : str
+            Path to the second xyz file.
+        thresh : float
+            The RMSD tolerance used for comparison.
+
+    Returns
+    -------
+        passOG : bool
+            Verdict on whether the two geometries are roughly equal.
+    """
     print("Checking the overall geometry.")
     passOG = fuzzy_compare_xyz(xyz1, xyz2, thresh)
     print("Pass overall geometry check: ", passOG)
@@ -187,22 +349,20 @@ def compareOG(xyz1, xyz2, thresh: float) -> bool:
     return passOG
 
 
-def runtest_num_atoms_in_xyz(resource_path_root, xyzfile):
-    parent_folder = get_parent_folder(xyzfile)
-    file_path = resource_path_root / "refs" / parent_folder / f"{xyzfile}.xyz"
-    xyz_file1 = mol3D()
-    xyz_file1.readfromxyz(file_path)
-    xyz_file1.getNumAtoms()
-
-    with open(file_path, 'r') as f:
-        xyz_file2 = f.readlines()
-    num_atoms = int(xyz_file2[0])
-
-    if num_atoms != xyz_file1.getNumAtoms():
-        print('Something is wrong with the number of atoms read from the XYZ file!')
-
-
 def compareGeo(xyz1, xyz2, threshMLBL, threshLG, threshOG, slab=False, transition_metals_only=True):
+    """
+    TODO.
+
+    Parameters
+    ----------
+        TODO : TODO
+            TODO.
+
+    Returns
+    -------
+        TODO : TODO
+            TODO.
+    """
     # Compare number of atoms.
     passNumAtoms = compareNumAtoms(xyz1, xyz2)
     # Compare metal-ligand bond length.
@@ -222,6 +382,19 @@ def compareGeo(xyz1, xyz2, threshMLBL, threshLG, threshOG, slab=False, transitio
 
 
 def comparedict(ref, gen, thresh):
+    """
+    TODO.
+
+    Parameters
+    ----------
+        TODO : TODO
+            TODO.
+
+    Returns
+    -------
+        TODO : TODO
+            TODO.
+    """
     passComp = True
     if not set(ref.keys()) <= set(gen.keys()):
         raise KeyError("Keys in the dictionay has been changed.")
@@ -251,6 +424,19 @@ def jobdir(infile):
 
 
 def parse4test(infile, tmp_path: Path, isMulti: bool = False, extra_args: Dict[str, str] = {}) -> str:
+    """
+    TODO.
+
+    Parameters
+    ----------
+        TODO : TODO
+            TODO.
+
+    Returns
+    -------
+        TODO : TODO
+            TODO.
+    """
     name = jobname(infile)
     f = posixpath.join(tmp_path, os.path.basename(infile))
     newname = str(tmp_path) + "/" + os.path.basename(infile)
@@ -286,6 +472,19 @@ def parse4test(infile, tmp_path: Path, isMulti: bool = False, extra_args: Dict[s
 
 
 def parse4testNoFF(infile, tmp_path: Path, isMulti: bool = False) -> str:
+    """
+    TODO.
+
+    Parameters
+    ----------
+        TODO : TODO
+            TODO.
+
+    Returns
+    -------
+        TODO : TODO
+            TODO.
+    """
     name = jobname(infile)
     newinfile = str(tmp_path / (name + "_noff.in"))
     shutil.copyfile(infile, newinfile)
@@ -293,6 +492,19 @@ def parse4testNoFF(infile, tmp_path: Path, isMulti: bool = False) -> str:
 
 
 def report_to_dict(lines):
+    """
+    TODO.
+
+    Parameters
+    ----------
+        TODO : TODO
+            TODO.
+
+    Returns
+    -------
+        TODO : TODO
+            TODO.
+    """    
     """
     create a dictionary from comma
     separated files
@@ -315,6 +527,19 @@ def report_to_dict(lines):
 
 
 def compare_report_new(report1, report2):
+    """
+    TODO.
+
+    Parameters
+    ----------
+        TODO : TODO
+            TODO.
+
+    Returns
+    -------
+        TODO : TODO
+            TODO.
+    """
     with open(report1, 'r') as f_in:
         data1 = f_in.readlines()
     with open(report2, 'r') as f_in:
@@ -374,6 +599,19 @@ def compare_report_new(report1, report2):
 
 
 def checkMultiFileGen(myjobdir, refdir):
+    """
+    TODO.
+
+    Parameters
+    ----------
+        TODO : TODO
+            TODO.
+
+    Returns
+    -------
+        TODO : TODO
+            TODO.
+    """
     passMultiFileCheck = True
     myfiles = [i for i in os.listdir(myjobdir) if ".xyz" in i]
     reffiles = [i for i in os.listdir(refdir) if ".xyz" in i]
@@ -394,6 +632,19 @@ def checkMultiFileGen(myjobdir, refdir):
 
 
 def compare_qc_input(inp, inp_ref):
+    """
+    TODO.
+
+    Parameters
+    ----------
+        TODO : TODO
+            TODO.
+
+    Returns
+    -------
+        TODO : TODO
+            TODO.
+    """    
     passQcInputCheck = True
     if not os.path.exists(inp_ref):
         return passQcInputCheck
@@ -417,6 +668,19 @@ def compare_qc_input(inp, inp_ref):
 
 
 def runtest(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG, seed=31415):
+    """
+    TODO.
+
+    Parameters
+    ----------
+        TODO : TODO
+            TODO.
+
+    Returns
+    -------
+        TODO : TODO
+            TODO.
+    """
     # Set seeds to eliminate randomness from test results.
     random.seed(seed)
     np.random.seed(seed)
@@ -466,11 +730,15 @@ def runtest_slab(tmp_path, resource_path_root, name, threshOG, extra_files=None)
     Parameters
     ----------
         tmp_path : str
-                tmp folder to run the test
+            tmp folder to run the test.
+        resource_path_root : TODO
+            TODO.
         name : str
-                name of the test
-        axis : threshOG
-                tolerance for RMSD comparison of overall geometries.
+            name of the test
+        threshOG : TODO
+            Tolerance for RMSD comparison of overall geometries.
+        extra_files : TODO
+            TODO.
     """
     infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
     newinfile, _ = parse4test(infile, tmp_path)
@@ -498,11 +766,15 @@ def runtest_molecule_on_slab(tmp_path, resource_path_root, name, threshOG, extra
     Parameters
     ----------
         tmp_path : str
-                tmp folder to run the test
+            tmp folder to run the test.
+        resource_path_root : TODO
+            TODO.
         name : str
-                name of the test
-        axis : threshOG
-                tolerance for RMSD comparison of overall geometries.
+            name of the test
+        threshOG : TODO
+            Tolerance for RMSD comparison of overall geometries.
+        extra_files : TODO
+            TODO.
     """
     infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
     newinfile, _ = parse4test(infile, tmp_path, extra_args={
@@ -527,6 +799,19 @@ def runtest_molecule_on_slab(tmp_path, resource_path_root, name, threshOG, extra
 
 
 def runtestgeo(tmp_path, resource_path_root, name, thresh, deleteH=True, geo_type="oct"):
+    """
+    TODO.
+
+    Parameters
+    ----------
+        TODO : TODO
+            TODO.
+
+    Returns
+    -------
+        TODO : TODO
+            TODO.
+    """
     initgeo = resource_path_root / "inputs" / "geocheck" / name / "init.xyz"
     optgeo = resource_path_root / "inputs" / "geocheck" / name / "opt.xyz"
     refjson = resource_path_root / "refs" / "geocheck" / name / "ref.json"
@@ -554,6 +839,19 @@ def runtestgeo(tmp_path, resource_path_root, name, thresh, deleteH=True, geo_typ
 
 
 def runtestgeo_optonly(resource_path_root, name, thresh, deleteH=True, geo_type="oct"):
+    """
+    TODO.
+
+    Parameters
+    ----------
+        TODO : TODO
+            TODO.
+
+    Returns
+    -------
+        TODO : TODO
+            TODO.
+    """
     optgeo = resource_path_root / "inputs" / "geocheck" / name / "opt.xyz"
     refjson = resource_path_root / "refs" / "geocheck" / name / "ref.json"
     mymol = mol3D()
@@ -570,6 +868,19 @@ def runtestgeo_optonly(resource_path_root, name, thresh, deleteH=True, geo_type=
 
 
 def runtestNoFF(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG):
+    """
+    TODO.
+
+    Parameters
+    ----------
+        TODO : TODO
+            TODO.
+
+    Returns
+    -------
+        TODO : TODO
+            TODO.
+    """
     infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
     newinfile, myjobdir = parse4testNoFF(infile, tmp_path)
     [passNumAtoms, passMLBL, passLG, passOG, pass_report,
@@ -612,6 +923,19 @@ def runtestNoFF(tmp_path, resource_path_root, name, threshMLBL, threshLG, thresh
 
 
 def runtest_reportonly(tmp_path, resource_path_root, name, seed=31415):
+    """
+    TODO.
+
+    Parameters
+    ----------
+        TODO : TODO
+            TODO.
+
+    Returns
+    -------
+        TODO : TODO
+            TODO.
+    """    
     # Set seeds to eliminate randomness from test results.
     random.seed(seed)
     np.random.seed(seed)
@@ -648,6 +972,19 @@ def runtest_reportonly(tmp_path, resource_path_root, name, seed=31415):
 
 
 def runtestMulti(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG):
+    """
+    TODO.
+
+    Parameters
+    ----------
+        TODO : TODO
+            TODO.
+
+    Returns
+    -------
+        TODO : TODO
+            TODO.
+    """
     infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
     newinfile, myjobdir = parse4test(infile, tmp_path, True)
     args = ['main.py', '-i', newinfile]
