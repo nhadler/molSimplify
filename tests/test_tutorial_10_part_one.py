@@ -9,7 +9,7 @@ def test_tutorial_10_part_one(tmp_path, resource_path_root):
     [passNumAtoms, passMLBL, passLG, passOG, pass_report, pass_qcin] = hp.runtest(
         tmp_path, resource_path_root, testName, threshMLBL, threshLG, threshOG)
     assert passNumAtoms
-    # Not checking for passMLBL because there are atoms very close to the cutoff
+    # Not checking for passMLBL because there are atoms very close to the cutoff.
     # assert passMLBL
     assert passLG
     assert passOG

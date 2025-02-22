@@ -17,15 +17,42 @@ import posixpath
 
 
 def is_number(s: str) -> bool:
-    """check whether the string is a integral/float/scientific"""
+    """
+    Check whether the string is a integral/float/scientific.
+
+    Parameters
+    ----------
+        s : str
+            The string to be assessed.
+
+    Returns
+    -------
+        is_num : bool
+            Flag indicating whether s is a number.
+    """
     try:
         float(s)
-        return True
+        is_num = True
     except ValueError:
-        return False
+        is_num = False
+    return is_num
 
 
 def get_parent_folder(test_name):
+    """
+    Determine the parent folder name based on the test name.
+
+    Parameters
+    ----------
+        test_name : str
+            The name of the test.
+            E.g., "example_1".
+
+    Returns
+    -------
+        f : str
+            The name of the parent folder.
+    """
     # Getting the name of the parent folder for reference results.
     # Parent folders are named in line with test names.
     possible_folders = [
@@ -48,6 +75,7 @@ def get_parent_folder(test_name):
     # no parent folder was identified.
     raise Exception('No parent folder identified.')
 
+
 @contextmanager
 def working_directory(path: Path):
     prev_cwd = os.getcwd()
@@ -63,6 +91,23 @@ def fuzzy_equal(x1, x2, thresh: float) -> bool:
 
 
 def fuzzy_compare_xyz(xyz1, xyz2, thresh: float) -> bool:
+    """
+    Compare that two geometries are roughly equal.
+
+    Parameters
+    ----------
+        xyz1 : str
+            Path to the first xyz file.
+        xyz2 : str
+            Path to the second xyz file.
+        thresh : float
+            The RMSD tolerance used for comparison.
+
+    Returns
+    -------
+        fuzzyEqual : bool
+            Verdict on whether the two geometries are roughly equal.
+    """
     fuzzyEqual = False
     mol1 = mol3D()
     mol1.readfromxyz(xyz1)
@@ -77,41 +122,81 @@ def fuzzy_compare_xyz(xyz1, xyz2, thresh: float) -> bool:
 
 
 def getAllLigands(xyz, transition_metals_only=True):
+    """
+    Get all the ligands of a transition metal complex.
+
+    Parameters
+    ----------
+        xyz : str
+            Path to the xyz file.
+            Assumed to be a transition metal complex.
+        transition_metals_only : bool
+            Whether to only consider transition metals as metals.
+
+    Returns
+    -------
+        ligands : list of mol3D
+            mol3D objects of all ligands.
+    """
     mymol3d = mol3D()
     mymol3d.readfromxyz(xyz)
-    # OUTPUT
-    #   -mol3D: mol3D of all ligands
+    # Assumes only one metal in the molecule,
+    # so [0] is used.
     mm = mymol3d.findMetal(transition_metals_only=transition_metals_only)[0]
     mbonded = mymol3d.getBondedAtoms(mm)
-    ligands = []
-    ligAtoms = []
-    # Get the 1st atom of one ligand
+    ligands = []  # mol3D objects of ligands.
+    ligAtoms = [] # Atom indices identified to be part of a ligand.
+
+    # Get the 1st atom of one ligand.
     for iatom in mbonded:
         if iatom not in ligAtoms:
             lig = [iatom]
             oldlig = []
+
+            # Keep branching out by getting bonded atoms
+            # until ligand does not grow any more.
             while len(lig) > len(oldlig):
-                # make a copy of lig
+                # Make a copy of lig.
                 oldlig = lig[:]
                 for i in oldlig:
                     lbonded = mymol3d.getBondedAtoms(i)
                     for j in lbonded:
                         if (j != mm) and (j not in lig):
                             lig.append(j)
+
             newlig = mol3D()
             for i in lig:
                 newlig.addAtom(mymol3d.atoms[i])
                 ligAtoms.append(i)
             ligands.append(newlig)
-    print("Ligand analysis of xyz file: ", xyz)
-    print("There are ", len(ligands), " ligand(s) bonded with metal center\
-            ", mm, " in the complex")
+
+    print(f"Ligand analysis of xyz file: {xyz}")
+    print(f"There are {len(ligands)} ligand(s) bonded with metal center\
+            {mm} in the complex")
     for i in range(0, len(ligands)):
-        print("Number of atoms in ligand # ", i, " : ", ligands[i].natoms)
+        print(f"Number of atoms in ligand # {i} : {ligands[i].natoms}")
     return ligands
 
 
 def getMetalLigBondLength(mymol3d: mol3D, transition_metals_only=True) -> List[float]:
+    """
+    Get all the metal-ligand bond lengths of a transition metal complex.
+
+    Parameters
+    ----------
+        mymol3d : mol3D
+            The molecule to be analyzed.
+            Assumed to be a transition metal complex.
+        transition_metals_only : bool
+            Whether to only consider transition metals as metals.
+
+    Returns
+    -------
+        blength : list of float
+            The bond lengths between the metal and the ligands.
+    """
+    # Assumes only one metal in the molecule,
+    # so [0] is used.
     mm = mymol3d.findMetal(transition_metals_only=transition_metals_only)[0]
     bonded = mymol3d.getBondedAtoms(mm)
     blength = []
@@ -122,21 +207,57 @@ def getMetalLigBondLength(mymol3d: mol3D, transition_metals_only=True) -> List[f
 
 
 def compareNumAtoms(xyz1, xyz2) -> bool:
-    """Compare number of atoms"""
-    print("Checking total number of atoms")
+    """
+    Compare number of atoms of two geometries.
+
+    Parameters
+    ----------
+        xyz1 : str
+            Path to the first xyz file.
+        xyz2 : str
+            Path to the second xyz file.
+
+    Returns
+    -------
+        passNumAtoms : bool
+            Whether the number of atoms is the same
+            between the two structures.
+    """
+    print("Checking total number of atoms.")
     mol1 = mol3D()
     mol1.readfromxyz(xyz1)
     mol2 = mol3D()
     mol2.readfromxyz(xyz2)
     # Compare number of atoms
     passNumAtoms = (mol1.natoms == mol2.natoms)
-    print("Pass total number of atoms check: ", passNumAtoms)
+    print(f"Pass total number of atoms check: {passNumAtoms}")
     return passNumAtoms
 
 
 def compareMLBL(xyz1, xyz2, thresh: float, transition_metals_only=True) -> bool:
-    """Compare Metal Ligand Bond Length"""
-    print("Checking metal-ligand bond length")
+    """
+    Compare metal-ligand bond lengths between two transition metal complexes.
+
+    Parameters
+    ----------
+        xyz1 : str
+            Path to the first xyz file.
+            Assumed to be a transition metal complex.
+        xyz2 : str
+            Path to the second xyz file.
+            Assumed to be a transition metal complex.
+        thresh : float
+            The tolerance used for bond length comparison.
+        transition_metals_only : bool
+            Whether to only consider transition metals as metals.
+
+    Returns
+    -------
+        passMLBL : bool
+            Verdict on whether M-L bond lengths between
+            the two geometries are equal.
+    """
+    print("Checking metal-ligand bond length.")
     mol1 = mol3D()
     mol1.readfromxyz(xyz1)
     mol2 = mol3D()
@@ -144,42 +265,84 @@ def compareMLBL(xyz1, xyz2, thresh: float, transition_metals_only=True) -> bool:
     bl1 = getMetalLigBondLength(mol1, transition_metals_only=transition_metals_only)
     bl2 = getMetalLigBondLength(mol2, transition_metals_only=transition_metals_only)
     passMLBL = True
+
     if len(bl1) != len(bl2):
         print("Error! Number of metal-ligand bonds is different")
         passMLBL = False
     else:
+        # Check each metal-ligand bond length.
+        # Failure on any leads to overall test failure.
         for i in range(0, len(bl1)):
             if not fuzzy_equal(bl1[i], bl2[i], thresh):
-                print("Error! Metal-Ligand bondlength mismatch for bond # ", i)
+                print(f"Error! Metal-ligand bond length mismatch for bond # {i}")
                 passMLBL = False
-    print("Pass metal-ligand bond length check: ", passMLBL)
-    print("Threshold for bondlength difference: ", thresh)
+
+    print(f"Pass metal-ligand bond length check: {passMLBL}")
+    print(f"Threshold for bond length difference: {thresh}")
+
     return passMLBL
 
 
 def compareLG(xyz1, xyz2, thresh: float, transition_metals_only=True) -> bool:
-    """Compare Ligand Geometry"""
-    print("Checking the Ligand Geometries")
+    """
+    Compare ligand geometries between two transition metal complexes.
+
+    Parameters
+    ----------
+        xyz1 : str
+            Path to the first xyz file.
+            Assumed to be a transition metal complex.
+        xyz2 : str
+            Path to the second xyz file.
+            Assumed to be a transition metal complex.
+        thresh : float
+            The RMSD tolerance used for ligand comparison.
+        transition_metals_only : bool
+            Whether to only consider transition metals as metals.
+
+    Returns
+    -------
+        passLG : bool
+            Verdict on whether ligand geometries between
+            the two complexes are equal.
+    """
     passLG = True
     ligs1 = getAllLigands(xyz1, transition_metals_only=transition_metals_only)
     ligs2 = getAllLigands(xyz2, transition_metals_only=transition_metals_only)
     if len(ligs1) != len(ligs2):
         passLG = False
         return passLG
-    for i in range(0, len(ligs1)):  # Iterate over the ligands
-        print("Checking geometry for ligand # ", i)
+    for i in range(0, len(ligs1)):  # Iterate over the ligands.
+        print(f"Checking geometry for ligand # {i}")
         ligs1[i], U, d0, d1 = kabsch(ligs1[i], ligs2[i])
         rmsd12 = ligs1[i].rmsd(ligs2[i])
         print(f'rmsd is {rmsd12:.2f}')
         if rmsd12 > thresh:
             passLG = False
             return passLG
-    print("Pass ligand geometry check: ", passLG)
-    print("Threshold for ligand geometry RMSD difference: ", thresh)
+    print(f"Pass ligand geometry check: {passLG}")
+    print(f"Threshold for ligand geometry RMSD difference: {thresh}")
     return passLG
 
 
 def compareOG(xyz1, xyz2, thresh: float) -> bool:
+    """
+    Comparison of overall geometries of two structures.
+
+    Parameters
+    ----------
+        xyz1 : str
+            Path to the first xyz file.
+        xyz2 : str
+            Path to the second xyz file.
+        thresh : float
+            The RMSD tolerance used for overall geometry comparison.
+
+    Returns
+    -------
+        passOG : bool
+            Verdict on whether the two geometries are roughly equal overall.
+    """
     print("Checking the overall geometry.")
     passOG = fuzzy_compare_xyz(xyz1, xyz2, thresh)
     print("Pass overall geometry check: ", passOG)
@@ -187,22 +350,43 @@ def compareOG(xyz1, xyz2, thresh: float) -> bool:
     return passOG
 
 
-def runtest_num_atoms_in_xyz(resource_path_root, xyzfile):
-    parent_folder = get_parent_folder(xyzfile)
-    file_path = resource_path_root / "refs" / parent_folder / f"{xyzfile}.xyz"
-    xyz_file1 = mol3D()
-    xyz_file1.readfromxyz(file_path)
-    xyz_file1.getNumAtoms()
-
-    with open(file_path, 'r') as f:
-        xyz_file2 = f.readlines()
-    num_atoms = int(xyz_file2[0])
-
-    if num_atoms != xyz_file1.getNumAtoms():
-        print('Something is wrong with the number of atoms read from the XYZ file!')
-
-
 def compareGeo(xyz1, xyz2, threshMLBL, threshLG, threshOG, slab=False, transition_metals_only=True):
+    """
+    Thorough comparison of two geometries, considering number of atoms and overall geometries.
+    For non-slab geometries, also considering metal-ligand bond lengths and ligand geometries.
+
+    Parameters
+    ----------
+        xyz1 : str
+            Path to the first xyz file.
+        xyz2 : str
+            Path to the second xyz file.
+        threshMLBL : float
+            The tolerance used for bond length comparison.
+        threshLG : float
+            The RMSD tolerance used for ligand comparison.
+        threshOG : float
+            The RMSD tolerance used for overall geometry comparison.
+        slab : bool
+            Flag indicating whether the geometries are slabs.
+            Reduces the scope fo the checks.
+        transition_metals_only : bool
+            Whether to only consider transition metals as metals.
+
+    Returns
+    -------
+        passNumAtoms : bool
+            Whether the number of atoms is the same
+            between the two structures.
+        passMLBL : bool
+            Verdict on whether M-L bond lengths between
+            the two geometries are equal.
+        passLG : bool
+            Verdict on whether ligand geometries between
+            the two complexes are equal.
+        passOG : bool
+            Verdict on whether the two geometries are roughly equal overall.
+    """
     # Compare number of atoms.
     passNumAtoms = compareNumAtoms(xyz1, xyz2)
     # Compare metal-ligand bond length.
@@ -216,21 +400,41 @@ def compareGeo(xyz1, xyz2, threshMLBL, threshLG, threshOG, slab=False, transitio
     # ANN set bond length test
     # covalent radii test
     if not slab:
-        return [passNumAtoms, passMLBL, passLG, passOG]
+        return passNumAtoms, passMLBL, passLG, passOG
     else:
-        return [passNumAtoms, passOG]
+        return passNumAtoms, passOG
 
 
 def comparedict(ref, gen, thresh):
+    """
+    Compares the two dictionaries given as inputs
+    to see if they are equivalent.
+
+    Parameters
+    ----------
+        ref : dict
+            The reference dictionary.
+        gen : dict
+            The newly generated dictionary.
+        thresh : float
+            The threshold for float comparison,
+            for numerical dictionary items.
+
+    Returns
+    -------
+        passComp : bool
+            Whether the dictionaries are found to be equivalent.
+    """
     passComp = True
     if not set(ref.keys()) <= set(gen.keys()):
-        raise KeyError("Keys in the dictionay has been changed.")
+        raise KeyError("Keys in the dictionary are not equivalent.")
     for key in ref:
-        try:
+        if is_number(ref[key]):
             valref, valgen = float(ref[key]), float(gen[key])
             if not abs(valref - valgen) < thresh:
                 passComp = False
-        except ValueError:
+        else:
+            # Items for this key are strings, not numbers.
             valref, valgen = str(ref[key]), str(gen[key])
             if not valgen == valref:
                 passComp = False
@@ -250,7 +454,27 @@ def jobdir(infile):
     return mydir
 
 
-def parse4test(infile, tmp_path: Path, isMulti: bool = False, extra_args: Dict[str, str] = {}) -> str:
+def parse4test(infile, tmp_path: Path, extra_args: Dict[str, str] = {}) -> str:
+    """
+    Parse the in file and rewrite it,
+    taking into account extra_args.
+
+    Parameters
+    ----------
+        infile : str
+            The path to the in file.
+        tmp_path : pathlib.PosixPath
+            Pre-defined pytest fixture. Temporary folder path to run the test.
+        extra_args : dict
+            Extra arguments to be written to the new job in file.
+
+    Returns
+    -------
+        newname : str
+            The path to the new job in file.
+        jobdir : str
+            The job directory.
+    """
     name = jobname(infile)
     f = posixpath.join(tmp_path, os.path.basename(infile))
     newname = str(tmp_path) + "/" + os.path.basename(infile)
@@ -261,8 +485,8 @@ def parse4test(infile, tmp_path: Path, isMulti: bool = False, extra_args: Dict[s
     newdata = ""
     for line in data:
         if line.split()[0] in extra_args.keys():
-            newdata += (line.split()[0] + ' ' + str(os.path.dirname(infile))
-                        + '/' + str(extra_args[line.split()[0]]) + '\n')
+            newdata += f'{line.split()[0]} \
+            {os.path.dirname(infile)}/{extra_args[line.split()[0]]}\n'
             continue
         if not (("-jobdir" in line) or ("-name" in line)):
             newdata += line
@@ -275,8 +499,7 @@ def parse4test(infile, tmp_path: Path, isMulti: bool = False, extra_args: Dict[s
     newdata += "-jobdir " + name + "\n"
     print('=====')
     print(newdata)
-    if not isMulti:
-        newdata += "-name " + name + "\n"
+    newdata += "-name " + name + "\n"
     print(newdata)
     with open(newname, 'w') as fi:
         fi.write(newdata)
@@ -285,17 +508,46 @@ def parse4test(infile, tmp_path: Path, isMulti: bool = False, extra_args: Dict[s
     return newname, jobdir
 
 
-def parse4testNoFF(infile, tmp_path: Path, isMulti: bool = False) -> str:
+def parse4testNoFF(infile, tmp_path: Path) -> str:
+    """
+    Parse the in file and rewrite it.
+    Similar to parse4test, but with
+    ffoption set to no.
+
+    Parameters
+    ----------
+        infile : str
+            The path to the in file.
+        tmp_path : pathlib.PosixPath
+            Pre-defined pytest fixture. Temporary folder path to run the test.
+
+    Returns
+    -------
+        newname : str
+            The path to the new job in file.
+        jobdir : str
+            The job directory.
+    """
     name = jobname(infile)
     newinfile = str(tmp_path / (name + "_noff.in"))
     shutil.copyfile(infile, newinfile)
-    return parse4test(newinfile, tmp_path, isMulti, extra_args={"-ffoption": "N"})
+    newname, jobdir = parse4test(newinfile, tmp_path, extra_args={"-ffoption": "N"})
+    return newname, jobdir
 
 
 def report_to_dict(lines):
     """
-    create a dictionary from comma
-    separated files
+    Create a dictionary from comma-separated files.
+
+    Parameters
+    ----------
+        lines : list of str
+            Contents of a file, obtained with readlines().
+
+    Returns
+    -------
+        d : dict
+            Dictionary reflecting the contents of lines.
     """
     d = dict()
     for line in lines:
@@ -304,102 +556,107 @@ def report_to_dict(lines):
             d[key] = float(val.strip('[]'))
         except ValueError:
             d[key] = str(val.strip('[]'))
-    # extra proc for ANN_bond list:
+    # Extra step for ANN_bond list:
     if 'ANN_bondl' in d.keys():
         d['ANN_bondl'] = [float(i.strip('[]')) for i in d['ANN_bondl'].split()]
-    return (d)
-
-
-# compare the report, split key and values, do
-# fuzzy comparison on the values
+    return d
 
 
 def compare_report_new(report1, report2):
+    """
+    Compare the reports, split key and values, do
+    fuzzy comparison on the values.
+
+    Parameters
+    ----------
+        report1 : str
+            Path to first report file.
+        report2 : str
+            Path to second report file.
+
+    Returns
+    -------
+        are_equal : bool
+            Verdict on whether the reports are equal.
+    """
     with open(report1, 'r') as f_in:
         data1 = f_in.readlines()
     with open(report2, 'r') as f_in:
         data2 = f_in.readlines()
+
     if data1 and data2:
-        Equal = True
+        are_equal = True
         dict1 = report_to_dict(data1)
         dict2 = report_to_dict(data2)
     else:
-        Equal = False
-        print('File not found:')
+        are_equal = False
+        print('File not found.')
         if not data1:
-            print(f'missing: {report1}')
+            print(f'Missing: {report1}')
         if not data2:
-            print(f'missing: {report2}')
-    if Equal:
+            print(f'Missing: {report2}')
 
+    if are_equal:
         for k in dict1.keys():
-            if Equal:
+            if are_equal:
                 val1 = dict1[k]
                 if k not in dict2.keys():
-                    Equal = False
+                    are_equal = False
                     print("Report compare failed for ", report1, report2)
                     print(f"keys {k} not present in {report2}")
                 else:
                     val2 = dict2[k]
 
                     if not k == "ANN_bondl":
-                        # see whether the values are numbers or text
+                        # See whether the values are numbers or text.
                         if is_number(val1) and is_number(val2):
-                            Equal = fuzzy_equal(val1, val2, 1e-4)
+                            are_equal = fuzzy_equal(val1, val2, 1e-4)
                         else:
-                            Equal = (val1 == val2)
-                        if not Equal:
+                            are_equal = (val1 == val2)
+                        if not are_equal:
                             print("Report compare failed for ",
                                   report1, report2)
                             print("Values don't match for key", k)
                             print([val1, val2])
                     else:
-                        # loop over ANN bonds?
-                        # see whether the values are numbers or text
-                        for ii, v in enumerate(val1):
-                            Equal = fuzzy_equal(v, val2[ii], 1e-4)
-                        if not Equal:
+                        # Loop over ANN bonds?
+                        # See whether the values are numbers or text.
+                        for v1, v2 in zip(val1, val2):
+                            are_equal = fuzzy_equal(v1, v2, 1e-4)
+                        if not are_equal:
                             print("Report compare failed for ",
                                   report1, report2)
                             print("Values don't match for key", k)
                             print([val1, val2])
             else:
                 break
-    return Equal
 
-
-# When generating multiple files from the 1 input file
-# Compare the test directory and reference directory for
-# Number of xyz file, xyz file names
-
-
-def checkMultiFileGen(myjobdir, refdir):
-    passMultiFileCheck = True
-    myfiles = [i for i in os.listdir(myjobdir) if ".xyz" in i]
-    reffiles = [i for i in os.listdir(refdir) if ".xyz" in i]
-    print(f"Run directory: {myjobdir}")
-    print(f"Generated xyz: {myfiles}")
-    print(f"Reference directory: {refdir}")
-    print(f"Ref xyz: {reffiles}")
-    print(f"Generated {len(myfiles)} files, expecting {len(reffiles)}")
-    if len(myfiles) != len(reffiles):
-        passMultiFileCheck = False
-        print("Error! Numbers don't match!")
-    else:
-        for ref in reffiles:
-            if ref not in myfiles:
-                print(f"xyz file {ref} is missing in generated file folder")
-                passMultiFileCheck = False
-    return [passMultiFileCheck, myfiles]
+    return are_equal
 
 
 def compare_qc_input(inp, inp_ref):
+    """
+    Compare two quantum chemistry code input files
+    to determine if they are equal.
+
+    Parameters
+    ----------
+        inp : str
+            The path to the quantum chemistry (qc) code input file.
+        inp_ref : pathlib.PosixPath
+            The path to the reference qc code input file.
+
+    Returns
+    -------
+        passQcInputCheck : bool
+            Verdict on whether qc input files are equal.
+    """
     passQcInputCheck = True
     if not os.path.exists(inp_ref):
         return passQcInputCheck
     elif os.path.exists(inp_ref) and (not os.path.exists(inp)):
         passQcInputCheck = False
-        print(f"{inp} not found")
+        print(f"{inp} not found.")
         return passQcInputCheck
 
     with open(inp, 'r') as f_in:
@@ -417,6 +674,48 @@ def compare_qc_input(inp, inp_ref):
 
 
 def runtest(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG, seed=31415):
+    """
+    Performs test for specified test name.
+
+    Parameters
+    ----------
+        tmp_path : pathlib.PosixPath
+            Pre-defined pytest fixture. Temporary folder path to run the test.
+        resource_path_root : pathlib.PosixPath
+            Variable from pytest-resource-path.
+            Points to molSimplify/tests/testresources.
+        name : str
+            The name of the test.
+        threshMLBL : float
+            The tolerance used for bond length comparison.
+        threshLG : float
+            The RMSD tolerance used for ligand comparison.
+        threshOG : float
+            The RMSD tolerance used for overall geometry comparison.
+        seed : int
+            The random seed.
+
+    Returns
+    -------
+        passNumAtoms : bool
+            Whether the number of atoms is the same
+            between the output and reference structures.
+        passMLBL : bool
+            Verdict on whether M-L bond lengths between
+            the output and reference structures are equal.
+        passLG : bool
+            Verdict on whether ligand geometries between
+            the output and reference structures are equal.
+        passOG : bool
+            Verdict on whether the geometries of the
+            output and reference are roughly equal overall.
+        pass_report : bool
+            Verdict on whether the output and reference
+            reports are equal.
+        pass_qcin : bool
+            Verdict on whether the output and reference
+            qc input files are equal.
+    """
     # Set seeds to eliminate randomness from test results.
     random.seed(seed)
     np.random.seed(seed)
@@ -456,7 +755,7 @@ def runtest(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG, 
     print("Reference qc input file: ", ref_qcin)
     print("Test qc input file:", output_qcin)
     print("Qc input status:", pass_qcin)
-    return [passNumAtoms, passMLBL, passLG, passOG, pass_report, pass_qcin]
+    return passNumAtoms, passMLBL, passLG, passOG, pass_report, pass_qcin
 
 
 def runtest_slab(tmp_path, resource_path_root, name, threshOG, extra_files=None):
@@ -465,12 +764,26 @@ def runtest_slab(tmp_path, resource_path_root, name, threshOG, extra_files=None)
 
     Parameters
     ----------
-        tmp_path : str
-                tmp folder to run the test
+        tmp_path : pathlib.PosixPath
+            Pre-defined pytest fixture. Temporary folder path to run the test.
+        resource_path_root : pathlib.PosixPath
+            Variable from pytest-resource-path.
+            Points to molSimplify/tests/testresources.
         name : str
-                name of the test
-        axis : threshOG
-                tolerance for RMSD comparison of overall geometries.
+            The name of the test.
+        threshOG : float
+            Tolerance for RMSD comparison of overall geometries.
+        extra_files : list of str
+            Extra files to be copied to the test directory.
+
+    Returns
+    -------
+        passNumAtoms : bool
+            Whether the number of atoms is the same
+            between the output and reference structures.
+        passOG : bool
+            Verdict on whether the geometries of the
+            output and reference are roughly equal overall.
     """
     infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
     newinfile, _ = parse4test(infile, tmp_path)
@@ -488,7 +801,7 @@ def runtest_slab(tmp_path, resource_path_root, name, threshOG, extra_files=None)
     pass_xyz = compareGeo(output_xyz, ref_xyz, threshMLBL=0, threshLG=0,
                           threshOG=threshOG, slab=True)
     [passNumAtoms, passOG] = pass_xyz
-    return [passNumAtoms, passOG]
+    return passNumAtoms, passOG
 
 
 def runtest_molecule_on_slab(tmp_path, resource_path_root, name, threshOG, extra_files=None):
@@ -497,12 +810,26 @@ def runtest_molecule_on_slab(tmp_path, resource_path_root, name, threshOG, extra
 
     Parameters
     ----------
-        tmp_path : str
-                tmp folder to run the test
+        tmp_path : pathlib.PosixPath
+            Pre-defined pytest fixture. Temporary folder path to run the test.
+        resource_path_root : pathlib.PosixPath
+            Variable from pytest-resource-path.
+            Points to molSimplify/tests/testresources.
         name : str
-                name of the test
-        axis : threshOG
-                tolerance for RMSD comparison of overall geometries.
+            The name of the test.
+        threshOG : float
+            Tolerance for RMSD comparison of overall geometries.
+        extra_files : list of str
+            Extra files to be copied to the test directory.
+
+    Returns
+    -------
+        passNumAtoms : bool
+            Whether the number of atoms is the same
+            between the output and reference structures.
+        passOG : bool
+            Verdict on whether the geometries of the
+            output and reference are roughly equal overall.
     """
     infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
     newinfile, _ = parse4test(infile, tmp_path, extra_args={
@@ -523,10 +850,37 @@ def runtest_molecule_on_slab(tmp_path, resource_path_root, name, threshOG, extra
     pass_xyz = compareGeo(output_xyz, ref_xyz, threshMLBL=0, threshLG=0,
                           threshOG=threshOG, slab=True)
     [passNumAtoms, passOG] = pass_xyz
-    return [passNumAtoms, passOG]
+    return passNumAtoms, passOG
 
 
 def runtestgeo(tmp_path, resource_path_root, name, thresh, deleteH=True, geo_type="oct"):
+    """
+    Performs test comparing dictionary of measurements of geometry
+    generated by IsOct or IsStructure against a reference.
+
+    Parameters
+    ----------
+        tmp_path : pathlib.PosixPath
+            Pre-defined pytest fixture. Temporary folder path to run the test.
+        resource_path_root : pathlib.PosixPath
+            Variable from pytest-resource-path.
+            Points to molSimplify/tests/testresources.
+        name : str
+            The name of the test.
+        thresh : float
+            The threshold for float comparison,
+            for numerical dictionary items.
+        deleteH : bool, optional
+            Flag to delete Hs in ligand comparison. Default is True.
+        geo_type : str
+            The geometry type.
+
+    Returns
+    -------
+        passGeo : bool
+            Whether the dictionaries of the reference and the output
+            are found to be equivalent.
+    """
     initgeo = resource_path_root / "inputs" / "geocheck" / name / "init.xyz"
     optgeo = resource_path_root / "inputs" / "geocheck" / name / "opt.xyz"
     refjson = resource_path_root / "refs" / "geocheck" / name / "ref.json"
@@ -553,23 +907,47 @@ def runtestgeo(tmp_path, resource_path_root, name, thresh, deleteH=True, geo_typ
     return passGeo
 
 
-def runtestgeo_optonly(resource_path_root, name, thresh, deleteH=True, geo_type="oct"):
-    optgeo = resource_path_root / "inputs" / "geocheck" / name / "opt.xyz"
-    refjson = resource_path_root / "refs" / "geocheck" / name / "ref.json"
-    mymol = mol3D()
-    mymol.readfromxyz(optgeo)
-    if geo_type == "oct":
-        _, _, dict_struct_info = mymol.IsOct(debug=False,
-                                             flag_deleteH=deleteH)
-        with open(refjson, "r") as fo:
-            dict_ref = json.load(fo)
-        passGeo = comparedict(dict_ref, dict_struct_info, thresh)
-        return passGeo
-    else:
-        raise NotImplementedError('Only octahedral geometries supported for now')
-
-
 def runtestNoFF(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG):
+    """
+    Performs test for specified test name, with no force field applied.
+
+    Parameters
+    ----------
+        tmp_path : pathlib.PosixPath
+            Pre-defined pytest fixture. Temporary folder path to run the test.
+        resource_path_root : pathlib.PosixPath
+            Variable from pytest-resource-path.
+            Points to molSimplify/tests/testresources.
+        name : str
+            The name of the test.
+        threshMLBL : float
+            The tolerance used for bond length comparison.
+        threshLG : float
+            The RMSD tolerance used for ligand comparison.
+        threshOG : float
+            The RMSD tolerance used for overall geometry comparison.
+
+    Returns
+    -------
+        passNumAtoms : bool
+            Whether the number of atoms is the same
+            between the output and reference structures.
+        passMLBL : bool
+            Verdict on whether M-L bond lengths between
+            the output and reference structures are equal.
+        passLG : bool
+            Verdict on whether ligand geometries between
+            the output and reference structures are equal.
+        passOG : bool
+            Verdict on whether the geometries of the
+            output and reference are roughly equal overall.
+        pass_report : bool
+            Verdict on whether the output and reference
+            reports are equal.
+        pass_qcin : bool
+            Verdict on whether the output and reference
+            qc input files are equal.
+    """
     infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
     newinfile, myjobdir = parse4testNoFF(infile, tmp_path)
     [passNumAtoms, passMLBL, passLG, passOG, pass_report,
@@ -608,10 +986,31 @@ def runtestNoFF(tmp_path, resource_path_root, name, threshMLBL, threshLG, thresh
         print("Reference qc input file: ", ref_qcin)
         print("Test qc input file: ", output_qcin)
         print("Qc input status: ", pass_qcin)
-    return [passNumAtoms, passMLBL, passLG, passOG, pass_report, pass_qcin]
+    return passNumAtoms, passMLBL, passLG, passOG, pass_report, pass_qcin
 
 
 def runtest_reportonly(tmp_path, resource_path_root, name, seed=31415):
+    """
+    Performs test for specified test name, only looking at report files.
+
+    Parameters
+    ----------
+        tmp_path : pathlib.PosixPath
+            Pre-defined pytest fixture. Temporary folder path to run the test.
+        resource_path_root : pathlib.PosixPath
+            Variable from pytest-resource-path.
+            Points to molSimplify/tests/testresources.
+        name : str
+            The name of the test.
+        seed : int
+            The random seed.
+
+    Returns
+    -------
+        pass_report : bool
+            Verdict on whether the output and reference
+            reports are equal.
+    """
     # Set seeds to eliminate randomness from test results.
     random.seed(seed)
     np.random.seed(seed)
@@ -645,39 +1044,3 @@ def runtest_reportonly(tmp_path, resource_path_root, name, seed=31415):
     print("Reference report file: ", ref_report)
     print("Reference report status: ", pass_report)
     return pass_report
-
-
-def runtestMulti(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG):
-    infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
-    newinfile, myjobdir = parse4test(infile, tmp_path, True)
-    args = ['main.py', '-i', newinfile]
-    with working_directory(tmp_path):
-        startgen(args, False, False)
-    print("Test input file: ", newinfile)
-    print("Test output files are generated in ", myjobdir)
-    refdir = resource_path_root / "refs" / name
-    [passMultiFileCheck, myfiles] = checkMultiFileGen(myjobdir, refdir)
-    pass_structures = []
-    if not passMultiFileCheck:
-        print("Test failed for checking number and names of generated files. "
-              "Test ends")
-    else:
-        print("Checking each generated structure...")
-        for f in myfiles:
-            if ".xyz" in f:
-                r = f.replace(".xyz", ".report")
-                output_xyz = f"{myjobdir}/{f}"
-                ref_xyz = f"{refdir}/{f}"
-                output_report = f"{myjobdir}/{r}"
-                ref_report = f"{refdir}/{r}"
-                print("Output xyz file: ", output_xyz)
-                print("Reference xyz file: ", ref_xyz)
-                print("Test report file: ", output_report)
-                print("Reference report file: ", ref_report)
-                pass_xyz = compareGeo(
-                    output_xyz, ref_xyz, threshMLBL, threshLG, threshOG)
-                [passNumAtoms, passMLBL, passLG, passOG] = pass_xyz
-                pass_report = compare_report_new(output_report, ref_report)
-            pass_structures.append(
-                [f, passNumAtoms, passMLBL, passLG, passOG, pass_report])
-    return [passMultiFileCheck, pass_structures]
