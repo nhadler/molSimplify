@@ -29,7 +29,7 @@ def is_number(s: str) -> bool:
     -------
         is_num : bool
             Flag indicating whether s is a number.
-    """    
+    """
     try:
         float(s)
         is_num = True
@@ -195,7 +195,7 @@ def getMetalLigBondLength(mymol3d: mol3D, transition_metals_only=True) -> List[f
         blength : list of float
             The bond lengths between the metal and the ligands.
     """
-    # Assumes only one metal in the molecule, 
+    # Assumes only one metal in the molecule,
     # so [0] is used.
     mm = mymol3d.findMetal(transition_metals_only=transition_metals_only)[0]
     bonded = mymol3d.getBondedAtoms(mm)
@@ -504,7 +504,7 @@ def report_to_dict(lines):
     -------
         TODO : TODO
             TODO.
-    """    
+    """
     """
     create a dictionary from comma
     separated files
@@ -644,7 +644,7 @@ def compare_qc_input(inp, inp_ref):
     -------
         TODO : TODO
             TODO.
-    """    
+    """
     passQcInputCheck = True
     if not os.path.exists(inp_ref):
         return passQcInputCheck
@@ -935,7 +935,7 @@ def runtest_reportonly(tmp_path, resource_path_root, name, seed=31415):
     -------
         TODO : TODO
             TODO.
-    """    
+    """
     # Set seeds to eliminate randomness from test results.
     random.seed(seed)
     np.random.seed(seed)
