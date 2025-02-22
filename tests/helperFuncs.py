@@ -25,6 +25,29 @@ def is_number(s: str) -> bool:
         return False
 
 
+def get_parent_folder(test_name):
+    # Getting the name of the parent folder for reference results.
+    # Parent folders are named in line with test names.
+    possible_folders = [
+    'tutorial',
+    'example',
+    'xtb',
+    'molcas',
+    'old_ann',
+    'orca',
+    'gfnff',
+    'tetrahedral',
+    ]
+
+    job_name_l = test_name.lower()
+    for f in possible_folders:
+        if f in job_name_l:
+            return f # parent folder
+
+    # If get to this point in the code,
+    # no parent folder was identified.
+    raise Exception('No parent folder identified.')
+
 @contextmanager
 def working_directory(path: Path):
     prev_cwd = os.getcwd()
@@ -47,7 +70,7 @@ def fuzzy_compare_xyz(xyz1, xyz2, thresh: float) -> bool:
     mol2.readfromxyz(xyz2)
     mol1, U, d0, d1 = kabsch(mol1, mol2)
     rmsd12 = mol1.rmsd(mol2)
-    print(('rmsd is ' + '{0:.2f}'.format(rmsd12)))
+    print(f'rmsd is {rmsd12:.2f}')
     if rmsd12 < thresh:
         fuzzyEqual = True
     return fuzzyEqual
@@ -147,7 +170,7 @@ def compareLG(xyz1, xyz2, thresh: float, transition_metals_only=True) -> bool:
         print("Checking geometry for ligand # ", i)
         ligs1[i], U, d0, d1 = kabsch(ligs1[i], ligs2[i])
         rmsd12 = ligs1[i].rmsd(ligs2[i])
-        print(('rmsd is ' + '{0:.2f}'.format(rmsd12)))
+        print(f'rmsd is {rmsd12:.2f}')
         if rmsd12 > thresh:
             passLG = False
             return passLG
@@ -157,7 +180,7 @@ def compareLG(xyz1, xyz2, thresh: float, transition_metals_only=True) -> bool:
 
 
 def compareOG(xyz1, xyz2, thresh: float) -> bool:
-    print("Checking the overall geometry")
+    print("Checking the overall geometry.")
     passOG = fuzzy_compare_xyz(xyz1, xyz2, thresh)
     print("Pass overall geometry check: ", passOG)
     print("Threshold for overall geometry check: ", thresh)
@@ -165,7 +188,8 @@ def compareOG(xyz1, xyz2, thresh: float) -> bool:
 
 
 def runtest_num_atoms_in_xyz(resource_path_root, xyzfile):
-    file_path = resource_path_root / "refs" / f"{xyzfile}.xyz"
+    parent_folder = get_parent_folder(xyzfile)
+    file_path = resource_path_root / "refs" / parent_folder / f"{xyzfile}.xyz"
     xyz_file1 = mol3D()
     xyz_file1.readfromxyz(file_path)
     xyz_file1.getNumAtoms()
@@ -179,14 +203,14 @@ def runtest_num_atoms_in_xyz(resource_path_root, xyzfile):
 
 
 def compareGeo(xyz1, xyz2, threshMLBL, threshLG, threshOG, slab=False, transition_metals_only=True):
-    # Compare number of atoms
+    # Compare number of atoms.
     passNumAtoms = compareNumAtoms(xyz1, xyz2)
-    # Compare Metal ligand bond length
+    # Compare metal-ligand bond length.
     if not slab:
         passMLBL = compareMLBL(xyz1, xyz2, threshMLBL, transition_metals_only=transition_metals_only)
-        # Compare Single ligand geometry
+        # Compare single ligand geometry.
         passLG = compareLG(xyz1, xyz2, threshLG, transition_metals_only=transition_metals_only)
-    # Compare gross match of overall complex
+    # Compare gross match of overall complex.
     passOG = compareOG(xyz1, xyz2, threshOG)
     # FF free test
     # ANN set bond length test
@@ -200,7 +224,7 @@ def compareGeo(xyz1, xyz2, threshMLBL, threshLG, threshOG, slab=False, transitio
 def comparedict(ref, gen, thresh):
     passComp = True
     if not set(ref.keys()) <= set(gen.keys()):
-        raise KeyError("Keys in the dictionay has been changed")
+        raise KeyError("Keys in the dictionay has been changed.")
     for key in ref:
         try:
             valref, valgen = float(ref[key]), float(gen[key])
@@ -256,7 +280,7 @@ def parse4test(infile, tmp_path: Path, isMulti: bool = False, extra_args: Dict[s
     print(newdata)
     with open(newname, 'w') as fi:
         fi.write(newdata)
-    print("Input file parsed for test is located: ", newname)
+    print(f"Input file parsed for test is located: {newname}")
     jobdir = str(tmp_path / name)
     return newname, jobdir
 
@@ -303,9 +327,9 @@ def compare_report_new(report1, report2):
         Equal = False
         print('File not found:')
         if not data1:
-            print(('missing: ' + str(report1)))
+            print(f'missing: {report1}')
         if not data2:
-            print(('missing: ' + str(report2)))
+            print(f'missing: {report2}')
     if Equal:
 
         for k in dict1.keys():
@@ -314,7 +338,7 @@ def compare_report_new(report1, report2):
                 if k not in dict2.keys():
                     Equal = False
                     print("Report compare failed for ", report1, report2)
-                    print("keys " + str(k) + " not present in " + str(report2))
+                    print(f"keys {k} not present in {report2}")
                 else:
                     val2 = dict2[k]
 
@@ -353,18 +377,18 @@ def checkMultiFileGen(myjobdir, refdir):
     passMultiFileCheck = True
     myfiles = [i for i in os.listdir(myjobdir) if ".xyz" in i]
     reffiles = [i for i in os.listdir(refdir) if ".xyz" in i]
-    print("Run directory:", myjobdir)
-    print("Generated xyz:", myfiles)
-    print("Reference directory:", refdir)
-    print("Ref xyz:", reffiles)
-    print("Generated ", len(myfiles), " files, expecting ", len(reffiles))
+    print(f"Run directory: {myjobdir}")
+    print(f"Generated xyz: {myfiles}")
+    print(f"Reference directory: {refdir}")
+    print(f"Ref xyz: {reffiles}")
+    print(f"Generated {len(myfiles)} files, expecting {len(reffiles)}")
     if len(myfiles) != len(reffiles):
         passMultiFileCheck = False
         print("Error! Numbers don't match!")
     else:
         for ref in reffiles:
             if ref not in myfiles:
-                print("xyz file ", ref, " is missing in generated file folder")
+                print(f"xyz file {ref} is missing in generated file folder")
                 passMultiFileCheck = False
     return [passMultiFileCheck, myfiles]
 
@@ -375,7 +399,7 @@ def compare_qc_input(inp, inp_ref):
         return passQcInputCheck
     elif os.path.exists(inp_ref) and (not os.path.exists(inp)):
         passQcInputCheck = False
-        print(inp + "not found")
+        print(f"{inp} not found")
         return passQcInputCheck
 
     with open(inp, 'r') as f_in:
@@ -393,7 +417,7 @@ def compare_qc_input(inp, inp_ref):
 
 
 def runtest(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG, seed=31415):
-    # Set seeds to eliminate randomness from test results
+    # Set seeds to eliminate randomness from test results.
     random.seed(seed)
     np.random.seed(seed)
     infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
@@ -407,15 +431,15 @@ def runtest(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG, 
     with open(newinfile, 'r') as f_in:
         molsim_data = f_in.read()
     if 'orca' in molsim_data.lower():
-        # if not '-name' in molsim_data.lower():
         output_qcin = myjobdir + '/orca.in'
 
     if 'molcas' in molsim_data.lower():
         output_qcin = myjobdir + '/molcas.input'
 
-    ref_xyz = resource_path_root / "refs" / f"{name}.xyz"
-    ref_report = resource_path_root / "refs" / f"{name}.report"
-    ref_qcin = resource_path_root / "refs" / f"{name}.qcin"
+    parent_folder = get_parent_folder(name)
+    ref_xyz = resource_path_root / "refs" / parent_folder / f"{name}.xyz"
+    ref_report = resource_path_root / "refs" / parent_folder / f"{name}.report"
+    ref_qcin = resource_path_root / "refs" / parent_folder / f"{name}.qcin"
 
     print("Test input file: ", newinfile)
     print("Test output files are generated in ", myjobdir)
@@ -458,8 +482,9 @@ def runtest_slab(tmp_path, resource_path_root, name, threshOG, extra_files=None)
     with working_directory(tmp_path):
         startgen(args, False, False)
     output_xyz = tmp_path / 'slab' / 'super332.xyz'
-    ref_xyz = resource_path_root / "refs" / f"{name}.xyz"
-    print("Output xyz file: ", output_xyz)
+    parent_folder = get_parent_folder(name)
+    ref_xyz = resource_path_root / "refs" / parent_folder / f"{name}.xyz"
+    print(f"Output xyz file: {output_xyz}")
     pass_xyz = compareGeo(output_xyz, ref_xyz, threshMLBL=0, threshLG=0,
                           threshOG=threshOG, slab=True)
     [passNumAtoms, passOG] = pass_xyz
@@ -492,8 +517,9 @@ def runtest_molecule_on_slab(tmp_path, resource_path_root, name, threshOG, extra
     with working_directory(tmp_path):
         startgen(args, False, False)
     output_xyz = tmp_path / "loaded_slab" / "loaded.xyz"
-    ref_xyz = resource_path_root / "refs" / f"{name}.xyz"
-    print("Output xyz file: ", output_xyz)
+    parent_folder = get_parent_folder(name)
+    ref_xyz = resource_path_root / "refs" / parent_folder / f"{name}.xyz"
+    print(f"Output xyz file: {output_xyz}")
     pass_xyz = compareGeo(output_xyz, ref_xyz, threshMLBL=0, threshLG=0,
                           threshOG=threshOG, slab=True)
     [passNumAtoms, passOG] = pass_xyz
@@ -521,9 +547,8 @@ def runtestgeo(tmp_path, resource_path_root, name, thresh, deleteH=True, geo_typ
             raise ValueError(f"Invalid geo_type {geo_type}")
     with open(refjson, "r") as fo:
         dict_ref = json.load(fo)
-    # passGeo = (sorted(dict_ref.items()) == sorted(dict_struct_info.items()))
-    print("ref: ", dict_ref)
-    print("now: ", dict_struct_info)
+    print(f"ref: {dict_ref}")
+    print(f"now: {dict_struct_info}")
     passGeo = comparedict(dict_ref, dict_struct_info, thresh)
     return passGeo
 
@@ -563,9 +588,10 @@ def runtestNoFF(tmp_path, resource_path_root, name, threshMLBL, threshLG, thresh
             output_qcin = myjobdir + '/orca.in'
         if 'molcas' in molsim_data.lower():
             output_qcin = myjobdir + '/molcas.input'
-        ref_xyz = resource_path_root / "refs" / f"{newname}.xyz"
-        ref_report = resource_path_root / "refs" / f"{newname}.report"
-        ref_qcin = resource_path_root / "refs" / f"{name}.qcin"
+        parent_folder = get_parent_folder(name)
+        ref_xyz = resource_path_root / "refs" / parent_folder / f"{newname}.xyz"
+        ref_report = resource_path_root / "refs" / parent_folder / f"{newname}.report"
+        ref_qcin = resource_path_root / "refs" / parent_folder / f"{name}.qcin"
         print("Test input file: ", newinfile)
         print("Test output files are generated in ", myjobdir)
         print("Output xyz file: ", output_xyz)
@@ -586,13 +612,13 @@ def runtestNoFF(tmp_path, resource_path_root, name, threshMLBL, threshLG, thresh
 
 
 def runtest_reportonly(tmp_path, resource_path_root, name, seed=31415):
-    # Set seeds to eliminate randomness from test results
+    # Set seeds to eliminate randomness from test results.
     random.seed(seed)
     np.random.seed(seed)
     infile = resource_path_root / "inputs" / "in_files" / f"{name}.in"
-    # Copy the input file to the temporary folder
+    # Copy the input file to the temporary folder.
     shutil.copy(infile, tmp_path/f'{name}_reportonly.in')
-    # Add the report only flag
+    # Add the report only flag.
     with open(tmp_path/f'{name}_reportonly.in', 'a') as f:
         f.write('-reportonly True\n')
     newinfile, myjobdir = parse4test(tmp_path/f'{name}_reportonly.in', tmp_path)
@@ -602,8 +628,9 @@ def runtest_reportonly(tmp_path, resource_path_root, name, seed=31415):
     with working_directory(tmp_path):
         startgen(args, False, False)
     output_report = myjobdir + '/' + name + '_reportonly.report'
-    ref_report = resource_path_root / "refs" / f"{name}.report"
-    # Copy the reference report to the temporary folder
+    parent_folder = get_parent_folder(name)
+    ref_report = resource_path_root / "refs" / parent_folder / f"{name}.report"
+    # Copy the reference report to the temporary folder.
     shutil.copy(ref_report, tmp_path/f'{name}_ref.report')
     with open(tmp_path/f'{name}_ref.report', 'r') as f:
         lines = f.read()

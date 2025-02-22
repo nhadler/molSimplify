@@ -40,7 +40,7 @@ def test_pythonic_metalloid_structure(tmp_path, resource_path_root):
     output_xyz = f'{tmp_path}/tin_complex.xyz'
     this_diag.mol.writexyz(output_xyz)
 
-    ref_xyz = f'{resource_path_root}/refs/structgen_complex.xyz'
+    ref_xyz = f'{resource_path_root}/refs/structgen/structgen_complex.xyz'
 
     threshMLBL = 0.1
     threshLG = 1.0

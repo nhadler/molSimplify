@@ -11,8 +11,8 @@ def test_ligand_from_mol_file(tmp_path, resource_path_root):
     mol_file = resource_path_root / "inputs" / "mol_files" / "pdp.mol"
     shutil.copyfile(mol_file, tmp_path / "pdp.mol")
 
-    ref_xyz = resource_path_root / "refs" / "ligand_from_mol_file.xyz"
-    ref_report = resource_path_root / "refs" / "ligand_from_mol_file.report"
+    ref_xyz = resource_path_root / "refs" / "ligand_from_mol" / "ligand_from_mol_file.xyz"
+    ref_report = resource_path_root / "refs" / "ligand_from_mol" / "ligand_from_mol_file.report"
 
     threshMLBL = 0.1
     threshLG = 0.1
