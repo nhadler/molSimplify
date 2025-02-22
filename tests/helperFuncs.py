@@ -510,8 +510,7 @@ def parse4test(infile, tmp_path: Path, extra_args: Dict[str, str] = {}) -> str:
 
 def parse4testNoFF(infile, tmp_path: Path) -> str:
     """
-    Parse the in file and rewrite it,
-    taking into account isMulti.
+    Parse the in file and rewrite it.
     Similar to parse4test, but with
     ffoption set to no.
 
