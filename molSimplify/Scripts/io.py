@@ -51,8 +51,8 @@ def printgeoms():
     for i, g in enumerate(coords):
         geomgroups[int(g)-1].append(geomshorts[i])
     for i, g in enumerate(geomnames):
-        print(("Coordination: %s, geometry: %s,\t short name: %s " %
-              (coords[i], g, geomshorts[i])))
+        print("Coordination: %s, geometry: %s,\t short name: %s " %
+              (coords[i], g, geomshorts[i]))
     print('')
 
 # Get available geometries
@@ -466,7 +466,7 @@ def core_load(usercore: str, mcores: Optional[dict] = None) -> Tuple[Union[mol3D
             fcore = str(resource_files("molSimplify").joinpath(f"Cores/{dbentry[0]}"))
         # check if core xyz/mol file exists
         if not glob.glob(fcore):
-            emsg = "We can't find the core structure file %s right now! Something is amiss. Exiting..\n" % fcore
+            emsg = "We can't find the core structure file %s right now! Something is amiss. Exiting.\n" % fcore
             print(emsg)
             return None, emsg
         if ('.xyz' in fcore):
@@ -482,20 +482,20 @@ def core_load(usercore: str, mcores: Optional[dict] = None) -> Tuple[Union[mol3D
     elif ('.mol' in usercore or '.xyz' in usercore or '.smi' in usercore):
         if glob.glob(usercore):
             ftype = usercore.split('.')[-1]
-            print(('Core is a '+ftype+' file'))
+            print('Core is a '+ftype+' file')
             # try and catch error if conversion doesn't work
             try:
                 core.OBMol = core.getOBMol(
                     usercore, ftype+'f')  # convert from file
                 print('Core successfully converted to OBMol')
             except IOError:
-                emsg = 'Failed converting file ' + usercore+' to molecule..Check your file.\n'
+                emsg = 'Failed converting file ' + usercore+' to molecule. Check your file.\n'
                 print(emsg)
                 return None, emsg
             core.ident = usercore.split('.')[0]
             core.ident = core.ident.rsplit('/')[-1]
         else:
-            emsg = 'Core file '+usercore+' does not exist. Exiting..\n'
+            emsg = 'Core file '+usercore+' does not exist. Exiting.\n'
             print(emsg)
             return None, emsg
     # if not, try converting from SMILES
@@ -562,7 +562,7 @@ def substr_load(usersubstrate: str,
             fsubst = str(resource_files("molSimplify").joinpath(f"Substrates/{var_list_sub_i[0]}"))
         # check if substrate xyz/mol file exists
         if not glob.glob(fsubst):
-            emsg = "We can't find the substrate structure file %s right now! Something is amiss. Exiting..\n" % fsubst
+            emsg = "We can't find the substrate structure file %s right now! Something is amiss. Exiting.\n" % fsubst
             print(emsg)
             return None, subcatoms, emsg
         if ('.xyz' in fsubst):
@@ -600,7 +600,7 @@ def substr_load(usersubstrate: str,
     elif ('.mol' in usersubstrate or '.xyz' in usersubstrate or '.smi' in usersubstrate):
         if glob.glob(usersubstrate):
             ftype = usersubstrate.split('.')[-1]
-            print(('Substrate is a '+ftype+' file'))
+            print(f'Substrate is a {ftype} file')
             # try and catch error if conversion doesn't work
             try:
                 sub.OBMol = sub.getOBMol(
@@ -609,12 +609,12 @@ def substr_load(usersubstrate: str,
 
             except IOError:
                 emsg = 'Failed converting file ' + usersubstrate + \
-                    ' to molecule..Check your file.\n'
+                    ' to molecule. Check your file.\n'
                 print(emsg)
                 return None, subcatoms, emsg
             sub.ident = usersubstrate.split('/')[-1].split('.')[0]
         else:
-            emsg = 'Substrate file '+usersubstrate+' does not exist. Exiting..\n'
+            emsg = 'Substrate file '+usersubstrate+' does not exist. Exiting.\n'
             print(emsg)
             return None, subcatoms, emsg
     # if not, try converting from SMILES
@@ -638,70 +638,111 @@ def substr_load(usersubstrate: str,
     return sub, subcatoms, emsg
 
 
-# Output currently typed as any instead of Union[mol3D, None] because many other
-# scripts depend on a mol3D as first return value.
 def lig_load(userligand: str, licores: Optional[dict] = None) -> Tuple[Any, str]:
+    """
+    Load a ligand.
+    Output currently typed as any instead of Union[mol3D, None] because many other
+    scripts depend on a mol3D as first return value.
+
+    The function tries three approaches,
+    stopping after the first approach that works:
+    1) Check if ligand exists in dictionary. If so, pull from Ligands folder.
+    2) Load from a file path [.mol, .xyz, .smi, .sdf].
+    3) Interpret as a SMILES string.
+
+    Parameters
+    ----------
+        userligand : str
+            The name of the desired ligand.
+            Entry in Ligands/ligands.dict (or licores), path to geometry file,
+            or SMILES.
+            Can also instead provide a group in the ligands dictionary;
+            if so, a random ligand from that group is chosen.
+        licores : dict
+            A user dictionary of the form of Ligands/ligands.dict. Optional.
+
+    Returns
+    -------
+        lig : mol3D
+            TODO.
+            False if TODO
+        esmg : str
+            TODO.
+    """
 
     if licores is None:
         licores = getlicores()
     globs = globalvars()
-    # ## get groups ###
+
+    # Get groups.
     groups = []
     for entry in licores:
         groups += licores[entry][3]
     groups = sorted(list(set(groups)))
-    # check if user requested group
+
+    # Check if the user requested group.
+    # If so, set userligand to a random representative of the group.
     if userligand.lower() in groups:
+        # Examples of groups in ligands.dict: bidentate, amino acid, small.
         subligs = [key for key in licores if userligand.lower()
                    in licores[key][3]]
-        # randomly select ligand
+        # Randomly select ligand.
         userligand = random.choice(subligs)
+
     if '~' in userligand:
         homedir = os.path.expanduser("~")
         userligand = userligand.replace('~', homedir)
+
     emsg = ''
-    lig = mol3D()  # initialize ligand molecule
+    lig = mol3D()  # Initialize ligand molecule.
     lig.needsconformer = False
-    # get similarity of userligand to ligands in dictionary, from the sequence point of view
+
+    # Get similarity of userligand to ligands in dictionary, from the sequence point of view.
+    # This is used to assign ligands in cases where it is likely the user made a typo
+    # of something in the ligands dictionary.
+    # licores.keys() are the ligand names in the ligands dictionary.
     text_similarities = [difflib.SequenceMatcher(None, userligand, i).ratio() for i in list(licores.keys())]
-    # check if ligand exists in dictionary
-    if userligand in list(licores.keys()) or max(text_similarities) > 0.6:  # Two cases here
-        if userligand in list(licores.keys()):  # Ligand is in the dictionary ligands.dict
-            print(('loading ligand from dictionary: ' + str(userligand)))
+
+    # 1) Check if ligand exists in dictionary.
+    if userligand in list(licores.keys()) or max(text_similarities) > 0.6:  # Two cases here.
+        # Case 1: Ligand is in the dictionary ligands.dict.
+        if userligand in list(licores.keys()):
+            print(f'Loading ligand from dictionary: {userligand}')
             dbentry = licores[userligand]
+        # Case 2: max(text_similarities) > 0.6
+        # It is likely the user made a typo in inputting a ligand that is in ligands.dict
         else:
-            # max(text_similarities) > 0.6 --> It is likely the user made a typo in inputting a ligand that is in ligands.dict
             max_similarity = max(text_similarities)
             index_max = text_similarities.index(max_similarity)
             desired_ligand = list(licores.keys())[index_max]
-            print(f'ligand was not in dictionary, but the sequence is very similar to a ligand that is: {str(desired_ligand)}')
-            print(('loading ligand from dictionary: ' + str(desired_ligand)))
-            dbentry = licores[desired_ligand]  # Loading the typo-d ligand
-        # load lig mol file (with hydrogens)
+            print(f'Ligand was not in dictionary, but the sequence is very similar to a ligand that is: {desired_ligand}')
+            print(f'Loading ligand from dictionary: {desired_ligand}')
+            dbentry = licores[desired_ligand]  # Loading the typo ligand.
+        # Load lig mol file (with hydrogens).
         if globs.custom_path:
             flig = globs.custom_path + "/Ligands/" + dbentry[0]
         else:
             flig = str(resource_files("molSimplify").joinpath(f"Ligands/{dbentry[0]}"))
-        # check if ligand xyz/mol file exists
-        print(('looking for '+flig))
+        # Check if ligand xyz/mol file exists in the Ligands folder.
+        print(f'Looking for {flig}')
         if not os.path.isfile(flig):
-            emsg = "We can't find the ligand structure file %s right now! Something is amiss. Exiting..\n" % flig
+            emsg = f"We can't find the ligand structure file {flig} right now! Something is amiss. Exiting.\n"
             print(emsg)
             return False, emsg
-        if ('.xyz' in flig):
+        if '.xyz' in flig:
             lig.OBMol = lig.getOBMol(flig, 'xyzf')
-            # Set charge to last entry in ligands.dict
+            # Set charge to last entry in ligands.dict.
             lig.OBMol.SetTotalCharge(int(dbentry[-1][0]))
-        elif ('.mol2' in flig):
+        elif '.mol2' in flig:
             lig.OBMol = lig.getOBMol(flig, 'mol2f')
-        elif ('.mol' in flig):
+        elif '.mol' in flig:
             lig.OBMol = lig.getOBMol(flig, 'molf')
-        elif ('.smi' in flig):
+        elif '.smi' in flig:
             print('SMILES conversion')
             lig.OBMol = lig.getOBMol(flig, 'smif')
             lig.needsconformer = True
 
-        # modified the check for length,
+        # Modified the check for length,
         # as it parsing string length instead of
         # list length!
         if isinstance(dbentry[2], str):
@@ -725,38 +766,40 @@ def lig_load(userligand: str, licores: Optional[dict] = None) -> Tuple[Any, str]
             lig.grps = []
         if len(dbentry) > 3:
             lig.ffopt = dbentry[4][0]
-    # load from file
+
+    # 2) Load from file.
     elif ('.mol' in userligand or '.xyz' in userligand or '.smi' in userligand or '.sdf' in userligand):
         if glob.glob(userligand):
             ftype = userligand.split('.')[-1]
-            # try and catch error if conversion doesn't work
+            # Try and catch error if conversion doesn't work.
             try:
-                print(('ligand is an '+ftype+' file'))
+                print(f'Ligand is an {ftype} file.')
                 lig.OBMol = lig.getOBMol(
-                    userligand, ftype+'f')  # convert from file
-                # generate coordinates if not existing
+                    userligand, ftype+'f')  # Convert from file.
+                # Generate coordinates if not existing.
                 lig.charge = lig.OBMol.GetTotalCharge()
                 print('Ligand successfully converted to OBMol')
             except IOError:
-                emsg = 'Failed converting file ' + userligand+' to molecule..Check your file.\n'
+                emsg = f'Failed converting file {userligand} to molecule. Check your file.\n'
                 return False, emsg
             lig.ident = userligand.rsplit('/')[-1]
             lig.ident = lig.ident.split('.'+ftype)[0]
         else:
-            emsg = 'Ligand file '+userligand+' does not exist. Exiting..\n'
+            emsg = f'Ligand file {userligand} does not exist. Exiting.\n'
             print(emsg)
             return False, emsg
-    # if not, try interpreting as SMILES string
+
+    # 3) Try interpreting as SMILES string.
     else:
         print(f'Interpreting ligand {userligand} as a SMILES string, as it was not in the ligands dictionary.')
-        print('Available ligands in the ligands dictionary can be found at molSimplify/molSimplify/Ligands/ligands.dict\n'
-              'Or by running the command `molsimplify -h liganddict`')
+        print('Available ligands in the ligands dictionary can be found at molSimplify/molSimplify/Ligands/ligands.dict,\n'
+              'or by running the command `molsimplify -h liganddict`.')
         try:
-            lig.getOBMol(userligand, 'smistring', True)  # convert from smiles
+            lig.getOBMol(userligand, 'smistring', True)  # Convert from SMILES.
             lig.convert2mol3D()
             assert lig.natoms
             lig.charge = lig.OBMol.GetTotalCharge()
-            print('Ligand successfully interpreted as SMILES')
+            print('Ligand successfully interpreted as SMILES.')
         except IOError:
             emsg = f"We tried converting the string '{userligand}' to a molecule but it wasn't a valid SMILES string.\n"
             emsg += f"Furthermore, we couldn't find the ligand structure: '{userligand}' in the ligands dictionary.\n"
@@ -794,7 +837,7 @@ def bind_load(userbind: str, bindcores: dict) -> Tuple[Union[mol3D, None], bool,
             fbind = str(resource_files("molSimplify").joinpath(f"Bind/{bindcores[userbind][0]}"))
         # check if bind xyz/mol file exists
         if not glob.glob(fbind):
-            emsg = "We can't find the binding species structure file %s right now! Something is amiss. Exiting..\n" % fbind
+            emsg = "We can't find the binding species structure file %s right now! Something is amiss. Exiting.\n" % fbind
             print(emsg)
             return None, False, emsg
         if ('.xyz' in fbind):
@@ -814,12 +857,12 @@ def bind_load(userbind: str, bindcores: dict) -> Tuple[Union[mol3D, None], bool,
                     userbind, ftype+'f')  # convert from file
                 bind.charge = bind.OBMol.GetTotalCharge()
             except IOError:
-                emsg = 'Failed converting file ' + userbind+' to molecule..Check your file.\n'
+                emsg = 'Failed converting file ' + userbind+' to molecule. Check your file.\n'
                 return None, False, emsg
             bind.ident = userbind.rsplit('/')[-1]
             bind.ident = bind.ident.split('.'+ftype)[0]
         else:
-            emsg = 'Binding species file '+userbind+' does not exist. Exiting..\n'
+            emsg = 'Binding species file '+userbind+' does not exist. Exiting.\n'
             return None, False, emsg
     # if not, try converting from SMILES
     else:

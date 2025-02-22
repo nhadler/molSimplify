@@ -2,14 +2,19 @@
 # Dpt of Chemical Engineering, MIT
 
 from molSimplify.Classes.mol3D import mol3D
-from molSimplify.Scripts.geometry import (checkcolinear,
-                                          distance,
-                                          norm,
-                                          rotate_around_axis,
-                                          rotation_params,
-                                          vecangle,
-                                          vecdiff)
-from molSimplify.Scripts.io import getlicores, lig_load
+from molSimplify.Scripts.geometry import (
+    checkcolinear,
+    distance,
+    norm,
+    rotate_around_axis,
+    rotation_params,
+    vecangle,
+    vecdiff,
+    )
+from molSimplify.Scripts.io import (
+    getlicores,
+    lig_load,
+    )
 
 
 '''

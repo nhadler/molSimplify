@@ -1977,7 +1977,7 @@ class mol3D:
             oct : bool
                 Defines whether a structure is octahedral. Default is True.
             strict_cutoff: bool, optional
-                strict bonding cutoff for fullerene and SACs
+                Strict bonding cutoff for fullerene and SACs.
             catom_list: list, optional
                 List of indices of bonded atoms.
         """
@@ -3358,7 +3358,7 @@ class mol3D:
             atom_specific_cutoffs: bool, optional
                 Use atom specific cutoffs to determing bonding. Default is False.
             strict_cutoff: bool, optional
-                strict bonding cutoff for fullerene and SACs
+                Strict bonding cutoff for fullerene and SACs.
 
         Returns
         -------
@@ -3489,7 +3489,7 @@ class mol3D:
             oct : bool, optional
                 Flag for turning on octahedral bonding routines.
             strict_cutoff: bool, optional
-                strict bonding cutoff for fullerene and SACs
+                Strict bonding cutoff for fullerene and SACs.
             catom_list: list, optional
                 List of indices of bonded atoms.
 
@@ -3813,12 +3813,12 @@ class mol3D:
         Parameters
         ----------
             inds : list
-                The indices of the selected submolecule to SAVE
+                The indices of the selected submolecule to SAVE.
 
         Returns
         -------
             new_bo_dict : dict
-                The ported over dictionary with new indices/bonds deleted
+                The ported over dictionary with new indices/bonds deleted.
         """
 
         if not self.bo_dict:
@@ -3845,7 +3845,7 @@ class mol3D:
         Parameters
         ----------
             strict_cutoff : bool, optional
-                strict bonding cutoff for fullerene and SACs
+                Strict bonding cutoff for fullerene and SACs.
             catom_list : list, optional
                 List of indices of coordinating atoms.
             max6 : bool, optional
@@ -3890,7 +3890,7 @@ class mol3D:
             alleq : bool, optional
                 Whether or not all ligands are equatorial.
             strict_cutoff : bool, optional
-                strict bonding cutoff for fullerene and SACs
+                Strict bonding cutoff for fullerene and SACs.
             catom_list : list, optional
                 List of indices of coordinating atoms.
             MRdiag_dict : dict, optional
@@ -4205,7 +4205,7 @@ class mol3D:
             transition_metals_only : bool, optional
                 Flag for considering more than just transition metals as metals. Default is False.
             num_recursions : list, optional
-                counter to track number of ligands classified as 'sandwich' and 'edge' in original structure
+                Counter to track number of ligands classified as 'sandwich' and 'edge' in original structure.
 
         Returns
         -------
@@ -4322,7 +4322,7 @@ class mol3D:
         Parameters
         ----------
             ind : int
-                index for one of the metal-coordinating atoms.
+                Index for one of the metal-coordinating atoms.
 
         Returns
         -------
@@ -4447,7 +4447,7 @@ class mol3D:
             debug : bool, optional
                 Flag for whether extra output should be printed. Default is False.
             strict_cutoff : bool, optional
-                strict bonding cutoff for fullerene and SACs
+                Strict bonding cutoff for fullerene and SACs.
             catom_list : list, optional
                 List of indices of coordinating atoms.
         """
