@@ -156,7 +156,7 @@ def getAllLigands(xyz, transition_metals_only=True):
             # Keep branching out by getting bonded atoms
             # until ligand does not grow any more.
             while len(lig) > len(oldlig):
-                # Make a copy of lig
+                # Make a copy of lig.
                 oldlig = lig[:]
                 for i in oldlig:
                     lbonded = mymol3d.getBondedAtoms(i)
@@ -221,7 +221,7 @@ def compareNumAtoms(xyz1, xyz2) -> bool:
     -------
         passNumAtoms : bool
             Whether the number of atoms is the same
-            between structures.
+            between the two structures.
     """
     print("Checking total number of atoms.")
     mol1 = mol3D()
@@ -236,7 +236,7 @@ def compareNumAtoms(xyz1, xyz2) -> bool:
 
 def compareMLBL(xyz1, xyz2, thresh: float, transition_metals_only=True) -> bool:
     """
-    Compare metal-ligand bond length between two transition metal complexes.
+    Compare metal-ligand bond lengths between two transition metal complexes.
 
     Parameters
     ----------
@@ -278,7 +278,7 @@ def compareMLBL(xyz1, xyz2, thresh: float, transition_metals_only=True) -> bool:
                 passMLBL = False
 
     print(f"Pass metal-ligand bond length check: {passMLBL}")
-    print(f"Threshold for bondlength difference: {thresh}")
+    print(f"Threshold for bond length difference: {thresh}")
 
     return passMLBL
 
@@ -296,14 +296,15 @@ def compareLG(xyz1, xyz2, thresh: float, transition_metals_only=True) -> bool:
             Path to the second xyz file.
             Assumed to be a transition metal complex.
         thresh : float
-            The tolerance used for bond length comparison.
+            The RMSD tolerance used for ligand comparison.
         transition_metals_only : bool
             Whether to only consider transition metals as metals.
 
     Returns
     -------
         passLG : bool
-            TODO.
+            Verdict on whether ligand geometries between
+            the two complexes are equal.
     """
     passLG = True
     ligs1 = getAllLigands(xyz1, transition_metals_only=transition_metals_only)
@@ -311,16 +312,16 @@ def compareLG(xyz1, xyz2, thresh: float, transition_metals_only=True) -> bool:
     if len(ligs1) != len(ligs2):
         passLG = False
         return passLG
-    for i in range(0, len(ligs1)):  # Iterate over the ligands
-        print("Checking geometry for ligand # ", i)
+    for i in range(0, len(ligs1)):  # Iterate over the ligands.
+        print(f"Checking geometry for ligand # {i}")
         ligs1[i], U, d0, d1 = kabsch(ligs1[i], ligs2[i])
         rmsd12 = ligs1[i].rmsd(ligs2[i])
         print(f'rmsd is {rmsd12:.2f}')
         if rmsd12 > thresh:
             passLG = False
             return passLG
-    print("Pass ligand geometry check: ", passLG)
-    print("Threshold for ligand geometry RMSD difference: ", thresh)
+    print(f"Pass ligand geometry check: {passLG}")
+    print(f"Threshold for ligand geometry RMSD difference: {thresh}")
     return passLG
 
 
@@ -335,12 +336,12 @@ def compareOG(xyz1, xyz2, thresh: float) -> bool:
         xyz2 : str
             Path to the second xyz file.
         thresh : float
-            The RMSD tolerance used for comparison.
+            The RMSD tolerance used for overall geometry comparison.
 
     Returns
     -------
         passOG : bool
-            Verdict on whether the two geometries are roughly equal.
+            Verdict on whether the two geometries are roughly equal overall.
     """
     print("Checking the overall geometry.")
     passOG = fuzzy_compare_xyz(xyz1, xyz2, thresh)
@@ -351,17 +352,40 @@ def compareOG(xyz1, xyz2, thresh: float) -> bool:
 
 def compareGeo(xyz1, xyz2, threshMLBL, threshLG, threshOG, slab=False, transition_metals_only=True):
     """
-    TODO.
+    Thorough comparison of two geometries, considering number of atoms and overall geometries.
+    For non-slab geometries, also considering metal-ligand bond lengths and ligand geometries.
 
     Parameters
     ----------
-        TODO : TODO
-            TODO.
+        xyz1 : str
+            Path to the first xyz file.
+        xyz2 : str
+            Path to the second xyz file.
+        threshMLBL : float
+            The tolerance used for bond length comparison.
+        threshLG : float
+            The RMSD tolerance used for ligand comparison.
+        threshOG : float
+            The RMSD tolerance used for overall geometry comparison.
+        slab : bool
+            Flag indicating whether the geometries are slabs.
+            Reduces the scope fo the checks.
+        transition_metals_only : bool
+            Whether to only consider transition metals as metals.
 
     Returns
     -------
-        TODO : TODO
-            TODO.
+        passNumAtoms : bool
+            Whether the number of atoms is the same
+            between the two structures.
+        passMLBL : bool
+            Verdict on whether M-L bond lengths between
+            the two geometries are equal.
+        passLG : bool
+            Verdict on whether ligand geometries between
+            the two complexes are equal.
+        passOG : bool
+            Verdict on whether the two geometries are roughly equal overall.
     """
     # Compare number of atoms.
     passNumAtoms = compareNumAtoms(xyz1, xyz2)
@@ -376,34 +400,40 @@ def compareGeo(xyz1, xyz2, threshMLBL, threshLG, threshOG, slab=False, transitio
     # ANN set bond length test
     # covalent radii test
     if not slab:
-        return [passNumAtoms, passMLBL, passLG, passOG]
+        return passNumAtoms, passMLBL, passLG, passOG
     else:
-        return [passNumAtoms, passOG]
+        return passNumAtoms, passOG
 
 
 def comparedict(ref, gen, thresh):
     """
-    TODO.
+    Compares the two dictionaries given as inputs
+    to see if they are equivalent.
 
     Parameters
     ----------
-        TODO : TODO
+        ref : dict
+            The reference dictionary.
+        gen : dict
+            The newly generated dictionary.
+        thresh : TODO
             TODO.
 
     Returns
     -------
-        TODO : TODO
-            TODO.
+        passComp : bool
+            Whether the dictionaries are found to be equivalent.
     """
     passComp = True
     if not set(ref.keys()) <= set(gen.keys()):
-        raise KeyError("Keys in the dictionay has been changed.")
+        raise KeyError("Keys in the dictionary are not equivalent.")
     for key in ref:
-        try:
+        if is_number(ref[key]):
             valref, valgen = float(ref[key]), float(gen[key])
             if not abs(valref - valgen) < thresh:
                 passComp = False
-        except ValueError:
+        else:
+            # Items for this key are strings, not numbers.
             valref, valgen = str(ref[key]), str(gen[key])
             if not valgen == valref:
                 passComp = False
@@ -519,7 +549,7 @@ def report_to_dict(lines):
     # extra proc for ANN_bond list:
     if 'ANN_bondl' in d.keys():
         d['ANN_bondl'] = [float(i.strip('[]')) for i in d['ANN_bondl'].split()]
-    return (d)
+    return d
 
 
 # compare the report, split key and values, do
@@ -628,7 +658,7 @@ def checkMultiFileGen(myjobdir, refdir):
             if ref not in myfiles:
                 print(f"xyz file {ref} is missing in generated file folder")
                 passMultiFileCheck = False
-    return [passMultiFileCheck, myfiles]
+    return passMultiFileCheck, myfiles
 
 
 def compare_qc_input(inp, inp_ref):
@@ -720,7 +750,7 @@ def runtest(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG, 
     print("Reference qc input file: ", ref_qcin)
     print("Test qc input file:", output_qcin)
     print("Qc input status:", pass_qcin)
-    return [passNumAtoms, passMLBL, passLG, passOG, pass_report, pass_qcin]
+    return passNumAtoms, passMLBL, passLG, passOG, pass_report, pass_qcin
 
 
 def runtest_slab(tmp_path, resource_path_root, name, threshOG, extra_files=None):
@@ -756,7 +786,7 @@ def runtest_slab(tmp_path, resource_path_root, name, threshOG, extra_files=None)
     pass_xyz = compareGeo(output_xyz, ref_xyz, threshMLBL=0, threshLG=0,
                           threshOG=threshOG, slab=True)
     [passNumAtoms, passOG] = pass_xyz
-    return [passNumAtoms, passOG]
+    return passNumAtoms, passOG
 
 
 def runtest_molecule_on_slab(tmp_path, resource_path_root, name, threshOG, extra_files=None):
@@ -795,7 +825,7 @@ def runtest_molecule_on_slab(tmp_path, resource_path_root, name, threshOG, extra
     pass_xyz = compareGeo(output_xyz, ref_xyz, threshMLBL=0, threshLG=0,
                           threshOG=threshOG, slab=True)
     [passNumAtoms, passOG] = pass_xyz
-    return [passNumAtoms, passOG]
+    return passNumAtoms, passOG
 
 
 def runtestgeo(tmp_path, resource_path_root, name, thresh, deleteH=True, geo_type="oct"):
@@ -919,7 +949,7 @@ def runtestNoFF(tmp_path, resource_path_root, name, threshMLBL, threshLG, thresh
         print("Reference qc input file: ", ref_qcin)
         print("Test qc input file: ", output_qcin)
         print("Qc input status: ", pass_qcin)
-    return [passNumAtoms, passMLBL, passLG, passOG, pass_report, pass_qcin]
+    return passNumAtoms, passMLBL, passLG, passOG, pass_report, pass_qcin
 
 
 def runtest_reportonly(tmp_path, resource_path_root, name, seed=31415):
@@ -1017,4 +1047,4 @@ def runtestMulti(tmp_path, resource_path_root, name, threshMLBL, threshLG, thres
                 pass_report = compare_report_new(output_report, ref_report)
             pass_structures.append(
                 [f, passNumAtoms, passMLBL, passLG, passOG, pass_report])
-    return [passMultiFileCheck, pass_structures]
+    return passMultiFileCheck, pass_structures
