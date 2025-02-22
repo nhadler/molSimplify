@@ -23,7 +23,7 @@ def test_tutorial_4_query(tmp_path, resource_path_root):
     # Compare the generated output file to the reference file.
     with open(f"{tmp_path}/simres.smi", "r") as f:
         output = f.readlines()
-    with open(resource_path_root / "refs" / "tutorial_4" / "simres.smi") as f:
+    with open(resource_path_root / "refs" / "tutorial" / "tutorial_4" / "simres.smi") as f:
         reference = f.readlines()
 
     assert output == reference
@@ -31,7 +31,7 @@ def test_tutorial_4_query(tmp_path, resource_path_root):
 
 def test_tutorial_4_dissim(tmp_path, resource_path_root):
     # Copy the results from the query into the working directory.
-    shutil.copyfile(resource_path_root / "refs" / "tutorial_4" / "simres.smi",
+    shutil.copyfile(resource_path_root / "refs" / "tutorial" / "tutorial_4" / "simres.smi",
                     tmp_path / "simres.smi")
 
     run_db_search(tmp_path, resource_path_root, "tutorial_4_dissim.in")
@@ -39,7 +39,7 @@ def test_tutorial_4_dissim(tmp_path, resource_path_root):
     # Compare the generated output file to the reference file.
     with open(f"{tmp_path}/dissimres.smi", "r") as f:
         output = f.readlines()
-    with open(resource_path_root / "refs" / "tutorial_4" / "dissimres.smi") as f:
+    with open(resource_path_root / "refs" / "tutorial" / "tutorial_4" / "dissimres.smi") as f:
         reference = f.readlines()
 
     assert output == reference
@@ -51,7 +51,7 @@ def test_tutorial_4_human(tmp_path, resource_path_root):
     # Compare the generated output file to the reference file.
     with open(f"{tmp_path}/simres.smi", "r") as f:
         output = f.readlines()
-    with open(resource_path_root / "refs" / "tutorial_4" / "simres_human.smi") as f:
+    with open(resource_path_root / "refs" / "tutorial" / "tutorial_4" / "simres_human.smi") as f:
         reference = f.readlines()
 
     assert output == reference
