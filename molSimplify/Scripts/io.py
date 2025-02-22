@@ -613,10 +613,10 @@ def lig_load(userligand: str, licores: Optional[dict] = None) -> Tuple[Any, str]
     Returns
     -------
         lig : mol3D
-            TODO.
-            False if TODO
+            The loaded ligand.
+            False if ligand loading fails
         esmg : str
-            TODO.
+            Error message.
     """
 
     if licores is None:
