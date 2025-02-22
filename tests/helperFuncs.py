@@ -416,8 +416,9 @@ def comparedict(ref, gen, thresh):
             The reference dictionary.
         gen : dict
             The newly generated dictionary.
-        thresh : TODO
-            TODO.
+        thresh : float
+            The threshold for float comparison,
+            for numerical dictionary items.
 
     Returns
     -------
@@ -866,35 +867,6 @@ def runtestgeo(tmp_path, resource_path_root, name, thresh, deleteH=True, geo_typ
     print(f"now: {dict_struct_info}")
     passGeo = comparedict(dict_ref, dict_struct_info, thresh)
     return passGeo
-
-
-def runtestgeo_optonly(resource_path_root, name, thresh, deleteH=True, geo_type="oct"):
-    """
-    TODO.
-
-    Parameters
-    ----------
-        TODO : TODO
-            TODO.
-
-    Returns
-    -------
-        TODO : TODO
-            TODO.
-    """
-    optgeo = resource_path_root / "inputs" / "geocheck" / name / "opt.xyz"
-    refjson = resource_path_root / "refs" / "geocheck" / name / "ref.json"
-    mymol = mol3D()
-    mymol.readfromxyz(optgeo)
-    if geo_type == "oct":
-        _, _, dict_struct_info = mymol.IsOct(debug=False,
-                                             flag_deleteH=deleteH)
-        with open(refjson, "r") as fo:
-            dict_ref = json.load(fo)
-        passGeo = comparedict(dict_ref, dict_struct_info, thresh)
-        return passGeo
-    else:
-        raise NotImplementedError('Only octahedral geometries supported for now')
 
 
 def runtestNoFF(tmp_path, resource_path_root, name, threshMLBL, threshLG, threshOG):
