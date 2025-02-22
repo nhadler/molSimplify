@@ -47,18 +47,18 @@ def test_printgeoms(capsys):
     captured = capsys.readouterr()
 
     ref = (
-        "Coordination: 1, geometry: none,\t short name: no \n"
-        "Coordination: 2, geometry: linear,\t short name: li \n"
-        "Coordination: 3, geometry: trigonal_planar,\t short name: tpl \n"
-        "Coordination: 4, geometry: square_planar,\t short name: sqp \n"
-        "Coordination: 4, geometry: tetrahedral,\t short name: thd \n"
-        "Coordination: 5, geometry: square_pyramidal,\t short name: spy \n"
-        "Coordination: 5, geometry: trigonal_bipyramidal,\t short name: tbp \n"
-        "Coordination: 6, geometry: octahedral,\t short name: oct \n"
-        "Coordination: 6, geometry: trigonal_prismatic,\t short name: tpr \n"
-        "Coordination: 7, geometry: pentagonal_bipyramidal,\t short name: pbp \n"
-        "Coordination: 8, geometry: square_antiprismatic,\t short name: sqap \n"
-        "Coordination: 8, geometry: trigonal_dodecahedral,\t short name: tdhd \n\n"
+        "Coordination: 1, geometry: none,\t short name: no\n"
+        "Coordination: 2, geometry: linear,\t short name: li\n"
+        "Coordination: 3, geometry: trigonal_planar,\t short name: tpl\n"
+        "Coordination: 4, geometry: square_planar,\t short name: sqp\n"
+        "Coordination: 4, geometry: tetrahedral,\t short name: thd\n"
+        "Coordination: 5, geometry: square_pyramidal,\t short name: spy\n"
+        "Coordination: 5, geometry: trigonal_bipyramidal,\t short name: tbp\n"
+        "Coordination: 6, geometry: octahedral,\t short name: oct\n"
+        "Coordination: 6, geometry: trigonal_prismatic,\t short name: tpr\n"
+        "Coordination: 7, geometry: pentagonal_bipyramidal,\t short name: pbp\n"
+        "Coordination: 8, geometry: square_antiprismatic,\t short name: sqap\n"
+        "Coordination: 8, geometry: trigonal_dodecahedral,\t short name: tdhd\n\n"
     )
     assert captured.out == ref
 

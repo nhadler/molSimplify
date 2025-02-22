@@ -17,21 +17,27 @@ from typing import List, Union, Tuple
 from argparse import Namespace
 from molSimplify.Classes.globalvars import globalvars
 from molSimplify.Scripts.isomers import generateisomers
-from molSimplify.Scripts.jobgen import (sgejobgen,
-                                        slurmjobgen)
-from molSimplify.Scripts.io import (core_load,
-                                    getlicores,
-                                    lig_load,
-                                    name_complex,
-                                    name_ts_complex,
-                                    substr_load)
-from molSimplify.Scripts.qcgen import (mlpgen,
-                                       multigamgen,
-                                       multimolcgen,
-                                       multiogen,
-                                       multiqgen,
-                                       multitcgen)
-from molSimplify.Scripts.structgen import (structgen)
+from molSimplify.Scripts.jobgen import (
+    sgejobgen,
+    slurmjobgen,
+    )
+from molSimplify.Scripts.io import (
+    core_load,
+    getlicores,
+    lig_load,
+    name_complex,
+    name_ts_complex,
+    substr_load,
+    )
+from molSimplify.Scripts.qcgen import (
+    mlpgen,
+    multigamgen,
+    multimolcgen,
+    multiogen,
+    multiqgen,
+    multitcgen,
+    )
+from molSimplify.Scripts.structgen import structgen
 
 # ##################################################################
 # ## define input for cross-compatibility between python 2 and 3 ###
@@ -477,7 +483,7 @@ def rungen(rundir, args: Namespace, chspfname=None, write_files: bool = True):
             rootdir = rootdir + '/' + chspfname
         if (args.suff):
             rootdir += args.suff
-        # check for mannual overwrite of
+        # check for manual overwrite of
         # directory name
         if args.jobdir:
             rootdir = rundir + args.jobdir
