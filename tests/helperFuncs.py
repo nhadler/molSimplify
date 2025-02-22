@@ -485,8 +485,8 @@ def parse4test(infile, tmp_path: Path, extra_args: Dict[str, str] = {}) -> str:
     newdata = ""
     for line in data:
         if line.split()[0] in extra_args.keys():
-            newdata += (f'{line.split()[0]} {os.path.dirname(infile)}\
-                        /{extra_args[line.split()[0]]}\n')
+            newdata += f'{line.split()[0]} \
+            {os.path.dirname(infile)}/{extra_args[line.split()[0]]}\n'
             continue
         if not (("-jobdir" in line) or ("-name" in line)):
             newdata += line
