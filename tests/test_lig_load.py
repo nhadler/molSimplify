@@ -7,7 +7,7 @@ import pytest
     "lig_name",
     [
 		"pentacyanopentadienide", # Ligand in ligands.dict.
-		"CC(C)O", 				  # SMILES for isopropyl alcohol.        
+		"CC(C)O", 				  # SMILES for isopropyl alcohol.
     ])
 def test_ligand_loading(tmp_path, resource_path_root, lig_name):
 	my_mol, _ = lig_load(lig_name)
