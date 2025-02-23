@@ -250,15 +250,15 @@ def make_MOF_SBU_RACs(
         """""""""
         # lc_descriptors for SBU i
         lc_descriptors_i: List[List[float]] = []
-        first_connecting_linker = True # Boolean that checks for first instance of linker connected to SBU
-        for j, linker in enumerate(connections_list):  # Iterating over the different linkers
+        first_connecting_linker = True # Boolean that checks for first instance of linker connected to SBU.
+        for j, linker in enumerate(connections_list):  # Iterating over the different linkers.
             if len(set(SBU).intersection(linker)) > 0:
                 descriptor_names = []
                 descriptors = []
                 # This means that the SBU and the current linker are connected.
                 temp_mol = mol3D()
                 link_list = []  # Will hold the lc atoms for the current linker.
-                for jj, val2 in enumerate(linker):  # linker is a list of global atom indices for the atoms in that linker
+                for jj, val2 in enumerate(linker):  # linker is a list of global atom indices for the atoms in that linker.
                     if val2 in anchoring_atoms:
                         link_list.append(jj)
                     # This builds a mol object for the linker --> even though it is in the SBU section.
@@ -266,21 +266,21 @@ def make_MOF_SBU_RACs(
 
                 temp_mol.graph = connections_subgraphlist[j].todense()
                 """""""""
-                Generate all of the lc autocorrelations (from the connecting atoms)
+                Generate all of the lc autocorrelations (from the connecting atoms).
                 """""""""
                 results_dictionary, descriptor_names, descriptors = gen_and_append_desc(
                     temp_mol, link_list, depth, descriptor_names, descriptors, Gval, 'lc')
                 """""""""
                 If heteroatom functional groups exist (anything that is not C or H, so methyl is missed, also excludes anything lc, so carboxylic metal-coordinating oxygens skipped),
-                compile the list of atoms
+                compile the list of atoms.
                 """""""""
                 functional_atoms = []
                 for jj in range(len(temp_mol.graph)):
-                    if jj not in link_list:  # linker atom is not bonded to a metal
-                        if not set({temp_mol.atoms[jj].sym}) & set({"C", "H"}):  # not a carbon nor a hydrogen. syms get symbols.
+                    if jj not in link_list:  # Linker atom is not bonded to a metal.
+                        if not set({temp_mol.atoms[jj].sym}) & set({"C", "H"}):  # Not a carbon nor a hydrogen. syms get symbols.
                             functional_atoms.append(jj)
                 """""""""
-                Generate all of the functional group autocorrelations
+                Generate all of the functional group autocorrelations.
                 """""""""
                 if len(functional_atoms) > 0:
                     results_dictionary, descriptor_names, descriptors = gen_and_append_desc(
@@ -302,11 +302,11 @@ def make_MOF_SBU_RACs(
 
                 for val in descriptors:
                     if not (type(val) is float or isinstance(val, np.float64)):
-                        print('Mixed typing. Please convert to python float, and avoid np float')
+                        print('Mixed typing. Please convert to python float, and avoid np float.')
                         raise AssertionError('Mixed typing creates issues. Please convert your typing.')
 
                 lc_descriptors_i.append(descriptors)
-                if first_connecting_linker: # Assign lc_names if first instance of connected linker
+                if first_connecting_linker: # Assign lc_names if first instance of connected linker.
                     lc_names = descriptor_names
                     first_connecting_linker = False
 
@@ -314,7 +314,7 @@ def make_MOF_SBU_RACs(
         averaged_lc_descriptors = np.mean(np.array(lc_descriptor_list), axis=0)  # Average the lc RACs over all of the linkers in the MOF.
         lc_descriptor_df = pd.DataFrame(lc_descriptors_i, columns=lc_names)
         lc_descriptor_df['name'] = name
-        # This CSV will be overwritten until the last SBU, but information on all linkers is being kept thanks to the concat function
+        # This CSV will be overwritten until the last SBU, but information on all linkers is being kept thanks to the concat function.
         lc_descriptors = pd.concat([lc_descriptors, lc_descriptor_df], ignore_index=True)
         lc_descriptors.to_csv(sbu_descriptor_path+'/lc_descriptors.csv', index=False)
         descriptors = []
@@ -329,24 +329,24 @@ def make_MOF_SBU_RACs(
             SBU_mol_fcoords_connected = XYZ_connected(cell_v, SBU_mol_cart_coords, SBU_mol_adj_mat)
             writeXYZandGraph(xyz_path, SBU_mol_atom_labels, cell_v, SBU_mol_fcoords_connected, SBU_mol_adj_mat)
 
-        # Write TXT file indicating the connecting atoms
+        # Write TXT file indicating the connecting atoms.
         sbu_index_connection_indices = []
         for item in global_connection_indices:
             if item in SBU:
                 sbu_index_connection_indices.append(SBU.index(item))
-        sbu_index_connection_indices = list(np.sort(sbu_index_connection_indices))  # Sort in ascending order
+        sbu_index_connection_indices = list(np.sort(sbu_index_connection_indices))  # Sort in ascending order.
         sbu_index_connection_indices = [str(item) for item in sbu_index_connection_indices]
         with open(f'{sbupath}/{name}_connection_indices_sbu_{i}.txt', 'w') as f:
             f.write(' '.join(sbu_index_connection_indices))
 
         """""""""
-        Generate all of the SBU based RACs (full scope, mc)
+        Generate all of the SBU based RACs (full scope, mc).
         """""""""
         results_dictionary = generate_full_complex_autocorrelations(
             SBU_mol, depth=depth, loud=False, flag_name=False, Gval=Gval, oct=False)
         descriptor_names, descriptors = append_descriptors(
             descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'f', 'all')
-        # Now starts at every metal on the graph and autocorrelates
+        # Now starts at every metal on the graph and autocorrelates.
 
         # Note, by this point in the code, molcif has had self.metals assigned to all metals in the structure
         # with findMetal(transition_metals_only=False) if the user has specified transition_metals_only to be
@@ -440,7 +440,7 @@ def make_MOF_linker_RACs(
             linker_mol_fcoords_connected = XYZ_connected(cell_v, linker_mol_cart_coords, linker_mol_adj_mat)
             writeXYZandGraph(xyz_path, linker_mol_atom_labels, cell_v, linker_mol_fcoords_connected, linker_mol_adj_mat)
 
-        # Write TXT file indicating the connecting atoms
+        # Write TXT file indicating the connecting atoms.
         linker_index_connection_indices = []
         for item in global_connection_indices:
             if item in linker:
@@ -459,7 +459,7 @@ def make_MOF_linker_RACs(
         lig_full = list()
 
         """""""""
-        Generate all of the linker based RACs
+        Generate all of the linker based RACs.
         """""""""
         for ii, properties in enumerate(allowed_strings):
             if not list(descriptors):  # This is the case when just starting and the list is empty.
@@ -539,11 +539,11 @@ def path_maker(path):
     None
 
     """
-    # Making the required folders
+    # Making the required folders.
     required_folders = [f'{path}/ligands', f'{path}/linkers', f'{path}/sbus', f'{path}/xyz', f'{path}/logs']
     mkdir_if_absent(required_folders)
 
-    # Making the required files
+    # Making the required files.
     required_files = ['sbu_descriptors.csv', 'linker_descriptors.csv', 'lc_descriptors.csv']
     make_file_if_absent(path, required_files)
 
@@ -596,11 +596,11 @@ def bond_information_write(linker_list, linkeranchors_superlist, adj_matrix, mol
     """
     bond_length_list = []
     scaled_bond_length_list = []
-    for linker_idx, linker_atoms_list in enumerate(linker_list):  # Iterate over all linkers
-        # Getting the connection points of the linker
+    for linker_idx, linker_atoms_list in enumerate(linker_list):  # Iterate over all linkers.
+        # Getting the connection points of the linker.
         for anchor_super_idx in range(len(linkeranchors_superlist)):
-            if list(linkeranchors_superlist[anchor_super_idx])[0] in linker_atoms_list:  # Any anchor index in the current entry of linkeranchors_superlist is in the current linker's indices
-                linker_connection_points = list(linkeranchors_superlist[anchor_super_idx])  # Indices of the connection points in the linker
+            if list(linkeranchors_superlist[anchor_super_idx])[0] in linker_atoms_list:  # Any anchor index in the current entry of linkeranchors_superlist is in the current linker's indices.
+                linker_connection_points = list(linkeranchors_superlist[anchor_super_idx])  # Indices of the connection points in the linker.
         for con_point in linker_connection_points:
             connected_atoms = adj_matrix.todense()[con_point, :]
             connected_atoms = np.ravel(connected_atoms)
@@ -608,14 +608,14 @@ def bond_information_write(linker_list, linkeranchors_superlist, adj_matrix, mol
             connected_atoms = np.nonzero(connected_atoms)[0]  # The indices of atoms connected to atom with index con_point.
 
             for con_atom in connected_atoms:
-                con_atom3D = molcif.getAtom(con_atom)  # atom3D of an atom connected to the connection point
-                con_point3D = molcif.getAtom(con_point)  # atom3D of the connection point on the linker
-                # Check if the atom is a metal
+                con_atom3D = molcif.getAtom(con_atom)  # atom3D of an atom connected to the connection point.
+                con_point3D = molcif.getAtom(con_point)  # atom3D of the connection point on the linker.
+                # Check if the atom is a metal.
                 if con_atom3D.ismetal(transition_metals_only=transition_metals_only):
-                    # Finding the optimal unit cell shift
+                    # Finding the optimal unit cell shift.
                     molcif_cart_coords = np.array([atom.coords() for atom in molcif.atoms])
-                    fcoords = frac_coord(molcif_cart_coords, cell_v)  # fractional coordinates
-                    fcoords[con_atom] += compute_image_flag(cell_v, fcoords[con_point], fcoords[con_atom])  # Shifting the connected metal to get it close to the connection point
+                    fcoords = frac_coord(molcif_cart_coords, cell_v)  # Fractional coordinates
+                    fcoords[con_atom] += compute_image_flag(cell_v, fcoords[con_point], fcoords[con_atom])  # Shifting the connected metal to get it close to the connection point.
                     ccoords = fractional2cart(fcoords, cell_v)
                     shifted_con_atom3D = atom3D(Sym=con_atom3D.symbol(), xyz=list(ccoords[con_atom, :]))
 
@@ -627,8 +627,8 @@ def bond_information_write(linker_list, linkeranchors_superlist, adj_matrix, mol
                     bond_length_list.append(bond_len)
                     scaled_bond_length_list.append(relative_bond_len)
 
-    mean_bond_len = np.mean(bond_length_list)  # Average over all SBU-linker atom to atom connections
-    mean_scaled_bond_len = np.mean(scaled_bond_length_list)  # Average over all SBU-linker atom to atom connections
+    mean_bond_len = np.mean(bond_length_list)  # Average over all SBU-linker atom to atom connections.
+    mean_scaled_bond_len = np.mean(scaled_bond_length_list)  # Average over all SBU-linker atom to atom connections.
     std_bond_len = np.std(bond_length_list)
     std_scaled_bond_len = np.std(scaled_bond_length_list)
 
@@ -703,7 +703,7 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
         sbu_atoms_to_branch_from_keys = [starting_atom_idx]
 
         while len(sbu_atoms_to_branch_from_keys) != 0:
-            # Take from the first key, i.e. [0], of the dictionary
+            # Take from the first key, i.e. [0], of the dictionary.
             my_key = sbu_atoms_to_branch_from_keys[0]
             neighbor_idx = sbu_atoms_to_branch_from[my_key][0]  # Grabbing a neighbor to calculate its position.
 
@@ -774,7 +774,7 @@ def surrounded_sbu_gen(SBU_list, linker_list, sbupath, molcif, adj_matrix, cell_
                     if neighbor_idx in added_idx:
                         continue  # Skip this index if it has already been added.
 
-                    # Getting the optimal position of the neighbor, relative to my_key
+                    # Getting the optimal position of the neighbor, relative to my_key.
                     fcoords_my_key = frac_coord(atom3D_dict_copy[my_key].coords(), cell_v)
 
                     fcoords_neighbor_initial = frac_coord(molcif.getAtom(neighbor_idx).coords(), cell_v)
@@ -825,7 +825,7 @@ def dist_mat_comp(X):
 
     """
     # Assumes X is an np array of shape (number of atoms, 3). The Cartesian coordinates of atoms.
-    # Does not do any unit cell shifts
+    # Does not do any unit cell shifts.
     # Makes use of numpy vectorization to speed things up versus a for loop approach.
     X1 = np.expand_dims(X, axis=1)
     X2 = np.expand_dims(X, axis=0)
@@ -865,14 +865,14 @@ def detect_1D_rod(molcif, allatomtypes, cpar, logpath, name, adj_matrix, fcoords
     None
 
     """
-    # Assumption: If a MOF contains 1D rod SBUs, all SBUs in the MOF are 1D rods
-    # Thus, can just branch out from an arbitrary metal in the MOF for the check
+    # Assumption: If a MOF contains 1D rod SBUs, all SBUs in the MOF are 1D rods.
+    # Thus, can just branch out from an arbitrary metal in the MOF for the check.
 
     metal_idxs = molcif.findMetal(transition_metals_only=transition_metals_only)
     current_idx = metal_idxs[0] # arbitrary metal
     current_pos = fcoords[current_idx]
 
-    # List of fractional coordinates of metal atoms in the current prospective 1D rod
+    # List of fractional coordinates of metal atoms in the current prospective 1D rod.
     metal_pos = [
     list(current_pos),
     ]
@@ -883,15 +883,15 @@ def detect_1D_rod(molcif, allatomtypes, cpar, logpath, name, adj_matrix, fcoords
     while keep_looking:
         cur_len = len(metal_pos)
 
-        # Get all metals <= 2 bonds away
+        # Get all metals <= 2 bonds away.
 
-        # indices of atoms with bonds to the atom with the index current_idx
+        # Indices of atoms with bonds to the atom with the index current_idx.
         first_neighbors = np.nonzero(adj_matrix[current_idx, :])[1]
 
         second_neighbors = [np.nonzero(adj_matrix[j, :])[1] for j in first_neighbors]
         second_neighbors = [j for i in second_neighbors for j in i]
 
-        # Get everything within second shell
+        # Get everything within second shell.
         shell_idxs = list(first_neighbors) + list(second_neighbors)
         shell_idxs = list(set(shell_idxs))
         shell_idxs.remove(current_idx)
@@ -914,10 +914,10 @@ def detect_1D_rod(molcif, allatomtypes, cpar, logpath, name, adj_matrix, fcoords
                 current_idx = i
                 current_pos = shifted_fcoord_neighbor
                 break
-                # Another assumption: 1D rod has no "dead ends", so can take any neighbor as the next index to examine
+                # Another assumption: 1D rod has no "dead ends", so can take any neighbor as the next index to examine.
 
         if len(metal_pos) == cur_len:
-            # Did not extend the prospective 1D rod
+            # Did not extend the prospective 1D rod.
             keep_looking = False
             break
 
@@ -1051,17 +1051,17 @@ def get_MOF_descriptors(
     adj_matrix = sparse.csr_matrix(adj_matrix)
 
     writeXYZandGraph(xyzpath, allatomtypes, cell_v, fcoords, adj_matrix.todense())
-    molcif, _, _, _, _ = import_from_cif(data, True)  # molcif is a mol3D class of a single unit cell (or the cell of the cif file)
+    molcif, _, _, _, _ = import_from_cif(data, True)  # molcif is a mol3D class of a single unit cell (or the cell of the cif file).
     molcif.graph = adj_matrix.todense()
 
     """""""""
-    check number of connected components.
-    if more than 1: it checks if the structure is interpenetrated. Fails if no metal in one of the connected components (identified by the graph).
+    Check number of connected components.
+    If more than 1: it checks if the structure is interpenetrated. Fails if no metal in one of the connected components (identified by the graph).
     This includes floating solvent molecules.
     """""""""
 
     n_components, labels_components = sparse.csgraph.connected_components(csgraph=adj_matrix, directed=False, return_labels=True)
-    metal_list = set([at for at in molcif.findMetal(transition_metals_only=transition_metals_only)])  # the atom indices of the metals
+    metal_list = set([at for at in molcif.findMetal(transition_metals_only=transition_metals_only)])  # The atom indices of the metals.
     if not len(metal_list) > 0:
         failure_str = f"Failed to featurize {name}: no metal found\n"
         full_names, full_descriptors = failure_response(path, failure_str)
@@ -1075,12 +1075,12 @@ def get_MOF_descriptors(
             return full_names, full_descriptors
 
     if n_components > 1:  # There are multiple connected components that have a metal in them in this case.
-        print("structure is interpenetrated")
+        print("Structure is interpenetrated.")
         tmpstr = "%s found to be an interpenetrated structure\n" % (name)
         write2file(logpath, "/%s.log" % name, tmpstr)
 
     """""""""
-    step 1: metallic part
+    Step 1: metallic part
         removelist = metals (1) + atoms only connected to metals (2) + H connected to (1+2)
             Actually, it looks like only (1) and (2). Not H connected to (1+2)
         SBUlist = removelist + 1st coordination shell of the metals
@@ -1102,7 +1102,7 @@ def get_MOF_descriptors(
         write2file(logpath, "/%s.log" % name, tmpstr)
     [removelist.update(set([atom])) for atom in SBUlist if all((molcif.getAtom(val).ismetal(transition_metals_only=transition_metals_only) or molcif.getAtom(val).symbol().upper() == 'H') for val in molcif.getBondedAtomsSmart(atom))]
     """""""""
-    adding hydrogens connected to atoms which are only connected to metals. In particular interstitial OH, like in UiO SBU.
+    Adding hydrogens connected to atoms which are only connected to metals. In particular interstitial OH, like in UiO SBU.
     """""""""
     for atom in SBUlist:
         for val in molcif.getBondedAtomsSmart(atom):
@@ -1114,7 +1114,7 @@ def get_MOF_descriptors(
     The remove list only removes metals and things ONLY connected to metals or hydrogens.
     Thus the coordinating atoms are double counted in the linker.
 
-    step 2: organic part
+    Step 2: organic part
         removelist = linkers are all atoms - the removelist (assuming no bond between
         organiclinkers)
     """""""""
@@ -1124,18 +1124,18 @@ def get_MOF_descriptors(
     connections_list = copy.deepcopy(linker_list)
     connections_subgraphlist = copy.deepcopy(linker_subgraphlist)
     """""""""
-    find all anchoring atoms on linkers and ligands (lc identification)
+    Find all anchoring atoms on linkers and ligands (lc identification).
         The atoms that are bonded to a metal.
     """""""""
     anc_atoms = set()
-    for linker in linker_list:  # Checking all of the linkers one by one.
+    for linker in linker_list:      # Checking all of the linkers one by one.
         for atom_linker in linker:  # Checking each atom in the current linker.
             bonded2atom = np.nonzero(adj_matrix[atom_linker, :])[1]  # Indices of atoms with bonds to the atom with the index atom_linker.
             if set(bonded2atom) & metal_list:  # This means one of the atoms bonded to the atom with the index atom_linker is a metal.
                 anc_atoms.add(atom_linker)
     """""""""
-    step 3: determine whether linker or ligand
-    checking to find the anchors and #SBUs that are connected to an organic part
+    Step 3: determine whether linker or ligand
+    Checking to find the anchors and #SBUs that are connected to an organic part.
     anchor <= 1 -> ligand
     anchor > 1 and #SBU > 1 -> linker
     else: walk over the linker graph and count #crossing PBC
@@ -1157,20 +1157,20 @@ def get_MOF_descriptors(
         To do this, we check if something is connected to more than one SBU. Set to
         handle cases where primitive cell is small, ambiguous cases are recorded.
         """""""""
-        for iii, atoms in enumerate(atoms_list):  # Loop over all atom indices in a linker.
-            connected_atoms = np.nonzero(adj_matrix[atoms, :])[1]  # Indices of atoms with bonds to the atom with the index atoms.
+        for iii, atoms in enumerate(atoms_list):      # Loop over all atom indices in a linker.
+            connected_atoms = np.nonzero(adj_matrix[atoms, :])[1]   # Indices of atoms with bonds to the atom with the index atoms.
             for kk, sbu_atoms_list in enumerate(initial_SBU_list):  # Loop over all SBU subgraphs.
-                for sbu_atoms in sbu_atoms_list:  # Loop over SBU.
+                for sbu_atoms in sbu_atoms_list:      # Loop over SBU.
                     if sbu_atoms in connected_atoms:  # Found an SBU atom bonded to an atom in the linker defined by atoms_list.
                         linkeranchors_list.add(iii)
                         linkeranchors_atoms.add(atoms)
                         sbuanchors_list.add(sbu_atoms)
-                        sbu_connect_list.add(kk)  # Add if unique SBUs
+                        sbu_connect_list.add(kk)      # Add if unique SBUs
         min_length, max_length = linker_length(linker_subgraphlist[ii].todense(), linkeranchors_list)
         linkeranchors_superlist.append(linkeranchors_atoms)
 
-        if len(linkeranchors_list) >= 2:  # linker, and in one ambiguous case, could be a ligand.
-            if len(sbu_connect_list) >= 2:  # Something that connects two SBUs is certain to be a linker
+        if len(linkeranchors_list) >= 2:    # Linker, and in one ambiguous case, could be a ligand.
+            if len(sbu_connect_list) >= 2:  # Something that connects two SBUs is certain to be a linker.
                 max_min_linker_length = max(min_length, max_min_linker_length)
                 min_max_linker_length = min(max_length, min_max_linker_length)
                 continue
@@ -1188,7 +1188,7 @@ def get_MOF_descriptors(
                     at.coords() for at in [molcif.getAtom(val) for val in sbu_temp]])
                 sbu_adjmat = slice_mat(adj_matrix.todense(), sbu_temp)
                 pr_image_sbu = ligand_detect(cell_v, sbu_cart_coords, sbu_adjmat, set(range(len(linkeranchors_list))))  # Periodic images for the SBU
-                if not (len(np.unique(pr_image_sbu, axis=0)) == 1 and len(np.unique(pr_image_organic, axis=0)) == 1):  # Linker. More than one periodic image for sbu or organic component.
+                if not (len(np.unique(pr_image_sbu, axis=0)) == 1 and len(np.unique(pr_image_organic, axis=0)) == 1):   # Linker. More than one periodic image for sbu or organic component.
                     max_min_linker_length = max(min_length, max_min_linker_length)
                     min_max_linker_length = min(max_length, min_max_linker_length)
                     tmpstr = str(name)+','+' Anchors list: '+str(sbuanchors_list) \
@@ -1197,7 +1197,7 @@ def get_MOF_descriptors(
                     continue
                 else: # All anchoring atoms are in the same unitcell -> ligand
                     removelist.update(set(templist[ii]))  # We also want to remove these ligands.
-                    SBUlist.update(set(templist[ii]))  # We also want to remove these SBUs.
+                    SBUlist.update(set(templist[ii]))     # We also want to remove these SBUs.
                     linker_list.pop(ii)
                     linker_subgraphlist.pop(ii)
                     tmpstr = str(name)+','+' Anchors list: '+str(sbuanchors_list) \
@@ -1209,7 +1209,7 @@ def get_MOF_descriptors(
         else:  # Definite ligand
             write2file(logpath, "/%s.log" % name, "found ligand\n")
             removelist.update(set(templist[ii]))  # We also want to remove these ligands.
-            SBUlist.update(set(templist[ii]))  # We also want to remove these ligands.
+            SBUlist.update(set(templist[ii]))     # We also want to remove these ligands.
             linker_list.pop(ii)
             linker_subgraphlist.pop(ii)
             tmpstr = str(name)+','+' Anchors list: '+str(sbuanchors_list) \
@@ -1272,7 +1272,7 @@ def get_MOF_descriptors(
             linker_list, linker_subgraphlist, molcif, depth, name, cell_v, linkerpath,
             linkeranchors_superlist, Gval
             )
-        full_names = descriptor_names+lig_descriptor_names+lc_descriptor_names #+ ECFP_names
+        full_names = descriptor_names+lig_descriptor_names+lc_descriptor_names
         full_descriptors = list(descriptors)+list(lig_descriptors)+list(lc_descriptors)
         print(len(full_names), len(full_descriptors))
     elif len(linker_subgraphlist) == 1:  # Only one linker identified.

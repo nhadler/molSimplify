@@ -116,10 +116,6 @@ def readcif(name):
                               float(ln[fracz_index].replace('(','').replace(')',''))])
             ln[type_index] = ln[type_index].strip("_")
             at_type = ln[type_index]
-            # for idx, char in enumerate(ln[type_index]): # Looking through the characters of the element symbol in order to remove any numbers.
-            #     if char.isdigit(): # This means one of the characters in the atom type is a number.
-            #         at_type = ln[type_index][:idx] # Overwriting. Use the atom element symbol without numbers.
-            #         break # Get the characters up to the number, then stop.
             at_type = at_type.capitalize()
             atomtypes.append(at_type)
 
@@ -774,7 +770,7 @@ def make_supercell(cell, atoms, fcoords, exp_coeff):
     assert exp_coeff.shape == (3,)
     # All entries should be integers.
     assert all([i % int(i) == 0 for i in exp_coeff])
-    # All entries should be natrual numbers.
+    # All entries should be natural numbers.
     assert all([i > 0 for i in exp_coeff])
 
     supercell = np.multiply(cell.T, exp_coeff).T

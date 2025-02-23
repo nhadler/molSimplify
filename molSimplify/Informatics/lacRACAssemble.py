@@ -84,7 +84,6 @@ def get_descriptor_vector(this_complex, custom_ligand_dict=False,
     # Generate custom_ligand_dict if one not passed!
     if not custom_ligand_dict:
         liglist, ligdents, ligcons = ligand_breakdown(this_complex, BondedOct=True) # Complex is assumed to be octahedral
-        # print(liglist, ligdents, ligcons)
         if not alleq:
             if lacRACs:
                 assignment_func = ligand_assign_consistent
@@ -167,7 +166,6 @@ def get_descriptor_vector(this_complex, custom_ligand_dict=False,
                                                        'D_lc', 'eq')
 
     # metal ACs
-    # print('getting metal ACs')
     results_dictionary = generate_metal_autocorrelations(this_complex, depth=depth,
                                                          loud=False, modifier=ox_modifier,
                                                          NumB=NumB, Gval=Gval, metal_ind=metal_ind,
@@ -277,7 +275,6 @@ def get_descriptor_derivatives(this_complex, custom_ligand_dict=False, ox_modifi
                                                                                         results_dictionary['results'],
                                                                                         'f', 'all')
     # ligand ACs
-    # print('getting ligand AC derivatives')
     results_dictionary = generate_all_ligand_autocorrelation_derivatives_lac(this_complex, depth=depth, loud=False,
                                                                          custom_ligand_dict=custom_ligand_dict)
     descriptor_derivative_names, descriptor_derivatives = append_descriptor_derivatives(descriptor_derivative_names,
@@ -313,7 +310,6 @@ def get_descriptor_derivatives(this_complex, custom_ligand_dict=False, ox_modifi
                                                                                         results_dictionary['result_eq_con'],
                                                                                         'D_lc', 'eq')
     # metal ACs
-    # print('getting metal AC derivatives')
     results_dictionary = generate_metal_autocorrelation_derivatives(this_complex, depth=depth, loud=False,
                                                                     modifier=ox_modifier, metal_ind=metal_ind)
     descriptor_derivative_names, descriptor_derivatives = append_descriptor_derivatives(descriptor_derivative_names,

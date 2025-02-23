@@ -721,7 +721,7 @@ def loop_structure(_path, path_init_geo):
     return charac, info_tot
 
 
-# Find the file name by matching unique_ID and spin mulplicity.
+# Find the file name by matching unique_ID and spin multiplicity.
 def find_file_with_unique_num(_path, unique_num):
     filename = None
     for dirpath, dirs, files in sorted(os.walk(_path)):
