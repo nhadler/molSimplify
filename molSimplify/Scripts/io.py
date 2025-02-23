@@ -614,7 +614,7 @@ def lig_load(userligand: str, licores: Optional[dict] = None) -> Tuple[Any, str]
     -------
         lig : mol3D
             The loaded ligand.
-            False if ligand loading fails
+            False if ligand loading fails.
         esmg : str
             Error message.
     """
