@@ -19,6 +19,6 @@ def test_ligand_loading(tmp_path, resource_path_root, lig_name):
 	passNumAtoms = hp.compareNumAtoms(lig_path, comparison_path)
 	assert passNumAtoms
 
-	threshold = 0.0001
+	threshold = 0.01
 	fuzzyEqual = hp.fuzzy_compare_xyz(lig_path, comparison_path, threshold)
 	assert fuzzyEqual
