@@ -400,3 +400,26 @@ def test_geo_geometry_type_distance(resource_path_root, geo_type, ref):
     result = mol.get_geometry_type_distance()
     print(result)
     assert result['geometry'] == ref
+
+
+@pytest.mark.parametrize(
+    "geo",
+    [
+    "benzene",
+    "co",
+    "cr3_f6_optimization",
+    ])
+def test_graph_hash(resource_path_root, geo):
+    # Note: May fail if a very different version of networkx is used
+    # compared to that used for the reference.
+    mol = mol3D()
+    mol.readfromxyz(resource_path_root / "inputs" / "xyz_files" / f"{geo}.xyz")
+    gh = mol.get_graph_hash(attributed_flag=True, oct=False)
+
+    reference_path = str(resource_path_root / "refs" / "graph_hash" / f"{geo}.txt")
+    with open(reference_path, 'r') as f:
+        reference_gh = f.readline()
+
+    reference_gh = reference_gh.rstrip() # Remove trailing newline.
+
+    assert gh == reference_gh
