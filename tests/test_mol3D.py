@@ -420,4 +420,6 @@ def test_graph_hash(resource_path_root, geo):
     with open(reference_path, 'r') as f:
         reference_gh = f.readline()
 
+    reference_gh = reference_gh.rstrip() # Remove trailing newline.
+
     assert gh == reference_gh
