@@ -159,6 +159,7 @@ get_first_shell
 get_geometry_type
 get_geometry_type_distance
 get_geometry_type_old
+get_graph_hash
 get_linear_angle
 get_mol_graph_det
 get_molecular_mass
@@ -4314,6 +4315,49 @@ class mol3D:
             "info_edge_lig": info_edge_lig,
         }
         return results
+
+    def get_graph_hash(self, attributed_flag=True, oct=False):
+        """
+        Calculate the graph hash of a molecule.
+        Note: Not useful for distinguishing betweeen molecules
+        that are just a single atom.
+
+        Parameters
+        ----------
+            attributed_flag : bool
+                Whether the graph hash takes into account element symbols.
+                Default is True.
+            oct : bool
+                Defines whether a structure is octahedral.
+                Default is False.
+
+        Returns
+        -------
+            gh : str
+                The graph hash.
+        """
+
+        if not len(self.graph):
+            print('graph attribute not set. Setting it.')
+            self.createMolecularGraph(oct=oct)
+
+        G = nx.Graph()
+        attributed = []
+        for i, row in enumerate(self.graph):
+            for j, column in enumerate(row):
+                if self.graph[i][j] == 1:
+                    temp_label = [self.getAtom(i).symbol(), self.getAtom(j).symbol()]
+                    temp_label.sort()
+                    temp_label = ''.join(temp_label)
+                    attributed.append((i, j, {'label': temp_label}))
+        G.add_edges_from(attributed)
+
+        if attributed_flag:
+            gh = nx.weisfeiler_lehman_graph_hash(G, edge_attr="label")
+        else:
+            gh = nx.weisfeiler_lehman_graph_hash(G)
+
+        return gh
 
     def get_linear_angle(self, ind):
         """
