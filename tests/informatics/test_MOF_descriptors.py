@@ -56,7 +56,7 @@ def test_get_MOF_descriptors_ODAC(resource_path_root, tmp_path, name, ref_names)
             str(resource_path_root / "inputs" / "cif_files" / f"{name}.cif"),
             depth=3,
             path=str(tmp_path),
-            xyzpath=str(tmp_path / "test.xyz"),
+            xyz_path=str(tmp_path / "test.xyz"),
             Gval=True,
         )
 
@@ -102,7 +102,7 @@ def test_get_MOF_descriptors_JACS(resource_path_root, tmp_path, name, ref_names)
             str(resource_path_root / "inputs" / "cif_files" / f"{name}.cif"),
             depth=3,
             path=str(tmp_path),
-            xyzpath=str(tmp_path / "test.xyz"),
+            xyz_path=str(tmp_path / "test.xyz"),
             Gval=False,
         )
 
