@@ -1170,7 +1170,7 @@ def metal_only_autocorrelation_derivative(
     w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
     for metal_ind in metal_idxs:
         autocorrelation_vector_derivative += func(mol, w, metal_ind, d, oct=oct)
-    autocorrelation_vector_derivative = np.divide(autocorrelation_vector_derivative, n_met)    
+    autocorrelation_vector_derivative = np.divide(autocorrelation_vector_derivative, n_met)
     return (autocorrelation_vector_derivative)
 
 
@@ -1973,7 +1973,7 @@ def generate_metal_autocorrelations(mol, loud=False, depth=4, oct=True, flag_nam
     for ii, properties in enumerate(allowed_strings):
         metal_ac = metal_only_autocorrelation(mol, properties, depth, oct=oct,
                                               modifier=modifier, use_dist=use_dist,
-                                              size_normalize=size_normalize, 
+                                              size_normalize=size_normalize,
                                               MRdiag_dict=MRdiag_dict,
                                               transition_metals_only=transition_metals_only)
         this_colnames = []
@@ -2104,7 +2104,7 @@ def generate_metal_deltametrics(mol, loud=False, depth=4, oct=True, flag_name=Fa
         labels_strings += ["NumB"]
     if polarizability:
         allowed_strings += ['polarizability']
-        labels_strings += ['alpha']        
+        labels_strings += ['alpha']
     if len(MRdiag_dict):
         allowed_strings, labels_strings = [], []
         for k in list(MRdiag_dict):
