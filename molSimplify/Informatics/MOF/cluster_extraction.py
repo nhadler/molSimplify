@@ -37,7 +37,6 @@ def get_primitive(data_path, write_path):
 #########################################################################################
 
 def make_MOF_SBU_RACs(SBU_list, SBU_subgraph, molcif, depth, name, cell, anchoring_atoms, sbu_path=False, connections_list=False, connections_subgraphlist=False):
-    n_sbu = len(SBU_list)
     print(SBU_list)
     G=nx.from_numpy_matrix(molcif.graph)
     cycles = nx.minimum_cycle_basis(G) # gets all closed rings in graph
@@ -112,7 +111,6 @@ def make_MOF_SBU_RACs(SBU_list, SBU_subgraph, molcif, depth, name, cell, anchori
 
 def make_MOF_linker_RACs(linker_list, linker_subgraphlist, molcif, depth, name, cell, linker_path=False):
     #### This function makes full scope linker RACs for MOFs ####
-    nlink = len(linker_list)
     for i, linker in enumerate(linker_list):
         linker_mol = mol3D()
         for val in linker:
@@ -383,6 +381,6 @@ def get_MOF_descriptors(data, depth, path=False, xyz_path = False):
         SBU_list, SBU_subgraphlist = pbc_funs.get_closed_subgraph(remove_list, truncated_linkers, adj_matrix)
         SBU_list, SBU_subgraphlist = pbc_funs.include_extra_shells(SBU_list, molcif, adj_matrix)
         SBU_list, SBU_subgraphlist = pbc_funs.include_extra_shells(SBU_list, molcif, adj_matrix)
-    descriptor_names, descriptors, lc_descriptor_names, lc_descriptors = make_MOF_SBU_RACs(SBU_list, SBU_subgraphlist, molcif, depth, name, cell_v,anc_atoms, sbu_path, connections_list, connections_subgraphlist)
-    lig_descriptor_names, lig_descriptors = make_MOF_linker_RACs(linker_list, linker_subgraphlist, molcif, depth, name, cell_v, linker_path)
+    make_MOF_SBU_RACs(SBU_list, SBU_subgraphlist, molcif, depth, name, cell_v,anc_atoms, sbu_path, connections_list, connections_subgraphlist)
+    make_MOF_linker_RACs(linker_list, linker_subgraphlist, molcif, depth, name, cell_v, linker_path)
     return None, None

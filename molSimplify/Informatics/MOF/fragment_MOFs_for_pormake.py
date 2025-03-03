@@ -234,7 +234,6 @@ def breakdown_MOF(SBU_list, SBU_subgraph, molcif, name, cell, anchoring_atoms, s
     None
 
     """
-    n_sbu = len(SBU_list)
     all_SBU_atoms = []
     all_SBU_X_atoms = []
 
@@ -484,7 +483,7 @@ def breakdown_MOF(SBU_list, SBU_subgraph, molcif, name, cell, anchoring_atoms, s
         if (linker_mol.natoms == 0) or (n_components > 1) or (heavy_atom_count < 3):
             continue
         linker_mol_fcoords_connected = XYZ_connected(cell, linker_mol_cart_coords , linker_mol_adj_mat )
-        coord_list, molgraph = returnXYZandGraph(None , linker_mol_atom_labels , cell , linker_mol_fcoords_connected, linker_mol_adj_mat)
+        coord_list, _ = returnXYZandGraph(None , linker_mol_atom_labels , cell , linker_mol_fcoords_connected, linker_mol_adj_mat)
         for r in range(linker_mol.natoms):
             linker_mol.getAtom(r).setcoords(coord_list[r])
         for val in tuple_list_linker:
@@ -497,7 +496,7 @@ def breakdown_MOF(SBU_list, SBU_subgraph, molcif, name, cell, anchoring_atoms, s
                 X_string = '   '.join([str(val) for val in final_X_indices_linker])
             else:
                 X_string = '   '
-            coord_list, molgraph = returnXYZandGraph(xyzname, linker_mol_atom_labels, cell,
+            returnXYZandGraph(xyzname, linker_mol_atom_labels, cell,
                 linker_mol_fcoords_connected, linker_mol_adj_mat)
             linker_mol.writexyz(xyzname, withgraph=True, specialheader='   '+X_string)
     return None
