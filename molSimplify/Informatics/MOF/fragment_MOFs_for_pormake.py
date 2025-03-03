@@ -880,7 +880,7 @@ def make_MOF_fragments(data, path=False, xyz_path=False):
             tmpstr = "\nStructure has LONG LINKER\n\n"
             write2file(log_path, "/%s.log"%name, tmpstr)
             # First account for all of the carboxylic acid type linkers, add in the carbons.
-            [[SBU_list.add(val) for val in molcif.getBondedAtomsSmart(zero_first_shell)] for zero_first_shell in SBU_list.copy()] 
+            [[SBU_list.add(val) for val in molcif.getBondedAtomsSmart(zero_first_shell)] for zero_first_shell in SBU_list.copy()]
         truncated_linkers = allatoms - SBU_list
         SBU_list, SBU_subgraphlist = get_closed_subgraph(SBU_list, truncated_linkers, adj_matrix)
         if not long_ligands:
