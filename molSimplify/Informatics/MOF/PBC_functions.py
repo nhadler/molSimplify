@@ -828,7 +828,7 @@ def compute_adj_matrix(distance_mat, allatomtypes, wiggle_room=1, handle_overlap
             rad = (COVALENT_RADII[e1] + COVALENT_RADII[e2])
             dist = distance_mat[i,i+j+1]
             # check for atomic overlap:
-            if dist < min(COVALENT_RADII[e1] , COVALENT_RADII[e2]):
+            if dist < min(COVALENT_RADII[e1], COVALENT_RADII[e2]):
                 print(f"Atomic overlap involving atom {i} and {i+j+1}! Zero-indexed.")
                 print(f"dist is {dist} and the cutoff is {min(COVALENT_RADII[e1] , COVALENT_RADII[e2])}")
                 if handle_overlap:

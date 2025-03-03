@@ -163,49 +163,6 @@ def deltametric_catoms(mol, prop_vec, orig, d, oct=True, catoms=None):
     return (result_vector)
 
 
-def multimetal_only_autocorrelation(mol, prop, d, oct=True,
-                                    func=autocorrelation, modifier=False,
-                                    transition_metals_only=True):
-    """
-    Calculate metal-centered autocorrelation, averaged over all metals.
-
-    Parameters
-    ----------
-        mol : mol3D
-            Molecule to calculate multimetal autocorrelation from.
-        prop : str
-            Property to evaluate.
-        d : int
-            Depth of autocorrelation.
-        oct : bool, optional
-            Use octahedral criteria for structure evaluation, by default True.
-            If complex is octahedral, will use better bond checks.
-        func : function, optional
-            Which function to evaluate autocorrelation by. By default autocorrelation.
-        modifier : bool, optional
-            If passed - dict, used to modify prop vector (e.g., for adding
-            ONLY used with  ox_nuclear_charge    ox or charge)
-            {"Fe":2, "Co": 3} etc, by default False.
-        transition_metals_only : bool, optional
-            Flag if only transition metals counted as metals, by default True.
-
-    Returns
-    -------
-        autocorrelation_vector : list
-            List of multimetal autocorrelations.
-
-    """
-    autocorrelation_vector = np.zeros(d + 1)
-    metal_idxs = mol.findMetal(transition_metals_only=transition_metals_only)
-    n_met = len(metal_idxs)
-
-    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
-    for metal_ind in metal_idxs:
-        autocorrelation_vector += func(mol, w, metal_ind, d, oct=oct)
-    autocorrelation_vector = np.divide(autocorrelation_vector, n_met)
-    return (autocorrelation_vector)
-
-
 def multiatom_only_autocorrelation(mol, prop, d, oct=True,
                                    func=autocorrelation, modifier=False,
                                    additional_elements=False):
@@ -249,49 +206,6 @@ def atom_only_summetric(mol, prop, d, atomIdx, oct=True):
     else:
         autocorrelation_vector += summetric(mol, w, atomIdx, d, oct=oct)
     return (autocorrelation_vector)
-
-
-def multimetal_only_deltametric(mol, prop, d, oct=True,
-                                func=deltametric, modifier=False,
-                                transition_metals_only=True):
-    """
-    Calculate metal-centered deltametric, averaged over all metals.
-
-    Parameters
-    ----------
-        mol : mol3D
-            Molecule to calculate multimetal deltametric from.
-        prop : str
-            Property to evaluate.
-        d : int
-            Depth of deltametric.
-        oct : bool, optional
-            Use octahedral criteria for structure evaluation, by default True.
-            If complex is octahedral, will use better bond checks.
-        func : function, optional
-            Which function to evaluate deltametric by. By default deltametric.
-        modifier : bool, optional
-            If passed - dict, used to modify prop vector (e.g., for adding
-            ONLY used with  ox_nuclear_charge    ox or charge)
-            {"Fe":2, "Co": 3} etc, by default False.
-        transition_metals_only : bool, optional
-            Flag if only transition metals counted as metals, by default True.
-
-    Returns
-    -------
-        deltametric_vector : list
-            List of multimetal deltametrics.
-
-    """
-    deltametric_vector = np.zeros(d + 1)
-    metal_idxs = mol.findMetal(transition_metals_only=transition_metals_only)
-    n_met = len(metal_idxs)
-
-    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
-    for metal_ind in metal_idxs:
-        deltametric_vector += func(mol, w, metal_ind, d, oct=oct)
-    deltametric_vector = np.divide(deltametric_vector, n_met)
-    return (deltametric_vector)
 
 
 def multiatom_only_deltametric(mol, prop, d, oct=True,
@@ -900,61 +814,6 @@ def generate_all_ligand_deltametric_derivatives(mol, loud, depth=4, name=False, 
     return results_dictionary
 
 
-def generate_multimetal_autocorrelations(
-    mol, depth=4, oct=True, flag_name=False,
-    polarizability=False, Gval=False,
-    transition_metals_only=True):
-    """
-    Calculate metal-centered autocorrelations, averaged over all metals.
-
-    Parameters
-    ----------
-        mol : mol3D
-            Molecule to calculate multimetal autocorrelations from.
-        depth : int, optional
-            Depth of autocorrelations.
-        oct : bool, optional
-            Use octahedral criteria for structure evaluation, by default True.
-            If complex is octahedral, will use better bond checks.
-        flag_name : bool, optional
-            Shift RAC names slightly, by default False.
-        polarizability : bool, optional
-            Use polarizability (alpha) as RAC, by default False.
-        Gval : bool, optional
-            Use G value as RAC, by default False.
-        transition_metals_only : bool, optional
-            Flag if only transition metals counted as metals, by default True.
-
-    Returns
-    -------
-        results_dictionary : dict
-            Dictionary of multimetal RAC names and values.
-
-    """
-    result = list()
-    colnames = []
-    allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
-    labels_strings = ['chi', 'Z', 'I', 'T', 'S']
-    if Gval:
-        allowed_strings += ['group_number']
-        labels_strings += ['Gval']
-    if polarizability:
-        allowed_strings += ['polarizability']
-        labels_strings += ['alpha']
-    for ii, properties in enumerate(allowed_strings):
-        metal_ac = multimetal_only_autocorrelation(mol, properties, depth, oct=oct, transition_metals_only=transition_metals_only)
-        this_colnames = []
-        for i in range(0, depth + 1):
-            this_colnames.append(labels_strings[ii] + '-' + str(i))
-        colnames.append(this_colnames)
-        result.append(metal_ac)
-    if flag_name:
-        results_dictionary = {'colnames': colnames, 'results_mc_ac': result}
-    else:
-        results_dictionary = {'colnames': colnames, 'results': result}
-    return results_dictionary
-
-
 def generate_multiatom_autocorrelations(mol, depth=4, oct=True, flag_name=False, additional_elements=False):
     # oct - bool, if complex is octahedral, will use better bond checks
     result = list()
@@ -1006,61 +865,6 @@ def generate_metal_ox_eff_deltametrics(oxmodifier, mol, depth=4, oct=True, flag_
     colnames.append(this_colnames)
     result.append(metal_ox_ac)
     results_dictionary = {'colnames': colnames, 'results': result}
-    return results_dictionary
-
-
-def generate_multimetal_deltametrics(
-    mol, depth=4, oct=True, flag_name=False,
-    polarizability=False, Gval=False,
-    transition_metals_only=True):
-    """
-    Calculate metal-centered deltametrics, averaged over all metals.
-
-    Parameters
-    ----------
-        mol : mol3D
-            Molecule to calculate multimetal deltametrics from.
-        depth : int, optional
-            Depth of deltametrics.
-        oct : bool, optional
-            Use octahedral criteria for structure evaluation, by default True.
-            If complex is octahedral, will use better bond checks.
-        flag_name : bool, optional
-            Shift RAC names slightly, by default False.
-        polarizability : bool, optional
-            Use polarizability (alpha) as RAC, by default False.
-        Gval : bool, optional
-            Use G value as RAC, by default False.
-        transition_metals_only : bool, optional
-            Flag if only transition metals counted as metals, by default True.
-
-    Returns
-    -------
-        results_dictionary : dict
-            Dictionary of multimetal deltametric names and values.
-
-    """
-    result = list()
-    colnames = []
-    allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
-    labels_strings = ['chi', 'Z', 'I', 'T', 'S']
-    if Gval:
-        allowed_strings += ['group_number']
-        labels_strings += ['Gval']
-    if polarizability:
-        allowed_strings += ['polarizability']
-        labels_strings += ['alpha']
-    for ii, properties in enumerate(allowed_strings):
-        metal_ac = multimetal_only_deltametric(mol, properties, depth, oct=oct, transition_metals_only=transition_metals_only)
-        this_colnames = []
-        for i in range(0, depth + 1):
-            this_colnames.append(labels_strings[ii] + '-' + str(i))
-        colnames.append(this_colnames)
-        result.append(metal_ac)
-    if flag_name:
-        results_dictionary = {'colnames': colnames, 'results_mc_del': result}
-    else:
-        results_dictionary = {'colnames': colnames, 'results': result}
     return results_dictionary
 
 

@@ -865,6 +865,7 @@ def generate_full_complex_autocorrelations(mol, loud,
                                            MRdiag_dict={}):
     """
     Utility to manage full complex autocorrelation generation and labeling.
+    Works on any molecule, not just TM complexes.
 
     Parameters
     ----------
@@ -1055,7 +1056,7 @@ def atom_only_autocorrelation_derivative(mol, prop, d, atomIdx, oct=True):
 
     Returns
     -------
-        autocorrelation_vector : list
+        autocorrelation_derivative_mat : list
             List of atom-only autocorrelation derivatives.
 
     """
@@ -1071,7 +1072,7 @@ def atom_only_autocorrelation_derivative(mol, prop, d, atomIdx, oct=True):
 
 
 def metal_only_autocorrelation(
-    mol, prop, d, oct=True, metal_ind=None,
+    mol, prop, d, oct=True,
     func=autocorrelation, modifier=False,
     use_dist=False, size_normalize=False,
     MRdiag_dict={}, transition_metals_only=True
@@ -1079,6 +1080,8 @@ def metal_only_autocorrelation(
     """
     Calculate the metal_only product autocorrelations
     (e.g., metal-centered atom-only RACs).
+
+    Averaged over all metals.
 
     Parameters
     ----------
@@ -1090,12 +1093,13 @@ def metal_only_autocorrelation(
             Depth of autocorrelation.
         oct : bool, optional
             Use octahedral geometry evaluations, by default True.
-        metal_ind : bool, optional
-            Index of the metal atom to generate property, by default False.
         func : function, optional
             Which function to evaluate mc-racs by, by default autocorrelation.
         modifier : bool, optional
             Use ox_modifier, by default False.
+            If passed - dict, used to modify prop vector (e.g., for adding
+            ONLY used with  ox_nuclear_charge    ox or charge)
+            {"Fe":2, "Co": 3} etc, by default False.
         use_dist : bool, optional
             Weigh autocorrelation by physical distance of atom from original, by default False.
         size_normalize : bool, optional
@@ -1111,19 +1115,21 @@ def metal_only_autocorrelation(
             MC atom-only RACs vector.
 
     """
-    try:
-        if not isinstance(metal_ind, int):
-            metal_ind = get_metal_index(mol, transition_metals_only=transition_metals_only)
-        w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, MRdiag_dict=MRdiag_dict)
-        autocorrelation_vector = func(mol, w, metal_ind, d, oct=oct, use_dist=use_dist, size_normalize=size_normalize)
-    except IndexError:
-        print('Error, no metal found in mol object!')
-        return False
+    autocorrelation_vector = np.zeros(d + 1)
+    metal_idxs = mol.findMetal(transition_metals_only=transition_metals_only)
+    if len(metal_idxs) == 0:
+        raise Exception('No metal found in mol object.')
+    n_met = len(metal_idxs)
+
+    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, MRdiag_dict=MRdiag_dict)
+    for metal_ind in metal_idxs:
+        autocorrelation_vector += func(mol, w, metal_ind, d, oct=oct, use_dist=use_dist, size_normalize=size_normalize)
+    autocorrelation_vector = np.divide(autocorrelation_vector, n_met)
     return (autocorrelation_vector)
 
 
 def metal_only_autocorrelation_derivative(
-    mol, prop, d, oct=True, metal_ind=None,
+    mol, prop, d, oct=True,
     func=autocorrelation_derivative, modifier=False,
     transition_metals_only=True):
     """
@@ -1155,14 +1161,16 @@ def metal_only_autocorrelation_derivative(
             MC atom-only RAC derivatives vector (matrix).
 
     """
-    try:
-        if not isinstance(metal_ind, int):
-            metal_ind = get_metal_index(mol, transition_metals_only=transition_metals_only)
-        w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
-        autocorrelation_vector_derivative = func(mol, w, metal_ind, d, oct=oct)
-    except IndexError:
-        print('Error, no metal found in mol object!')
-        return False
+    autocorrelation_vector_derivative = np.zeros(d + 1)
+    metal_idxs = mol.findMetal(transition_metals_only=transition_metals_only)
+    if len(metal_idxs) == 0:
+        raise Exception('No metal found in mol object.')
+    n_met = len(metal_idxs)
+
+    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
+    for metal_ind in metal_idxs:
+        autocorrelation_vector_derivative += func(mol, w, metal_ind, d, oct=oct)
+    autocorrelation_vector_derivative = np.divide(autocorrelation_vector_derivative, n_met)    
     return (autocorrelation_vector_derivative)
 
 
@@ -1251,7 +1259,7 @@ def atom_only_deltametric_derivative(mol, prop, d, atomIdx, oct=True, modifier=F
 
 
 def metal_only_deltametric_derivative(
-    mol, prop, d, oct=True, metal_ind=None,
+    mol, prop, d, oct=True,
     func=deltametric_derivative, modifier=False,
     transition_metals_only=True):
     """
@@ -1264,11 +1272,9 @@ def metal_only_deltametric_derivative(
         prop : str
             Property to evaluate.
         d : int
-            Depth of autocorrelation.
+            Depth of deltametric.
         oct : bool, optional
             Use octahedral geometry evaluations, by default True.
-        metal_ind : bool, optional
-            Index of metal atom to consider, by default False.
         func : function, optional
             Which function to evaluate mc-racs by, by default deltametric_derivative.
         modifier : bool, optional
@@ -1282,19 +1288,21 @@ def metal_only_deltametric_derivative(
             Metal-centered deltametric derivatives vector (matrix).
 
     """
-    try:
-        if not isinstance(metal_ind, int):
-            metal_ind = get_metal_index(mol, transition_metals_only=transition_metals_only)
-        w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
-        deltametric_vector_derivative = func(mol, w, metal_ind, d, oct=oct)
-    except IndexError:
-        print('Error, no metal found in mol object!')
-        return False
+    deltametric_vector_derivative = np.zeros(d + 1)
+    metal_idxs = mol.findMetal(transition_metals_only=transition_metals_only)
+    if len(metal_idxs) == 0:
+        raise Exception('No metal found in mol object.')
+    n_met = len(metal_idxs)
+
+    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
+    for metal_ind in metal_idxs:
+        deltametric_vector_derivative += func(mol, w, metal_ind, d, oct=oct)
+    deltametric_vector_derivative = np.divide(deltametric_vector_derivative, n_met)
     return (deltametric_vector_derivative)
 
 
 def metal_only_deltametric(
-    mol, prop, d, oct=True, metal_ind=None,
+    mol, prop, d, oct=True,
     func=deltametric, modifier=False,
     use_dist=False, size_normalize=False,
     MRdiag_dict={}, transition_metals_only=True):
@@ -1308,15 +1316,16 @@ def metal_only_deltametric(
         prop : str
             Property to evaluate.
         d : int
-            Depth of autocorrelation.
+            Depth of deltametric.
         oct : bool, optional
             Use octahedral geometry evaluations, by default True.
-        metal_ind : bool, optional
-            Index of metal atom to consider, by default False.
         func : function, optional
             Which function to evaluate mc-racs by, by default deltametric.
         modifier : bool, optional
             Use ox_modifier, by default False.
+            If passed - dict, used to modify prop vector (e.g., for adding
+            ONLY used with  ox_nuclear_charge    ox or charge)
+            {"Fe":2, "Co": 3} etc, by default False.
         use_dist : bool, optional
             Weigh autocorrelation by physical distance of atom from original, by default False.
         size_normalize : bool, optional
@@ -1332,14 +1341,16 @@ def metal_only_deltametric(
             Metal-centered deltametric RAC vector.
 
     """
-    try:
-        if not isinstance(metal_ind, int):
-            metal_ind = get_metal_index(mol, transition_metals_only=transition_metals_only)
-        w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, MRdiag_dict=MRdiag_dict)
-        deltametric_vector = func(mol, w, metal_ind, d, oct=oct, use_dist=use_dist, size_normalize=size_normalize)
-    except IndexError:
-        print('Error, no metal found in mol object!')
-        return False
+    deltametric_vector = np.zeros(d + 1)
+    metal_idxs = mol.findMetal(transition_metals_only=transition_metals_only)
+    if len(metal_idxs) == 0:
+        raise Exception('No metal found in mol object.')
+    n_met = len(metal_idxs)
+
+    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, MRdiag_dict=MRdiag_dict)
+    for metal_ind in metal_idxs:
+        deltametric_vector += func(mol, w, metal_ind, d, oct=oct, use_dist=use_dist, size_normalize=size_normalize)
+    deltametric_vector = np.divide(deltametric_vector, n_met)
     return (deltametric_vector)
 
 
@@ -1897,9 +1908,10 @@ def generate_all_ligand_deltametric_derivatives_lac(mol, loud, depth=4, flag_nam
     return results_dictionary
 
 
-def generate_metal_autocorrelations(mol, loud, depth=4, oct=True, flag_name=False,
-                                    modifier=False, NumB=False, Gval=False, metal_ind=None,
-                                    use_dist=False, size_normalize=False, MRdiag_dict={}):
+def generate_metal_autocorrelations(mol, loud=False, depth=4, oct=True, flag_name=False,
+                                    modifier=False, Gval=False, NumB=False, polarizability=False,
+                                    use_dist=False, size_normalize=False, MRdiag_dict={},
+                                    transition_metals_only=True):
     """
     Utility for generating all metal-centered product autocorrelations for a complex.
 
@@ -1907,8 +1919,8 @@ def generate_metal_autocorrelations(mol, loud, depth=4, oct=True, flag_name=Fals
     ----------
         mol : mol3D
             Molecule to get mc-RACs for.
-        loud : bool
-            Print debugging information.
+        loud : bool, optional
+            Print debugging information, by default False.
         depth : int, optional
             Depth of RACs to calculate, by default 4.
         oct : bool, optional
@@ -1918,18 +1930,20 @@ def generate_metal_autocorrelations(mol, loud, depth=4, oct=True, flag_name=Fals
             Shift RAC names slightly, by default False.
         modifier : bool, optional
             Use ox_modifier for metal, by default False.
-        NumB : bool, optional
-            Use number of bonds as descriptor property, by default False.
         Gval : bool, optional
             Use G value as descriptor property, by default False.
-        metal_ind : bool, optional
-            Index of the metal atom to generate property, by default False.
+        NumB : bool, optional
+            Use number of bonds as descriptor property, by default False.
+        polarizability : bool, optional
+            Use polarizability (alpha) as descriptor property, by default False.
         use_dist : bool, optional
             Weigh autocorrelation by physical distance of atom from original, by default False.
         size_normalize : bool, optional
             Whether or not to normalize by the number of atoms.
         MRdiag_dict : dict, optional
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
+        transition_metals_only : bool, optional
+            Flag if only transition metals counted as metals, by default True.
 
     Returns
     -------
@@ -1948,6 +1962,9 @@ def generate_metal_autocorrelations(mol, loud, depth=4, oct=True, flag_name=Fals
     if NumB:
         allowed_strings += ["num_bonds"]
         labels_strings += ["NumB"]
+    if polarizability:
+        allowed_strings += ['polarizability']
+        labels_strings += ['alpha']
     if len(MRdiag_dict):
         allowed_strings, labels_strings = [], []
         for k in list(MRdiag_dict):
@@ -1955,8 +1972,10 @@ def generate_metal_autocorrelations(mol, loud, depth=4, oct=True, flag_name=Fals
             labels_strings += [k]
     for ii, properties in enumerate(allowed_strings):
         metal_ac = metal_only_autocorrelation(mol, properties, depth, oct=oct,
-                                              modifier=modifier, metal_ind=metal_ind, use_dist=use_dist,
-                                              size_normalize=size_normalize, MRdiag_dict=MRdiag_dict)
+                                              modifier=modifier, use_dist=use_dist,
+                                              size_normalize=size_normalize, 
+                                              MRdiag_dict=MRdiag_dict,
+                                              transition_metals_only=transition_metals_only)
         this_colnames = []
         for i in range(0, depth + 1):
             this_colnames.append(labels_strings[ii] + '-' + str(i))
@@ -1969,8 +1988,8 @@ def generate_metal_autocorrelations(mol, loud, depth=4, oct=True, flag_name=Fals
     return results_dictionary
 
 
-def generate_metal_autocorrelation_derivatives(mol, loud, depth=4, oct=True, flag_name=False,
-                                               modifier=False, NumB=False, Gval=False, metal_ind=None):
+def generate_metal_autocorrelation_derivatives(mol, loud=False, depth=4, oct=True, flag_name=False,
+                                               modifier=False, NumB=False, Gval=False):
     """
     Utility for generating all metal-centered product autocorrelation derivatives for a complex.
 
@@ -1978,8 +1997,8 @@ def generate_metal_autocorrelation_derivatives(mol, loud, depth=4, oct=True, fla
     ----------
         mol : mol3D
             Molecule to get mc-RAC derivatives for.
-        loud : bool
-            Print debugging information.
+        loud : bool, optional
+            Print debugging information, by default False.
         depth : int, optional
             Depth of RACs to calculate, by default 4.
         oct : bool, optional
@@ -1993,8 +2012,6 @@ def generate_metal_autocorrelation_derivatives(mol, loud, depth=4, oct=True, fla
             Use number of bonds as descriptor property, by default False.
         Gval : bool, optional
             Use G value as descriptor property, by default False.
-        metal_ind : bool, optional
-            Index of the metal atom to generate property, by default False.
 
     Returns
     -------
@@ -2015,9 +2032,9 @@ def generate_metal_autocorrelation_derivatives(mol, loud, depth=4, oct=True, fla
         labels_strings += ["NumB"]
     for ii, properties in enumerate(allowed_strings):
         metal_ac_der = metal_only_autocorrelation_derivative(mol, properties, depth,
-                                                             oct=oct, modifier=modifier, metal_ind=metal_ind)
+                                                             oct=oct, modifier=modifier)
         for i in range(0, depth + 1):
-            colnames.append(['d' + labels_strings[ii] + '-' + str(i) + '/d' + labels_strings[ii] + str(j) for j in
+            colnames.append([f'd{labels_strings[ii]}-{i}/d{labels_strings[ii]}{j}' for j in
                              range(0, mol.natoms)])
 
         if result is None:
@@ -2031,8 +2048,8 @@ def generate_metal_autocorrelation_derivatives(mol, loud, depth=4, oct=True, fla
     return results_dictionary
 
 
-def generate_metal_deltametrics(mol, loud, depth=4, oct=True, flag_name=False,
-                                modifier=False, NumB=False, Gval=False, metal_ind=None,
+def generate_metal_deltametrics(mol, loud=False, depth=4, oct=True, flag_name=False,
+                                modifier=False, Gval=False, NumB=False, polarizability=False,
                                 use_dist=False, size_normalize=False, MRdiag_dict={},
                                 transition_metals_only=True):
     """
@@ -2042,8 +2059,8 @@ def generate_metal_deltametrics(mol, loud, depth=4, oct=True, flag_name=False,
     ----------
         mol : mol3D
             Molecule to get D_mc-RACs for.
-        loud : bool
-            Print debugging information.
+        loud : bool, optional
+            Print debugging information, by default False.
         depth : int, optional
             Depth of RACs to calculate, by default 4.
         oct : bool, optional
@@ -2053,12 +2070,12 @@ def generate_metal_deltametrics(mol, loud, depth=4, oct=True, flag_name=False,
             Shift RAC names slightly, by default False.
         modifier : bool, optional
             Use ox_modifier for metal, by default False.
-        NumB : bool, optional
-            Use number of bonds as descriptor property, by default False.
         Gval : bool, optional
             Use G value as descriptor property, by default False.
-        metal_ind : bool, optional
-            Index of the metal atom to generate property, by default False.
+        NumB : bool, optional
+            Use number of bonds as descriptor property, by default False.
+        polarizability : bool, optional
+            Use polarizability (alpha) as descriptor property, by default False.
         use_dist : bool, optional
             Weigh autocorrelation by physical distance of atom from original, by default False.
         size_normalize : bool, optional
@@ -2085,6 +2102,9 @@ def generate_metal_deltametrics(mol, loud, depth=4, oct=True, flag_name=False,
     if NumB:
         allowed_strings += ["num_bonds"]
         labels_strings += ["NumB"]
+    if polarizability:
+        allowed_strings += ['polarizability']
+        labels_strings += ['alpha']        
     if len(MRdiag_dict):
         allowed_strings, labels_strings = [], []
         for k in list(MRdiag_dict):
@@ -2092,7 +2112,7 @@ def generate_metal_deltametrics(mol, loud, depth=4, oct=True, flag_name=False,
             labels_strings += [k]
     for ii, properties in enumerate(allowed_strings):
         metal_ac = metal_only_deltametric(mol, properties, depth, oct=oct,
-                                          modifier=modifier, metal_ind=metal_ind,
+                                          modifier=modifier,
                                           use_dist=use_dist, size_normalize=size_normalize,
                                           MRdiag_dict=MRdiag_dict,
                                           transition_metals_only=transition_metals_only)
@@ -2108,8 +2128,8 @@ def generate_metal_deltametrics(mol, loud, depth=4, oct=True, flag_name=False,
     return results_dictionary
 
 
-def generate_metal_deltametric_derivatives(mol, loud, depth=4, oct=True, flag_name=False,
-                                           modifier=False, NumB=False, Gval=False, metal_ind=None):
+def generate_metal_deltametric_derivatives(mol, loud=False, depth=4, oct=True, flag_name=False,
+                                           modifier=False, NumB=False, Gval=False):
     """
     Utility for generating all metal-centered deltametric autocorrelation derivatives
     for a complex.
@@ -2118,8 +2138,8 @@ def generate_metal_deltametric_derivatives(mol, loud, depth=4, oct=True, flag_na
     ----------
         mol : mol3D
             Molecule to get D_mc-RAC derivatives for.
-        loud : bool
-            Print debugging information.
+        loud : bool, optional
+            Print debugging information, by default False.
         depth : int, optional
             Depth of RACs to calculate, by default 4.
         oct : bool, optional
@@ -2133,8 +2153,6 @@ def generate_metal_deltametric_derivatives(mol, loud, depth=4, oct=True, flag_na
             Use number of bonds as descriptor property, by default False.
         Gval : bool, optional
             Use G value as descriptor property, by default False.
-        metal_ind : bool, optional
-            Index of the metal atom to generate property, by default False.
 
     Returns
     -------
@@ -2155,9 +2173,9 @@ def generate_metal_deltametric_derivatives(mol, loud, depth=4, oct=True, flag_na
         labels_strings += ["NumB"]
     for ii, properties in enumerate(allowed_strings):
         metal_ac_der = metal_only_deltametric_derivative(mol, properties, depth, oct=oct,
-                                                         metal_ind=metal_ind, modifier=modifier)
+                                                         modifier=modifier)
         for i in range(0, depth + 1):
-            colnames.append(['d' + labels_strings[ii] + '-' + str(i) + '/d' + labels_strings[ii] + str(j) for j in
+            colnames.append([f'd{labels_strings[ii]}-{i}/d{labels_strings[ii]}{j}' for j in
                              range(0, mol.natoms)])
         if result is None:
             result = metal_ac_der
@@ -2245,27 +2263,3 @@ def generate_metal_ox_deltametric_derivatives(oxmodifier, mol, loud, depth=4, oc
     result = metal_ox_ac
     results_dictionary = {'colnames': colnames, 'results': result}
     return results_dictionary
-
-def get_metal_index(mol, transition_metals_only=True):
-    """
-    Utility for getting metal index of molecule, and printing warning
-    if more than one metal index found.
-
-    Parameters
-    ----------
-        mol : mol3D
-            Molecule to get metal index for.
-        transition_metals_only : bool, optional
-            Flag if only transition metals counted as metals, by default True.
-
-    Returns
-    -------
-        f_metal_idx: int
-            Index of the first metal atom.
-
-    """
-    metal_idx = mol.findMetal(transition_metals_only=transition_metals_only)
-    if len(metal_idx) > 1:
-        print('Warning: More than one metal in mol object. Choosing the first one.')
-    f_metal_idx = metal_idx[0]
-    return f_metal_idx

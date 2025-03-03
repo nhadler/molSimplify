@@ -13,12 +13,12 @@ from molSimplify.Informatics.RACassemble import append_descriptors
 from molSimplify.Informatics.autocorrelation import (
     generate_atomonly_autocorrelations,
     generate_atomonly_deltametrics,
-    generate_multimetal_autocorrelations,
-    generate_multimetal_deltametrics,
     )
 from molSimplify.Informatics.lacRACAssemble import (
-    generate_full_complex_autocorrelations,
     full_autocorrelation,
+    generate_full_complex_autocorrelations,
+    generate_metal_autocorrelations,
+    generate_metal_deltametrics,
     )
 from molSimplify.Informatics.MOF.atomic import (
     COVALENT_RADII,
@@ -353,11 +353,11 @@ def make_MOF_SBU_RACs(
         # False. So all metals are considered for mc and D_mc, not just transition metals, unless the user has
         # specified transition_metals_only to be True.
 
-        results_dictionary = generate_multimetal_autocorrelations(molcif, depth=depth, Gval=Gval,
+        results_dictionary = generate_metal_autocorrelations(molcif, depth=depth, Gval=Gval,
             transition_metals_only=transition_metals_only, oct=False)
         descriptor_names, descriptors = append_descriptors(
             descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'mc', 'all')
-        results_dictionary = generate_multimetal_deltametrics(molcif, depth=depth, Gval=Gval,
+        results_dictionary = generate_metal_deltametrics(molcif, depth=depth, Gval=Gval,
             transition_metals_only=transition_metals_only, oct=False)
         descriptor_names, descriptors = append_descriptors(
             descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'D_mc', 'all')
@@ -944,9 +944,11 @@ def get_MOF_descriptors(
     Parameters
     ----------
     data : str
-        The path to the cif file for which descriptors are generated. Should end in ".cif".
+        The path to the cif file for which descriptors are generated.
+        Should end in ".cif".
     depth : int
-        The depth of the RACs that are generated. See https://doi.org/10.1021/acs.jpca.7b08750 for more information.
+        The depth of the RACs that are generated.
+        See https://doi.org/10.1021/acs.jpca.7b08750 for more information.
     path : str
         The parent path (folder) to which output will be written.
         This output includes three csv files.
