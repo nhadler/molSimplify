@@ -1,4 +1,3 @@
-import pytest
 from molSimplify.Informatics.MOF.PBC_functions import (
     cell_to_cellpar,
     compute_adj_matrix,
@@ -12,10 +11,12 @@ from molSimplify.Informatics.MOF.PBC_functions import (
     readcif,
     # returnXYZandGraph,
     solvent_removal,
-    # writeXYZandGraph,
+    writeXYZandGraph,
     )
-import numpy as np
+import filecmp
 import json
+import numpy as np
+import pytest
 
 @pytest.mark.parametrize(
     "cpar, reference_cell",
@@ -93,8 +94,33 @@ def test_compute_image_flag(cell, fcoord1, fcoord2, reference_shift):
     shift = compute_image_flag(cell, fcoord1, fcoord2)
     assert np.allclose(shift, reference_shift)
 
-# def test_writeXYZandGraph():
-#     assert False
+def test_writeXYZandGraph(resource_path_root, tmp_path):
+    filename = str(tmp_path / 'writeXYZandGraph_test.xyz')
+    atoms = ['Cu', 'O', 'C', 'H', 'H', 'H']
+    cell = np.array([[10,0,0],[0,10,0],[0,0,10]])
+    fcoords = np.array([
+        [1,0,0],
+        [0.85,0,0],
+        [0.7,0,0],
+        [0.65,-0.1,0],
+        [0.65,0,0.1],
+        [0.65,0.05,-0.1],
+        ])
+    mol_graph = np.array([
+        [0,1,0,0,0,0],
+        [1,0,1,0,0,0],
+        [0,1,0,1,1,1],
+        [0,0,1,0,0,0],
+        [0,0,1,0,0,0],
+        [0,0,1,0,0,0],
+        ])
+    writeXYZandGraph(filename, atoms, cell, fcoords, mol_graph)
+
+    reference_xyz_path = str(resource_path_root / "refs" / "informatics" / "mof" / "net" / "writeXYZandGraph_test.xyz")
+    reference_net_path = str(resource_path_root / "refs" / "informatics" / "mof" / "net" / "writeXYZandGraph_test.net")
+
+    assert filecmp.cmp(filename, reference_xyz_path)
+    assert filecmp.cmp(filename.replace('.xyz','.net'), reference_net_path)
 
 # def test_returnXYZandGraph():
 #     assert False
