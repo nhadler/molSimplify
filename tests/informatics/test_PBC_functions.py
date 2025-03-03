@@ -10,9 +10,9 @@ from molSimplify.Informatics.MOF.PBC_functions import (
     mkcell,
     overlap_removal,
     readcif,
-    returnXYZandGraph,
+    # returnXYZandGraph,
     solvent_removal,
-    writeXYZandGraph,
+    # writeXYZandGraph,
     )
 import numpy as np
 import json
@@ -73,11 +73,25 @@ def test_frac_coord(coord, cell, reference_fcoords):
     fcoords = frac_coord(coord, cell)
     assert np.allclose(fcoords, reference_fcoords)
 
-# def test_compute_image_flag():
-#     assert False
-
-# def test_make_supercell():
-#     assert False
+@pytest.mark.parametrize(
+    "cell, fcoord1, fcoord2, reference_shift",
+    [
+        (np.array([[10,0,0],[0,10,0],[0,0,10]]),
+            np.array([0.2,0.2,0.8]),
+            np.array([0.1,0.3,0]),
+            np.array([0,0,1])),
+        (np.array([[10,0,0],[0,10,8],[4,15,10]]),
+            np.array([0.5,0.3,0.9]),
+            np.array([0.1,0.8,0.1]),
+            np.array([0,-1,1])),
+        (np.array([[10,0,0],[0,10,8],[4,15,10]]),
+            np.array([0.5,0.5,0.5]),
+            np.array([0.5,0.5,0.5]),
+            np.array([0,0,0])),
+    ])
+def test_compute_image_flag(cell, fcoord1, fcoord2, reference_shift):
+    shift = compute_image_flag(cell, fcoord1, fcoord2)
+    assert np.allclose(shift, reference_shift)
 
 # def test_writeXYZandGraph():
 #     assert False
