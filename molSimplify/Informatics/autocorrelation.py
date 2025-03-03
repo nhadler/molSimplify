@@ -26,7 +26,6 @@ from molSimplify.Informatics.lacRACAssemble import (
     generate_metal_ox_autocorrelations,
     generate_metal_ox_deltametric_derivatives,
     generate_metal_ox_deltametrics,
-    get_metal_index,
     metal_only_autocorrelation,
     metal_only_autocorrelation_derivative,
     metal_only_deltametric,
@@ -1073,3 +1072,24 @@ def generate_atomonly_deltametric_derivatives(mol, atomIdx, depth=4, oct=True, N
             result = np.row_stack([result, atom_only_ac_der])
     results_dictionary = {'colnames': colnames, 'results': result}
     return results_dictionary
+
+def get_metal_index(mol, transition_metals_only=True):
+    """
+    Utility for getting metal index of molecule, and printing warning
+    if more than one metal index found.
+    Parameters
+    ----------
+        mol : mol3D
+            Molecule to get metal index for.
+        transition_metals_only : bool, optional
+            Flag if only transition metals counted as metals, by default True.
+    Returns
+    -------
+        f_metal_idx: int
+            Index of the first metal atom.
+    """
+    metal_idx = mol.findMetal(transition_metals_only=transition_metals_only)
+    if len(metal_idx) > 1:
+        print('Warning: More than one metal in mol object. Choosing the first one.')
+    f_metal_idx = metal_idx[0]
+    return f_metal_idx
