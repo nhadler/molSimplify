@@ -109,7 +109,7 @@ def get_descriptor_vector(this_complex, custom_ligand_dict=False,
 
     # full ACs
     results_dictionary = generate_full_complex_autocorrelations(this_complex, depth=3,
-                                                                loud=False, flag_name=False,
+                                                                flag_name=False,
                                                                 modifier=ox_modifier,
                                                                 NumB=NumB, Gval=Gval)
     descriptor_names, descriptors = append_descriptors(descriptor_names, descriptors,
@@ -155,7 +155,7 @@ def get_descriptor_vector(this_complex, custom_ligand_dict=False,
 
     # metal ACs
     results_dictionary = generate_metal_autocorrelations(this_complex, depth=3,
-                                                         loud=False, modifier=ox_modifier,
+                                                         modifier=ox_modifier,
                                                          NumB=NumB, Gval=Gval)
     descriptor_names, descriptors = append_descriptors(descriptor_names, descriptors,
                                                        results_dictionary['colnames'],
@@ -163,7 +163,7 @@ def get_descriptor_vector(this_complex, custom_ligand_dict=False,
                                                        'mc', 'all')
 
     results_dictionary = generate_metal_deltametrics(this_complex, depth=3,
-                                                     loud=False, modifier=ox_modifier,
+                                                     modifier=ox_modifier,
                                                      NumB=NumB, Gval=Gval)
     descriptor_names, descriptors = append_descriptors(descriptor_names, descriptors,
                                                        results_dictionary['colnames'],
@@ -173,13 +173,13 @@ def get_descriptor_vector(this_complex, custom_ligand_dict=False,
     # ## ox-metal ACs, if ox available
     if ox_modifier:
         results_dictionary = generate_metal_ox_autocorrelations(ox_modifier, this_complex,
-                                                                depth=3, loud=False)
+                                                                depth=3)
         descriptor_names, descriptors = append_descriptors(descriptor_names, descriptors,
                                                            results_dictionary['colnames'],
                                                            results_dictionary['results'],
                                                            'mc', 'all')
         results_dictionary = generate_metal_ox_deltametrics(ox_modifier, this_complex,
-                                                            depth=3, loud=False)
+                                                            depth=3)
         descriptor_names, descriptors = append_descriptors(descriptor_names, descriptors,
                                                            results_dictionary['colnames'],
                                                            results_dictionary['results'],
@@ -222,7 +222,7 @@ def get_descriptor_derivatives(this_complex, custom_ligand_dict=False, ox_modifi
 
     # full ACs
     results_dictionary = generate_full_complex_autocorrelation_derivatives(this_complex, depth=3,
-                                                                           loud=False, flag_name=False,
+                                                                           flag_name=False,
                                                                            modifier=ox_modifier)
     descriptor_derivative_names, descriptor_derivatives = append_descriptor_derivatives(descriptor_derivative_names,
                                                                                         descriptor_derivatives,
@@ -272,7 +272,7 @@ def get_descriptor_derivatives(this_complex, custom_ligand_dict=False, ox_modifi
     # metal ACs
     print('getting metal AC derivatives')
     results_dictionary = generate_metal_autocorrelation_derivatives(this_complex, depth=3,
-                                                                    loud=False, modifier=ox_modifier)
+                                                                    modifier=ox_modifier)
     descriptor_derivative_names, descriptor_derivatives = append_descriptor_derivatives(descriptor_derivative_names,
                                                                                         descriptor_derivatives,
                                                                                         results_dictionary['colnames'],
@@ -280,7 +280,7 @@ def get_descriptor_derivatives(this_complex, custom_ligand_dict=False, ox_modifi
                                                                                         'mc', 'all')
 
     results_dictionary = generate_metal_deltametric_derivatives(this_complex, depth=3,
-                                                                loud=False, modifier=ox_modifier)
+                                                                modifier=ox_modifier)
     descriptor_derivative_names, descriptor_derivatives = append_descriptor_derivatives(descriptor_derivative_names,
                                                                                         descriptor_derivatives,
                                                                                         results_dictionary['colnames'],
@@ -290,7 +290,7 @@ def get_descriptor_derivatives(this_complex, custom_ligand_dict=False, ox_modifi
     # ## ox-metal ACs
     if ox_modifier:
         results_dictionary = generate_metal_ox_autocorrelation_derivatives(ox_modifier, this_complex,
-                                                                           depth=3, loud=False)
+                                                                           depth=3)
         descriptor_derivative_names, descriptor_derivatives = append_descriptor_derivatives(descriptor_derivative_names,
                                                                                             descriptor_derivatives,
                                                                                             results_dictionary['colnames'],
@@ -298,7 +298,7 @@ def get_descriptor_derivatives(this_complex, custom_ligand_dict=False, ox_modifi
                                                                                             'mc', 'all')
 
         results_dictionary = generate_metal_ox_deltametric_derivatives(ox_modifier, this_complex,
-                                                                       depth=3, loud=False)
+                                                                       depth=3)
         descriptor_derivative_names, descriptor_derivatives = append_descriptor_derivatives(descriptor_derivative_names,
                                                                                             descriptor_derivatives,
                                                                                             results_dictionary['colnames'],

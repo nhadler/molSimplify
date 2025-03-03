@@ -11,7 +11,8 @@ from molSimplify.Informatics.lacRACAssemble import (
     generate_full_complex_autocorrelations,
     generate_metal_autocorrelations,
     generate_metal_deltametrics,
-    generate_all_ligand_misc)
+    generate_all_ligand_misc,
+    )
 from molSimplify.Classes.mol3D import mol3D
 
 # DFT observations used to postprocess DFT results by measuring ligand properties
@@ -82,15 +83,15 @@ class dft_observation:
         if not lig_only:
             if not simple:
                 results_dictionary = generate_metal_autocorrelations(
-                    self.mol, depth=3, loud=loud)
+                    self.mol, depth=3)
                 self.append_descriptors(
                     results_dictionary['colnames'], results_dictionary['results'], 'mc', 'all')
                 results_dictionary = generate_metal_deltametrics(
-                    self.mol, depth=3, loud=loud)
+                    self.mol, depth=3)
                 self.append_descriptors(
                     results_dictionary['colnames'], results_dictionary['results'], 'D_mc', 'all')
             results_dictionary = generate_full_complex_autocorrelations(
-                self.mol, depth=3, loud=loud)
+                self.mol, depth=3)
             self.append_descriptors(
                 results_dictionary['colnames'], results_dictionary['results'], 'f', 'all')
         print(('after adding full complex descriptors... ' +
