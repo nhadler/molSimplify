@@ -343,7 +343,7 @@ def make_MOF_SBU_RACs(
         Generate all of the SBU based RACs (full scope, mc).
         """""""""
         results_dictionary = generate_full_complex_autocorrelations(
-            SBU_mol, depth=depth, loud=False, flag_name=False, Gval=Gval, oct=False)
+            SBU_mol, depth=depth, flag_name=False, Gval=Gval, oct=False)
         descriptor_names, descriptors = append_descriptors(
             descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'f', 'all')
         # Now starts at every metal on the graph and autocorrelates.
