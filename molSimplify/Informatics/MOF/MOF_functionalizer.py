@@ -81,23 +81,23 @@ def functionalize_MOF(cif_file,
     ######################################################
 
     # Read the cif file and make the cell for fractional coordinates
-    cpar, allatomtypes, fcoords = readcif(cif_file)
+    cpar, all_atom_types, fcoords = readcif(cif_file)
     molcif, cell_vector, alpha, beta, gamma = import_from_cif(cif_file, True)
     cell_v = np.array(cell_vector)
     original_fcoords = fcoords.copy()
     cart_coords = fractional2cart(fcoords, cell_v)
     distance_mat = compute_distance_matrix(cell_v, cart_coords)
-    adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes)
+    adj_matrix, _ = compute_adj_matrix(distance_mat, all_atom_types)
     molcif.graph = adj_matrix.todense()
 
     ###### At this point, we have most things we need to functionalize.
     # Thus the first step is to break down into linkers. This uses what we developed for MOF featurization
-    linker_list, linker_subgraphlist = get_linkers(molcif, adj_matrix, allatomtypes)
+    linker_list, linker_subgraphlist = get_linkers(molcif, adj_matrix, all_atom_types)
 
     ###### We need to then figure out which atoms to functionalize.
     checkedlist = set() # Keeps track of the atoms that have already been checked for functionalization.
     # Make a copy of the atom type list to loop over later.
-    original_allatomtypes = allatomtypes.copy() # Storing all the chemical symbols that there were originally.
+    original_all_atom_types = all_atom_types.copy() # Storing all the chemical symbols that there were originally.
     delete_list = [] # Collect all of the H that need to be deleted later.
     extra_atom_coords = []
     extra_atom_types = []
@@ -106,7 +106,7 @@ def functionalize_MOF(cif_file,
     if functional_group != 'H': # We don't do anything for -H functionalization.
 
         ### Iterate over atoms until we find one suitable for functionalization.
-        for i, atom in enumerate(original_allatomtypes):
+        for i, atom in enumerate(original_all_atom_types):
             print(f'i is {i}')
             if i in checkedlist:
                 continue # Move on to the next atom.
@@ -115,7 +115,7 @@ def functionalize_MOF(cif_file,
                 continue
 
             # Atoms that are connected to atom i.
-            connected_atom_list, connected_atom_types = connected_atoms_from_adjmat(adj_matrix, i, original_allatomtypes)
+            connected_atom_list, connected_atom_types = connected_atoms_from_adjmat(adj_matrix, i, original_all_atom_types)
 
             if ('H' not in connected_atom_types) or (connected_atom_types.count('H')>1 or len(connected_atom_types) != 3): ### must functionalize where an H was. Needs sp2 C.
                 # Note: if a carbon has more than one hydrogen bonded to it, it is not considered for functionalization.
@@ -135,7 +135,7 @@ def functionalize_MOF(cif_file,
 
                 linker_atom_types, linker_graph, linker_cart_coords = analyze_linker(cart_coords,
                     linker_to_analyze,
-                    allatomtypes,
+                    all_atom_types,
                     linker_subgraphlist,
                     linker_to_analyze_index,
                     cell_v,
@@ -153,7 +153,7 @@ def functionalize_MOF(cif_file,
                         The first linker functionalization.
                         """""""""
                         molcif, functionalization_counter, functionalized, delete_list, extra_atom_coords, extra_atom_types, functionalized_atoms = first_functionalization(molcif,
-                            allatomtypes,
+                            all_atom_types,
                             i,
                             connected_atom_list,
                             k,
@@ -185,7 +185,7 @@ def functionalize_MOF(cif_file,
                         path_between_functionalizations,
                         functionalized,
                         adj_matrix,
-                        allatomtypes,
+                        all_atom_types,
                         molcif,
                         functional_group,
                         linker_cart_coords,
@@ -203,34 +203,34 @@ def functionalize_MOF(cif_file,
     Apply delete_list and extra_atom_types to make final_atom_types and new_coord_list.
     """""""""
     # Deleting atoms (hydrogens that are replaced by functional groups)
-    new_coord_list, final_atom_types = atom_deletion(cart_coords, allatomtypes, delete_list)
+    new_coord_list, final_atom_types = atom_deletion(cart_coords, all_atom_types, delete_list)
 
     # Adding atoms (the atoms in the functional groups)
-    allatomtypes, fcoords = atom_addition(extra_atom_types, final_atom_types, new_coord_list, extra_atom_coords, cell_v)
+    all_atom_types, fcoords = atom_addition(extra_atom_types, final_atom_types, new_coord_list, extra_atom_coords, cell_v)
 
     """""""""
     Write the cif.
     """""""""
     cif_folder = f'{path2write}/cif/'
     mkdir_if_absent(cif_folder)
-    write_cif(f'{path2write}/cif/functionalized_{base_mof_name}_{functional_group}_{functionalization_limit}.cif', cpar, fcoords, allatomtypes)
+    write_cif(f'{path2write}/cif/functionalized_{base_mof_name}_{functional_group}_{functionalization_limit}.cif', cpar, fcoords, all_atom_types)
 
     if symm_flag:
         """""""""
         Check on how the functionalization affected the symmetry.
         """""""""
         print('------- UNFUNCTIONALIZED CASE --------')
-        symmetry_check(original_allatomtypes, original_fcoords, cell_v)
+        symmetry_check(original_all_atom_types, original_fcoords, cell_v)
 
         # Analysis for the case where the cell is functionalized.
-        # Difference with the block above: allatomtypes and fcoords, instead of original_allatomtypes and original_fcoords
+        # Difference with the block above: all_atom_types and fcoords, instead of original_all_atom_types and original_fcoords
         print('------- FUNCTIONALIZED CASE --------')
-        symmetry_check(allatomtypes, fcoords, cell_v)
+        symmetry_check(all_atom_types, fcoords, cell_v)
 
     return functionalized_atoms
 
 def first_functionalization(molcif,
-    allatomtypes,
+    all_atom_types,
     i,
     connected_atom_list,
     k,
@@ -253,7 +253,7 @@ def first_functionalization(molcif,
     ----------
     molcif : molSimplify.Classes.mol3D.mol3D
         The cell of the cif file to be functionalized.
-    allatomtypes : list of str
+    all_atom_types : list of str
         The atom types of the MOF, indicated by chemical symbols like 'O' and 'Cu'. Length is the number of atoms.
     i : int
         The global index of the atom of to be functionalized.
@@ -308,7 +308,7 @@ def first_functionalization(molcif,
     """
     # Apply the functionalization to the MOF.
     molcif, atom_types_to_add, additions_to_cart, functionalization_counter, functionalized = apply_functionalization(molcif,
-                                        allatomtypes, i, connected_atom_list[k], connected_atom_list, functional_group,
+                                        all_atom_types, i, connected_atom_list[k], connected_atom_list, functional_group,
                                         linker_cart_coords, linker_to_functionalize, linker_atom_types, linker_graph, functionalization_counter, additional_atom_offset=additional_atom_offset)
 
     # Add the atom that's been functionalized to the deleted atom list so that it isn't kept in the final structure.
@@ -330,7 +330,7 @@ def additional_functionalization(i,
     path_between_functionalizations,
     functionalized,
     adj_matrix,
-    allatomtypes,
+    all_atom_types,
     molcif,
     functional_group,
     linker_cart_coords,
@@ -363,7 +363,7 @@ def additional_functionalization(i,
         Indicates whether the number of linker functionalizations requested by the user have been made. True is so, False otherwise.
     adj_matrix : scipy.sparse.csr.csr_matrix
         1 represents a bond, 0 represents no bond. Shape is (number of atoms, number of atoms).
-    allatomtypes : list of str
+    all_atom_types : list of str
         The atom types of the MOF, indicated by chemical symbols like 'O' and 'Cu'. Length is the number of atoms.
     molcif : molSimplify.Classes.mol3D.mol3D
         The cell of the cif file to be functionalized.
@@ -422,7 +422,7 @@ def additional_functionalization(i,
         functionalization_index = linker_to_functionalize[potential_functionalization] # Gets the global index of the atom to functionalize.
 
         # Get the neighbors of the atom that we are considering for functionalization.
-        secondary_connected_atom_list, secondary_connected_atom_types = connected_atoms_from_adjmat(adj_matrix, functionalization_index, allatomtypes)
+        secondary_connected_atom_list, secondary_connected_atom_types = connected_atoms_from_adjmat(adj_matrix, functionalization_index, all_atom_types)
 
         if 'H' not in secondary_connected_atom_types:
             continue # Must functionalize where an H was. If not, skip.
@@ -432,7 +432,7 @@ def additional_functionalization(i,
             for l, secondary_connected_atom in enumerate(secondary_connected_atom_types):
                 if (secondary_connected_atom == 'H') and (not functionalized):
                     molcif, atom_types_to_add, additions_to_cart, functionalization_counter, functionalized = apply_functionalization(molcif,
-                                    allatomtypes, functionalization_index, secondary_connected_atom_list[l], secondary_connected_atom_list,
+                                    all_atom_types, functionalization_index, secondary_connected_atom_list[l], secondary_connected_atom_list,
                                     functional_group, linker_cart_coords, linker_to_functionalize, linker_atom_types, linker_graph,
                                     functionalization_counter, additional_atom_offset=additional_atom_offset)
                     delete_list.append(secondary_connected_atom_list[l])
@@ -448,7 +448,7 @@ def additional_functionalization(i,
 
     return molcif, functionalization_counter, delete_list, extra_atom_coords, extra_atom_types, functionalized_atoms
 
-def apply_functionalization(molcif, allatomtypes, position_to_functionalize, atom_to_replace, position_to_functionalize_neighbors,
+def apply_functionalization(molcif, all_atom_types, position_to_functionalize, atom_to_replace, position_to_functionalize_neighbors,
                                         functional_group, linker_cart_coords, linker_to_analyze, linker_atom_types, linker_graph, functionalization_counter, additional_atom_offset=0):
     #######################################################################################################
     # Note: position_to_functionalize is distinct from atom_to_replace. When functionalizing a C-H bond,  #
@@ -466,7 +466,7 @@ def apply_functionalization(molcif, allatomtypes, position_to_functionalize, ato
     ----------
     molcif : molSimplify.Classes.mol3D.mol3D
         The cell of the cif file to be functionalized.
-    allatomtypes : list of str
+    all_atom_types : list of str
         The atom types of the cif file, indicated by chemical symbols like 'O' and 'Cu'. Length is the number of atoms.
     position_to_functionalize : int
         The global index of the atom to functionalize.
@@ -569,7 +569,7 @@ def apply_functionalization(molcif, allatomtypes, position_to_functionalize, ato
 
 def analyze_linker(cart_coords,
     linker_to_analyze,
-    allatomtypes,
+    all_atom_types,
     linker_subgraphlist,
     linker_to_analyze_index,
     cell_v):
@@ -583,7 +583,7 @@ def analyze_linker(cart_coords,
     linker_to_analyze : list of numpy.int32
         A list of the global atom indices of the atoms in the identified linker.
         The identified linker is the one that has atom i.
-    allatomtypes : list of str
+    all_atom_types : list of str
         The atom types of the MOF, indicated by chemical symbols like 'O' and 'Cu'. Length is the number of atoms.
     linker_subgraphlist : list of scipy.sparse.csr.csr_matrix
         The atom connections in the linker subgraph. Length is # of linkers.
@@ -605,7 +605,7 @@ def analyze_linker(cart_coords,
     # Get the cartesian coordinates of the linker from the linker atoms.
     linker_coords = [cart_coords[val,:] for val in linker_to_analyze] ### contains the atom numbers in the linker.
     # Get the linker atom types of the linker from the linker atoms.
-    linker_atom_types = [allatomtypes[val] for val in linker_to_analyze]
+    linker_atom_types = [all_atom_types[val] for val in linker_to_analyze]
     # Get the linker graph that's useful for determining what's connected to what.
     linker_graph = linker_subgraphlist[linker_to_analyze_index].todense()
     linker_graph = np.asarray(linker_graph)
@@ -616,14 +616,14 @@ def analyze_linker(cart_coords,
 
     return linker_atom_types, linker_graph, linker_cart_coords
 
-def symmetry_check(allatomtypes, fcoords, cell_v, precision=1):
+def symmetry_check(all_atom_types, fcoords, cell_v, precision=1):
     """
     Checks the spacegroup and the space group number of the provided MOF information.
     Before and after finding the Niggli cell (maximally reduced cell).
 
     Parameters
     ----------
-    allatomtypes : list of str
+    all_atom_types : list of str
         The atom types of the MOF, indicated by chemical symbols like 'O' and 'Cu'. Length is the number of atoms.
     fcoords : numpy.ndarray of numpy.float64
         The fractional positions of the crystal atoms. Shape is (number of atoms, 3).
@@ -639,9 +639,9 @@ def symmetry_check(allatomtypes, fcoords, cell_v, precision=1):
 
     """
     import spglib
-    numbers = [] # Will keep track of which atom in unique_types is in which position in allatomtypes.
-    unique_types=list(set(allatomtypes))
-    for label in allatomtypes:
+    numbers = [] # Will keep track of which atom in unique_types is in which position in all_atom_types.
+    unique_types=list(set(all_atom_types))
+    for label in all_atom_types:
         numbers.append(int(unique_types.index(label)+1))
     full_cell_for_spg = (cell_v, fcoords, numbers)
     spcg = spglib.get_spacegroup(full_cell_for_spg, symprec=precision)
@@ -965,7 +965,7 @@ def make_networkx_graph(adj_matrix):
     G.add_edges_from(edges)
     return G
 
-def get_linkers(molcif, adj_matrix, allatomtypes):
+def get_linkers(molcif, adj_matrix, all_atom_types):
     """
     Returns information on the linkers in the provided MOF.
     Similar to the code in molSimplify.Informatics.MOF.MOF_descriptors.get_MOF_descriptors. Specifically, step 1: metallic part
@@ -976,7 +976,7 @@ def get_linkers(molcif, adj_matrix, allatomtypes):
         The cell of the cif file being analyzed.
     adj_matrix : scipy.sparse.csr.csr_matrix
         1 represents a bond, 0 represents no bond. Shape is (number of atoms, number of atoms).
-    allatomtypes : list of str
+    all_atom_types : list of str
         The atom types of the cif file, indicated by chemical symbols like 'O' and 'Cu'. Length is the number of atoms.
 
     Returns
@@ -995,7 +995,7 @@ def get_linkers(molcif, adj_matrix, allatomtypes):
     [removelist.update(set([metal])) for metal in molcif.findMetal(transition_metals_only=False)] # Remove all metals as part of the SBU.
     # for metal in removelist:
     #     bonded_atoms = set(molcif.getBondedAtomsSmart(metal))
-    #     bonded_atoms_types = set([str(allatomtypes[at]) for at in set(molcif.getBondedAtomsSmart(metal))]) # The types of elements bonded to metals. E.g. oxygen, carbon, etc.
+    #     bonded_atoms_types = set([str(all_atom_types[at]) for at in set(molcif.getBondedAtomsSmart(metal))]) # The types of elements bonded to metals. E.g. oxygen, carbon, etc.
 
     # Add to removelist any atoms that are only bonded to metals (not counting hydrogens).
         # The all() function returns True if all items in an iterable are true, otherwise it returns False.
@@ -1007,7 +1007,7 @@ def get_linkers(molcif, adj_matrix, allatomtypes):
     linker_list, linker_subgraphlist = get_closed_subgraph(linkers.copy(), removelist.copy(), adj_matrix)
     return linker_list, linker_subgraphlist
 
-def connected_atoms_from_adjmat(adj_matrix, index, allatomtypes):
+def connected_atoms_from_adjmat(adj_matrix, index, all_atom_types):
     """
     Finds the atoms connected to the atom with the index `index`.
     This function works with sparse matrices. Assumes you handed a sparse matrix.
@@ -1018,7 +1018,7 @@ def connected_atoms_from_adjmat(adj_matrix, index, allatomtypes):
         1 represents a bond, 0 represents no bond. Shape is (number of atoms, number of atoms).
     index : int
         The index of the atom for which the connected atoms will be found.
-    allatomtypes : list of str
+    all_atom_types : list of str
         The atom types of the cif file, indicated by chemical symbols like 'O' and 'Cu'. Length is the number of atoms.
 
     Returns
@@ -1030,7 +1030,7 @@ def connected_atoms_from_adjmat(adj_matrix, index, allatomtypes):
 
     """
     connected_atom_list = np.nonzero(adj_matrix[index,:])[1] # indices of atoms with bonds to the atom with the index `index`
-    connected_atom_types = [allatomtypes[j] for j in connected_atom_list]
+    connected_atom_types = [all_atom_types[j] for j in connected_atom_list]
 
     return connected_atom_list, connected_atom_types
 
@@ -1102,19 +1102,19 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
         base_mof_name = base_mof_name[:-4]
 
     # Read the cif file and make the cell for fractional coordinates
-    cpar, allatomtypes, fcoords = readcif(cif_file)
+    cpar, all_atom_types, fcoords = readcif(cif_file)
     molcif, cell_vector, alpha, beta, gamma = import_from_cif(cif_file, True)
     cell_v = np.array(cell_vector)
     cart_coords = fractional2cart(fcoords, cell_v)
     distance_mat = compute_distance_matrix(cell_v, cart_coords)
-    adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes)
+    adj_matrix, _ = compute_adj_matrix(distance_mat, all_atom_types)
     molcif.graph = adj_matrix.todense()
 
     ### End of repeat code ###
 
     ###### At this point, we have most things we need to functionalize.
     # Thus the first step is to break down into linkers. This uses what we developed for MOF featurization
-    linker_list, linker_subgraphlist = get_linkers(molcif, adj_matrix, allatomtypes)
+    linker_list, linker_subgraphlist = get_linkers(molcif, adj_matrix, all_atom_types)
 
     ###### We need to then figure out which atoms to functionalize.
     checkedlist = set() # Keeps track of the atoms that have already been checked for functionalization.
@@ -1125,10 +1125,10 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
 
     for _i, func_index in enumerate(func_indices):
         print(f'On {_i+1} out of {len(func_indices)}')
-        atom_to_functionalize = allatomtypes[func_index]
+        atom_to_functionalize = all_atom_types[func_index]
 
         # Atoms that are connected to atom at index func_index.
-        connected_atom_list, connected_atom_types = connected_atoms_from_adjmat(adj_matrix, func_index, allatomtypes)
+        connected_atom_list, connected_atom_types = connected_atoms_from_adjmat(adj_matrix, func_index, all_atom_types)
 
         if atom_to_functionalize != 'C': # Assumes that functionalization is performed on a C atom.
             raise ValueError('Invalid atom to functionalize: not a carbon atom.')
@@ -1143,7 +1143,7 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
 
             linker_atom_types, linker_graph, linker_cart_coords = analyze_linker(cart_coords,
                 linker_to_analyze,
-                allatomtypes,
+                all_atom_types,
                 linker_subgraphlist,
                 linker_to_analyze_index,
                 cell_v,
@@ -1158,7 +1158,7 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
 
                     functionalization_counter = 1
                     molcif, functionalization_counter, functionalized, delete_list, extra_atom_coords, extra_atom_types, functionalized_atoms = first_functionalization(molcif,
-                        allatomtypes,
+                        all_atom_types,
                         func_index,
                         connected_atom_list,
                         k,
@@ -1181,21 +1181,21 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
     Apply delete_list and extra_atom_types to make final_atom_types and new_coord_list.
     """""""""
     # Deleting atoms (hydrogens that are replaced by functional groups)
-    new_coord_list, final_atom_types = atom_deletion(cart_coords, allatomtypes, delete_list)
+    new_coord_list, final_atom_types = atom_deletion(cart_coords, all_atom_types, delete_list)
 
     # Adding atoms (the atoms in the functional groups)
-    allatomtypes, fcoords = atom_addition(extra_atom_types, final_atom_types, new_coord_list, extra_atom_coords, cell_v)
+    all_atom_types, fcoords = atom_addition(extra_atom_types, final_atom_types, new_coord_list, extra_atom_coords, cell_v)
 
     # Check to make sure none of the functional group atoms are too close to other atoms in the CIF
     # If so, code will interpret atoms to be bonded that should not be.
-    post_functionalization_overlap_and_bonding_check(cell_v, allatomtypes, fcoords, extra_atom_types)
+    post_functionalization_overlap_and_bonding_check(cell_v, all_atom_types, fcoords, extra_atom_types)
 
     """""""""
     Write the cif.
     """""""""
     cif_folder = f'{path2write}/cif/'
     mkdir_if_absent(cif_folder)
-    write_cif(f'{path2write}/cif/functionalized_{base_mof_name}_{functional_group}_index.cif', cpar, fcoords, allatomtypes)
+    write_cif(f'{path2write}/cif/functionalized_{base_mof_name}_{functional_group}_index.cif', cpar, fcoords, all_atom_types)
 
 def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_group, func_indices, additional_atom_offset):
     """
@@ -1230,12 +1230,12 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
         base_mof_name = base_mof_name[:-4]
 
     # Read the cif file and make the cell for fractional coordinates
-    cpar, allatomtypes, fcoords = readcif(cif_file)
+    cpar, all_atom_types, fcoords = readcif(cif_file)
     molcif, cell_vector, alpha, beta, gamma = import_from_cif(cif_file, True)
     cell_v = np.array(cell_vector)
     cart_coords = fractional2cart(fcoords, cell_v)
     distance_mat = compute_distance_matrix(cell_v, cart_coords)
-    adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes)
+    adj_matrix, _ = compute_adj_matrix(distance_mat, all_atom_types)
     molcif.graph = adj_matrix.todense()
 
     ### End of repeat code ###
@@ -1261,10 +1261,10 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
 
     for _i, func_index in enumerate(func_indices): # Loop over all indices to be functionalized.
         print(f'On {_i+1} out of {len(func_indices)}')
-        atom_to_functionalize = allatomtypes[func_index]
+        atom_to_functionalize = all_atom_types[func_index]
 
         # Atoms that are connected to atom at index func_index.
-        connected_atom_list, connected_atom_types = connected_atoms_from_adjmat(adj_matrix, func_index, allatomtypes)
+        connected_atom_list, connected_atom_types = connected_atoms_from_adjmat(adj_matrix, func_index, all_atom_types)
 
         if atom_to_functionalize != 'C': # Assumes that functionalization is performed on a C atom with two C neighbors and one H neighbor.
             raise ValueError('Invalid atom to functionalize: not a carbon atom.')
@@ -1358,14 +1358,14 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
     cartesian_coordinates = molcif.coordsvect()
     fcoords = frac_coord(cartesian_coordinates, cell_v)
     # Getting the atom types.
-    allatomtypes = molcif.symvect()
+    all_atom_types = molcif.symvect()
 
     # """""""""
     # Write the cif.
     # """""""""
     cif_folder = f'{path2write}/cif/'
     mkdir_if_absent(cif_folder)
-    write_cif(f'{path2write}/cif/functionalized_{base_mof_name}_{functional_group}_index.cif', cpar, fcoords, allatomtypes)
+    write_cif(f'{path2write}/cif/functionalized_{base_mof_name}_{functional_group}_index.cif', cpar, fcoords, all_atom_types)
 
 def alignment_objective(rotation_vector, molcif_clone, MOF_main_carbon_index, MOF_carbon_neighbor_indices,
     functional_group_template, fg_main_carbon_index, fg_carbon_neighbor_indices, translation_vector):
@@ -1429,7 +1429,7 @@ def alignment_objective(rotation_vector, molcif_clone, MOF_main_carbon_index, MO
     objective_function = distance1 + distance2 + distance3 # Want to minimize this.
     return objective_function
 
-def post_functionalization_overlap_and_bonding_check(cell_v, allatomtypes, fcoords, extra_atom_types):
+def post_functionalization_overlap_and_bonding_check(cell_v, all_atom_types, fcoords, extra_atom_types):
     """
     Prints information on whether the introduced functional group atoms are overlapping with other atoms.
     Also prints information on the interpreted bonds of the introduced functional group atoms. Useful to make sure the functional group atoms are not too close to other atoms.
@@ -1438,7 +1438,7 @@ def post_functionalization_overlap_and_bonding_check(cell_v, allatomtypes, fcoor
     ----------
     cell_v : numpy.ndarray of numpy.float64
         Each row corresponds to one of the cell vectors. Shape is (3, 3).
-    allatomtypes : list of str
+    all_atom_types : list of str
         The atom types of the MOF, indicated by chemical symbols like 'O' and 'Cu'. Length is the number of atoms.
     fcoords : numpy.ndarray of numpy.float64
         The fractional positions of the crystal atoms. Shape is (number of atoms, 3).
@@ -1452,7 +1452,7 @@ def post_functionalization_overlap_and_bonding_check(cell_v, allatomtypes, fcoor
     """
     cart_coords = fractional2cart(fcoords, cell_v)
     distance_mat = compute_distance_matrix(cell_v, cart_coords)
-    adj_matrix, _ = compute_adj_matrix(distance_mat, allatomtypes, handle_overlap=False) # Will throw an error if atoms are overlapping after functionalization.
+    adj_matrix, _ = compute_adj_matrix(distance_mat, all_atom_types, handle_overlap=False) # Will throw an error if atoms are overlapping after functionalization.
     adj_matrix = adj_matrix.todense()
     adj_matrix = np.squeeze(np.asarray(adj_matrix)) # Converting from numpy.matrix to numpy.array
 
@@ -1464,7 +1464,7 @@ def post_functionalization_overlap_and_bonding_check(cell_v, allatomtypes, fcoor
     for i in range(len(flattened_extra_atom_types)): # Check all the added atoms
         print(f'Number of bonds to functional group atom {flattened_extra_atom_types[i]} is {np.sum(adj_matrix[-1-i])}')
 
-def atom_deletion(cart_coords, allatomtypes, delete_list):
+def atom_deletion(cart_coords, all_atom_types, delete_list):
     """
     Makes new coordinate and atom lists that disregard the undesired hydrogens.
 
@@ -1472,7 +1472,7 @@ def atom_deletion(cart_coords, allatomtypes, delete_list):
     ----------
     cart_coords : numpy.ndarray of numpy.float64
         The Cartesian coordinates of the crystal atoms. Shape is (number of atoms, 3).
-    allatomtypes : list of str
+    all_atom_types : list of str
         The atom types of the MOF, indicated by chemical symbols like 'O' and 'Cu'. Length is the number of atoms.
     delete_list : list of numpy.int32
         The indices of atoms that are deleted because they are replaced by functional groups.
@@ -1485,12 +1485,12 @@ def atom_deletion(cart_coords, allatomtypes, delete_list):
         The updated atom types of the MOF, indicated by chemical symbols like 'O' and 'Cu'. Length is the number of atoms.
 
     """
-    print('Initial shape', cart_coords.shape, len(allatomtypes))
+    print('Initial shape', cart_coords.shape, len(all_atom_types))
     new_coord_list = None # Will be changed in the following lines.
     final_atom_types = []
     for cart_row in range(0, cart_coords.shape[0]): # Going from zero through number of atoms - 1
         if cart_row in delete_list:
-            if allatomtypes[cart_row] != 'H':
+            if all_atom_types[cart_row] != 'H':
                 raise Exception('Error!') # As the code is implemented right now, only hydrogens should be being replaced.
             else:
                 continue
@@ -1498,7 +1498,7 @@ def atom_deletion(cart_coords, allatomtypes, delete_list):
             new_coord_list = np.array([cart_coords[cart_row,:]])
         else:
             new_coord_list = np.concatenate((np.array(new_coord_list),np.array([cart_coords[cart_row,:]])),axis=0)
-        final_atom_types.append(allatomtypes[cart_row])
+        final_atom_types.append(all_atom_types[cart_row])
     # Really have deletion by non-inclusion (see the continue statement).
     print('Shape after deletions', new_coord_list.shape, len(final_atom_types)) # (shape is (number of atoms, 3))
 
@@ -1525,7 +1525,7 @@ def atom_addition(extra_atom_types, final_atom_types, new_coord_list, extra_atom
 
     Returns
     -------
-    allatomtypes : list of str
+    all_atom_types : list of str
         The atom types of the MOF, indicated by chemical symbols like 'O' and 'Cu'. Length is the number of atoms.
     fcoords : numpy.ndarray of numpy.float64
         The fractional positions of the crystal atoms. Shape is (number of atoms, 3).
@@ -1537,10 +1537,10 @@ def atom_addition(extra_atom_types, final_atom_types, new_coord_list, extra_atom
         [final_atom_types.append(new_atom) for new_atom in new_fg] # Adding to the chemical symbols list.
         new_coord_list = np.concatenate((new_coord_list,np.array(extra_atom_coords[fg_num])),axis=0) # Adding to the coordinates array.
     print('Shape after deletions and inclusion of functional group atoms', new_coord_list.shape, len(final_atom_types))
-    allatomtypes = final_atom_types
+    all_atom_types = final_atom_types
     fcoords = frac_coord(new_coord_list, cell_v)
 
-    return allatomtypes, fcoords
+    return all_atom_types, fcoords
 
 def DS_remover(file_list):
     """
@@ -1577,20 +1577,20 @@ def mkdir_if_absent(folder_path):
     if not os.path.exists(folder_path):
         os.mkdir(folder_path)
 
-def apply_monatomic_functionalization(molcif, allatomtypes, atom_to_replace, functional_group, functionalization_counter):
+def apply_monatomic_functionalization(molcif, all_atom_types, atom_to_replace, functional_group, functionalization_counter):
     """
     Deprecated way of executing monatomic functionalization.
     Does not take into account the different bond lengths of different functional groups, as is done in vector_preparation's calculation of initial_placement.
 
     """
     molcif.getAtom(atom_to_replace).mutate(functional_group) # Replaces one atom3D with another.
-    allatomtypes[atom_to_replace] = functional_group
+    all_atom_types[atom_to_replace] = functional_group
     functionalization_counter -= 1
     if functionalization_counter == 0:
         functionalized = True
     else:
         functionalized = False
-    return molcif, allatomtypes, functionalization_counter, functionalized
+    return molcif, all_atom_types, functionalization_counter, functionalized
 
 ### End of functions ###
 

@@ -36,7 +36,7 @@ def get_primitive(datapath, writepath):
 # the vector to be of constant dimension so we can correlate the output property.       #
 #########################################################################################
 
-def make_MOF_SBU_RACs(SBUlist, SBU_subgraph, molcif, depth, name,cell,anchoring_atoms, sbupath=False, connections_list=False, connections_subgraphlist=False):
+def make_MOF_SBU_RACs(SBUlist, SBU_subgraph, molcif, depth, name, cell, anchoring_atoms, sbupath=False, connections_list=False, connections_subgraphlist=False):
     n_sbu = len(SBUlist)
     print(SBUlist)
     G=nx.from_numpy_matrix(molcif.graph)
@@ -106,8 +106,8 @@ def make_MOF_SBU_RACs(SBUlist, SBU_subgraph, molcif, depth, name,cell,anchoring_
         ###### WRITE THE SBU MOL TO THE PLACE
         if sbupath and not os.path.exists(sbupath+"/"+str(name)+str(i)+'.xyz'):
             xyzname = sbupath+"/"+str(name)+"_sbu_"+str(i)+".xyz"
-            SBU_mol_fcoords_connected = pbc_funs.XYZ_connected(cell , SBU_mol_cart_coords , SBU_mol_adj_mat )
-            pbc_funs.writeXYZandGraph(xyzname , SBU_mol_atom_labels , cell , SBU_mol_fcoords_connected,SBU_mol_adj_mat)
+            SBU_mol_fcoords_connected = pbc_funs.XYZ_connected(cell, SBU_mol_cart_coords, SBU_mol_adj_mat )
+            pbc_funs.writeXYZandGraph(xyzname, SBU_mol_atom_labels, cell, SBU_mol_fcoords_connected,SBU_mol_adj_mat)
     return None, None, None, None
 
 def make_MOF_linker_RACs(linkerlist, linker_subgraphlist, molcif, depth, name, cell, linkerpath=False):
@@ -129,7 +129,7 @@ def make_MOF_linker_RACs(linkerlist, linker_subgraphlist, molcif, depth, name, c
     return None, None
 
 
-def get_MOF_descriptors(data, depth, path=False, xyzpath = False):
+def get_MOF_descriptors(data, depth, path=False, xyz_path = False):
     if not path:
         print('Need a directory to place all of the linker, SBU, and ligand objects. Exiting now.')
         raise ValueError('Base path must be specified in order to write descriptors.')
@@ -156,7 +156,7 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath = False):
     Simultaneously prepare mol3D class for MOF for future RAC featurization (molcif)
     """""""""
 
-    cpar, allatomtypes, fcoords = pbc_funs.readcif(data)
+    cpar, all_atom_types, fcoords = pbc_funs.readcif(data)
     cell_v = pbc_funs.mkcell(cpar)
     cart_coords = pbc_funs.fractional2cart(fcoords, cell_v)
     name = os.path.basename(data).strip(".cif")
@@ -167,13 +167,13 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath = False):
         return None, None
     distance_mat = pbc_funs.compute_distance_matrix(cell_v, cart_coords)
     try:
-        adj_matrix, _ = pbc_funs.compute_adj_matrix(distance_mat, allatomtypes)
+        adj_matrix, _ = pbc_funs.compute_adj_matrix(distance_mat, all_atom_types)
     except NotImplementedError:
         tmpstr = "Failed to featurize %s: atomic overlap\n" % (name)
         pbc_funs.write2file(path, "/FailedStructures.log", tmpstr)
         return None, None
 
-    pbc_funs.writeXYZandGraph(xyzpath, allatomtypes, cell_v, fcoords, adj_matrix.todense())
+    pbc_funs.writeXYZandGraph(xyz_path, all_atom_types, cell_v, fcoords, adj_matrix.todense())
     molcif, _, _, _, _ = import_from_cif(data, True)
     molcif.graph = adj_matrix.todense()
 
@@ -221,10 +221,10 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath = False):
     [removelist.update(set([metal])) for metal in molcif.findMetal(transition_metals_only=False)] #Remove all metals as part of the SBU
     for metal in removelist:
         bonded_atoms = set(molcif.getBondedAtomsSmart(metal))
-        bonded_atoms_types = set([str(allatomtypes[at]) for at in set(molcif.getBondedAtomsSmart(metal))])
+        bonded_atoms_types = set([str(all_atom_types[at]) for at in set(molcif.getBondedAtomsSmart(metal))])
         cn = len(bonded_atoms)
         cn_atom = ",".join([at for at in bonded_atoms_types])
-        tmpstr = "atom %i with type of %s found to have %i coordinates with atom types of %s\n" % (metal, allatomtypes[metal], cn, cn_atom)
+        tmpstr = "atom %i with type of %s found to have %i coordinates with atom types of %s\n" % (metal, all_atom_types[metal], cn, cn_atom)
         pbc_funs.write2file(logpath, "/%s.log" % name, tmpstr)
     [removelist.update(set([atom])) for atom in SBUlist if all((molcif.getAtom(val).ismetal() or molcif.getAtom(val).symbol().upper() == 'H') for val in molcif.getBondedAtomsSmart(atom))]
     """""""""
@@ -371,18 +371,18 @@ def get_MOF_descriptors(data, depth, path=False, xyzpath = False):
         if not long_ligands:
             tmpstr = "\nStructure has SHORT ligand\n\n"
             pbc_funs.write2file(logpath,"/%s.log"%name,tmpstr)
-            SBU_list , SBU_subgraphlist = pbc_funs.include_extra_shells(SBU_list,SBU_subgraphlist,molcif ,adj_matrix)
+            SBU_list, SBU_subgraphlist = pbc_funs.include_extra_shells(SBU_list, molcif, adj_matrix)
     else:
-        tmpstr = "Structure %s has extreamly short ligands, check the outputs\n"%name
+        tmpstr = "Structure %s has extremely short ligands, check the outputs\n"%name
         pbc_funs.write2file(ligandpath,"/ambiguous.txt",tmpstr)
-        tmpstr = "Structure has extreamly short ligands\n"
+        tmpstr = "Structure has extremely short ligands\n"
         pbc_funs.write2file(logpath,"/%s.log"%name,tmpstr)
-        tmpstr = "Structure has extreamly short ligands\n"
+        tmpstr = "Structure has extremely short ligands\n"
         pbc_funs.write2file(logpath,"/%s.log"%name,tmpstr)
         truncated_linkers = allatoms - removelist
         SBU_list, SBU_subgraphlist = pbc_funs.get_closed_subgraph(removelist, truncated_linkers, adj_matrix)
-        SBU_list, SBU_subgraphlist = pbc_funs.include_extra_shells(SBU_list,SBU_subgraphlist,molcif ,adj_matrix)
-        SBU_list, SBU_subgraphlist = pbc_funs.include_extra_shells(SBU_list,SBU_subgraphlist,molcif ,adj_matrix)
-    descriptor_names, descriptors, lc_descriptor_names, lc_descriptors = make_MOF_SBU_RACs(SBU_list, SBU_subgraphlist, molcif, depth, name , cell_v,anc_atoms, sbupath, connections_list, connections_subgraphlist)
+        SBU_list, SBU_subgraphlist = pbc_funs.include_extra_shells(SBU_list, molcif, adj_matrix)
+        SBU_list, SBU_subgraphlist = pbc_funs.include_extra_shells(SBU_list, molcif, adj_matrix)
+    descriptor_names, descriptors, lc_descriptor_names, lc_descriptors = make_MOF_SBU_RACs(SBU_list, SBU_subgraphlist, molcif, depth, name, cell_v,anc_atoms, sbupath, connections_list, connections_subgraphlist)
     lig_descriptor_names, lig_descriptors = make_MOF_linker_RACs(linker_list, linker_subgraphlist, molcif, depth, name, cell_v, linkerpath)
     return None, None
