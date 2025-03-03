@@ -4,7 +4,7 @@ from molSimplify.Informatics.MOF.PBC_functions import (
     compute_adj_matrix,
     compute_distance_matrix,
     compute_image_flag,
-    fraccoord,
+    frac_coord,
     fractional2cart,
     make_supercell,
     mkcell,
@@ -45,11 +45,33 @@ def test_cell_to_cellpar(cell, reference_cpar):
     cpar = cell_to_cellpar(cell)
     assert np.allclose(cpar, reference_cpar, atol=1e-4)
 
-# def test_fractional2cart():
-#     assert False
+@pytest.mark.parametrize(
+    "fcoords, cell, reference_cart_coord",
+    [
+        (np.array([[0.5,0.5,0.5],[0.7,-0.2,0.1],[0.8,0.8,1.0]]),
+            np.array([[10,0,0],[0,5,0],[0,0,15]]),
+            np.array([[5,2.5,7.5],[7,-1,1.5],[8,4,15]])),
+        (np.array([[0.3,0.9,0.65],[0.1,0.01,-0.3],[1.1,0.8,0.7]]),
+            np.array([[10,0,0],[0,5,10],[7,8,9]]),
+            np.array([[7.55,9.7,14.85],[-1.1,-2.35,-2.6],[15.9,9.6,14.3]])),
+    ])
+def test_fractional2cart(fcoords, cell, reference_cart_coord):
+    cart_coord = fractional2cart(fcoords, cell)
+    assert np.allclose(cart_coord, reference_cart_coord)
 
-# def test_fraccoord():
-#     assert False
+@pytest.mark.parametrize(
+    "coord, cell, reference_fcoords",
+    [
+        (np.array([[5,2.5,7.5],[7,-1,1.5],[8,4,15]]),
+            np.array([[10,0,0],[0,5,0],[0,0,15]]),
+            np.array([[0.5,0.5,0.5],[0.7,-0.2,0.1],[0.8,0.8,1.0]])),
+        (np.array([[7.55,9.7,14.85],[-1.1,-2.35,-2.6],[15.9,9.6,14.3]]),
+            np.array([[10,0,0],[0,5,10],[7,8,9]]),
+            np.array([[0.3,0.9,0.65],[0.1,0.01,-0.3],[1.1,0.8,0.7]])),
+    ])
+def test_frac_coord(coord, cell, reference_fcoords):
+    fcoords = frac_coord(coord, cell)
+    assert np.allclose(fcoords, reference_fcoords)
 
 # def test_compute_image_flag():
 #     assert False
