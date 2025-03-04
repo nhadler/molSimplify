@@ -10,13 +10,11 @@
 # lac: ligand assign consistent
 
 from __future__ import print_function
-import numpy as np
 from molSimplify.Classes.ligand import (
     ligand_assign_consistent,
     ligand_assign_original,
     ligand_breakdown,
     )
-from molSimplify.Classes.globalvars import globalvars
 from molSimplify.Informatics.autocorrelation import (
     append_descriptor_derivatives,
     append_descriptors,
@@ -37,8 +35,7 @@ from molSimplify.Informatics.autocorrelation import (
     generate_metal_ox_deltametric_derivatives,
     generate_metal_ox_deltametrics,
     )
-
-globs = globalvars()
+import numpy as np
 
 
 def get_descriptor_vector(this_complex, custom_ligand_dict=False,

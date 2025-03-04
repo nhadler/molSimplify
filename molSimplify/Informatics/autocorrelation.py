@@ -1,14 +1,16 @@
-import numpy as np
-from molSimplify.Classes.mol3D import mol3D
+from molSimplify.Classes.globalvars import globalvars
 from molSimplify.Classes.ligand import (
     ligand_assign_original,
     ligand_breakdown,
     )
+from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Scripts.geometry import distance
-from molSimplify.Classes.globalvars import globalvars
+import numpy as np
 
 # ########## UNIT CONVERSION
 HF_to_Kcal_mol = 627.503
+
+globs = globalvars()
 
 
 def append_descriptors(descriptor_names, descriptors, list_of_names, list_of_props, prefix, suffix):
