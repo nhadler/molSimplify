@@ -4316,7 +4316,7 @@ class mol3D:
         }
         return results
 
-    def get_graph_hash(self, attributed_flag=True, oct=False):
+    def get_graph_hash(self, attributed_flag=True, oct=False, loud=True):
         """
         Calculate the graph hash of a molecule.
         Note: Not useful for distinguishing betweeen molecules
@@ -4330,6 +4330,9 @@ class mol3D:
             oct : bool
                 Defines whether a structure is octahedral.
                 Default is False.
+            loud : bool
+                Whether to generate print statements.
+                Default is True.
 
         Returns
         -------
@@ -4338,7 +4341,8 @@ class mol3D:
         """
 
         if not len(self.graph):
-            print('graph attribute not set. Setting it.')
+            if loud:
+                print('graph attribute not set. Setting it.')
             self.createMolecularGraph(oct=oct)
 
         G = nx.Graph()
