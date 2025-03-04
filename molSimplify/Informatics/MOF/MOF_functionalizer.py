@@ -80,7 +80,7 @@ def functionalize_MOF(cif_file,
     # functionalization is fluoride.                     #
     ######################################################
 
-    # Read the cif file and make the cell for fractional coordinates
+    # Read the cif file and make the cell for fractional coordinates.
     cpar, all_atom_types, fcoords = readcif(cif_file)
     molcif, cell_vector, alpha, beta, gamma = import_from_cif(cif_file, True)
     cell_v = np.array(cell_vector)
@@ -91,11 +91,11 @@ def functionalize_MOF(cif_file,
     molcif.graph = adj_matrix.todense()
 
     ###### At this point, we have most things we need to functionalize.
-    # Thus the first step is to break down into linkers. This uses what we developed for MOF featurization
+    # Thus the first step is to break down into linkers. This uses what we developed for MOF featurization.
     linker_list, linker_subgraphlist = get_linkers(molcif, adj_matrix, all_atom_types)
 
     ###### We need to then figure out which atoms to functionalize.
-    checkedlist = set() # Keeps track of the atoms that have already been checked for functionalization.
+    checked_list = set() # Keeps track of the atoms that have already been checked for functionalization.
     # Make a copy of the atom type list to loop over later.
     original_all_atom_types = all_atom_types.copy() # Storing all the chemical symbols that there were originally.
     delete_list = [] # Collect all of the H that need to be deleted later.
@@ -108,30 +108,30 @@ def functionalize_MOF(cif_file,
         ### Iterate over atoms until we find one suitable for functionalization.
         for i, atom in enumerate(original_all_atom_types):
             print(f'i is {i}')
-            if i in checkedlist:
+            if i in checked_list:
                 continue # Move on to the next atom.
             if atom != 'C': # Assumes that functionalization is performed on a C atom.
-                checkedlist.add(i)
+                checked_list.add(i)
                 continue
 
             # Atoms that are connected to atom i.
             connected_atom_list, connected_atom_types = connected_atoms_from_adjmat(adj_matrix, i, original_all_atom_types)
 
-            if ('H' not in connected_atom_types) or (connected_atom_types.count('H')>1 or len(connected_atom_types) != 3): ### must functionalize where an H was. Needs sp2 C.
+            if ('H' not in connected_atom_types) or (connected_atom_types.count('H')>1 or len(connected_atom_types) != 3): ### Must functionalize where an H was. Needs sp2 C.
                 # Note: if a carbon has more than one hydrogen bonded to it, it is not considered for functionalization.
                 # So, the carbons treated by this code will carbons in a benzene-style ring for the most part, I assume.
                     # Since apply_functionalization assumes two neighbors to the carbon excluding hydrogens.
                     # TODO expand in the future?
                 # Note: can only replace a hydrogen in the functionalization, at the moment. Can't replace a methyl, hydroxyl, etc.
-                checkedlist.add(i)
+                checked_list.add(i)
                 continue
             else: # Found a suitable location for functionalization.
                 functionalized = False
                 functionalization_counter = functionalization_limit
 
                 # Identifying the linker that has atom i.
-                # Also adds all the atoms in the identified linker to checkedlist. So, won't check this linker again.
-                linker_to_analyze, linker_to_analyze_index, checkedlist = linker_identification(linker_list, i, checkedlist)
+                # Also adds all the atoms in the identified linker to checked_list. So, won't check this linker again.
+                linker_to_analyze, linker_to_analyze_index, checked_list = linker_identification(linker_list, i, checked_list)
 
                 linker_atom_types, linker_graph, linker_cart_coords = analyze_linker(cart_coords,
                     linker_to_analyze,
@@ -202,10 +202,10 @@ def functionalize_MOF(cif_file,
     """""""""
     Apply delete_list and extra_atom_types to make final_atom_types and new_coord_list.
     """""""""
-    # Deleting atoms (hydrogens that are replaced by functional groups)
+    # Deleting atoms (hydrogens that are replaced by functional groups).
     new_coord_list, final_atom_types = atom_deletion(cart_coords, all_atom_types, delete_list)
 
-    # Adding atoms (the atoms in the functional groups)
+    # Adding atoms (the atoms in the functional groups).
     all_atom_types, fcoords = atom_addition(extra_atom_types, final_atom_types, new_coord_list, extra_atom_coords, cell_v)
 
     """""""""
@@ -223,7 +223,7 @@ def functionalize_MOF(cif_file,
         symmetry_check(original_all_atom_types, original_fcoords, cell_v)
 
         # Analysis for the case where the cell is functionalized.
-        # Difference with the block above: all_atom_types and fcoords, instead of original_all_atom_types and original_fcoords
+        # Difference with the block above: all_atom_types and fcoords, instead of original_all_atom_types and original_fcoords.
         print('------- FUNCTIONALIZED CASE --------')
         symmetry_check(all_atom_types, fcoords, cell_v)
 
@@ -409,10 +409,10 @@ def additional_functionalization(i,
     """
     original_functionalization_counter = functionalization_counter
 
-    anchor_idx = linker_to_functionalize.index(i) # As a reminder, linker_to_functionalize is a list of numpy.int32, the numpy.int32s being indices for the atoms in the linker
+    anchor_idx = linker_to_functionalize.index(i) # As a reminder, linker_to_functionalize is a list of numpy.int32, the numpy.int32s being indices for the atoms in the linker.
     G = make_networkx_graph(linker_subgraphlist[linker_to_functionalize_index]) # Getting the graph for the linker of interest.
-    # Use network X to find functionalization paths that are N atoms away from the original spot
-    n_path_lengths_away = findPaths(G,anchor_idx,path_between_functionalizations)
+    # Use network X to find functionalization paths that are N atoms away from the original spot.
+    n_path_lengths_away = findPaths(G,anchor_idx, path_between_functionalizations)
     already_functionalized = False
     for path in n_path_lengths_away: # Looking at the possible paths between the anchor_idx and atoms that are N (path_between_functionalizations) atom away.
         if already_functionalized: # An atom was already functionalized.
@@ -439,7 +439,7 @@ def additional_functionalization(i,
                     extra_atom_coords.append(additions_to_cart)
                     extra_atom_types.append(atom_types_to_add)
                     functionalized_atoms.append(functionalization_index)
-                    already_functionalized = True # Want to break out of all the for loops
+                    already_functionalized = True # Want to break out of all the for loops.
                     break # break the for l, secondary... loop since a functionalization was made.
 
     if functionalization_counter == original_functionalization_counter: # Equivalently, if already_functionalized == False
@@ -658,7 +658,7 @@ def symmetry_check(all_atom_types, fcoords, cell_v, precision=1):
     print('spacegroup after standardization:', spcg)
     print('space group number after standardization:', space_group_number)
 
-def linker_identification(linker_list, i, checkedlist):
+def linker_identification(linker_list, i, checked_list):
     """
     Identifies which linker the atom i is in.
 
@@ -668,7 +668,7 @@ def linker_identification(linker_list, i, checkedlist):
         Each inner list is its own separate linker. The ints are the global atom indices of that linker. Length is # of linkers.
     i : int
         The global index of the atom of interest.
-    checkedlist : set of int
+    checked_list : set of int
         The indices of atoms that have already been checked for functionalization.
 
     Returns
@@ -678,7 +678,7 @@ def linker_identification(linker_list, i, checkedlist):
         The identified linker is the one that has atom i.
     linker_to_analyze_index : int
         The number identifier of the linker that contains the atom of interest.
-    checkedlist : set of int
+    checked_list : set of int
         The indices of atoms that have already been checked for functionalization.
         Updated to include the atoms in the identified linker.
 
@@ -688,13 +688,13 @@ def linker_identification(linker_list, i, checkedlist):
         if i in linker: # The atom i (which is to be functionalized) is in the atoms of the current linker.
             linker_to_analyze_index, linker_to_analyze = linker_num, linker
             # Once a linker has been functionalized, we want to be done with that linker and not functionalize it again.
-            [checkedlist.add(val) for val in linker]
+            [checked_list.add(val) for val in linker]
             break # Don't need to keep looking through the linkers in this case, since the atom i which is to be functionalized was in the current linker.
 
     if linker_to_analyze is None: # linker_to_analyze was never overwritten.
         raise Exception(f"Atom {i} was not in any linker - something has gone wrong.")
 
-    return linker_to_analyze, linker_to_analyze_index, checkedlist
+    return linker_to_analyze, linker_to_analyze_index, checked_list
 
 def geo_dict_loader():
     """
@@ -991,20 +991,17 @@ def get_linkers(molcif, adj_matrix, all_atom_types):
     [SBUlist.update(set([metal])) for metal in molcif.findMetal(transition_metals_only=False)] # Consider all metals as part of the SBUs.
     [SBUlist.update(set(molcif.getBondedAtomsSmart(metal))) for metal in molcif.findMetal(transition_metals_only=False)] # Also consider all atoms bonded to a metals part of the SBUs.
 
-    removelist = set()
-    [removelist.update(set([metal])) for metal in molcif.findMetal(transition_metals_only=False)] # Remove all metals as part of the SBU.
-    # for metal in removelist:
-    #     bonded_atoms = set(molcif.getBondedAtomsSmart(metal))
-    #     bonded_atoms_types = set([str(all_atom_types[at]) for at in set(molcif.getBondedAtomsSmart(metal))]) # The types of elements bonded to metals. E.g. oxygen, carbon, etc.
+    remove_list = set()
+    [remove_list.update(set([metal])) for metal in molcif.findMetal(transition_metals_only=False)] # Remove all metals as part of the SBU.
 
-    # Add to removelist any atoms that are only bonded to metals (not counting hydrogens).
+    # Add to remove_list any atoms that are only bonded to metals (not counting hydrogens).
         # The all() function returns True if all items in an iterable are true, otherwise it returns False.
-    [removelist.update(set([atom])) for atom in SBUlist if all((molcif.getAtom(val).ismetal() or
+    [remove_list.update(set([atom])) for atom in SBUlist if all((molcif.getAtom(val).ismetal() or
         molcif.getAtom(val).symbol().upper() == 'H') for val in molcif.getBondedAtomsSmart(atom))]
 
-    allatoms = set(range(0, adj_matrix.shape[0])) # A set that goes from 0 to the number of atoms - 1
-    linkers = allatoms - removelist
-    linker_list, linker_subgraphlist = get_closed_subgraph(linkers.copy(), removelist.copy(), adj_matrix)
+    all_atoms = set(range(0, adj_matrix.shape[0])) # A set that goes from 0 to the number of atoms - 1
+    linkers = all_atoms - remove_list
+    linker_list, linker_subgraphlist = get_closed_subgraph(linkers.copy(), remove_list.copy(), adj_matrix)
     return linker_list, linker_subgraphlist
 
 def connected_atoms_from_adjmat(adj_matrix, index, all_atom_types):
@@ -1117,7 +1114,7 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
     linker_list, linker_subgraphlist = get_linkers(molcif, adj_matrix, all_atom_types)
 
     ###### We need to then figure out which atoms to functionalize.
-    checkedlist = set() # Keeps track of the atoms that have already been checked for functionalization.
+    checked_list = set() # Keeps track of the atoms that have already been checked for functionalization.
     delete_list = [] # Collect all of the H that need to be deleted later.
     extra_atom_coords = []
     extra_atom_types = []
@@ -1138,8 +1135,8 @@ def functionalize_MOF_at_indices(cif_file, path2write, functional_group, func_in
             raise ValueError('Invalid atom to functionalize: not an sp2 carbon atom.')
         else: # atom_to_functionalize is a suitable location for functionalization.
             # Identifying the linker that has atom atom_to_functionalize.
-            # Also adds all the atoms in the identified linker to checkedlist.
-            linker_to_analyze, linker_to_analyze_index, _ = linker_identification(linker_list, func_index, checkedlist) # checkedlist is not important here.
+            # Also adds all the atoms in the identified linker to checked_list.
+            linker_to_analyze, linker_to_analyze_index, _ = linker_identification(linker_list, func_index, checked_list) # checked_list is not important here.
 
             linker_atom_types, linker_graph, linker_cart_coords = analyze_linker(cart_coords,
                 linker_to_analyze,
@@ -1334,7 +1331,7 @@ def functionalize_MOF_at_indices_mol3D_merge(cif_file, path2write, functional_gr
             functional_group_clone = rotate_around_axis(functional_group_clone, main_carbon_coordinate, [0,1,0], y_rotation)
             functional_group_clone = rotate_around_axis(functional_group_clone, main_carbon_coordinate, [0,0,1], z_rotation)
 
-            # Account for additional_atom_offset
+            # Account for additional_atom_offset.
             # Vector between functionalized carbon and the anchor atom of the functional group (e.g. the C in -CH3 functional group).
             anchor_coordinate = functional_group_clone.getAtom(fg_anchor_index).coords()
             direction_vector = np.array(anchor_coordinate) - np.array(main_carbon_coordinate)
@@ -1610,7 +1607,7 @@ def main():
 
     # The way the code is currently set up, the only folder required prior to running this script is a folder of the name `mofname` with the CIF file of the name `mofname` in it.
     # Functionalization should occur on the primitive cell.
-    unmodified_cifs = DS_remover(os.listdir(base_database_path)) # The list of unmodified cifs
+    unmodified_cifs = DS_remover(os.listdir(base_database_path)) # The list of unmodified cifs.
     for primMOF in unmodified_cifs:
         primMOF = primMOF.strip('.cif')
         mkdir_if_absent(base_database_path_primitive)
@@ -1635,7 +1632,7 @@ def main():
                 else:
                     continue
 
-    # Functionalize by index
+    # Functionalize by index.
     index_func_folder = f'{mofname}_index_func'
     mkdir_if_absent(index_func_folder)
     functionalize_MOF_at_indices(f'{base_database_path_primitive}/{MOF}.cif', index_func_folder, 'F', [57])

@@ -242,8 +242,8 @@ def get_MOF_descriptors(data, depth, path=False, xyz_path = False):
         remove_list = linkers are all atoms - the remove_list (assuming no bond between
         organiclinkers)
     """""""""
-    allatoms = set(range(0, adj_matrix.shape[0]))
-    linkers = allatoms - remove_list
+    all_atoms = set(range(0, adj_matrix.shape[0]))
+    linkers = all_atoms - remove_list
     linker_list, linker_subgraphlist = pbc_funs.get_closed_subgraph(linkers.copy(), remove_list.copy(), adj_matrix)
     connections_list = copy.deepcopy(linker_list)
     connections_subgraphlist = copy.deepcopy(linker_subgraphlist)
@@ -364,7 +364,7 @@ def get_MOF_descriptors(data, depth, path=False, xyz_path = False):
             tmpstr = "\nStructure has LONG ligand\n\n"
             pbc_funs.write2file(log_path,"/%s.log"%name,tmpstr)
             [[SBU_list.add(val) for val in  molcif.getBondedAtomsSmart(zero_first_shell)] for zero_first_shell in SBU_list.copy()] #First account for all of the carboxylic acid type linkers, add in the carbons.
-        truncated_linkers = allatoms - SBU_list
+        truncated_linkers = all_atoms - SBU_list
         SBU_list, SBU_subgraphlist = pbc_funs.get_closed_subgraph(SBU_list, truncated_linkers, adj_matrix)
         if not long_ligands:
             tmpstr = "\nStructure has SHORT ligand\n\n"
@@ -377,7 +377,7 @@ def get_MOF_descriptors(data, depth, path=False, xyz_path = False):
         pbc_funs.write2file(log_path,"/%s.log"%name,tmpstr)
         tmpstr = "Structure has extremely short ligands\n"
         pbc_funs.write2file(log_path,"/%s.log"%name,tmpstr)
-        truncated_linkers = allatoms - remove_list
+        truncated_linkers = all_atoms - remove_list
         SBU_list, SBU_subgraphlist = pbc_funs.get_closed_subgraph(remove_list, truncated_linkers, adj_matrix)
         SBU_list, SBU_subgraphlist = pbc_funs.include_extra_shells(SBU_list, molcif, adj_matrix)
         SBU_list, SBU_subgraphlist = pbc_funs.include_extra_shells(SBU_list, molcif, adj_matrix)
