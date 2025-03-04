@@ -3,7 +3,6 @@ from molSimplify.Classes.ligand import (
     ligand_assign_original,
     ligand_breakdown,
     )
-from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Scripts.geometry import distance
 import numpy as np
 
@@ -2410,7 +2409,6 @@ def generate_metal_ox_deltametric_derivatives(oxmodifier, mol, depth=4, oct=True
     # #             ONLY used with  ox_nuclear_charge    ox or charge)
     # #              {"Fe":2, "Co": 3} etc, normally only 1 metal...
     #    oct - bool, if complex is octahedral, will use better bond checks
-    result = list()
     colnames = []
     metal_ox_ac = metal_only_deltametric_derivative(mol, 'ox_nuclear_charge',
                                                     depth, oct=oct, modifier=oxmodifier)
