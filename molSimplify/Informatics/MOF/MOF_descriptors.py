@@ -1038,9 +1038,9 @@ def get_MOF_descriptors(
                     flag = True
                     continue
                 if flag:
-                    splitrow = row.split()
-                    atom1 = int(re.findall(r'\d+', splitrow[0])[0])
-                    atom2 = int(re.findall(r'\d+', splitrow[1])[0])
+                    split_row = row.split()
+                    atom1 = int(re.findall(r'\d+', split_row[0])[0])
+                    atom2 = int(re.findall(r'\d+', split_row[1])[0])
                     max_sofar = max(atom1, max_sofar)
                     max_sofar = max(atom2, max_sofar)
                     adj_matrix_list.append((atom1, atom2))
@@ -1118,8 +1118,8 @@ def get_MOF_descriptors(
         remove_list = linkers are all atoms - the remove_list (assuming no bond between
         organiclinkers)
     """""""""
-    allatoms = set(range(0, adj_matrix.shape[0]))  # The indices of all the atoms.
-    linkers = allatoms - remove_list
+    all_atoms = set(range(0, adj_matrix.shape[0]))  # The indices of all the atoms.
+    linkers = all_atoms - remove_list
     linker_list, linker_subgraphlist = get_closed_subgraph(linkers.copy(), remove_list.copy(), adj_matrix)
     connections_list = copy.deepcopy(linker_list)
     connections_subgraphlist = copy.deepcopy(linker_subgraphlist)
@@ -1242,7 +1242,7 @@ def get_MOF_descriptors(
             # Expanding the number of atoms considered to be part of the SBU.
             # First account for all of the carboxylic acid type linkers, add in the carbons.
             [[SBU_list.add(val) for val in molcif.getBondedAtomsSmart(zero_first_shell)] for zero_first_shell in SBU_list.copy()]
-        truncated_linkers = allatoms - SBU_list  # Taking the difference of sets.
+        truncated_linkers = all_atoms - SBU_list  # Taking the difference of sets.
         SBU_list, SBU_subgraphlist = get_closed_subgraph(SBU_list, truncated_linkers, adj_matrix)
         if not long_ligands:
             tmpstr = "\nStructure has SHORT ligand\n\n"
@@ -1255,7 +1255,7 @@ def get_MOF_descriptors(
         write2file(log_path, "/%s.log" % name, tmpstr)
         tmpstr = "Structure has extremely short ligands\n"
         write2file(log_path, "/%s.log" % name, tmpstr)
-        truncated_linkers = allatoms - remove_list
+        truncated_linkers = all_atoms - remove_list
         SBU_list, SBU_subgraphlist = get_closed_subgraph(remove_list, truncated_linkers, adj_matrix)
         SBU_list, SBU_subgraphlist = include_extra_shells(SBU_list, molcif, adj_matrix)
         SBU_list, SBU_subgraphlist = include_extra_shells(SBU_list, molcif, adj_matrix)

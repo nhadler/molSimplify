@@ -572,7 +572,7 @@ def identify_lc_atoms(molcif, remove_list, metal_list):
         Each inner list is its own separate linker. The ints are the atom indices of that linker. Length is # of linkers.
     linker_subgraphlist : list of numpy.matrix
         The atom connections in the linker subgraph. Length is # of linkers.
-    allatoms : set of int
+    all_atoms : set of int
         The indices of all of the atoms in the MOF.
     connections_list : list of list of int
         Each inner list is its own separate linker. The ints are the atom indices of that linker. Length is # of linkers.
@@ -580,8 +580,8 @@ def identify_lc_atoms(molcif, remove_list, metal_list):
         The atom connections in the linker subgraph. Length is # of linkers.
 
     """
-    allatoms = set(range(0, molcif.graph.shape[0]))
-    linkers = allatoms - remove_list # Anything that is in the remove list (SBU) is removed, leaving linkers
+    all_atoms = set(range(0, molcif.graph.shape[0]))
+    linkers = all_atoms - remove_list # Anything that is in the remove list (SBU) is removed, leaving linkers
     # Use the atoms for linkers and the remove list, along with the original full unit cell graph to make the linker subgraphs
     linker_list, linker_subgraphlist = get_closed_subgraph(linkers.copy(), remove_list.copy(), molcif.graph)
     # Next, we have to determine which atoms on the linkers are the connecting points to the SBU.
@@ -600,7 +600,7 @@ def identify_lc_atoms(molcif, remove_list, metal_list):
             if set(bonded2atom) & metal_list:
                 anc_atoms.add(atom_linker)
     # return the anchoring atoms, the atoms we leave as linkers
-    return anc_atoms, linkers, linker_list, linker_subgraphlist, allatoms, connections_list, connections_subgraphlist
+    return anc_atoms, linkers, linker_list, linker_subgraphlist, all_atoms, connections_list, connections_subgraphlist
 
 def identify_short_linkers(molcif, initial_SBU_list, initial_SBU_subgraphlist, remove_list, linkers,
     linker_list, linker_subgraphlist, adj_matrix, SBU_list, log_path, linker_path, name, cell_v):
@@ -850,7 +850,7 @@ def make_MOF_fragments(data, path=False, xyz_path=False):
         remove_list = linkers are all atoms - the remove_list (assuming no bond between
         organic linkers)
     '''
-    anc_atoms, linkers, linker_list, linker_subgraphlist, allatoms, connections_list, connections_subgraphlist = identify_lc_atoms(
+    anc_atoms, linkers, linker_list, linker_subgraphlist, all_atoms, connections_list, connections_subgraphlist = identify_lc_atoms(
         molcif, remove_list, metal_list)
 
     '''
@@ -880,7 +880,7 @@ def make_MOF_fragments(data, path=False, xyz_path=False):
             write2file(log_path, "/%s.log"%name, tmpstr)
             # First account for all of the carboxylic acid type linkers, add in the carbons.
             [[SBU_list.add(val) for val in molcif.getBondedAtomsSmart(zero_first_shell)] for zero_first_shell in SBU_list.copy()]
-        truncated_linkers = allatoms - SBU_list
+        truncated_linkers = all_atoms - SBU_list
         SBU_list, SBU_subgraphlist = get_closed_subgraph(SBU_list, truncated_linkers, adj_matrix)
         if not long_ligands:
             tmpstr = "\nStructure has SHORT LINKER\n\n"
@@ -893,7 +893,7 @@ def make_MOF_fragments(data, path=False, xyz_path=False):
         write2file(linker_path, "/short.txt", tmpstr)
         tmpstr = "Structure has extremely short linkers\n"
         write2file(log_path, "/%s.log"%name, tmpstr)
-        truncated_linkers = allatoms - remove_list
+        truncated_linkers = all_atoms - remove_list
         SBU_list, SBU_subgraphlist = get_closed_subgraph(remove_list, truncated_linkers, adj_matrix)
         SBU_list, SBU_subgraphlist = include_extra_shells(SBU_list, molcif, adj_matrix)
         SBU_list, SBU_subgraphlist = include_extra_shells(SBU_list, molcif, adj_matrix)
