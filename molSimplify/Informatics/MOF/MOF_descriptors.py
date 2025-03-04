@@ -931,9 +931,14 @@ def detect_1D_rod(molcif, all_atom_types, cpar, log_path, name, adj_matrix, fcoo
         write2file(log_path, "/%s.log" % name, tmpstr)
 
 def get_MOF_descriptors(
-        data, depth, path, xyz_path, graph_provided=False, wiggle_room=1,
-        max_num_atoms=2000, get_sbu_linker_bond_info=False, surrounded_sbu_file_generation=False,
-        detect_1D_rod_sbu=False, Gval=False, transition_metals_only=False):
+        data, depth, path, xyz_path,
+        graph_provided=False, Gval=False,
+        transition_metals_only=False,
+        max_num_atoms=2000, wiggle_room=1,
+        get_sbu_linker_bond_info=False,
+        surrounded_sbu_file_generation=False,
+        detect_1D_rod_sbu=False,
+        ):
     """
     Generates RAC descriptors on a MOF, assuming it has P1 symmetry.
     Writes three files: sbu_descriptors.csv, linker_descriptors.csv, and lc_descriptors.csv
@@ -960,20 +965,20 @@ def get_MOF_descriptors(
     graph_provided : bool
         Whether or not the cif file has graph information of the structure (i.e. what atoms are bonded to what atoms).
         If not, computes the N^2 pairwise distance matrix, which is expensive.
-    wiggle_room : float
-        A multiplier that allows for more or less strict bond distance cutoffs.
+    Gval : bool
+        Whether to use G value as RAC, by default False.
+    transition_metals_only : bool
+        Flag if only transition metals counted as metals, by default False.
     max_num_atoms : int
         The maximum number of atoms in the unit cell for which analysis is conducted.
+    wiggle_room : float
+        A multiplier that allows for more or less strict bond distance cutoffs.
     get_sbu_linker_bond_info : bool
         Whether or not a TXT file is written with information on the bonds between SBUs and linkers.
     surrounded_sbu_file_generation : bool
         Whether or not an XYZ file for each SBU, surrounded by its connected linkers, will be generated.
     detect_1D_rod_sbu : bool
         Whether or not to check if SBU is a 1D rod.
-    Gval : bool
-        Whether to use G value as RAC, by default False.
-    transition_metals_only : bool
-        Flag if only transition metals counted as metals, by default False.
 
     Returns
     -------
