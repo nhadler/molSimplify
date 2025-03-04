@@ -3,6 +3,16 @@ import pytest
 from molSimplify.Classes.atom3D import atom3D
 
 
+@ pytest.mark.parametrize(
+	"sym, coords",
+	[
+	("Al", [0.8,3.9,3.9]),
+	("Ir", [-1,2.4,7.7]),
+	])
+def test_repr(sym, coords):
+	my_atom = atom3D(Sym=sym, xyz=coords)
+	assert str(my_atom) == f"atom3D(Sym={sym}, xyz={coords})"
+
 @pytest.mark.parametrize(
 	"sym",
 	[
