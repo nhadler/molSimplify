@@ -40,7 +40,7 @@ def test_symbol(sym):
 def test_coords(coords):
 	my_atom = atom3D(xyz=coords)
 	assert coords == my_atom.coords()
-	
+
 
 def test_defaults():
 	my_atom = atom3D()
