@@ -9,7 +9,6 @@ from molSimplify.Informatics.MOF.PBC_functions import (
     mkcell,
     overlap_removal,
     readcif,
-    # returnXYZandGraph,
     solvent_removal,
     writeXYZandGraph,
     )
@@ -122,9 +121,6 @@ def test_writeXYZandGraph(resource_path_root, tmp_path):
     assert filecmp.cmp(filename, reference_xyz_path)
     assert filecmp.cmp(filename.replace('.xyz','.net'), reference_net_path)
 
-# def test_returnXYZandGraph():
-#     assert False
-
 @pytest.mark.parametrize(
     "name",
     [
@@ -191,8 +187,8 @@ def test_compute_adj_matrix(resource_path_root, name):
 @pytest.mark.parametrize(
     "name",
     [
-        "Zn_MOF",
         "Co_MOF",
+        "Zn_MOF",
     ])
 def test_solvent_removal(resource_path_root, tmp_path, name):
     input_geo = str(resource_path_root / "inputs" / "cif_files" / f"{name}_with_solvent.cif")
@@ -200,7 +196,7 @@ def test_solvent_removal(resource_path_root, tmp_path, name):
     solvent_removal(input_geo, output_path)
 
     # Comparing two CIF files for equality
-    reference_cif_path = str(resource_path_root / "refs" / "informatics" / "mof" / "cif" / f"{name}.cif")
+    reference_cif_path = str(resource_path_root / "refs" / "informatics" / "mof" / "cif" / f"{name}_solvent_removed.cif")
     cpar1, allatomtypes1, fcoords1 = readcif(output_path)
     cpar2, allatomtypes2, fcoords2 = readcif(reference_cif_path)
 
@@ -208,5 +204,28 @@ def test_solvent_removal(resource_path_root, tmp_path, name):
     assert allatomtypes1 == allatomtypes2
     assert np.array_equal(fcoords1, fcoords2)
 
-# def test_overlap_removal():
-#     assert False
+@pytest.mark.parametrize(
+    "name, case",
+    [
+        ("Co_MOF", "duplicate"),
+        ("Co_MOF", "overlap"),
+        ("Zn_MOF", "duplicate"),
+        ("Zn_MOF", "overlap"),
+    ])
+def test_overlap_removal(resource_path_root, tmp_path, name, case):
+    # Duplicate atoms can sometimes occur when enforcing P1 symmetry with Vesta.
+    # In this case, introduced artificially.
+    # Duplicate: Atoms in exact same position.
+    # Overlap: Atoms not in exact same position, but too close.
+    input_geo = str(resource_path_root / "inputs" / "cif_files" / f"{name}_with_{case}.cif")
+    output_path = str(tmp_path / f"{name}.cif")
+    overlap_removal(input_geo, output_path)
+
+    # Comparing two CIF files for equality
+    reference_cif_path = str(resource_path_root / "refs" / "informatics" / "mof" / "cif" / f"{name}_{case}_fixed.cif")
+    cpar1, allatomtypes1, fcoords1 = readcif(output_path)
+    cpar2, allatomtypes2, fcoords2 = readcif(reference_cif_path)
+
+    assert np.array_equal(cpar1, cpar2)
+    assert allatomtypes1 == allatomtypes2
+    assert np.array_equal(fcoords1, fcoords2)

@@ -1126,11 +1126,10 @@ def overlap_removal(cif_path, new_cif_path):
 
     # Loading the cif and getting information about the crystal cell.
     cpar, all_atom_types, fcoords = readcif(cif_path)
+    # Duplicate: Atoms are in the exact same position.
     all_atom_types, fcoords = remove_duplicate_atoms(all_atom_types, fcoords)
     cell_v = mkcell(cpar)
     cart_coords = fractional2cart(fcoords, cell_v)
-    # if len(cart_coords) > 2000: # Don't deal with large cifs because of computational resources required for their treatment.
-    #     raise Exception("Too large of a cif file")
 
     # Assuming that the cif does not have graph information of the structure.
     distance_mat = compute_distance_matrix(cell_v,cart_coords)
