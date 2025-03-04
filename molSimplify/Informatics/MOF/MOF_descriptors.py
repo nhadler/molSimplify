@@ -11,11 +11,9 @@ from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Scripts.cellbuilder_tools import import_from_cif
 from molSimplify.Informatics.RACassemble import append_descriptors
 from molSimplify.Informatics.autocorrelation import (
+    full_autocorrelation,
     generate_atomonly_autocorrelations,
     generate_atomonly_deltametrics,
-    )
-from molSimplify.Informatics.lacRACAssemble import (
-    full_autocorrelation,
     generate_full_complex_autocorrelations,
     generate_metal_autocorrelations,
     generate_metal_deltametrics,

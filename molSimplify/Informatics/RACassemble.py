@@ -13,12 +13,11 @@ import sys
 from typing import Tuple, Union, List
 from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Informatics.autocorrelation import (
+    append_descriptors,
     generate_all_ligand_autocorrelation_derivatives,
     generate_all_ligand_autocorrelations,
     generate_all_ligand_deltametric_derivatives,
     generate_all_ligand_deltametrics,
-    )
-from molSimplify.Informatics.lacRACAssemble import (
     generate_full_complex_autocorrelation_derivatives,
     generate_full_complex_autocorrelations,
     generate_metal_autocorrelation_derivatives,
@@ -354,38 +353,7 @@ def create_OHE(metal: str,
     return OHE_names, OHE_values
 
 
-# # utility to build standardly formatted RACS
-#  @param descriptor_names RAC names, will be appended to
-#  @param descriptors RAC, will be appended to
-#  @param list_of_names names, will be added
-#  @param list_of_props types of RACs
-#  @param prefix RAC prefix
-#  @param suffix RAC suffix
-#  @return descriptor_names updated names
-#  @return descriptors updated RACs
-def append_descriptors(descriptor_names, descriptors, list_of_names,
-                       list_of_props, prefix, suffix):
-    try:
-        basestring
-    except NameError:
-        basestring = str
-
-    for names in list_of_names:
-        if not isinstance(names, basestring):
-            names = ["-".join([prefix, str(i), suffix]) for i in names]
-            descriptor_names += names
-        else:
-            names = "-".join([prefix, str(names), suffix])
-            descriptor_names.append(names)
-    for values in list_of_props:
-        if not isinstance(names, basestring):
-            descriptors.extend(values)
-        else:
-            descriptors.append(values)
-    return descriptor_names, descriptors
-
-
-# # utility to build standardly formatted RACS derivatives
+# # utility to build standardly formatted RACs derivatives
 #  @param descriptor_derivative_names RAC names, will be a matrix!
 #  @param descriptor_derivatives RAC, will be appended to
 #  @param mat_of_names names, will be added

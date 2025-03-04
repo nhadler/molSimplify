@@ -5,12 +5,14 @@
 #
 #  Dpt of Chemical Engineering, MIT
 
-from molSimplify.Informatics.lacRACAssemble import (
-    generate_all_ligand_autocorrelations_lac,
-    generate_all_ligand_deltametrics_lac,
+from molSimplify.Informatics.autocorrelation import(
     generate_full_complex_autocorrelations,
     generate_metal_autocorrelations,
     generate_metal_deltametrics,
+    )
+from molSimplify.Informatics.lacRACAssemble import (
+    generate_all_ligand_autocorrelations_lac,
+    generate_all_ligand_deltametrics_lac,
     generate_all_ligand_misc,
     )
 from molSimplify.Classes.mol3D import mol3D

@@ -25,14 +25,12 @@ from sklearn.multioutput import MultiOutputRegressor
 
 from molSimplify.Classes.globalvars import globalvars
 from molSimplify.Informatics.autocorrelation import (
+    atom_only_autocorrelation,
+    atom_only_deltametric,
     atom_only_ratiometric,
     atom_only_summetric,
     generate_atomonly_autocorrelations,
     generate_atomonly_deltametrics,
-    )
-from molSimplify.Informatics.lacRACAssemble import (
-    atom_only_autocorrelation,
-    atom_only_deltametric,
     )
 from molSimplify.Informatics.partialcharges import ffeatures
 from molSimplify.Scripts.geometry import (
