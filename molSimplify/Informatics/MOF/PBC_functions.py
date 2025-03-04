@@ -34,7 +34,7 @@ def readcif(name):
         The fractional positions of the atoms of the cif file. Shape is (number of atoms, 3).
 
     """
-    with open(name , 'r', errors='ignore') as fi: # ignore takes care of unicode errors in some cifs
+    with open(name , 'r', errors='ignore') as fi: # Ignore takes care of unicode errors in some cifs.
         EIF = fi.readlines()
         cond = False
         atom_props_count = 0
@@ -73,9 +73,6 @@ def readcif(name):
                 temp = temp.replace('(','')
                 cell_gamma = float(temp)
                 cell_parameter_boundary[1] = counter + 1
-            # if cond and line_stripped.startswith("loop_"):
-            #     break
-            # else:
 
             if line_stripped.startswith("_atom") :
 
@@ -90,8 +87,6 @@ def readcif(name):
                     fracy_index = atom_props_count
                 elif line_stripped == "_atom_site_fract_z":
                     fracz_index = atom_props_count
-                # elif "charge" in line_stripped:
-                #     charge_index=atom_props_count
 
                 if cond:
                     atom_props_count += 1 # Another atom property in the block we are interested in.
@@ -101,9 +96,13 @@ def readcif(name):
                 if len(line_splitted) == atom_props_count:
                     atomlines.append(line)
                 elif line == '\n':
-                    continue # Allow for newlines between the _atom_ lines and the lines holding the atom information.
+                    # Allow for newlines between the _atom_ lines and the lines holding the atom information.
+                    continue
                 else:
-                    break # Don't need to keep looking through the file, since we've seen all the desired information for all atoms. We left the block.
+                    # Don't need to keep looking through the file,
+                    # since we've seen all the desired information for all atoms.
+                    # We left the block.
+                    break
 
             counter += 1
 
@@ -143,12 +142,12 @@ def compute_image_flag(cell, fcoord1, fcoord2):
 
     """
     supercells = np.array(list(itertools.product((-1, 0, 1), repeat=3)))
-    fcoords = fcoord2 + supercells # 27 versions of fcoord2, shifted some cells over in different directions
+    fcoords = fcoord2 + supercells # 27 versions of fcoord2, shifted some cells over in different directions.
     coords = np.array([np.dot(j, cell) for j in fcoords]) # Cartesian coordinates
     coord1 = np.dot(fcoord1, cell)
     dists = distance.cdist([coord1], coords) # Euclidean distance
     dists = dists[0].tolist()
-    image = dists.index(min(dists)) # The image of the closest fcoord2, when considering cell shifts
+    image = dists.index(min(dists)) # The image of the closest fcoord2, when considering cell shifts.
     return supercells[image]
 
 def linker_length(adjmat, anchors):
@@ -235,9 +234,11 @@ def ligand_detect(cell, cart_coords, adj_mat, anchor_list):
     while len(connected_components) < len(cart_coords):
         current_node = connected_components[counter]
         for j,v in enumerate(adj_mat[current_node]):
-            if v == 1 and (j not in checked) and (j not in connected_components): # If find a bonded atom that hasn't been checked yet
+            # If find a bonded atom that hasn't been checked yet:
+            if v == 1 and (j not in checked) and (j not in connected_components):
                 image_flag = compute_image_flag(cell,fcoords[current_node],fcoords[j])
-                fcoords[j] += image_flag # Shifting fractional coordinates by the number of cells specified by compute_image_flag
+                # Shifting fractional coordinates by the number of cells specified by compute_image_flag
+                fcoords[j] += image_flag
                 connected_components.append(j)
                 checked.append(j)
                 if j in anchor_list:
@@ -278,7 +279,8 @@ def XYZ_connected(cell, cart_coords, adj_mat):
         try:
             current_node = connected_components[counter]
         except:
-            indices = [i for i, x in enumerate(labels_components) if x == tested_index] # Indices corresponding to atoms in the component corresponding to tested_index
+            # Indices corresponding to atoms in the component corresponding to tested_index
+            indices = [i for i, x in enumerate(labels_components) if x == tested_index]
             current_node = indices[index_counter]
 
             if index_counter == (len(indices)-1):
@@ -287,8 +289,10 @@ def XYZ_connected(cell, cart_coords, adj_mat):
             else:
                 index_counter += 1
         for j,v in enumerate(adj_mat[current_node]):
-            if v == 1 and (j not in checked) and (j not in connected_components): # If find a bonded atom that hasn't been checked yet
-                fcoords[j]+=compute_image_flag(cell,fcoords[current_node],fcoords[j]) # Shifting fractional coordinates by the number of cells specified by compute_image_flag
+            # If find a bonded atom that hasn't been checked yet:
+            if v == 1 and (j not in checked) and (j not in connected_components):
+                # Shifting fractional coordinates by the number of cells specified by compute_image_flag
+                fcoords[j]+=compute_image_flag(cell,fcoords[current_node],fcoords[j])
                 connected_components.append(j)
                 checked.append(j)
         counter += 1
@@ -517,11 +521,19 @@ def mkcell(cpar):
     deg2rad = np.pi/180.0
     a_mag, b_mag, c_mag = cpar[:3]
     alpha, beta, gamma = [x * deg2rad for x in cpar[3:]] # Converting the angles to radians from degrees.
-    a_vec = np.array([a_mag, 0.0, 0.0]) # a_vec is taken to be along the x axis
-    b_vec = np.array([b_mag * np.cos(gamma), b_mag * np.sin(gamma), 0.0]) # See this depiction of lattice parameters for reasoning behind these equations. https://www.doitpoms.ac.uk/tlplib/crystallography3/parameters.php. b_vec is taken to be in the X-Y plane.
+    a_vec = np.array([a_mag, 0.0, 0.0])                  # a_vec is taken to be along the x axis
+
+    # See this depiction of lattice parameters for reasoning behind these equations.
+    # https://www.doitpoms.ac.uk/tlplib/crystallography3/parameters.php. b_vec is taken to be in the X-Y plane.
+    b_vec = np.array([b_mag * np.cos(gamma), b_mag * np.sin(gamma), 0.0])
     c_x = c_mag * np.cos(beta)
-    c_y = c_mag * (np.cos(alpha) - np.cos(gamma) * np.cos(beta)) / np.sin(gamma) # You have to use a matrix to convert. This is derived in most textbooks on crystallography, such as McKie & McKie 'Essentials of Crystallography'. https://chemistry.stackexchange.com/questions/136836/converting-fractional-coordinates-into-cartesian-coordinates-for-crystallography
-    c_vec = np.array([c_x, c_y, (c_mag**2 - c_x**2 - c_y**2)**0.5]) # c_x**2 + c_y**2 + c_z**2 = c_mag**2
+    # You have to use a matrix to convert. This is derived in most textbooks on crystallography,
+    # such as McKie & McKie 'Essentials of Crystallography'.
+    # https://chemistry.stackexchange.com/questions/136836/converting-fractional-coordinates-into-cartesian-coordinates-for-crystallography
+    c_y = c_mag * (np.cos(alpha) - np.cos(gamma) * np.cos(beta)) / np.sin(gamma)
+
+    # c_x**2 + c_y**2 + c_z**2 = c_mag**2
+    c_vec = np.array([c_x, c_y, (c_mag**2 - c_x**2 - c_y**2)**0.5])
     cell = np.array([a_vec, b_vec, c_vec])
     return cell
 
@@ -660,7 +672,7 @@ def compute_distance_matrix(cell, cart_coords, num_cells=1):
     # The standard distance formula of square root of x^2 + y^2 + z^2
     dist = np.sqrt(np.sum(np.square(dist), axis=-1)) # Shape is (number of atoms, number of atoms, number of combinations in combos)
 
-    # But we want only the minimum
+    # But we want only the minimum.
     distance_matrix = np.min(dist, axis=-1) # Consider the distance between two atoms at the crystal cell shift where they are closest.
     return distance_matrix
 
@@ -738,7 +750,6 @@ def make_graph_from_nodes_edges(nodes, edges, attribs):
     """
     gr = nx.Graph()
     [gr.add_node(n,atomicNum=at) for n,at in zip(nodes,attribs)]
-    #gr.add_nodes_from(nodes)
     gr.add_edges_from(edges)
     return gr
 
@@ -915,22 +926,24 @@ def get_closed_subgraph(linkers, SBU_list, adj_matrix):
         counter += 1
         if counter > 5000:
             break
-        start_idx = list(linkers_sub)[0] # index of an atom belonging to the linkers
-        current_linker_list = set([start_idx]) # Linker atoms will be added to this set as they are discovered.
-        checked_list = set() # Will contain all of the indices that have already been tried as start_idx.
+        start_idx = list(linkers_sub)[0]        # Index of an atom belonging to the linkers.
+        current_linker_list = set([start_idx])  # Linker atoms will be added to this set as they are discovered.
+        checked_list = set()                    # Will contain all of the indices that have already been tried as start_idx.
         while len(checked_list) <= len(current_linker_list):
-            loop_over = np.nonzero(adj_matrix[start_idx])[1] # indices of atoms with bonds to the atom with the index start_idx
+            loop_over = np.nonzero(adj_matrix[start_idx])[1] # Indices of atoms with bonds to the atom with the index start_idx
             current_linker_list.update(loop_over)
             current_linker_list = current_linker_list-SBU_list
             checked_list.add(start_idx)
             for val in loop_over:
                 if val not in SBU_list:
-                    current_linker_list.update(np.nonzero(adj_matrix[val])[1]) # np.nonzero(adj_matrix[val])[1] are the indices of atoms with bonds to the atom with index val
-            left_to_check = current_linker_list-checked_list-SBU_list # Linker atoms whose connecting atoms still need to be checked.
+                    # np.nonzero(adj_matrix[val])[1] are the indices of atoms with bonds to the atom with index val
+                    current_linker_list.update(np.nonzero(adj_matrix[val])[1])
+            # Linker atoms whose connecting atoms still need to be checked.
+            left_to_check = current_linker_list-checked_list-SBU_list
             if len(left_to_check) == 0:
                 break
             else:
-                start_idx = list(left_to_check)[0] # update start_idx for the next pass through the while loop
+                start_idx = list(left_to_check)[0] # update start_idx for the next pass through the while loop.
         current_linker_list = current_linker_list - SBU_list
         linkers_sub = linkers_sub - current_linker_list
         ####### We want to return both the linker itself as well as the subgraph corresponding to it.
@@ -1189,7 +1202,7 @@ def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
     print(f'n_components: {n_components}')
     print(f'labels_components: {labels_components}')
     print(f'len is {len(labels_components)}')
-    metal_list = set([at for at in molcif.findMetal(transition_metals_only=False)]) # the atom indices of the metals
+    metal_list = set([at for at in molcif.findMetal(transition_metals_only=False)]) # The atom indices of the metals.
     if not len(metal_list) > 0:
         raise Exception("No metal in the structure.")
 
@@ -1204,5 +1217,5 @@ def solvent_removal(cif_path, new_cif_path, wiggle_room=1):
     # Removing the atoms corresponding to the solvent.
     all_atom_types, fcoords = remove_undesired_atoms(solvent_indices, all_atom_types, fcoords)
 
-    # Writing the cif files
+    # Writing the cif files.
     write_cif(new_cif_path,cpar,fcoords,all_atom_types)
