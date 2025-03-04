@@ -99,7 +99,7 @@ def readcif(name):
                     # Allow for newlines between the _atom_ lines and the lines holding the atom information.
                     continue
                 else:
-                    # Don't need to keep looking through the file, 
+                    # Don't need to keep looking through the file,
                     # since we've seen all the desired information for all atoms.
                     # We left the block.
                     break
@@ -522,12 +522,12 @@ def mkcell(cpar):
     a_mag, b_mag, c_mag = cpar[:3]
     alpha, beta, gamma = [x * deg2rad for x in cpar[3:]] # Converting the angles to radians from degrees.
     a_vec = np.array([a_mag, 0.0, 0.0])                  # a_vec is taken to be along the x axis
-    
+
     # See this depiction of lattice parameters for reasoning behind these equations.
     # https://www.doitpoms.ac.uk/tlplib/crystallography3/parameters.php. b_vec is taken to be in the X-Y plane.
     b_vec = np.array([b_mag * np.cos(gamma), b_mag * np.sin(gamma), 0.0])
     c_x = c_mag * np.cos(beta)
-    # You have to use a matrix to convert. This is derived in most textbooks on crystallography, 
+    # You have to use a matrix to convert. This is derived in most textbooks on crystallography,
     # such as McKie & McKie 'Essentials of Crystallography'.
     # https://chemistry.stackexchange.com/questions/136836/converting-fractional-coordinates-into-cartesian-coordinates-for-crystallography
     c_y = c_mag * (np.cos(alpha) - np.cos(gamma) * np.cos(beta)) / np.sin(gamma)
