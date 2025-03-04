@@ -1012,7 +1012,7 @@ def get_MOF_descriptors(
     name = os.path.basename(data).replace(".cif", "")
     if len(cart_coords) > max_num_atoms:  # Don't deal with large cifs because of computational resources required for their treatment.
         print("cif file is too large, skipping it for now...")
-        failure_str = f"Failed to featurize {name}: large primitive cell\n {len(cart_coords)} atoms"
+        failure_str = f"Failed to featurize {name}: Large primitive cell.\n {len(cart_coords)} atoms"
         full_names, full_descriptors = failure_response(path, failure_str)
         return full_names, full_descriptors
 
@@ -1024,16 +1024,16 @@ def get_MOF_descriptors(
         try:
             adj_matrix, _ = compute_adj_matrix(distance_mat, all_atom_types, wiggle_room)
         except NotImplementedError:
-            failure_str = f"Failed to featurize {name}: atomic overlap\n"
+            failure_str = f"Failed to featurize {name}: Atomic overlap.\n"
             full_names, full_descriptors = failure_response(path, failure_str)
             return full_names, full_descriptors
     else:  # Grab the adjacency matrix from the cif file.
         adj_matrix_list = []
         max_sofar = 0
         with open(data.replace('primitive', 'cif'), 'r') as f:
-            readdata = f.readlines()
+            read_data = f.readlines()
             flag = False
-            for i, row in enumerate(readdata):
+            for i, row in enumerate(read_data):
                 if '_ccdc_geom_bond_type' in row:
                     flag = True
                     continue
@@ -1063,14 +1063,14 @@ def get_MOF_descriptors(
     n_components, labels_components = sparse.csgraph.connected_components(csgraph=adj_matrix, directed=False, return_labels=True)
     metal_list = set([at for at in molcif.findMetal(transition_metals_only=transition_metals_only)])  # The atom indices of the metals.
     if not len(metal_list) > 0:
-        failure_str = f"Failed to featurize {name}: no metal found\n"
+        failure_str = f"Failed to featurize {name}: No metal found.\n"
         full_names, full_descriptors = failure_response(path, failure_str)
         return full_names, full_descriptors
     for comp in range(n_components):
         inds_in_comp = [i for i in range(len(labels_components)) if labels_components[i] == comp]
         if not set(inds_in_comp) & metal_list:  # In the context of sets, & is the intersection. If the intersection is null, the (&) expression is False; the `not` would then make it True.
             # If this if statement is entered, there is an entire connected component that has no metals in it. No connections to any metal.
-            failure_str = f"Failed to featurize {name}: solvent molecules\n"
+            failure_str = f"Failed to featurize {name}: Solvent molecules.\n"
             full_names, full_descriptors = failure_response(path, failure_str)
             return full_names, full_descriptors
 

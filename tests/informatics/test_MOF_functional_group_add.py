@@ -36,9 +36,9 @@ def test_fg_addition(resource_path_root, tmp_path, num_func, func_group):
 
     # Check the structure with functional groups added
     reference_cif_path = str(resource_path_root / "refs" / "informatics" / "mof" / "cif" / f"functionalized_UiO-66_{func_group}_{num_func}.cif")
-    cpar1, allatomtypes1, fcoords1 = readcif(f"{destination_path}/cif/functionalized_UiO-66_{func_group}_{num_func}.cif")
-    cpar2, allatomtypes2, fcoords2 = readcif(reference_cif_path)
+    cpar1, all_atom_types1, fcoords1 = readcif(f"{destination_path}/cif/functionalized_UiO-66_{func_group}_{num_func}.cif")
+    cpar2, all_atom_types2, fcoords2 = readcif(reference_cif_path)
 
     assert np.allclose(cpar1, cpar2)
-    assert allatomtypes1 == allatomtypes2
+    assert all_atom_types1 == all_atom_types2
     assert np.allclose(fcoords1, fcoords2)
