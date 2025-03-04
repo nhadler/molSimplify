@@ -38,6 +38,190 @@ from molSimplify.Classes.globalvars import globalvars
 HF_to_Kcal_mol = 627.503
 
 
+def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, NumB=False, Gval=False, polarizability=False):
+    """
+    This function gets autocorrelations for a molecule starting in one single atom only.
+
+    Parameters
+    ----------
+        mol : mol3D
+            mol3D molecule to analyze.
+        atomIdx : int or list of int
+            Index or list of indices of atoms to start autocorrelation from.
+        depth : int, optional
+            Depth of autocorrelations.
+        oct : bool, optional
+            Use octahedral criteria for structure evaluation, by default True.
+            If complex is octahedral, will use better bond checks.
+        NumB : bool, optional
+            Use number of bonds as descriptor property, by default False.
+        Gval : bool, optional
+            Use G value as RAC, by default False.
+        polarizability : bool, optional
+            Use polarizability (alpha) as RAC, by default False.
+
+    Returns
+    -------
+        results_dictionary : dict
+            Dictionary of atom only RAC names and values.
+
+    """
+    result = list()
+    colnames = []
+    allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
+    labels_strings = ['chi', 'Z', 'I', 'T', 'S']
+    if Gval:
+        allowed_strings += ['group_number']
+        labels_strings += ['Gval']
+    if NumB:
+        allowed_strings += ["num_bonds"]
+        labels_strings += ["NumB"]
+    if polarizability:
+        allowed_strings += ['polarizability']
+        labels_strings += ['alpha']
+    for ii, properties in enumerate(allowed_strings):
+        atom_only_ac = atom_only_autocorrelation(mol, properties, depth, atomIdx, oct=oct)
+        this_colnames = []
+        for i in range(0, depth + 1):
+            this_colnames.append(labels_strings[ii] + '-' + str(i))
+        colnames.append(this_colnames)
+        result.append(atom_only_ac)
+    results_dictionary = {'colnames': colnames, 'results': result}
+    return results_dictionary
+
+
+def generate_atomonly_autocorrelation_derivatives(mol, atomIdx, depth=4, oct=True, NumB=False, Gval=False):
+    # # This function gets the d/dx for autocorrelations for a molecule starting
+    # # in one single atom only.
+    # Inputs:
+    #       mol - mol3D class
+    #       atomIdx - int, index of atom3D class
+    result = None
+    colnames = []
+    allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
+    labels_strings = ['chi', 'Z', 'I', 'T', 'S']
+    if Gval:
+        allowed_strings += ['group_number']
+        labels_strings += ['Gval']
+    if NumB:
+        allowed_strings += ["num_bonds"]
+        labels_strings += ["NumB"]
+    for ii, properties in enumerate(allowed_strings):
+        atom_only_ac = atom_only_autocorrelation_derivative(mol, properties, depth, atomIdx, oct=oct)
+        for i in range(0, depth + 1):
+            colnames.append(['d' + labels_strings[ii] + '-' + str(i) + '/d' + labels_strings[ii] + str(j) for j in
+                             range(0, mol.natoms)])
+        if result is None:
+            result = atom_only_ac
+        else:
+            result = np.row_stack([result, atom_only_ac])
+    results_dictionary = {'colnames': colnames, 'results': result}
+    return results_dictionary
+
+
+def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, NumB=False, Gval=False, polarizability=False):
+    """
+    This function gets deltametrics for a molecule starting in one single atom only.
+
+    Parameters
+    ----------
+        mol : mol3D
+            mol3D molecule to analyze.
+        atomIdx : int
+            index of atom3D class.
+        depth : int, optional
+            Depth of deltametrics.
+        oct : bool, optional
+            Use octahedral criteria for structure evaluation, by default True.
+            If complex is octahedral, will use better bond checks.
+        NumB : bool, optional
+            Use number of bonds as descriptor property, by default False.
+        Gval : bool, optional
+            Use G value as RAC, by default False.
+        polarizability : bool, optional
+            Use polarizability (alpha) as RAC, by default False.
+
+    Returns
+    -------
+        results_dictionary : dict
+            Dictionary of atom only deltametric names and values.
+
+    """
+    result = list()
+    colnames = []
+    allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
+    labels_strings = ['chi', 'Z', 'I', 'T', 'S']
+    if Gval:
+        allowed_strings += ['group_number']
+        labels_strings += ['Gval']
+    if NumB:
+        allowed_strings += ["num_bonds"]
+        labels_strings += ["NumB"]
+    if polarizability:
+        allowed_strings += ["polarizability"]
+        labels_strings += ["alpha"]
+    for ii, properties in enumerate(allowed_strings):
+        atom_only_ac = atom_only_deltametric(mol, properties, depth, atomIdx, oct=oct)
+        this_colnames = []
+        for i in range(0, depth + 1):
+            this_colnames.append(labels_strings[ii] + '-' + str(i))
+        colnames.append(this_colnames)
+        result.append(atom_only_ac)
+    results_dictionary = {'colnames': colnames, 'results': result}
+    return results_dictionary
+
+
+def generate_atomonly_deltametric_derivatives(mol, atomIdx, depth=4, oct=True, NumB=False, Gval=False):
+    # # This function gets deltametrics for a molecule starting
+    # # in one single atom only.
+    # Inputs:
+    #       mol - mol3D class
+    #       atomIdx - int, index of atom3D class
+    result = None
+    colnames = []
+    allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
+    labels_strings = ['chi', 'Z', 'I', 'T', 'S']
+    if Gval:
+        allowed_strings += ['group_number']
+        labels_strings += ['Gval']
+    if NumB:
+        allowed_strings += ["num_bonds"]
+        labels_strings += ["NumB"]
+    for ii, properties in enumerate(allowed_strings):
+        atom_only_ac_der = atom_only_deltametric_derivative(mol, properties, depth, atomIdx, oct=oct)
+        for i in range(0, depth + 1):
+            colnames.append(['d' + labels_strings[ii] + '-' + str(i) + '/d' + labels_strings[ii] + str(j) for j in
+                             range(0, mol.natoms)])
+        if result is None:
+            result = atom_only_ac_der
+        else:
+            result = np.row_stack([result, atom_only_ac_der])
+    results_dictionary = {'colnames': colnames, 'results': result}
+    return results_dictionary
+
+
+def get_metal_index(mol, transition_metals_only=True):
+    """
+    Utility for getting metal index of molecule, and printing warning
+    if more than one metal index found.
+    Parameters
+    ----------
+        mol : mol3D
+            Molecule to get metal index for.
+        transition_metals_only : bool, optional
+            Flag if only transition metals counted as metals, by default True.
+    Returns
+    -------
+        f_metal_idx: int
+            Index of the first metal atom.
+    """
+    metal_idx = mol.findMetal(transition_metals_only=transition_metals_only)
+    if len(metal_idx) > 1:
+        print('Warning: More than one metal in mol object. Choosing the first one.')
+    f_metal_idx = metal_idx[0]
+    return f_metal_idx
+
+
 def ratiometric(mol, prop_vec_num, prop_vec_den, orig, d, oct=True):
     """This function returns the ratiometrics for one atom.
 
@@ -910,186 +1094,3 @@ def generate_full_complex_coulomb_autocorrelations(mol,
     else:
         results_dictionary = {'colnames': colnames, 'results': result}
     return results_dictionary
-
-
-def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, NumB=False, Gval=False, polarizability=False):
-    """
-    This function gets autocorrelations for a molecule starting in one single atom only.
-
-    Parameters
-    ----------
-        mol : mol3D
-            mol3D molecule to analyze.
-        atomIdx : int or list of int
-            Index or list of indices of atoms to start autocorrelation from.
-        depth : int, optional
-            Depth of autocorrelations.
-        oct : bool, optional
-            Use octahedral criteria for structure evaluation, by default True.
-            If complex is octahedral, will use better bond checks.
-        NumB : bool, optional
-            Use number of bonds as descriptor property, by default False.
-        Gval : bool, optional
-            Use G value as RAC, by default False.
-        polarizability : bool, optional
-            Use polarizability (alpha) as RAC, by default False.
-
-    Returns
-    -------
-        results_dictionary : dict
-            Dictionary of atom only RAC names and values.
-
-    """
-    result = list()
-    colnames = []
-    allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
-    labels_strings = ['chi', 'Z', 'I', 'T', 'S']
-    if Gval:
-        allowed_strings += ['group_number']
-        labels_strings += ['Gval']
-    if NumB:
-        allowed_strings += ["num_bonds"]
-        labels_strings += ["NumB"]
-    if polarizability:
-        allowed_strings += ['polarizability']
-        labels_strings += ['alpha']
-    for ii, properties in enumerate(allowed_strings):
-        atom_only_ac = atom_only_autocorrelation(mol, properties, depth, atomIdx, oct=oct)
-        this_colnames = []
-        for i in range(0, depth + 1):
-            this_colnames.append(labels_strings[ii] + '-' + str(i))
-        colnames.append(this_colnames)
-        result.append(atom_only_ac)
-    results_dictionary = {'colnames': colnames, 'results': result}
-    return results_dictionary
-
-
-def generate_atomonly_autocorrelation_derivatives(mol, atomIdx, depth=4, oct=True, NumB=False, Gval=False):
-    # # This function gets the d/dx for autocorrelations for a molecule starting
-    # # in one single atom only.
-    # Inputs:
-    #       mol - mol3D class
-    #       atomIdx - int, index of atom3D class
-    result = None
-    colnames = []
-    allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
-    labels_strings = ['chi', 'Z', 'I', 'T', 'S']
-    if Gval:
-        allowed_strings += ['group_number']
-        labels_strings += ['Gval']
-    if NumB:
-        allowed_strings += ["num_bonds"]
-        labels_strings += ["NumB"]
-    for ii, properties in enumerate(allowed_strings):
-        atom_only_ac = atom_only_autocorrelation_derivative(mol, properties, depth, atomIdx, oct=oct)
-        for i in range(0, depth + 1):
-            colnames.append(['d' + labels_strings[ii] + '-' + str(i) + '/d' + labels_strings[ii] + str(j) for j in
-                             range(0, mol.natoms)])
-        if result is None:
-            result = atom_only_ac
-        else:
-            result = np.row_stack([result, atom_only_ac])
-    results_dictionary = {'colnames': colnames, 'results': result}
-    return results_dictionary
-
-
-def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, NumB=False, Gval=False, polarizability=False):
-    """
-    This function gets deltametrics for a molecule starting in one single atom only.
-
-    Parameters
-    ----------
-        mol : mol3D
-            mol3D molecule to analyze.
-        atomIdx : int
-            index of atom3D class.
-        depth : int, optional
-            Depth of deltametrics.
-        oct : bool, optional
-            Use octahedral criteria for structure evaluation, by default True.
-            If complex is octahedral, will use better bond checks.
-        NumB : bool, optional
-            Use number of bonds as descriptor property, by default False.
-        Gval : bool, optional
-            Use G value as RAC, by default False.
-        polarizability : bool, optional
-            Use polarizability (alpha) as RAC, by default False.
-
-    Returns
-    -------
-        results_dictionary : dict
-            Dictionary of atom only deltametric names and values.
-
-    """
-    result = list()
-    colnames = []
-    allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
-    labels_strings = ['chi', 'Z', 'I', 'T', 'S']
-    if Gval:
-        allowed_strings += ['group_number']
-        labels_strings += ['Gval']
-    if NumB:
-        allowed_strings += ["num_bonds"]
-        labels_strings += ["NumB"]
-    if polarizability:
-        allowed_strings += ["polarizability"]
-        labels_strings += ["alpha"]
-    for ii, properties in enumerate(allowed_strings):
-        atom_only_ac = atom_only_deltametric(mol, properties, depth, atomIdx, oct=oct)
-        this_colnames = []
-        for i in range(0, depth + 1):
-            this_colnames.append(labels_strings[ii] + '-' + str(i))
-        colnames.append(this_colnames)
-        result.append(atom_only_ac)
-    results_dictionary = {'colnames': colnames, 'results': result}
-    return results_dictionary
-
-
-def generate_atomonly_deltametric_derivatives(mol, atomIdx, depth=4, oct=True, NumB=False, Gval=False):
-    # # This function gets deltametrics for a molecule starting
-    # # in one single atom only.
-    # Inputs:
-    #       mol - mol3D class
-    #       atomIdx - int, index of atom3D class
-    result = None
-    colnames = []
-    allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
-    labels_strings = ['chi', 'Z', 'I', 'T', 'S']
-    if Gval:
-        allowed_strings += ['group_number']
-        labels_strings += ['Gval']
-    if NumB:
-        allowed_strings += ["num_bonds"]
-        labels_strings += ["NumB"]
-    for ii, properties in enumerate(allowed_strings):
-        atom_only_ac_der = atom_only_deltametric_derivative(mol, properties, depth, atomIdx, oct=oct)
-        for i in range(0, depth + 1):
-            colnames.append(['d' + labels_strings[ii] + '-' + str(i) + '/d' + labels_strings[ii] + str(j) for j in
-                             range(0, mol.natoms)])
-        if result is None:
-            result = atom_only_ac_der
-        else:
-            result = np.row_stack([result, atom_only_ac_der])
-    results_dictionary = {'colnames': colnames, 'results': result}
-    return results_dictionary
-
-def get_metal_index(mol, transition_metals_only=True):
-    """
-    Utility for getting metal index of molecule, and printing warning
-    if more than one metal index found.
-    Parameters
-    ----------
-        mol : mol3D
-            Molecule to get metal index for.
-        transition_metals_only : bool, optional
-            Flag if only transition metals counted as metals, by default True.
-    Returns
-    -------
-        f_metal_idx: int
-            Index of the first metal atom.
-    """
-    metal_idx = mol.findMetal(transition_metals_only=transition_metals_only)
-    if len(metal_idx) > 1:
-        print('Warning: More than one metal in mol object. Choosing the first one.')
-    f_metal_idx = metal_idx[0]
-    return f_metal_idx
