@@ -412,7 +412,7 @@ def additional_functionalization(i,
     anchor_idx = linker_to_functionalize.index(i) # As a reminder, linker_to_functionalize is a list of numpy.int32, the numpy.int32s being indices for the atoms in the linker.
     G = make_networkx_graph(linker_subgraphlist[linker_to_functionalize_index]) # Getting the graph for the linker of interest.
     # Use network X to find functionalization paths that are N atoms away from the original spot.
-    n_path_lengths_away = findPaths(G,anchor_idx, path_between_functionalizations)
+    n_path_lengths_away = findPaths(G, anchor_idx, path_between_functionalizations)
     already_functionalized = False
     for path in n_path_lengths_away: # Looking at the possible paths between the anchor_idx and atoms that are N (path_between_functionalizations) atom away.
         if already_functionalized: # An atom was already functionalized.
