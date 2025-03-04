@@ -13,6 +13,7 @@ def test_repr(sym, coords):
 	my_atom = atom3D(Sym=sym, xyz=coords)
 	assert str(my_atom) == f"atom3D(Sym={sym}, xyz={coords})"
 
+
 @pytest.mark.parametrize(
 	"sym",
 	[
