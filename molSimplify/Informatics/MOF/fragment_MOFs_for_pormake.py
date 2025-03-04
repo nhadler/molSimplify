@@ -482,8 +482,8 @@ def breakdown_MOF(SBU_list, SBU_subgraph, molcif, name, cell, anchoring_atoms, s
         heavy_atom_count = linker_mol.count_atoms()
         if (linker_mol.natoms == 0) or (n_components > 1) or (heavy_atom_count < 3):
             continue
-        linker_mol_fcoords_connected = XYZ_connected(cell, linker_mol_cart_coords , linker_mol_adj_mat )
-        coord_list, _ = returnXYZandGraph(None , linker_mol_atom_labels , cell , linker_mol_fcoords_connected, linker_mol_adj_mat)
+        linker_mol_fcoords_connected = XYZ_connected(cell, linker_mol_cart_coords, linker_mol_adj_mat)
+        coord_list, _ = returnXYZandGraph(None, linker_mol_atom_labels, cell, linker_mol_fcoords_connected, linker_mol_adj_mat)
         for r in range(linker_mol.natoms):
             linker_mol.getAtom(r).setcoords(coord_list[r])
         for val in tuple_list_linker:
@@ -885,7 +885,7 @@ def make_MOF_fragments(data, path=False, xyz_path=False):
         if not long_ligands:
             tmpstr = "\nStructure has SHORT LINKER\n\n"
             write2file(log_path, "/%s.log"%name, tmpstr)
-            SBU_list , SBU_subgraphlist = include_extra_shells(SBU_list, molcif, adj_matrix)
+            SBU_list, SBU_subgraphlist = include_extra_shells(SBU_list, molcif, adj_matrix)
             print('=== SKIPPING DUE TO LINKER BEING TOO SHORT!')
             return 2
     else:
