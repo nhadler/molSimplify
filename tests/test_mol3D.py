@@ -467,7 +467,7 @@ def test_findMetal(resource_path_root, name, transition_metals_only, correct_ans
 
 
 @pytest.mark.parametrize(
-    "name, oct_val",
+    "name, oct_flag",
     [
     ("fe_complex", True),
     ("fe_complex", False),
@@ -476,13 +476,13 @@ def test_findMetal(resource_path_root, name, transition_metals_only, correct_ans
     ("FIrpic", True),
     ("FIrpic", False),
     ])
-def test_createMolecularGraph(resource_path_root, name, oct_val):
+def test_createMolecularGraph(resource_path_root, name, oct_flag):
     xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
     mol = mol3D()
     mol.readfromxyz(xyz_file)
-    mol.createMolecularGraph(oct=oct_val)
+    mol.createMolecularGraph(oct=oct_flag)
 
-    reference_path = resource_path_root / "refs" / "json" / f"{name}_oct_{oct_val}.json"
+    reference_path = resource_path_root / "refs" / "json" / f"{name}_oct_{oct_flag}.json"
     with open(reference_path, 'r') as f:
         reference_graph = json.load(f)
     reference_graph = np.array(reference_graph)
@@ -499,6 +499,8 @@ def test_createMolecularGraph(resource_path_root, name, oct_val):
     ("caffeine", 4, False, [3,5,19]),
     ("FIrpic", 26, True, [0,23,25]),
     ("FIrpic", 26, False, [0,23,25]),
+    ("FIrpic", 0, True, [6,13,26,33,44,52]),
+    ("FIrpic", 0, False, [6,13,26,33,44,52]),
     ])
 def test_getBondedAtoms(resource_path_root, name, idx, get_graph, correct_answer):
     xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
@@ -511,12 +513,58 @@ def test_getBondedAtoms(resource_path_root, name, idx, get_graph, correct_answer
     assert nats == correct_answer
 
 
-# def test_getBondedAtomsSmart(resource_path_root):
-#     pass
+@pytest.mark.parametrize(
+    "name, idx, oct_flag, correct_answer",
+    [
+    ("fe_complex", 6, True, [0,2,4,7,9,11]),
+    ("fe_complex", 6, False, []),
+    ("caffeine", 4, True, [3,5,19]),
+    ("caffeine", 4, False, [3,5,19]),
+    ("FIrpic", 26, True, [0,23,25]),
+    ("FIrpic", 26, False, [0,23,25]),
+    ("FIrpic", 0, True, [6,13,26,33,44,52]),
+    ("FIrpic", 0, False, [6,13,26,33,44,52]),
+    ])
+def test_getBondedAtomsSmart(resource_path_root, name, idx, oct_flag, correct_answer):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    nats = mol.getBondedAtomsSmart(idx, oct=oct_flag)
+    assert nats == correct_answer
 
 
-# def test_getBondedAtomsOct(resource_path_root):
-#     pass
+@pytest.mark.parametrize(
+    "name, idx, correct_answer",
+    [
+    ("fe_complex", 6, [0,2,4,7,9,11]),
+    ("caffeine", 4, [3,5,19]),
+    ("caffeine", 7, [6,8]),
+    ("caffeine", 9, [6]),
+    ])
+def test_getBondedAtomsnotH(resource_path_root, name, idx, correct_answer):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    nats = mol.getBondedAtomsnotH(idx)
+    assert nats == correct_answer
+
+
+@pytest.mark.parametrize(
+    "name, idx, correct_answer",
+    [
+    ("fe_complex", 6, [0,2,4,7,9,11]),
+    ("FIrpic", 0, [6,13,26,33,44,52]),
+    ("cr3_f6_optimization", 0, [1,2,3,4,5,6]),
+    ])
+def test_getBondedAtomsOct(resource_path_root, name, idx, correct_answer):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    nats = mol.getBondedAtomsOct(idx)
+    assert nats == correct_answer
 
 
 # def test_assign_graph_from_net(resource_path_root):
