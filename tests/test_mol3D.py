@@ -448,8 +448,8 @@ def test_getAtom(resource_path_root, name, idx, sym, coords):
     [
     ("benzene", True, []),
     ("benzene", False, []),
-    ("fe_complex", True, [7]),
-    ("fe_complex", False, [7]),
+    ("fe_complex", True, [6]),
+    ("fe_complex", False, [6]),
     ("in_complex", True, []),
     ("in_complex", False, [0]),
     ("bimetallic_al_complex", True, []),
@@ -462,9 +462,10 @@ def test_findMetal(resource_path_root, name, transition_metals_only, correct_ans
     mol = mol3D()
     mol.readfromxyz(xyz_file)
     metal_list = mol.findMetal(transition_metals_only=transition_metals_only)
+    assert metal_list == correct_answer
 
 
-# def test_createMolecularGraph(resource_path_root):
+# def test_createMolecularGraph(resource_path_root, name, oct):
 #     pass
 
 
