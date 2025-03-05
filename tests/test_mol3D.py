@@ -455,7 +455,7 @@ def test_getAtom(resource_path_root, name, idx, sym, coords):
     ("bimetallic_al_complex", True, []),
     ("bimetallic_al_complex", False, [0,13]),
     ("UiO-66_sbu", True, [0,1,2,3,4,5]),
-    ("UiO-66_sbu", False, [0,1,2,3,4,5]),    
+    ("UiO-66_sbu", False, [0,1,2,3,4,5]),
     ])
 def test_findMetal(resource_path_root, name, transition_metals_only, correct_answer):
     xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
