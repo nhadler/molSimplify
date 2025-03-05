@@ -893,6 +893,8 @@ def test_readfrommol2(resource_path_root, name, readstring):
         mol2_file = resource_path_root / "inputs" / "hapticity_compounds" / f"{name}.mol2"
     elif name == "formaldehyde":
         mol2_file = resource_path_root / "inputs" / "io" / f"{name}.mol2"
+    else:
+        raise ValueError('Invalid name.')
 
     mol = mol3D()
 
