@@ -1682,7 +1682,7 @@ class mol3D:
             force_clean : bool, optional
                 Force no bond info retention. Default is False.
             ignoreX : bool, optional
-                Index of anchor atom. Default is False.
+                Ignore X element when writing. Default is False.
         """
 
         # Get BO matrix if exits:
@@ -1719,7 +1719,7 @@ class mol3D:
                     if BO_mat[i][j] > 0:
                         self.OBMol.AddBond(i + 1, j + 1, int(BO_mat[i][j]))
 
-    def convert2OBMol2(self, force_clean=False, ignoreX=False):
+    def convert2OBMol2(self, ignoreX=False):
         """
         Converts mol3D class instance to OBMol class instance, but uses mol2
         function, so bond orders are not interpreted, but rather read through the mol2.
@@ -1728,10 +1728,8 @@ class mol3D:
 
         Parameters
         ----------
-            force_clean : bool, optional
-                Force no bond info retention. Default is False.
             ignoreX : bool, optional
-                Index of anchor atom. Default is False.
+                Ignore X element when writing. Default is False.
         """
 
         # Get BO matrix if exits:
