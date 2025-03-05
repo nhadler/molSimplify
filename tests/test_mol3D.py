@@ -660,29 +660,74 @@ def test_convert2OBMol2(resource_path_root, name):
     assert np.array_equal(reference_BO_mat, mol.BO_mat)
 
 
-# def test_delete_atom(resource_path_root):
+@pytest.mark.parametrize(
+    "name, canonicalize, use_mol2, correct_smiles",
+    [
+    ('phenanthroline', True, True, 'c1ccc2c(n1)c1ncccc1cc2'),
+    ('phenanthroline', True, False, 'c1ccc2c(n1)c1ncccc1cc2'),
+    ('phenanthroline', False, True, 'c1c2c(ncc1)c1c(cc2)cccn1'),
+    ('phenanthroline', False, False, 'c1c2c(ncc1)c1c(cc2)cccn1'),
+    ('taurine', True, True, 'NCCS([O])([O])O'),
+    ('taurine', True, False, 'NCCS(O)([O])[O]'),
+    ('taurine', False, True, 'S([O])([O])(O)CCN'),
+    ('taurine', False, False, 'S([O])([O])(O)CCN'),
+    ])
+def test_get_smiles(resource_path_root, name, canonicalize, use_mol2, correct_smiles):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+    smiles = mol.get_smiles(canonicalize=canonicalize, use_mol2=use_mol2)
+    assert smiles == correct_smiles
+
+
+@pytest.mark.parametrize(
+    "name, correct_answer",
+    [
+    ('caffeine', [-4.41475,-0.30732,0]),
+    ('HKUST-1_sbu', [-4.64738,-2.68238,7.59]),
+    ]
+    )
+def test_centermass(resource_path_root, name, correct_answer):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+    center_of_mass = mol.centermass()
+    assert np.allclose(center_of_mass, correct_answer, atol=1e-5)
+
+
+# @pytest.mark.parametrize(
+#     "name, bo_dict_flag, graph_flag",
+#     [
+
+#     ]
+#     )
+# def test_deleteatom(resource_path_root):
 #     pass
+# TODO have with bo_dict [populateBOMatrix] and graph [createMolecularGraph] set before, and not
+# TODO check mass, natoms, bo_dict, graph, self.atoms {length of list should go down by one}
 
 
-# def test_delete_atoms(resource_path_root):
+# def test_deleteatoms(resource_path_root):
 #     pass
-
-
-# def test_get_smiles(resource_path_root):
-#     pass
+# TODO have with bo_dict [populateBOMatrix] and graph [createMolecularGraph] set before, and not
+# TODO check mass, natoms, bo_dict, graph, self.atoms {length of list should go down}
 
 
 # def test_populateBOMatrix(resource_path_root):
 #     pass
+# TODO save json b/c numpy array. Test with bonddict and without
 
 
 # def test_readfrommol2(resource_path_root):
 #     pass
+# TODO check graph, bo_graph, bo_graph_trunc, bo_dict
 
 
 # def test_writemol2(resource_path_root, tmp_path):
 #     pass
+# TODO writestring, ignoreX
 
 
 # def test_writexyz(resource_path_root, tmp_path):
 #     pass
+# TODO writestring, withgraph, no_tabs, ignoreX
