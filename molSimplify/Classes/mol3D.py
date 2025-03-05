@@ -153,6 +153,8 @@ getMLBondLengths
 getNumAtoms
 getOBMol
 get_bo_dict_from_inds
+get_coordinate_array
+get_element_list
 get_fcs
 get_features
 get_first_shell
@@ -1688,17 +1690,16 @@ class mol3D:
         # Get BO matrix if exits:
         repop = False
 
-        if not (self.OBMol is False) and not force_clean:
+        if self.OBMol and not force_clean:
             BO_mat = self.populateBOMatrix()
-
             repop = True
-        elif not (self.BO_mat is False) and not force_clean:
+        elif self.BO_mat and not force_clean:
             BO_mat = self.BO_mat
             repop = True
-            # write temp xyz
+
+        # Write temporary xyz.
         fd, tempf = tempfile.mkstemp(suffix=".xyz")
         os.close(fd)
-        # self.writexyz('tempr.xyz', symbsonly=True)
         self.writexyz(tempf, symbsonly=True, ignoreX=ignoreX)
 
         obConversion = openbabel.OBConversion()
@@ -2108,11 +2109,11 @@ class mol3D:
             if i > self.natoms:
                 raise IndexError('mol3D object cannot delete atom '+str(i) +
                                  ' because it only has '+str(self.natoms)+' atoms!')
-        # convert negative indexes to positive indexes
+        # Convert negative indexes to positive indexes.
         Alist = [self.natoms+i if i < 0 else i for i in Alist]
         for atomIdx in Alist:
             if self.getAtom(atomIdx).sym == 'X':
-                self.atoms[atomIdx].sym = 'Fe'  # Switch to Iron temporarily
+                self.atoms[atomIdx].sym = 'Fe'  # Switch to Iron temporarily.
                 self.atoms[atomIdx].name = 'Fe'
         if self.bo_dict:
             self.convert2OBMol2()
@@ -2155,23 +2156,23 @@ class mol3D:
             raise ValueError('Multimetal complexes are not yet handled.')
         temp_mol = self.get_first_shell()[0]
         fcs_indices = temp_mol.get_fcs(max6=False)
-        # remove metal index from first coordination shell
+        # Remove metal index from first coordination shell.
         fcs_indices.remove(temp_mol.findMetal()[0])
 
         if len(fcs_indices) != len(ideal_polyhedron):
             raise ValueError('The coordination number differs between the two provided structures.')
 
-        # have to redo getting metal_idx with the new mol after running get_first_shell
-        # want to work with temp_mol since it has the edge and sandwich logic implemented to replace those with centroids
+        # Have to redo getting metal_idx with the new mol after running get_first_shell
+        # Want to work with temp_mol since it has the edge and sandwich logic implemented to replace those with centroids.
         metal_atom = temp_mol.getAtoms()[temp_mol.findMetal()[0]]
         fcs_atoms = [temp_mol.getAtoms()[i] for i in fcs_indices]
-        # construct a np array of the non-metal atoms in the FCS
+        # Construct an np array of the non-metal atoms in the FCS.
         distances = []
         positions = np.zeros([len(fcs_indices), 3])
         for idx, atom in enumerate(fcs_atoms):
             distance = atom.distance(metal_atom)
             distances.append(distance)
-            # shift so the metal is at (0, 0, 0)
+            # Shift so the metal is at (0, 0, 0)
             positions[idx, :] = np.array(atom.coords()) - np.array(metal_atom.coords())
 
         current_min = np.inf
@@ -2248,7 +2249,7 @@ class mol3D:
             self.geo_dict['num_coord_metal'] = num_coord
             flag_list.remove('num_coord_metal')
         if not len(flag_list):
-            flag_oct = 1  # good structure
+            flag_oct = 1  # Good structure
             flag_list = 'None'
         else:
             flag_oct = 0
@@ -3053,7 +3054,8 @@ class mol3D:
 
     def getAtomTypes(self):
         """
-        Get unique elements in a molecule
+        Get unique elements in a molecule.
+        Now somewhat redundant with get_element_list
 
         Returns
         -------
@@ -3837,6 +3839,48 @@ class mol3D:
             ind2 = ind2 - len(np.where(delete_inds < ind2)[0])
             new_bo_dict[(ind1, ind2)] = val
         return new_bo_dict
+
+    def get_coordinate_array(self):
+        """
+        Get the coordinate array of the molecule.
+
+        Parameters
+        ----------
+            None
+
+        Returns
+        -------
+            coord_array : np.array
+                The coordinates of each atom.
+                Shape is (number of atoms, 3).
+        """
+
+        num_atoms = self.getNumAtoms()
+        coord_array = np.zeros((num_atoms, 3))
+
+        for idx, atom in enumerate(self.getAtoms()):
+            coord_array[idx] = atom.coords()
+
+        return coord_array
+
+    def get_element_list(self):
+        """
+        Get the element list of the molecule.
+
+        Parameters
+        ----------
+            None
+
+        Returns
+        -------
+            element_list : list
+                The element symbol of each atom.
+        """
+
+        element_list = []
+        for idx, atom in enumerate(self.getAtoms()):
+            element_list.append(atom.symbol())
+        return element_list
 
     def get_fcs(self, strict_cutoff=False, catom_list=None, max6=True):
         """
@@ -4656,7 +4700,7 @@ class mol3D:
         conv.SetOutFormat('smi')
         if canonicalize:
             conv.SetOutFormat('can')
-        if self.OBMol is False:
+        if not self.OBMol:
             if use_mol2:
                 # Produces a smiles with the enforced BO matrix,
                 # which is needed for correct behavior for fingerprints.
@@ -5283,7 +5327,7 @@ class mol3D:
         sandwich_ligands, _sl = list(), list()
         for atom0 in catoms:
             lig = mol_fcs.findsubMol(atom0=atom0, atomN=metal_ind, smart=True)
-            # require to be at least a three-member ring
+            # Require to be at least a three-member ring.
             if len(lig) >= 3 and not set(lig) in _sl:
                 full_lig = self.findsubMol(atom0=mol_fcs.mapping_sub2mol[lig[0]],
                                            atomN=mol_fcs.mapping_sub2mol[metal_ind],
@@ -6069,6 +6113,9 @@ class mol3D:
                 Numpy array for bond order matrix.
         """
 
+        if not self.OBMol:
+            print('Need to set OBMol attribute first. Exiting.')
+            return
         obiter = openbabel.OBMolBondIter(self.OBMol)
         n = self.natoms
         molBOMat = np.zeros((n, n))
@@ -6115,7 +6162,7 @@ class mol3D:
         error_mat = molBOMat - molgraph
         error_idx = np.where(error_mat < 0)
         for i in range(len(error_idx)):
-            if len(error_idx[i]) > 0:
+            if len(error_idx[i]):
                 molBOMat[error_idx[i].tolist()[0], error_idx[i].tolist()[1]] = 1
         return molBOMat
 
@@ -6558,7 +6605,7 @@ class mol3D:
                 # If the split line has more than 4 elements, only elements 0 through 3 will be used.
                 # This means that it should work with any XYZ file that also stores something like Mulliken charge.
                 # Next, this looks for unique atom IDs in files.
-                if len(line_split) > 0:
+                if len(line_split):
                     lm = re.search(r'\d+$', line_split[0])
                     # If the string ends in digits m will be a Match object, or None otherwise.
                     if line_split[0] in list(amassdict.keys()) or ligand_unique_id:
