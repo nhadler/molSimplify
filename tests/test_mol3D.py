@@ -19,7 +19,7 @@ def test_adding_and_deleting_atoms():
 
     assert mol.natoms == 2
     cu_mass = 63.546
-    new_sum = fe_mass + cu_mass 
+    new_sum = fe_mass + cu_mass
     assert mol.mass == new_sum
     assert mol.findMetal() == [0, 1]
 
