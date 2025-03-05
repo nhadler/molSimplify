@@ -964,29 +964,29 @@ def test_writemol2(resource_path_root, tmp_path, writestring, ignoreX):
     mol.addAtom(atom3D(Sym="X", xyz=[-6.00156, 2.41704, 0.54295]))
 
     filename = str(tmp_path / f'writemol2_test_ignoreX_{ignoreX}.mol2')
+
+    reference_path = resource_path_root / "refs" / "write_tests" / f'writemol2_test_ignoreX_{ignoreX}.mol2'
+    with open(reference_path, 'r') as f:
+        contents2 = f.readlines()
+
     if writestring:
         ss = mol.writemol2(filename, writestring=writestring, ignoreX=ignoreX)
-        reference_path = resource_path_root / "refs" / "write_tests" / f'writemol2_test_ignoreX_{ignoreX}.mol2'
-        with open(reference_path, 'r') as f:
-            contents = f.readlines()
-        contents.pop(1) # Remove the line about the file path.
-        contents = ''.join(contents) # Convert from list to string.
+
+        contents2.pop(1) # Remove the line about the file path.
+        contents2 = ''.join(contents2) # Convert from list to string.
 
         mod_ss = ss.split('\n')
         mod_ss.pop(1) # Remove the line about the file path.
         mod_ss = '\n'.join(mod_ss)
 
-        contents = contents + '\n'
+        contents2 = contents2 + '\n'
 
-        assert mod_ss == contents
+        assert mod_ss == contents2
     else:
         mol.writemol2(filename, writestring=writestring, ignoreX=ignoreX)
-        reference_path = resource_path_root / "refs" / "write_tests" / f'writemol2_test_ignoreX_{ignoreX}.mol2'
 
         with open(filename, 'r') as f:
             contents1 = f.readlines()
-        with open(reference_path, 'r') as f:
-            contents2 = f.readlines()
 
         # Remove the lines about the file path.
         contents1.pop(1)
@@ -995,14 +995,81 @@ def test_writemol2(resource_path_root, tmp_path, writestring, ignoreX):
         contents2.append('\n')
         assert contents1 == contents2
 
-# @pytest.mark.parametrize(
-#     "writestring, withgraph, ignoreX, no_tabs",
-#     [
-#     (True, False, False, False),
-#     (False, True, False, False),
-#     (False, False, True, False),
-#     (False, False, False, True),
-#     ])
-# def test_writexyz(resource_path_root, tmp_path):
+@pytest.mark.parametrize(
+    "writestring, withgraph, ignoreX, no_tabs",
+    [
+    (True, False, False, False),
+    (False, True, False, False),
+    (False, False, True, False),
+    (False, False, False, True),
+    ])
+def test_writexyz(resource_path_root, tmp_path, writestring, withgraph, ignoreX, no_tabs):
+    mol = mol3D()
+    mol.addAtom(atom3D(Sym="O", xyz=[-5.37283, 1.90656, -0.02688]))
+    mol.addAtom(atom3D(Sym="H", xyz=[-4.39591, 2.01464, 0.09376]))
+    mol.addAtom(atom3D(Sym="H", xyz=[-5.72102, 1.28799, -0.71735]))
+    mol.addAtom(atom3D(Sym="X", xyz=[-6.00156, 2.41704, 0.54295]))
 
-#     if writestring:
+    filename = str(tmp_path / f'writexyz_test_withgraph_{withgraph}_ignoreX_{ignoreX}_no_tabs_{no_tabs}.xyz')
+
+    reference_path = resource_path_root / "refs" / "write_tests" / f'writexyz_test_withgraph_{withgraph}_ignoreX_{ignoreX}_no_tabs_{no_tabs}.xyz'
+    with open(reference_path, 'r') as f:
+        contents2 = f.readlines()
+
+    if writestring:
+        ss = mol.writexyz(filename, writestring=writestring,
+            withgraph=withgraph, ignoreX=ignoreX, no_tabs=no_tabs)
+
+        contents2.pop(1) # Remove the line about the file path.
+        contents2 = ''.join(contents2) # Convert from list to string.
+
+        mod_ss = ss.split('\n')
+        mod_ss.pop(1) # Remove the line about the file path.
+        mod_ss = '\n'.join(mod_ss)
+
+        # contents2 = contents2 + '\n'
+
+        assert mod_ss == contents2
+
+    elif withgraph:
+        mol.writexyz(filename, writestring=writestring,
+            withgraph=withgraph, ignoreX=ignoreX, no_tabs=no_tabs)
+
+        with open(filename, 'r') as f:
+            contents1 = f.readlines()
+
+        # Remove the lines about the file path.
+        contents1.pop(1)
+        contents2.pop(1)
+        # Add a new line to contents2.
+        # contents2.append('\n')
+        assert contents1 == contents2
+
+    elif ignoreX:
+        mol.writexyz(filename, writestring=writestring,
+            withgraph=withgraph, ignoreX=ignoreX, no_tabs=no_tabs)
+
+        with open(filename, 'r') as f:
+            contents1 = f.readlines()
+
+        # Remove the lines about the file path.
+        contents1.pop(1)
+        contents2.pop(1)
+        # Add a new line to contents2.
+        # contents2.append('\n')
+        assert contents1 == contents2
+
+    elif no_tabs:
+        mol.writexyz(filename, writestring=writestring,
+            withgraph=withgraph, ignoreX=ignoreX, no_tabs=no_tabs)
+
+        with open(filename, 'r') as f:
+            contents1 = f.readlines()
+
+        # Remove the lines about the file path.
+        contents1.pop(1)
+        contents2.pop(1)
+        # Add a new line to contents2.
+        # contents2.append('\n')
+        assert contents1 == contents2
+        
