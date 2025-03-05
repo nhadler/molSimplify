@@ -1246,7 +1246,7 @@ class mol3D:
         Parameters
         ----------
             bo_graph: numpy.array
-                bond order matrix
+                Bond order matrix.
         '''
 
         aromatic_atoms = np.count_nonzero(bo_graph == 1.5)/2
@@ -1260,19 +1260,19 @@ class mol3D:
 
     def assign_graph_from_net(self, path_to_net, return_graph=False):
         """
-        Uses a .net file to assign a graph (and return if needed)
+        Uses a .net file to assign a graph (and return if needed).
 
         Parameters
         ----------
             path_to_net : str
-                path to .net file containing the molecular graph
+                path to .net file containing the molecular graph.
             return_graph : bool
                 Return the graph in addition to assigning it to self. Default is False.
 
         Returns
         -------
             graph: np.array
-                a numpy array containing the unattributed molecular graph
+                A numpy array containing the unattributed molecular graph.
         """
 
         with open(path_to_net, 'r') as f:

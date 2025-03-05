@@ -482,7 +482,7 @@ def test_createMolecularGraph(resource_path_root, name, oct_flag):
     mol.readfromxyz(xyz_file)
     mol.createMolecularGraph(oct=oct_flag)
 
-    reference_path = resource_path_root / "refs" / "json" / f"{name}_oct_{oct_flag}.json"
+    reference_path = resource_path_root / "refs" / "json" / f"{name}_oct_{oct_flag}_graph.json"
     with open(reference_path, 'r') as f:
         reference_graph = json.load(f)
     reference_graph = np.array(reference_graph)
@@ -567,8 +567,32 @@ def test_getBondedAtomsOct(resource_path_root, name, idx, correct_answer):
     assert nats == correct_answer
 
 
-# def test_assign_graph_from_net(resource_path_root):
-#     pass
+@pytest.mark.parametrize(
+    "name, return_graph",
+    [
+    ('HKUST-1_linker', True),
+    ('HKUST-1_linker', False),
+    ('HKUST-1_sbu', True),
+    ('HKUST-1_sbu', False),
+    ])
+def test_assign_graph_from_net(resource_path_root, name, return_graph):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    net_file = resource_path_root / "inputs" / "net_files" / f"{name}.net"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    if return_graph:
+        graph = mol.assign_graph_from_net(net_file, return_graph=return_graph)
+    else:
+        mol.assign_graph_from_net(net_file, return_graph=return_graph)
+        graph = mol.get_graph()
+
+    reference_path = resource_path_root / "refs" / "json" / f"{name}_graph.json"
+    with open(reference_path, 'r') as f:
+        reference_graph = json.load(f)
+    reference_graph = np.array(reference_graph)
+
+    assert np.array_equal(reference_graph, graph)
 
 
 # def test_convert2OBMol(resource_path_root):
