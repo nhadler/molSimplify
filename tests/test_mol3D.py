@@ -708,6 +708,42 @@ def test_centermass(resource_path_root, name, correct_answer):
 
 
 @pytest.mark.parametrize(
+    "name, bonddict",
+    [
+    ("benzene", True),
+    ("benzene", False),
+    ("caffeine", True),
+    ("caffeine", False),
+    ]
+    )
+def test_populateBOMatrix(resource_path_root, name, bonddict):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+    mol.convert2OBMol()
+    molBOMat = mol.populateBOMatrix(bonddict=bonddict)
+
+    if bonddict:
+        reference_path = resource_path_root / "refs" / "json" / "populateBOMatrix" /  f"{name}_bo_dict_{bonddict}.json"
+        with open(reference_path, 'r') as f:
+            reference_bo_dict = json.load(f)
+        # Needed to adjust the reference dictionary in order
+        # to save to json.
+        # So, need to adjust this dictionary for the 
+        # comparison.
+        mod_bo_dict = {str(k): v for k, v in mol.bo_dict.items()}
+        assert mod_bo_dict == reference_bo_dict
+
+    reference_path = resource_path_root / "refs" / "json" / "populateBOMatrix" /  f"{name}_molBOMat.json"
+    with open(reference_path, 'r') as f:
+        reference_BOMat = json.load(f)
+
+    # For saving np arrays to json, need to cast to list.
+    # Convert back for comparison.
+    assert np.array_equal(molBOMat, np.array(reference_BOMat))
+
+
+@pytest.mark.parametrize(
     "name, idx, bo_dict_flag, graph_flag",
     [
     ("FIrpic", 13, True, True),
@@ -812,11 +848,6 @@ def test_deleteatoms(resource_path_root, name, idxs, bo_dict_flag, graph_flag):
         assert np.array_equal(mol.graph, np.array(reference_dict['graph']))
     else:
         assert mol.graph == reference_dict['graph']
-
-
-# def test_populateBOMatrix(resource_path_root):
-#     pass
-# TODO save json b/c numpy array. Test with bonddict and without
 
 
 # def test_readfrommol2(resource_path_root):
