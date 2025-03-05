@@ -1027,8 +1027,6 @@ def test_writexyz(resource_path_root, tmp_path, writestring, withgraph, ignoreX,
         mod_ss.pop(1) # Remove the line about the file path.
         mod_ss = '\n'.join(mod_ss)
 
-        # contents2 = contents2 + '\n'
-
         assert mod_ss == contents2
 
     elif withgraph:
@@ -1041,8 +1039,6 @@ def test_writexyz(resource_path_root, tmp_path, writestring, withgraph, ignoreX,
         # Remove the lines about the file path.
         contents1.pop(1)
         contents2.pop(1)
-        # Add a new line to contents2.
-        # contents2.append('\n')
         assert contents1 == contents2
 
     elif ignoreX:
@@ -1055,8 +1051,6 @@ def test_writexyz(resource_path_root, tmp_path, writestring, withgraph, ignoreX,
         # Remove the lines about the file path.
         contents1.pop(1)
         contents2.pop(1)
-        # Add a new line to contents2.
-        # contents2.append('\n')
         assert contents1 == contents2
 
     elif no_tabs:
@@ -1069,7 +1063,4 @@ def test_writexyz(resource_path_root, tmp_path, writestring, withgraph, ignoreX,
         # Remove the lines about the file path.
         contents1.pop(1)
         contents2.pop(1)
-        # Add a new line to contents2.
-        # contents2.append('\n')
         assert contents1 == contents2
-
