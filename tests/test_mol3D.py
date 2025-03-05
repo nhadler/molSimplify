@@ -966,7 +966,7 @@ def test_writemol2(resource_path_root, tmp_path, writestring, ignoreX):
     filename = str(tmp_path / f'writemol2_test_ignoreX_{ignoreX}.mol2')
     if writestring:
         ss = mol.writemol2(filename, writestring=writestring, ignoreX=ignoreX)
-        reference_path = resource_path_root / "refs" / "write_tests" / f'writemol2_test_ignoreX_{ignoreX}.txt'
+        reference_path = resource_path_root / "refs" / "write_tests" / f'writemol2_test_ignoreX_{ignoreX}.mol2'
         with open(reference_path, 'r') as f:
             contents = f.readlines()
         contents.pop(1) # Remove the line about the file path.
@@ -975,6 +975,8 @@ def test_writemol2(resource_path_root, tmp_path, writestring, ignoreX):
         mod_ss = ss.split('\n')
         mod_ss.pop(1) # Remove the line about the file path.
         mod_ss = '\n'.join(mod_ss)
+
+        contents = contents + '\n'
 
         assert mod_ss == contents
     else:
@@ -989,9 +991,18 @@ def test_writemol2(resource_path_root, tmp_path, writestring, ignoreX):
         # Remove the lines about the file path.
         contents1.pop(1)
         contents2.pop(1)
+        # Add a new line to contents2.
+        contents2.append('\n')
         assert contents1 == contents2
 
-
+# @pytest.mark.parametrize(
+#     "writestring, withgraph, ignoreX, no_tabs",
+#     [
+#     (True, False, False, False),
+#     (False, True, False, False),
+#     (False, False, True, False),
+#     (False, False, False, True),
+#     ])
 # def test_writexyz(resource_path_root, tmp_path):
-#     pass
-# TODO writestring, withgraph [have error if graph not set?], no_tabs, ignoreX
+
+#     if writestring:
