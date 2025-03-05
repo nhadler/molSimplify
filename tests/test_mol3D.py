@@ -746,7 +746,7 @@ def test_populateBOMatrix(resource_path_root, name, bonddict):
             reference_bo_dict = json.load(f)
         # Needed to adjust the reference dictionary in order
         # to save to json.
-        # So, need to adjust this dictionary for the 
+        # So, need to adjust this dictionary for the
         # comparison.
         mod_bo_dict = {str(k): v for k, v in mol.bo_dict.items()}
         assert mod_bo_dict == reference_bo_dict
