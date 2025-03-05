@@ -1029,31 +1029,7 @@ def test_writexyz(resource_path_root, tmp_path, writestring, withgraph, ignoreX,
 
         assert mod_ss == contents2
 
-    elif withgraph:
-        mol.writexyz(filename, writestring=writestring,
-            withgraph=withgraph, ignoreX=ignoreX, no_tabs=no_tabs)
-
-        with open(filename, 'r') as f:
-            contents1 = f.readlines()
-
-        # Remove the lines about the file path.
-        contents1.pop(1)
-        contents2.pop(1)
-        assert contents1 == contents2
-
-    elif ignoreX:
-        mol.writexyz(filename, writestring=writestring,
-            withgraph=withgraph, ignoreX=ignoreX, no_tabs=no_tabs)
-
-        with open(filename, 'r') as f:
-            contents1 = f.readlines()
-
-        # Remove the lines about the file path.
-        contents1.pop(1)
-        contents2.pop(1)
-        assert contents1 == contents2
-
-    elif no_tabs:
+    elif withgraph or ignoreX or no_tabs:
         mol.writexyz(filename, writestring=writestring,
             withgraph=withgraph, ignoreX=ignoreX, no_tabs=no_tabs)
 
