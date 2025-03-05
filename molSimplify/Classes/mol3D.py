@@ -159,6 +159,7 @@ get_first_shell
 get_geometry_type
 get_geometry_type_distance
 get_geometry_type_old
+get_graph
 get_graph_hash
 get_linear_angle
 get_mol_graph_det
@@ -1245,7 +1246,7 @@ class mol3D:
         Parameters
         ----------
             bo_graph: numpy.array
-                bond order matrix
+                Bond order matrix.
         '''
 
         aromatic_atoms = np.count_nonzero(bo_graph == 1.5)/2
@@ -1259,19 +1260,19 @@ class mol3D:
 
     def assign_graph_from_net(self, path_to_net, return_graph=False):
         """
-        Uses a .net file to assign a graph (and return if needed)
+        Uses a .net file to assign a graph (and return if needed).
 
         Parameters
         ----------
             path_to_net : str
-                path to .net file containing the molecular graph
+                path to .net file containing the molecular graph.
             return_graph : bool
                 Return the graph in addition to assigning it to self. Default is False.
 
         Returns
         -------
             graph: np.array
-                a numpy array containing the unattributed molecular graph
+                A numpy array containing the unattributed molecular graph.
         """
 
         with open(path_to_net, 'r') as f:
@@ -1681,7 +1682,7 @@ class mol3D:
             force_clean : bool, optional
                 Force no bond info retention. Default is False.
             ignoreX : bool, optional
-                Index of anchor atom. Default is False.
+                Ignore X element when writing. Default is False.
         """
 
         # Get BO matrix if exits:
@@ -1718,7 +1719,7 @@ class mol3D:
                     if BO_mat[i][j] > 0:
                         self.OBMol.AddBond(i + 1, j + 1, int(BO_mat[i][j]))
 
-    def convert2OBMol2(self, force_clean=False, ignoreX=False):
+    def convert2OBMol2(self, ignoreX=False):
         """
         Converts mol3D class instance to OBMol class instance, but uses mol2
         function, so bond orders are not interpreted, but rather read through the mol2.
@@ -1727,10 +1728,8 @@ class mol3D:
 
         Parameters
         ----------
-            force_clean : bool, optional
-                Force no bond info retention. Default is False.
             ignoreX : bool, optional
-                Index of anchor atom. Default is False.
+                Ignore X element when writing. Default is False.
         """
 
         # Get BO matrix if exits:
@@ -3342,7 +3341,7 @@ class mol3D:
     def getBondedAtomsOct(self, ind, CN=6, debug=False, flag_loose=False, atom_specific_cutoffs=False,
                           strict_cutoff=False):
         """
-        Gets atoms bonded to an octahedrally coordinated metal. Specifically limitis intruder
+        Gets atoms bonded to an octahedrally coordinated metal. Specifically limits intruder
         C and H atoms that would otherwise be considered bonded in the distance cutoffs. Limits
         bonding to the CN closest atoms (CN = coordination number).
 
@@ -4315,6 +4314,23 @@ class mol3D:
             "info_edge_lig": info_edge_lig,
         }
         return results
+
+    def get_graph(self):
+        """
+        Return the graph attribute of the molecule.
+
+        Parameters
+        ----------
+            None
+
+        Returns
+        -------
+            self.graph : np.array
+                The graph.
+
+        """
+
+        return self.graph
 
     def get_graph_hash(self, attributed_flag=True, oct=False, loud=True):
         """

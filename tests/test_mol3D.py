@@ -1,3 +1,4 @@
+import json
 import pytest
 import numpy as np
 from molSimplify.Classes.mol3D import mol3D
@@ -104,6 +105,42 @@ def test_mutating_atoms():
 
     mol.atoms[0].mutate('C')
     assert mol.findMetal() == []
+
+
+def test_readfromxyz(resource_path_root):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / "cr3_f6_optimization.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    atoms_ref = [
+        ("Cr", [-0.060052, -0.000019, -0.000023]),
+        ("F", [1.802823, -0.010399, -0.004515]),
+        ("F", [-0.070170, 1.865178, 0.0035660]),
+        ("F", [-1.922959, 0.010197, 0.0049120]),
+        ("F", [-0.049552, -1.865205, -0.0038600]),
+        ("F", [-0.064742, 0.003876, 1.8531400]),
+        ("F", [-0.055253, -0.003594, -1.8531790]),
+    ]
+
+    for atom, ref in zip(mol.atoms, atoms_ref):
+        assert (atom.symbol(), atom.coords()) == ref
+
+    # Test read_final_optim_step
+    mol = mol3D()
+    mol.readfromxyz(xyz_file, read_final_optim_step=True)
+
+    atoms_ref = [
+        ("Cr", [-0.0599865612, 0.0000165451, 0.0000028031]),
+        ("F", [1.8820549261, 0.0000076116, 0.0000163815]),
+        ("F", [-0.0600064919, 1.9420510001, -0.0000022958]),
+        ("F", [-2.0019508544, -0.0000130345, -0.0000067108]),
+        ("F", [-0.0599967119, -1.9420284092, 0.0000133671]),
+        ("F", [-0.0600235008, 0.0000085354, 1.9418467918]),
+        ("F", [-0.0599958059, -0.0000082485, -1.9418293370]),
+    ]
+
+    for atom, ref in zip(mol.atoms, atoms_ref):
+        assert (atom.symbol(), atom.coords()) == ref
 
 
 @pytest.mark.parametrize('name, geometry_str', [
@@ -219,42 +256,6 @@ def test_is_edge_compound(resource_path_root, name, con_atoms):
     for i, (info, lig) in enumerate(zip(info_edge_lig, edge_lig_atoms)):
         assert info["natoms_connected"] == len(con_atoms[i])
         assert lig["atom_idxs"] == con_atoms[i]
-
-
-def test_readfromxyzfile(resource_path_root):
-    xyz_file = resource_path_root / "inputs" / "xyz_files" / "cr3_f6_optimization.xyz"
-    mol = mol3D()
-    mol.readfromxyz(xyz_file)
-
-    atoms_ref = [
-        ("Cr", [-0.060052, -0.000019, -0.000023]),
-        ("F", [1.802823, -0.010399, -0.004515]),
-        ("F", [-0.070170, 1.865178, 0.0035660]),
-        ("F", [-1.922959, 0.010197, 0.0049120]),
-        ("F", [-0.049552, -1.865205, -0.0038600]),
-        ("F", [-0.064742, 0.003876, 1.8531400]),
-        ("F", [-0.055253, -0.003594, -1.8531790]),
-    ]
-
-    for atom, ref in zip(mol.atoms, atoms_ref):
-        assert (atom.symbol(), atom.coords()) == ref
-
-    # Test read_final_optim_step
-    mol = mol3D()
-    mol.readfromxyz(xyz_file, read_final_optim_step=True)
-
-    atoms_ref = [
-        ("Cr", [-0.0599865612, 0.0000165451, 0.0000028031]),
-        ("F", [1.8820549261, 0.0000076116, 0.0000163815]),
-        ("F", [-0.0600064919, 1.9420510001, -0.0000022958]),
-        ("F", [-2.0019508544, -0.0000130345, -0.0000067108]),
-        ("F", [-0.0599967119, -1.9420284092, 0.0000133671]),
-        ("F", [-0.0600235008, 0.0000085354, 1.9418467918]),
-        ("F", [-0.0599958059, -0.0000082485, -1.9418293370]),
-    ]
-
-    for atom, ref in zip(mol.atoms, atoms_ref):
-        assert (atom.symbol(), atom.coords()) == ref
 
 
 def test_mol3D_from_smiles_macrocycles():
@@ -423,3 +424,265 @@ def test_graph_hash(resource_path_root, geo):
     reference_gh = reference_gh.rstrip() # Remove trailing newline.
 
     assert gh == reference_gh
+
+@pytest.mark.parametrize(
+    "name, idx, sym, coords",
+    [
+        ("caffeine", 6, "N", [-2.27577, 0.41807, 0.00000]),
+        ("caffeine", 18, "O", [-7.19749, -1.54201, 0.00000]),
+        ("phenanthroline", 20, "H", [-2.89683, 2.18661, -0.00000]),
+        ("taurine", 5, "C", [-2.02153, 1.84435, 0.11051]),
+    ]
+)
+def test_getAtom(resource_path_root, name, idx, sym, coords):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    atom = mol.getAtom(idx)
+    assert atom.symbol() == sym
+    assert atom.coords() == coords
+
+
+@pytest.mark.parametrize(
+    "name, transition_metals_only, correct_answer",
+    [
+    ("benzene", True, []),
+    ("benzene", False, []),
+    ("fe_complex", True, [6]),
+    ("fe_complex", False, [6]),
+    ("in_complex", True, []),
+    ("in_complex", False, [0]),
+    ("bimetallic_al_complex", True, []),
+    ("bimetallic_al_complex", False, [0,13]),
+    ("UiO-66_sbu", True, [0,1,2,3,4,5]),
+    ("UiO-66_sbu", False, [0,1,2,3,4,5]),
+    ])
+def test_findMetal(resource_path_root, name, transition_metals_only, correct_answer):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+    metal_list = mol.findMetal(transition_metals_only=transition_metals_only)
+    assert metal_list == correct_answer
+
+
+@pytest.mark.parametrize(
+    "name, oct_flag",
+    [
+    ("fe_complex", True),
+    ("fe_complex", False),
+    ("caffeine", True),
+    ("caffeine", False),
+    ("FIrpic", True),
+    ("FIrpic", False),
+    ])
+def test_createMolecularGraph(resource_path_root, name, oct_flag):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+    mol.createMolecularGraph(oct=oct_flag)
+
+    reference_path = resource_path_root / "refs" / "json" / "createMolecularGraph" / f"{name}_oct_{oct_flag}_graph.json"
+    with open(reference_path, 'r') as f:
+        reference_graph = json.load(f)
+    reference_graph = np.array(reference_graph)
+
+    assert np.array_equal(reference_graph, mol.get_graph())
+
+
+@pytest.mark.parametrize(
+    "name, idx, get_graph, correct_answer",
+    [
+    ("fe_complex", 6, True, [0,2,4,7,9,11]),
+    ("fe_complex", 6, False, []),
+    ("caffeine", 4, True, [3,5,19]),
+    ("caffeine", 4, False, [3,5,19]),
+    ("FIrpic", 26, True, [0,23,25]),
+    ("FIrpic", 26, False, [0,23,25]),
+    ("FIrpic", 0, True, [6,13,26,33,44,52]),
+    ("FIrpic", 0, False, [6,13,26,33,44,52]),
+    ])
+def test_getBondedAtoms(resource_path_root, name, idx, get_graph, correct_answer):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+    if get_graph:
+        mol.createMolecularGraph()
+
+    nats = mol.getBondedAtoms(idx)
+    assert nats == correct_answer
+
+
+@pytest.mark.parametrize(
+    "name, idx, oct_flag, correct_answer",
+    [
+    ("fe_complex", 6, True, [0,2,4,7,9,11]),
+    ("fe_complex", 6, False, []),
+    ("caffeine", 4, True, [3,5,19]),
+    ("caffeine", 4, False, [3,5,19]),
+    ("FIrpic", 26, True, [0,23,25]),
+    ("FIrpic", 26, False, [0,23,25]),
+    ("FIrpic", 0, True, [6,13,26,33,44,52]),
+    ("FIrpic", 0, False, [6,13,26,33,44,52]),
+    ])
+def test_getBondedAtomsSmart(resource_path_root, name, idx, oct_flag, correct_answer):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    nats = mol.getBondedAtomsSmart(idx, oct=oct_flag)
+    assert nats == correct_answer
+
+
+@pytest.mark.parametrize(
+    "name, idx, correct_answer",
+    [
+    ("fe_complex", 6, [0,2,4,7,9,11]),
+    ("caffeine", 4, [3,5,19]),
+    ("caffeine", 7, [6,8]),
+    ("caffeine", 9, [6]),
+    ])
+def test_getBondedAtomsnotH(resource_path_root, name, idx, correct_answer):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    nats = mol.getBondedAtomsnotH(idx)
+    assert nats == correct_answer
+
+
+@pytest.mark.parametrize(
+    "name, idx, correct_answer",
+    [
+    ("fe_complex", 6, [0,2,4,7,9,11]),
+    ("FIrpic", 0, [6,13,26,33,44,52]),
+    ("cr3_f6_optimization", 0, [1,2,3,4,5,6]),
+    ])
+def test_getBondedAtomsOct(resource_path_root, name, idx, correct_answer):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    nats = mol.getBondedAtomsOct(idx)
+    assert nats == correct_answer
+
+
+@pytest.mark.parametrize(
+    "name, return_graph",
+    [
+    ('HKUST-1_linker', True),
+    ('HKUST-1_linker', False),
+    ('HKUST-1_sbu', True),
+    ('HKUST-1_sbu', False),
+    ])
+def test_assign_graph_from_net(resource_path_root, name, return_graph):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    net_file = resource_path_root / "inputs" / "net_files" / f"{name}.net"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    if return_graph:
+        graph = mol.assign_graph_from_net(net_file, return_graph=return_graph)
+    else:
+        mol.assign_graph_from_net(net_file, return_graph=return_graph)
+        graph = mol.get_graph()
+
+    reference_path = resource_path_root / "refs" / "json" / "assign_graph_from_net" / f"{name}_graph.json"
+    with open(reference_path, 'r') as f:
+        reference_graph = json.load(f)
+    reference_graph = np.array(reference_graph)
+
+    assert np.array_equal(reference_graph, graph)
+
+
+@pytest.mark.parametrize(
+    "name, force_clean_flag",
+    [
+    ('caffeine', True),
+    ('caffeine', False),
+    ('cr3_f6_optimization', True),
+    ('cr3_f6_optimization', False),
+    ('taurine', True),
+    ('taurine', False),
+    ])
+def test_convert2OBMol(resource_path_root, name, force_clean_flag):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    reference_path = resource_path_root / "refs" / "json" / "convert2OBMol" / f"{name}_fc_{force_clean_flag}_OB_dict.json"
+    with open(reference_path, 'r') as f:
+        reference_dict = json.load(f)
+
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+    mol.convert2OBMol(force_clean=force_clean_flag)
+
+    assert reference_dict['NumAtoms'] == mol.OBMol.NumAtoms()
+    assert reference_dict['NumBonds'] == mol.OBMol.NumBonds()
+    assert reference_dict['NumHvyAtoms'] == mol.OBMol.NumHvyAtoms()
+    assert reference_dict['NumRotors'] == mol.OBMol.NumRotors()
+    assert reference_dict['Atom4GetType'] == mol.OBMol.GetAtom(4).GetType()
+    assert reference_dict['Atom4GetY'] == mol.OBMol.GetAtom(4).GetY()
+    # assert reference_dict['Bond4GetBondOrder'] == mol.OBMol.GetBond(4).GetBondOrder()
+    # assert reference_dict['Bond4GetBeginAtomIdx'] == mol.OBMol.GetBond(4).GetBeginAtomIdx()
+    # assert reference_dict['Bond4GetEndAtomIdx'] == mol.OBMol.GetBond(4).GetEndAtomIdx()
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+    'caffeine',
+    'cr3_f6_optimization',
+    'taurine',
+    ])
+def test_convert2OBMol2(resource_path_root, name):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    reference_path = resource_path_root / "refs" / "json" / "convert2OBMol2" /  f"{name}_OB_dict.json"
+    with open(reference_path, 'r') as f:
+        reference_dict = json.load(f)
+    reference_path = resource_path_root / "refs" / "json" / "convert2OBMol2" /  f"{name}_BO_mat.json"
+    with open(reference_path, 'r') as f:
+        reference_BO_mat = json.load(f)
+    reference_BO_mat = np.array(reference_BO_mat)
+
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+    mol.convert2OBMol2()
+
+    assert reference_dict['NumAtoms'] == mol.OBMol.NumAtoms()
+    assert reference_dict['NumBonds'] == mol.OBMol.NumBonds()
+    assert reference_dict['NumHvyAtoms'] == mol.OBMol.NumHvyAtoms()
+    assert reference_dict['NumRotors'] == mol.OBMol.NumRotors()
+    assert reference_dict['Atom4GetType'] == mol.OBMol.GetAtom(4).GetType()
+    assert reference_dict['Atom4GetY'] == mol.OBMol.GetAtom(4).GetY()
+    # assert reference_dict['Bond4GetBondOrder'] == mol.OBMol.GetBond(4).GetBondOrder()
+    # assert reference_dict['Bond4GetBeginAtomIdx'] == mol.OBMol.GetBond(4).GetBeginAtomIdx()
+    # assert reference_dict['Bond4GetEndAtomIdx'] == mol.OBMol.GetBond(4).GetEndAtomIdx()
+
+    assert np.array_equal(reference_BO_mat, mol.BO_mat)
+
+
+# def test_delete_atom(resource_path_root):
+#     pass
+
+
+# def test_delete_atoms(resource_path_root):
+#     pass
+
+
+# def test_get_smiles(resource_path_root):
+#     pass
+
+
+# def test_populateBOMatrix(resource_path_root):
+#     pass
+
+
+# def test_readfrommol2(resource_path_root):
+#     pass
+
+
+# def test_writemol2(resource_path_root, tmp_path):
+#     pass
+
+
+# def test_writexyz(resource_path_root, tmp_path):
+#     pass
