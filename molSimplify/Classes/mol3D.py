@@ -1688,17 +1688,16 @@ class mol3D:
         # Get BO matrix if exits:
         repop = False
 
-        if not (self.OBMol is False) and not force_clean:
+        if self.OBMol and not force_clean:
             BO_mat = self.populateBOMatrix()
-
             repop = True
-        elif not (self.BO_mat is False) and not force_clean:
+        elif self.BO_mat and not force_clean:
             BO_mat = self.BO_mat
             repop = True
-            # write temp xyz
+
+        # Write temporary xyz.
         fd, tempf = tempfile.mkstemp(suffix=".xyz")
         os.close(fd)
-        # self.writexyz('tempr.xyz', symbsonly=True)
         self.writexyz(tempf, symbsonly=True, ignoreX=ignoreX)
 
         obConversion = openbabel.OBConversion()
@@ -4656,7 +4655,7 @@ class mol3D:
         conv.SetOutFormat('smi')
         if canonicalize:
             conv.SetOutFormat('can')
-        if self.OBMol is False:
+        if not self.OBMol:
             if use_mol2:
                 # Produces a smiles with the enforced BO matrix,
                 # which is needed for correct behavior for fingerprints.
@@ -5283,7 +5282,7 @@ class mol3D:
         sandwich_ligands, _sl = list(), list()
         for atom0 in catoms:
             lig = mol_fcs.findsubMol(atom0=atom0, atomN=metal_ind, smart=True)
-            # require to be at least a three-member ring
+            # Require to be at least a three-member ring.
             if len(lig) >= 3 and not set(lig) in _sl:
                 full_lig = self.findsubMol(atom0=mol_fcs.mapping_sub2mol[lig[0]],
                                            atomN=mol_fcs.mapping_sub2mol[metal_ind],
@@ -6069,6 +6068,9 @@ class mol3D:
                 Numpy array for bond order matrix.
         """
 
+        if not self.OBMol:
+            print('Need to set OBMol attribute first. Exiting.')
+            return
         obiter = openbabel.OBMolBondIter(self.OBMol)
         n = self.natoms
         molBOMat = np.zeros((n, n))
@@ -6115,7 +6117,7 @@ class mol3D:
         error_mat = molBOMat - molgraph
         error_idx = np.where(error_mat < 0)
         for i in range(len(error_idx)):
-            if len(error_idx[i]) > 0:
+            if len(error_idx[i]):
                 molBOMat[error_idx[i].tolist()[0], error_idx[i].tolist()[1]] = 1
         return molBOMat
 
@@ -6558,7 +6560,7 @@ class mol3D:
                 # If the split line has more than 4 elements, only elements 0 through 3 will be used.
                 # This means that it should work with any XYZ file that also stores something like Mulliken charge.
                 # Next, this looks for unique atom IDs in files.
-                if len(line_split) > 0:
+                if len(line_split):
                     lm = re.search(r'\d+$', line_split[0])
                     # If the string ends in digits m will be a Match object, or None otherwise.
                     if line_split[0] in list(amassdict.keys()) or ligand_unique_id:
