@@ -3055,7 +3055,7 @@ class mol3D:
     def getAtomTypes(self):
         """
         Get unique elements in a molecule.
-        Now somewhat redundate with get_element_list
+        Now somewhat redundant with get_element_list
 
         Returns
         -------
