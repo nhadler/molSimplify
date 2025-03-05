@@ -1072,4 +1072,4 @@ def test_writexyz(resource_path_root, tmp_path, writestring, withgraph, ignoreX,
         # Add a new line to contents2.
         # contents2.append('\n')
         assert contents1 == contents2
-        
+
