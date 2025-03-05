@@ -485,6 +485,9 @@ def test_createMolecularGraph(resource_path_root, name, oct_flag):
     reference_path = resource_path_root / "refs" / "json" / "createMolecularGraph" / f"{name}_oct_{oct_flag}_graph.json"
     with open(reference_path, 'r') as f:
         reference_graph = json.load(f)
+
+    # For saving np arrays to json, need to cast to list.
+    # Convert back for comparison.
     reference_graph = np.array(reference_graph)
 
     assert np.array_equal(reference_graph, mol.get_graph())
@@ -590,6 +593,9 @@ def test_assign_graph_from_net(resource_path_root, name, return_graph):
     reference_path = resource_path_root / "refs" / "json" / "assign_graph_from_net" / f"{name}_graph.json"
     with open(reference_path, 'r') as f:
         reference_graph = json.load(f)
+
+    # For saving np arrays to json, need to cast to list.
+    # Convert back for comparison.
     reference_graph = np.array(reference_graph)
 
     assert np.array_equal(reference_graph, graph)
@@ -625,6 +631,9 @@ def test_convert2OBMol(resource_path_root, name, force_clean_flag):
     # assert reference_dict['Bond4GetBeginAtomIdx'] == mol.OBMol.GetBond(4).GetBeginAtomIdx()
     # assert reference_dict['Bond4GetEndAtomIdx'] == mol.OBMol.GetBond(4).GetEndAtomIdx()
 
+    # Seems version of Open Babel changes the ordering of bonds (e.g., which 
+    # bond is at index 4).
+
 
 @pytest.mark.parametrize(
     "name",
@@ -641,6 +650,9 @@ def test_convert2OBMol2(resource_path_root, name):
     reference_path = resource_path_root / "refs" / "json" / "convert2OBMol2" /  f"{name}_BO_mat.json"
     with open(reference_path, 'r') as f:
         reference_BO_mat = json.load(f)
+
+    # For saving np arrays to json, need to cast to list.
+    # Convert back for comparison.
     reference_BO_mat = np.array(reference_BO_mat)
 
     mol = mol3D()
@@ -695,22 +707,111 @@ def test_centermass(resource_path_root, name, correct_answer):
     assert np.allclose(center_of_mass, correct_answer, atol=1e-5)
 
 
-# @pytest.mark.parametrize(
-#     "name, bo_dict_flag, graph_flag",
-#     [
+@pytest.mark.parametrize(
+    "name, idx, bo_dict_flag, graph_flag",
+    [
+    ("FIrpic", 13, True, True),
+    ("FIrpic", 13, True, False),
+    ("FIrpic", 13, False, True),
+    ("FIrpic", 13, False, False),
+    ("penicillin", 16, True, True),
+    ("penicillin", 16, True, False),
+    ("penicillin", 16, False, True),
+    ("penicillin", 16, False, False),
+    ]
+    )
+def test_deleteatom(resource_path_root, name, idx, bo_dict_flag, graph_flag):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
 
-#     ]
-#     )
-# def test_deleteatom(resource_path_root):
-#     pass
-# TODO have with bo_dict [populateBOMatrix] and graph [createMolecularGraph] set before, and not
-# TODO check mass, natoms, bo_dict, graph, self.atoms {length of list should go down by one}
+    reference_path = resource_path_root / "refs" / "json" / "deleteatom" /  f"{name}_bo_dict_{bo_dict_flag}_graph_{graph_flag}.json"
+    with open(reference_path, 'r') as f:
+        reference_dict = json.load(f)
+
+    if bo_dict_flag:
+        mol.convert2OBMol()
+        mol.populateBOMatrix(bonddict=True)
+    if graph_flag:
+        mol.createMolecularGraph(oct=False)
+
+    mol.deleteatom(idx)
+
+    assert mol.natoms == len(mol.atoms)
+    assert mol.mass == reference_dict['mass']
+    assert mol.natoms == reference_dict['natoms']
+    assert len(mol.atoms) == reference_dict['len_atoms']
+
+    if mol.bo_dict:
+        # Needed to adjust the reference dictionary in order
+        # to save to json.
+        # So, need to adjust this dictionary for the 
+        # comparison.
+        mod_bo_dict = {str(k): v for k, v in mol.bo_dict.items()}
+    else:
+        mod_bo_dict = {}
+    assert mod_bo_dict == reference_dict['bo_dict']
+
+    if len(mol.graph):
+        # For saving np arrays to json, need to cast to list.
+        # Convert back for comparison.
+        assert np.array_equal(mol.graph, np.array(reference_dict['graph']))
+    else:
+        assert mol.graph == reference_dict['graph']
 
 
-# def test_deleteatoms(resource_path_root):
-#     pass
-# TODO have with bo_dict [populateBOMatrix] and graph [createMolecularGraph] set before, and not
-# TODO check mass, natoms, bo_dict, graph, self.atoms {length of list should go down}
+@pytest.mark.parametrize(
+    "name, idxs, bo_dict_flag, graph_flag",
+    [
+    ("FIrpic", [13, 40, 27, 21], True, True),
+    ("FIrpic", [13, 21, 27, 40], True, True),
+    ("FIrpic", [13, 40, 27, 21], True, False),
+    ("FIrpic", [13, 40, 27, 21], False, True),
+    ("FIrpic", [13, 40, 27, 21], False, False),
+    ("penicillin", [16, 6, 12, 34], True, True),
+    ("penicillin", [16, 6, 12, 34], True, False),
+    ("penicillin", [16, 6, 12, 34], False, True),
+    ("penicillin", [16, 6, 12, 34], False, False),
+    ]
+    )
+def test_deleteatoms(resource_path_root, name, idxs, bo_dict_flag, graph_flag):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    reference_path = resource_path_root / "refs" / "json" / "deleteatoms" /  f"{name}_bo_dict_{bo_dict_flag}_graph_{graph_flag}.json"
+    with open(reference_path, 'r') as f:
+        reference_dict = json.load(f)
+
+    if bo_dict_flag:
+        mol.convert2OBMol()
+        mol.populateBOMatrix(bonddict=True)
+    if graph_flag:
+        mol.createMolecularGraph(oct=False)
+
+    mol.deleteatoms(idxs)
+
+    assert mol.natoms == len(mol.atoms)
+    assert mol.mass == reference_dict['mass']
+    assert mol.natoms == reference_dict['natoms']
+    assert len(mol.atoms) == reference_dict['len_atoms']
+
+    if mol.bo_dict:
+        # Needed to adjust the reference dictionary in order
+        # to save to json.
+        # So, need to adjust this dictionary for the 
+        # comparison.
+        mod_bo_dict = {str(k): v for k, v in mol.bo_dict.items()}
+    else:
+        mod_bo_dict = {}
+    assert mod_bo_dict == reference_dict['bo_dict']
+
+    if len(mol.graph):
+        # For saving np arrays to json, need to cast to list.
+        # Convert back for comparison.
+        assert np.array_equal(mol.graph, np.array(reference_dict['graph']))
+    else:
+        assert mol.graph == reference_dict['graph']
 
 
 # def test_populateBOMatrix(resource_path_root):

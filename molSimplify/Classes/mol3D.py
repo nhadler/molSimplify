@@ -2107,11 +2107,11 @@ class mol3D:
             if i > self.natoms:
                 raise IndexError('mol3D object cannot delete atom '+str(i) +
                                  ' because it only has '+str(self.natoms)+' atoms!')
-        # convert negative indexes to positive indexes
+        # Convert negative indexes to positive indexes.
         Alist = [self.natoms+i if i < 0 else i for i in Alist]
         for atomIdx in Alist:
             if self.getAtom(atomIdx).sym == 'X':
-                self.atoms[atomIdx].sym = 'Fe'  # Switch to Iron temporarily
+                self.atoms[atomIdx].sym = 'Fe'  # Switch to Iron temporarily.
                 self.atoms[atomIdx].name = 'Fe'
         if self.bo_dict:
             self.convert2OBMol2()
@@ -2154,23 +2154,23 @@ class mol3D:
             raise ValueError('Multimetal complexes are not yet handled.')
         temp_mol = self.get_first_shell()[0]
         fcs_indices = temp_mol.get_fcs(max6=False)
-        # remove metal index from first coordination shell
+        # Remove metal index from first coordination shell.
         fcs_indices.remove(temp_mol.findMetal()[0])
 
         if len(fcs_indices) != len(ideal_polyhedron):
             raise ValueError('The coordination number differs between the two provided structures.')
 
-        # have to redo getting metal_idx with the new mol after running get_first_shell
-        # want to work with temp_mol since it has the edge and sandwich logic implemented to replace those with centroids
+        # Have to redo getting metal_idx with the new mol after running get_first_shell
+        # Want to work with temp_mol since it has the edge and sandwich logic implemented to replace those with centroids.
         metal_atom = temp_mol.getAtoms()[temp_mol.findMetal()[0]]
         fcs_atoms = [temp_mol.getAtoms()[i] for i in fcs_indices]
-        # construct a np array of the non-metal atoms in the FCS
+        # Construct an np array of the non-metal atoms in the FCS.
         distances = []
         positions = np.zeros([len(fcs_indices), 3])
         for idx, atom in enumerate(fcs_atoms):
             distance = atom.distance(metal_atom)
             distances.append(distance)
-            # shift so the metal is at (0, 0, 0)
+            # Shift so the metal is at (0, 0, 0)
             positions[idx, :] = np.array(atom.coords()) - np.array(metal_atom.coords())
 
         current_min = np.inf
@@ -2247,7 +2247,7 @@ class mol3D:
             self.geo_dict['num_coord_metal'] = num_coord
             flag_list.remove('num_coord_metal')
         if not len(flag_list):
-            flag_oct = 1  # good structure
+            flag_oct = 1  # Good structure
             flag_list = 'None'
         else:
             flag_oct = 0
