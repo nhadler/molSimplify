@@ -1022,11 +1022,11 @@ def test_writexyz(resource_path_root, tmp_path, writestring, withgraph, ignoreX,
         ss = mol.writexyz(filename, writestring=writestring,
             withgraph=withgraph, ignoreX=ignoreX, no_tabs=no_tabs)
 
-        contents2.pop(1) # Remove the line about the file path.
+        contents2.pop(1) # Remove the line about the time of creation.
         contents2 = ''.join(contents2) # Convert from list to string.
 
         mod_ss = ss.split('\n')
-        mod_ss.pop(1) # Remove the line about the file path.
+        mod_ss.pop(1) # Remove the line about the time of creation.
         mod_ss = '\n'.join(mod_ss)
 
         assert mod_ss == contents2
@@ -1038,7 +1038,7 @@ def test_writexyz(resource_path_root, tmp_path, writestring, withgraph, ignoreX,
         with open(filename, 'r') as f:
             contents1 = f.readlines()
 
-        # Remove the lines about the file path.
+        # Remove the lines about the time of creation.
         contents1.pop(1)
         contents2.pop(1)
         assert contents1 == contents2
