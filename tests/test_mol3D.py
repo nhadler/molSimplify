@@ -655,7 +655,7 @@ def test_convert2OBMol2(resource_path_root, name):
     assert reference_dict['Atom4GetY'] == mol.OBMol.GetAtom(4).GetY()
     # assert reference_dict['Bond4GetBondOrder'] == mol.OBMol.GetBond(4).GetBondOrder()
     # assert reference_dict['Bond4GetBeginAtomIdx'] == mol.OBMol.GetBond(4).GetBeginAtomIdx()
-    # assert reference_dict['Bond4GetEndAtomIdx'] == mol.OBMol.GetBond(4).GetEndAtomIdx()    
+    # assert reference_dict['Bond4GetEndAtomIdx'] == mol.OBMol.GetBond(4).GetEndAtomIdx()
 
     assert np.array_equal(reference_BO_mat, mol.BO_mat)
 
