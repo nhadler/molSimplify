@@ -447,6 +447,7 @@ def test_graph_hash(resource_path_root, geo):
 
     assert gh == reference_gh
 
+
 @pytest.mark.parametrize(
     "name, idx, sym, coords",
     [
@@ -994,6 +995,7 @@ def test_writemol2(resource_path_root, tmp_path, writestring, ignoreX):
         # Add a new line to contents2.
         contents2.append('\n')
         assert contents1 == contents2
+
 
 @pytest.mark.parametrize(
     "writestring, withgraph, ignoreX, no_tabs",
