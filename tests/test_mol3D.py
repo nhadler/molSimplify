@@ -125,7 +125,7 @@ def test_readfromxyz(resource_path_root):
     for atom, ref in zip(mol.atoms, atoms_ref):
         assert (atom.symbol(), atom.coords()) == ref
 
-    # Test read_final_optim_step
+    # Test read_final_optim_step.
     mol = mol3D()
     mol.readfromxyz(xyz_file, read_final_optim_step=True)
 
@@ -137,6 +137,23 @@ def test_readfromxyz(resource_path_root):
         ("F", [-0.0599967119, -1.9420284092, 0.0000133671]),
         ("F", [-0.0600235008, 0.0000085354, 1.9418467918]),
         ("F", [-0.0599958059, -0.0000082485, -1.9418293370]),
+    ]
+
+    for atom, ref in zip(mol.atoms, atoms_ref):
+        assert (atom.symbol(), atom.coords()) == ref
+
+    # Test readstring.
+    my_str = '3\n\n\
+    O         -5.34667        1.94740        0.01871\n\
+    H         -4.35735        1.91881       -0.01321\n\
+    H         -5.63604        1.31549       -0.68666\n'
+    mol = mol3D()
+    mol.readfromxyz(my_str, readstring=True)
+
+    atoms_ref = [
+        ("O", [-5.34667, 1.94740, 0.01871]),
+        ("H", [-4.35735, 1.91881, -0.01321]),
+        ("H", [-5.63604, 1.31549, -0.68666]),
     ]
 
     for atom, ref in zip(mol.atoms, atoms_ref):
@@ -850,8 +867,11 @@ def test_deleteatoms(resource_path_root, name, idxs, bo_dict_flag, graph_flag):
         assert mol.graph == reference_dict['graph']
 
 
+# TODO hapticity_compounds/BOWROX_comp_0.mol2
+# TODO io/formaldehyde.mol2
 # def test_readfrommol2(resource_path_root):
 #     pass
+# TODO readstring
 # TODO check graph, bo_graph, bo_graph_trunc, bo_dict
 
 
