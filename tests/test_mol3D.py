@@ -10,12 +10,17 @@ def test_adding_and_deleting_atoms():
     mol = mol3D()
     mol.addAtom(atom3D(Sym='Fe'))
 
+    fe_mass = 55.84526
     assert mol.natoms == 1
+    assert mol.mass == fe_mass
     assert mol.findMetal() == [0]
 
     mol.addAtom(atom3D(Sym='Cu'))
 
     assert mol.natoms == 2
+    cu_mass = 63.546
+    new_sum = fe_mass + cu_mass 
+    assert mol.mass == new_sum
     assert mol.findMetal() == [0, 1]
 
     mol.deleteatom(0)
@@ -867,12 +872,84 @@ def test_deleteatoms(resource_path_root, name, idxs, bo_dict_flag, graph_flag):
         assert mol.graph == reference_dict['graph']
 
 
-# TODO hapticity_compounds/BOWROX_comp_0.mol2
-# TODO io/formaldehyde.mol2
-# def test_readfrommol2(resource_path_root):
-#     pass
-# TODO readstring
-# TODO check graph, bo_graph, bo_graph_trunc, bo_dict
+@pytest.mark.parametrize(
+    "name, readstring",
+    [
+    ("BOWROX_comp_0", True),
+    ("BOWROX_comp_0", False),
+    ("formaldehyde", True),
+    ("formaldehyde", False),
+    ]
+    )
+def test_readfrommol2(resource_path_root, name, readstring):
+    def quick_load(file_list):
+        result = []
+        for i in file_list:
+            with open(i, 'r') as f:
+                result.append(json.load(f))
+        return result
+
+    if name == "BOWROX_comp_0":
+        mol2_file = resource_path_root / "inputs" / "hapticity_compounds" / f"{name}.mol2"
+    elif name == "formaldehyde":
+        mol2_file = resource_path_root / "inputs" / "io" / f"{name}.mol2"
+
+    mol = mol3D()
+
+    if readstring:
+        with open(mol2_file, 'r') as f:
+            contents = f.readlines()
+        str_contents = ''.join(contents)
+        mol.readfrommol2(str_contents, readstring=readstring)
+    else:
+        mol.readfrommol2(mol2_file)
+
+    # Loading the reference files.
+    reference_path1 = resource_path_root / "refs" / "json" / "readfrommol2" /  f"{name}_graph.json"
+    reference_path2 = resource_path_root / "refs" / "json" / "readfrommol2" /  f"{name}_bo_graph.json"
+    reference_path3 = resource_path_root / "refs" / "json" / "readfrommol2" /  f"{name}_bo_graph_trunc.json"
+    reference_path4 = resource_path_root / "refs" / "json" / "readfrommol2" /  f"{name}_bo_dict.json"
+    reference_graph, reference_bo_graph, reference_bo_graph_trunc, reference_bo_dict = quick_load(
+        [reference_path1, reference_path2, reference_path3, reference_path4])
+
+    # For saving np arrays to json, need to cast to list.
+    # Convert back for comparison.
+    # Also converted nan values to -1 prior to saving the json.
+    mod_bo_graph = np.nan_to_num(mol.bo_graph, nan=-1)
+    mod_bo_graph_trunc = np.nan_to_num(mol.bo_graph_trunc, nan=-1)
+
+    mod_bo_dict = {str(k): v for k, v in mol.bo_dict.items()}
+
+    assert np.array_equal(mol.graph, np.array(reference_graph))
+    assert np.array_equal(mod_bo_graph, np.array(reference_bo_graph))
+    assert np.array_equal(mod_bo_graph_trunc, np.array(reference_bo_graph_trunc))
+    assert mod_bo_dict == reference_bo_dict
+
+    mol_reference = mol3D()
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol_reference.readfromxyz(xyz_file)
+
+    c_array1, c_array2 = mol.get_coordinate_array(), mol_reference.get_coordinate_array()
+    assert np.array_equal(c_array1, c_array1)
+
+    e_list1, e_list2 = mol.get_element_list(), mol_reference.get_element_list()
+    assert e_list1 == e_list2
+
+
+@pytest.mark.parametrize(
+    "name, idx, correct_answer",
+    [
+    ("caffeine", 5, [-3.74508, -1.21580, 0]),
+    ("penicillin", 6, [-5.00626, 1.60324, 0.43159]),
+    ]
+    )
+def test_getAtomCoords(resource_path_root, name, idx, correct_answer):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    coords = mol.getAtomCoords(idx)
+    assert coords == correct_answer
 
 
 # def test_writemol2(resource_path_root, tmp_path):

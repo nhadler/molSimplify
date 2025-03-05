@@ -153,6 +153,8 @@ getMLBondLengths
 getNumAtoms
 getOBMol
 get_bo_dict_from_inds
+get_coordinate_array
+get_element_list
 get_fcs
 get_features
 get_first_shell
@@ -3052,7 +3054,8 @@ class mol3D:
 
     def getAtomTypes(self):
         """
-        Get unique elements in a molecule
+        Get unique elements in a molecule.
+        Now somewhat redundate with get_element_list
 
         Returns
         -------
@@ -3836,6 +3839,48 @@ class mol3D:
             ind2 = ind2 - len(np.where(delete_inds < ind2)[0])
             new_bo_dict[(ind1, ind2)] = val
         return new_bo_dict
+
+    def get_coordinate_array(self):
+        """
+        Get the coordinate array of the molecule.
+
+        Parameters
+        ----------
+            None
+
+        Returns
+        -------
+            coord_array : np.array
+                The coordinates of each atom.
+                Shape is (number of atoms, 3).
+        """
+
+        num_atoms = self.getNumAtoms()
+        coord_array = np.zeros((num_atoms, 3))
+
+        for idx, atom in enumerate(self.getAtoms()):
+            coord_array[idx] = atom.coords()
+
+        return coord_array
+
+    def get_element_list(self):
+        """
+        Get the element list of the molecule.
+
+        Parameters
+        ----------
+            None
+
+        Returns
+        -------
+            element_list : list
+                The element symbol of each atom.
+        """
+
+        element_list = []
+        for idx, atom in enumerate(self.getAtoms()):
+            element_list.append(atom.symbol())
+        return element_list
 
     def get_fcs(self, strict_cutoff=False, catom_list=None, max6=True):
         """
