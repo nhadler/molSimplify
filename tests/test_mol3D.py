@@ -482,7 +482,7 @@ def test_createMolecularGraph(resource_path_root, name, oct_flag):
     mol.readfromxyz(xyz_file)
     mol.createMolecularGraph(oct=oct_flag)
 
-    reference_path = resource_path_root / "refs" / "json" / f"{name}_oct_{oct_flag}_graph.json"
+    reference_path = resource_path_root / "refs" / "json" / "createMolecularGraph" / f"{name}_oct_{oct_flag}_graph.json"
     with open(reference_path, 'r') as f:
         reference_graph = json.load(f)
     reference_graph = np.array(reference_graph)
@@ -587,7 +587,7 @@ def test_assign_graph_from_net(resource_path_root, name, return_graph):
         mol.assign_graph_from_net(net_file, return_graph=return_graph)
         graph = mol.get_graph()
 
-    reference_path = resource_path_root / "refs" / "json" / f"{name}_graph.json"
+    reference_path = resource_path_root / "refs" / "json" / "assign_graph_from_net" / f"{name}_graph.json"
     with open(reference_path, 'r') as f:
         reference_graph = json.load(f)
     reference_graph = np.array(reference_graph)
@@ -607,7 +607,7 @@ def test_assign_graph_from_net(resource_path_root, name, return_graph):
     ])
 def test_convert2OBMol(resource_path_root, name, force_clean_flag):
     xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
-    reference_path = resource_path_root / "refs" / "json" / f"{name}_fc_{force_clean_flag}_OpenBabel_dict.json"
+    reference_path = resource_path_root / "refs" / "json" / "convert2OBMol" / f"{name}_fc_{force_clean_flag}_OB_dict.json"
     with open(reference_path, 'r') as f:
         reference_dict = json.load(f)
 
@@ -626,8 +626,38 @@ def test_convert2OBMol(resource_path_root, name, force_clean_flag):
     assert reference_dict['Bond4GetEndAtomIdx'] == mol.OBMol.GetBond(4).GetEndAtomIdx()
 
 
-def test_convert2OBMol2(resource_path_root):
-    pass
+@pytest.mark.parametrize(
+    "name",
+    [
+    'caffeine',
+    'cr3_f6_optimization',
+    'taurine',
+    ])
+def test_convert2OBMol2(resource_path_root, name):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    reference_path = resource_path_root / "refs" / "json" / "convert2OBMol2" /  f"{name}_OB_dict.json"
+    with open(reference_path, 'r') as f:
+        reference_dict = json.load(f)
+    reference_path = resource_path_root / "refs" / "json" / "convert2OBMol2" /  f"{name}_BO_mat.json"
+    with open(reference_path, 'r') as f:
+        reference_BO_mat = json.load(f)
+    reference_BO_mat = np.array(reference_BO_mat)
+
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+    mol.convert2OBMol2()
+
+    assert reference_dict['NumAtoms'] == mol.OBMol.NumAtoms()
+    assert reference_dict['NumBonds'] == mol.OBMol.NumBonds()
+    assert reference_dict['NumHvyAtoms'] == mol.OBMol.NumHvyAtoms()
+    assert reference_dict['NumRotors'] == mol.OBMol.NumRotors()
+    assert reference_dict['Atom4GetType'] == mol.OBMol.GetAtom(4).GetType()
+    assert reference_dict['Atom4GetY'] == mol.OBMol.GetAtom(4).GetY()
+    assert reference_dict['Bond4GetBondOrder'] == mol.OBMol.GetBond(4).GetBondOrder()
+    assert reference_dict['Bond4GetBeginAtomIdx'] == mol.OBMol.GetBond(4).GetBeginAtomIdx()
+    assert reference_dict['Bond4GetEndAtomIdx'] == mol.OBMol.GetBond(4).GetEndAtomIdx()    
+
+    assert np.array_equal(reference_BO_mat, mol.BO_mat)
 
 
 # def test_delete_atom(resource_path_root):
