@@ -7295,6 +7295,10 @@ class mol3D:
                                                  xyz[0], xyz[1], xyz[2])
         if withgraph:
             from scipy.sparse import csgraph
+
+            if not len(self.graph):
+                self.createMolecularGraph()
+
             csg = csgraph.csgraph_from_dense(self.graph)
             x, y = csg.nonzero()
             tempstr = ''
