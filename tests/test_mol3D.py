@@ -719,8 +719,7 @@ def test_get_smiles(resource_path_root, name, canonicalize, use_mol2, correct_sm
     [
     ('caffeine', [-4.41475,-0.30732,0]),
     ('HKUST-1_sbu', [-4.64738,-2.68238,7.59]),
-    ]
-    )
+    ])
 def test_centermass(resource_path_root, name, correct_answer):
     xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
     mol = mol3D()
@@ -736,8 +735,7 @@ def test_centermass(resource_path_root, name, correct_answer):
     ("benzene", False),
     ("caffeine", True),
     ("caffeine", False),
-    ]
-    )
+    ])
 def test_populateBOMatrix(resource_path_root, name, bonddict):
     xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
     mol = mol3D()
@@ -776,8 +774,7 @@ def test_populateBOMatrix(resource_path_root, name, bonddict):
     ("penicillin", 16, True, False),
     ("penicillin", 16, False, True),
     ("penicillin", 16, False, False),
-    ]
-    )
+    ])
 def test_deleteatom(resource_path_root, name, idx, bo_dict_flag, graph_flag):
     xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
     mol = mol3D()
@@ -830,8 +827,7 @@ def test_deleteatom(resource_path_root, name, idx, bo_dict_flag, graph_flag):
     ("penicillin", [16, 6, 12, 34], True, False),
     ("penicillin", [16, 6, 12, 34], False, True),
     ("penicillin", [16, 6, 12, 34], False, False),
-    ]
-    )
+    ])
 def test_deleteatoms(resource_path_root, name, idxs, bo_dict_flag, graph_flag):
     xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
     mol = mol3D()
@@ -879,8 +875,7 @@ def test_deleteatoms(resource_path_root, name, idxs, bo_dict_flag, graph_flag):
     ("BOWROX_comp_0", False),
     ("formaldehyde", True),
     ("formaldehyde", False),
-    ]
-    )
+    ])
 def test_readfrommol2(resource_path_root, name, readstring):
     def quick_load(file_list):
         result = []
@@ -943,8 +938,7 @@ def test_readfrommol2(resource_path_root, name, readstring):
     [
     ("caffeine", 5, [-3.74508, -1.21580, 0]),
     ("penicillin", 6, [-5.00626, 1.60324, 0.43159]),
-    ]
-    )
+    ])
 def test_getAtomCoords(resource_path_root, name, idx, correct_answer):
     xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
     mol = mol3D()
@@ -954,11 +948,50 @@ def test_getAtomCoords(resource_path_root, name, idx, correct_answer):
     assert coords == correct_answer
 
 
-# def test_writemol2(resource_path_root, tmp_path):
-#     pass
-# TODO writestring, ignoreX
+@pytest.mark.parametrize(
+    "writestring, ignoreX",
+    [
+    (True, True),
+    (True, False),
+    (False, True),
+    (False, False),
+    ])
+def test_writemol2(resource_path_root, tmp_path, writestring, ignoreX):
+    mol = mol3D()
+    mol.addAtom(atom3D(Sym="O", xyz=[-5.37283, 1.90656, -0.02688]))
+    mol.addAtom(atom3D(Sym="H", xyz=[-4.39591, 2.01464, 0.09376]))
+    mol.addAtom(atom3D(Sym="H", xyz=[-5.72102, 1.28799, -0.71735]))
+    mol.addAtom(atom3D(Sym="X", xyz=[-6.00156, 2.41704, 0.54295]))
+
+    filename = str(tmp_path / f'writemol2_test_ignoreX_{ignoreX}.mol2')
+    if writestring:
+        ss = mol.writemol2(filename, writestring=writestring, ignoreX=ignoreX)
+        reference_path = resource_path_root / "refs" / "write_tests" / f'writemol2_test_ignoreX_{ignoreX}.txt'
+        with open(reference_path, 'r') as f:
+            contents = f.readlines()
+        contents.pop(1) # Remove the line about the file path.
+        contents = ''.join(contents) # Convert from list to string.
+
+        mod_ss = ss.split('\n')
+        mod_ss.pop(1) # Remove the line about the file path.
+        mod_ss = '\n'.join(mod_ss)
+
+        assert mod_ss == contents
+    else:
+        mol.writemol2(filename, writestring=writestring, ignoreX=ignoreX)
+        reference_path = resource_path_root / "refs" / "write_tests" / f'writemol2_test_ignoreX_{ignoreX}.mol2'
+
+        with open(filename, 'r') as f:
+            contents1 = f.readlines()
+        with open(reference_path, 'r') as f:
+            contents2 = f.readlines()
+
+        # Remove the lines about the file path.
+        contents1.pop(1)
+        contents2.pop(1)
+        assert contents1 == contents2
 
 
 # def test_writexyz(resource_path_root, tmp_path):
 #     pass
-# TODO writestring, withgraph, no_tabs, ignoreX
+# TODO writestring, withgraph [have error if graph not set?], no_tabs, ignoreX
