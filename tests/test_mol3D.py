@@ -631,7 +631,7 @@ def test_convert2OBMol(resource_path_root, name, force_clean_flag):
     # assert reference_dict['Bond4GetBeginAtomIdx'] == mol.OBMol.GetBond(4).GetBeginAtomIdx()
     # assert reference_dict['Bond4GetEndAtomIdx'] == mol.OBMol.GetBond(4).GetEndAtomIdx()
 
-    # Seems version of Open Babel changes the ordering of bonds (e.g., which 
+    # Seems version of Open Babel changes the ordering of bonds (e.g., which
     # bond is at index 4).
 
 
@@ -745,7 +745,7 @@ def test_deleteatom(resource_path_root, name, idx, bo_dict_flag, graph_flag):
     if mol.bo_dict:
         # Needed to adjust the reference dictionary in order
         # to save to json.
-        # So, need to adjust this dictionary for the 
+        # So, need to adjust this dictionary for the
         # comparison.
         mod_bo_dict = {str(k): v for k, v in mol.bo_dict.items()}
     else:
@@ -799,7 +799,7 @@ def test_deleteatoms(resource_path_root, name, idxs, bo_dict_flag, graph_flag):
     if mol.bo_dict:
         # Needed to adjust the reference dictionary in order
         # to save to json.
-        # So, need to adjust this dictionary for the 
+        # So, need to adjust this dictionary for the
         # comparison.
         mod_bo_dict = {str(k): v for k, v in mol.bo_dict.items()}
     else:
