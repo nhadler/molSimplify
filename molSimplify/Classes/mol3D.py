@@ -159,6 +159,7 @@ get_first_shell
 get_geometry_type
 get_geometry_type_distance
 get_geometry_type_old
+get_graph
 get_graph_hash
 get_linear_angle
 get_mol_graph_det
@@ -3342,7 +3343,7 @@ class mol3D:
     def getBondedAtomsOct(self, ind, CN=6, debug=False, flag_loose=False, atom_specific_cutoffs=False,
                           strict_cutoff=False):
         """
-        Gets atoms bonded to an octahedrally coordinated metal. Specifically limitis intruder
+        Gets atoms bonded to an octahedrally coordinated metal. Specifically limits intruder
         C and H atoms that would otherwise be considered bonded in the distance cutoffs. Limits
         bonding to the CN closest atoms (CN = coordination number).
 
@@ -4315,6 +4316,23 @@ class mol3D:
             "info_edge_lig": info_edge_lig,
         }
         return results
+
+    def get_graph(self):
+        """
+        Return the graph attribute of the molecule.
+
+        Parameters
+        ----------
+            None
+
+        Returns
+        -------
+            self.graph : np.array
+                The graph.
+
+        """
+
+        return self.graph
 
     def get_graph_hash(self, attributed_flag=True, oct=False, loud=True):
         """
