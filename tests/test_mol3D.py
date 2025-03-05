@@ -106,6 +106,42 @@ def test_mutating_atoms():
     assert mol.findMetal() == []
 
 
+def test_readfromxyz(resource_path_root):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / "cr3_f6_optimization.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    atoms_ref = [
+        ("Cr", [-0.060052, -0.000019, -0.000023]),
+        ("F", [1.802823, -0.010399, -0.004515]),
+        ("F", [-0.070170, 1.865178, 0.0035660]),
+        ("F", [-1.922959, 0.010197, 0.0049120]),
+        ("F", [-0.049552, -1.865205, -0.0038600]),
+        ("F", [-0.064742, 0.003876, 1.8531400]),
+        ("F", [-0.055253, -0.003594, -1.8531790]),
+    ]
+
+    for atom, ref in zip(mol.atoms, atoms_ref):
+        assert (atom.symbol(), atom.coords()) == ref
+
+    # Test read_final_optim_step
+    mol = mol3D()
+    mol.readfromxyz(xyz_file, read_final_optim_step=True)
+
+    atoms_ref = [
+        ("Cr", [-0.0599865612, 0.0000165451, 0.0000028031]),
+        ("F", [1.8820549261, 0.0000076116, 0.0000163815]),
+        ("F", [-0.0600064919, 1.9420510001, -0.0000022958]),
+        ("F", [-2.0019508544, -0.0000130345, -0.0000067108]),
+        ("F", [-0.0599967119, -1.9420284092, 0.0000133671]),
+        ("F", [-0.0600235008, 0.0000085354, 1.9418467918]),
+        ("F", [-0.0599958059, -0.0000082485, -1.9418293370]),
+    ]
+
+    for atom, ref in zip(mol.atoms, atoms_ref):
+        assert (atom.symbol(), atom.coords()) == ref
+
+
 @pytest.mark.parametrize('name, geometry_str', [
     ('linear', 'linear'),
     ('trigonal_planar', 'trigonal planar'),
@@ -219,42 +255,6 @@ def test_is_edge_compound(resource_path_root, name, con_atoms):
     for i, (info, lig) in enumerate(zip(info_edge_lig, edge_lig_atoms)):
         assert info["natoms_connected"] == len(con_atoms[i])
         assert lig["atom_idxs"] == con_atoms[i]
-
-
-def test_readfromxyzfile(resource_path_root):
-    xyz_file = resource_path_root / "inputs" / "xyz_files" / "cr3_f6_optimization.xyz"
-    mol = mol3D()
-    mol.readfromxyz(xyz_file)
-
-    atoms_ref = [
-        ("Cr", [-0.060052, -0.000019, -0.000023]),
-        ("F", [1.802823, -0.010399, -0.004515]),
-        ("F", [-0.070170, 1.865178, 0.0035660]),
-        ("F", [-1.922959, 0.010197, 0.0049120]),
-        ("F", [-0.049552, -1.865205, -0.0038600]),
-        ("F", [-0.064742, 0.003876, 1.8531400]),
-        ("F", [-0.055253, -0.003594, -1.8531790]),
-    ]
-
-    for atom, ref in zip(mol.atoms, atoms_ref):
-        assert (atom.symbol(), atom.coords()) == ref
-
-    # Test read_final_optim_step
-    mol = mol3D()
-    mol.readfromxyz(xyz_file, read_final_optim_step=True)
-
-    atoms_ref = [
-        ("Cr", [-0.0599865612, 0.0000165451, 0.0000028031]),
-        ("F", [1.8820549261, 0.0000076116, 0.0000163815]),
-        ("F", [-0.0600064919, 1.9420510001, -0.0000022958]),
-        ("F", [-2.0019508544, -0.0000130345, -0.0000067108]),
-        ("F", [-0.0599967119, -1.9420284092, 0.0000133671]),
-        ("F", [-0.0600235008, 0.0000085354, 1.9418467918]),
-        ("F", [-0.0599958059, -0.0000082485, -1.9418293370]),
-    ]
-
-    for atom, ref in zip(mol.atoms, atoms_ref):
-        assert (atom.symbol(), atom.coords()) == ref
 
 
 def test_mol3D_from_smiles_macrocycles():
@@ -423,3 +423,94 @@ def test_graph_hash(resource_path_root, geo):
     reference_gh = reference_gh.rstrip() # Remove trailing newline.
 
     assert gh == reference_gh
+
+@pytest.mark.parametrize(
+    "name, idx, sym, coords",
+    [
+        ("caffeine", 6, "N", [-2.27577, 0.41807, 0.00000]),
+        ("caffeine", 18, "O", [-7.19749, -1.54201, 0.00000]),
+        ("phenanthroline", 20, "H", [-2.89683, 2.18661, -0.00000]),
+        ("taurine", 5, "C", [-2.02153, 1.84435, 0.11051]),
+    ]
+)
+def test_getAtom(resource_path_root, name, idx, sym, coords):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    atom = mol.getAtom(idx)
+    assert atom.symbol() == sym
+    assert atom.coords() == coords
+
+
+@pytest.mark.parametrize(
+    "name, transition_metals_only, correct_answer",
+    [
+    ("benzene", True, []),
+    ("benzene", False, []),
+    ("fe_complex", True, [7]),
+    ("fe_complex", False, [7]),
+    ("in_complex", True, []),
+    ("in_complex", False, [0]),
+    ("bimetallic_al_complex", True, []),
+    ("bimetallic_al_complex", False, [0,13]),
+    ("UiO-66_sbu", True, [0,1,2,3,4,5]),
+    ("UiO-66_sbu", False, [0,1,2,3,4,5]),    
+    ])
+def test_findMetal(resource_path_root, name, transition_metals_only, correct_answer):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+    metal_list = mol.findMetal(transition_metals_only=transition_metals_only)
+
+
+# def test_createMolecularGraph(resource_path_root):
+#     pass
+
+
+# def test_getBondedAtoms(resource_path_root):
+#     pass
+
+
+# def test_getBondedAtomsSmart(resource_path_root):
+#     pass
+
+
+# def test_assign_graph_from_net(resource_path_root):
+#     pass
+
+
+# def test_convert2OBMol(resource_path_root):
+#     pass
+
+
+# def test_convert2OBMol2(resource_path_root):
+#     pass
+
+
+# def test_delete_atom(resource_path_root):
+#     pass
+
+
+# def test_delete_atoms(resource_path_root):
+#     pass
+
+
+# def test_get_smiles(resource_path_root):
+#     pass
+
+
+# def test_populateBOMatrix(resource_path_root):
+#     pass
+
+
+# def test_readfrommol2(resource_path_root):
+#     pass
+
+
+# def test_writemol2(resource_path_root, tmp_path):
+#     pass
+
+
+# def test_writexyz(resource_path_root, tmp_path):
+#     pass
