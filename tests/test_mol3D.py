@@ -81,12 +81,61 @@ def test_getAtomwithinds(idxs):
         assert atom.coords() == list(coord)
 
 
-def test_copymol3D():
-    pass
+@pytest.mark.parametrize(
+    "make_graph, make_obmol",
+    [
+    (False, False),
+    (True, False),
+    (False, True),
+    (True, True),
+    ])
+def test_copymol3D(make_graph, make_obmol):
+    mol = mol3D()
+    symbols = ['O','H','H']
+    coords = [
+    [-3.73751, 1.29708, 0.00050],
+    [-2.74818, 1.33993, -0.00035],
+    [-4.02687, 2.24392, -0.01831],
+    ]
+    for sym, coord in zip(symbols, coords):
+        mol.addAtom(atom3D(Sym=sym, xyz=coord))
+
+    if make_graph:
+        mol.createMolecularGraph()
+    if make_obmol:
+        mol.convert2OBMol()
+
+    mol2 = mol3D()
+    mol2.copymol3D(mol)
+
+    atoms = mol2.getAtoms()
+    assert len(atoms) == 3
+    for atom, sym, coord in zip(atoms, symbols, coords):
+        assert atom.symbol() == sym
+        assert atom.coords() == coord
+
+    assert np.array_equal(mol.graph, mol2.graph)
+    assert mol.charge == mol2.charge
+    assert mol.OBMol == mol2.OBMol
 
 
 def test_initialize():
-    pass
+    mol = mol3D()
+    symbols = ['O','H']
+    coords = [
+    [-3.73751, 1.29708, 0.00050],
+    [-2.74818, 1.33993, -0.00035],
+    ]
+    for sym, coord in zip(symbols, coords):
+        mol.addAtom(atom3D(Sym=sym, xyz=coord))
+
+    mol.createMolecularGraph()
+    mol.initialize()
+    assert mol.atoms == []
+    assert mol.natoms == 0
+    assert mol.mass == 0
+    assert mol.size == 0
+    assert mol.graph == []
 
 
 def test_centersym():
