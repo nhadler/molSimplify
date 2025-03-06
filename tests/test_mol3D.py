@@ -360,8 +360,39 @@ def test_mindist(resource_path_root, name1, name2, correct_answer):
     assert np.isclose(mindist, correct_answer, atol=1e-5)
 
 
-def test_alignmol():
-    pass
+@pytest.mark.parametrize(
+    "name1, name2, idx1, idx2, correct_answer",
+    [
+    ('co', 'far_co', 0, 0, np.array([
+        [9.60627, 22.98702, -16.46037],
+        [10.39914, 22.28802, -16.46037],
+        ])),
+    ('far_co', 'co', 0, 0, np.array([
+        [-3.39222, 0.46228, 0.],
+        [-2.59935, -0.23672, 0.]
+        ])),
+    ('far_co', 'co', 0, 1, np.array([
+        [-2.59935, -0.23672, 0.],
+        [-1.80648, -0.93572, 0.],
+        ])),
+    ('far_co', 'benzene', 0, 5, np.array([
+        [-0.16423, 1.06026, 0.],
+        [0.62864, 0.36126, 0.],
+        ])),
+    ])
+def test_alignmol(resource_path_root, name1, name2, idx1, idx2, correct_answer):
+    xyz_file1 = resource_path_root / "inputs" / "xyz_files" / f"{name1}.xyz"
+    xyz_file2 = resource_path_root / "inputs" / "xyz_files" / f"{name2}.xyz"
+    mol1, mol2 = mol3D(), mol3D()
+    mol1.readfromxyz(xyz_file1)
+    mol2.readfromxyz(xyz_file2)
+
+    mol1.alignmol(mol1.getAtom(idx1), mol2.getAtom(idx2))
+    coords = mol1.get_coordinate_array()
+    assert np.allclose(coords, correct_answer, atol=1e-5)
+
+    elem_list = mol1.get_element_list()
+    assert elem_list == ['C', 'O']
 
 
 @pytest.mark.parametrize('name, geometry_str', [
@@ -773,7 +804,7 @@ def test_getBondedAtomsH(resource_path_root, name, idx, correct_answer):
     mol.readfromxyz(xyz_file)
     nats = mol.getBondedAtomsH(idx)
     assert nats == correct_answer
-    
+
 
 @pytest.mark.parametrize(
     "name, idx, correct_answer",
