@@ -45,10 +45,10 @@ def test_getDistToMetal():
     [-1.90753, 3.11615, 0.58170],
     ]
     for sym, coord in zip(symbols, coords):
-        mol.addAtom(atom3D(Sym=sym, xyz=coord))    
+        mol.addAtom(atom3D(Sym=sym, xyz=coord))
 
     # Note, this method works even with non-metals.
-    assert np.isclose(mol.getDistToMetal(0, 1), 1.90859, atol=1e-5) 
+    assert np.isclose(mol.getDistToMetal(0, 1), 1.90859, atol=1e-5)
     assert np.isclose(mol.getDistToMetal(0, 2), 2.36016, atol=1e-5)
     assert np.isclose(mol.getDistToMetal(1, 2), 0.99026, atol=1e-5)
 
@@ -78,7 +78,7 @@ def test_getAtomwithinds(idxs):
 
     for atom, sym, coord in zip(atom_list, symbols[idxs], coords[idxs]):
         assert atom.symbol() == sym
-        assert atom.coords() == list(coord)    
+        assert atom.coords() == list(coord)
 
 
 def test_copymol3D():
