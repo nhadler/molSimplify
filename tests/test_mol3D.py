@@ -6,11 +6,108 @@ from molSimplify.Classes.atom3D import atom3D
 from molSimplify.Classes.globalvars import globalvars
 
 
-# TODO getAtoms test
+def test_addAtom():
+    mol = mol3D()
+    assert mol.natoms == 0
+    mol.addAtom(atom3D(Sym='Cu', xyz=[1,2,3]))
+    assert mol.natoms == 1
+    cu_mass = 63.546
+    assert mol.mass == cu_mass
+    assert len(mol.atoms) == 1
+    assert mol.atoms[0].symbol() == 'Cu'
+    assert mol.atoms[0].coords() == [1,2,3]
 
-# TODO getDistToMetal
 
-# TODO getAtomwithinds
+def test_getAtoms():
+    mol = mol3D()
+    symbols = ['O','H','H']
+    coords = [
+    [-3.73751, 1.29708, 0.00050],
+    [-2.74818, 1.33993, -0.00035],
+    [-4.02687, 2.24392, -0.01831],
+    ]
+    for sym, coord in zip(symbols, coords):
+        mol.addAtom(atom3D(Sym=sym, xyz=coord))
+
+    atoms = mol.getAtoms()
+    assert len(atoms) == 3
+    for atom, sym, coord in zip(atoms, symbols, coords):
+        assert atom.symbol() == sym
+        assert atom.coords() == coord
+
+
+def test_getDistToMetal():
+    mol = mol3D()
+    symbols = ['Fe','O','H']
+    coords = [
+    [-2.56324, 0.91197, 0.05066],
+    [-1.78774, 2.62609, -0.27042],
+    [-1.90753, 3.11615, 0.58170],
+    ]
+    for sym, coord in zip(symbols, coords):
+        mol.addAtom(atom3D(Sym=sym, xyz=coord))    
+
+    # Note, this method works even with non-metals.
+    assert np.isclose(mol.getDistToMetal(0, 1), 1.90859, atol=1e-5) 
+    assert np.isclose(mol.getDistToMetal(0, 2), 2.36016, atol=1e-5)
+    assert np.isclose(mol.getDistToMetal(1, 2), 0.99026, atol=1e-5)
+
+
+@pytest.mark.parametrize(
+    "idxs",
+    [
+    [0,1],
+    [2],
+    [1,2],
+    [0,2],
+    ])
+def test_getAtomwithinds(idxs):
+    mol = mol3D()
+    symbols = ['Fe','O','H']
+    coords = [
+    [-2.56324, 0.91197, 0.05066],
+    [-1.78774, 2.62609, -0.27042],
+    [-1.90753, 3.11615, 0.58170],
+    ]
+    symbols, coords = np.array(symbols), np.array(coords)
+    for sym, coord in zip(symbols, coords):
+        mol.addAtom(atom3D(Sym=sym, xyz=coord))
+
+    atom_list = mol.getAtomwithinds(idxs)
+    assert len(atom_list) == len(idxs)
+
+    for atom, sym, coord in zip(atom_list, symbols[idxs], coords[idxs]):
+        assert atom.symbol() == sym
+        assert atom.coords() == list(coord)    
+
+
+def test_copymol3D():
+    pass
+
+
+def test_initialize():
+    pass
+
+
+def test_centersym():
+    pass
+
+
+def test_distance():
+    pass
+
+
+def test_mindist():
+    pass
+
+
+def test_getBondedAtomsH():
+    pass
+
+
+def test_alignmol():
+    pass
+
 
 def test_adding_and_deleting_atoms():
     mol = mol3D()
