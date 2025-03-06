@@ -138,10 +138,6 @@ def test_initialize():
     assert mol.graph == []
 
 
-def test_distance():
-    pass
-
-
 def test_mindist():
     pass
 
@@ -340,6 +336,23 @@ def test_centermass(resource_path_root, name, correct_answer):
     mol.readfromxyz(xyz_file)
     center_of_mass = mol.centermass()
     assert np.allclose(center_of_mass, correct_answer, atol=1e-5)
+
+
+@pytest.mark.parametrize(
+    "name1, name2, correct_answer",
+    [
+    ('benzene', 'taurine', 1.29003),
+    ('taurine', 'benzene', 1.29003),
+    ('phenanthroline', 'benzene', 1.97510),
+    ])
+def test_distance(resource_path_root, name1, name2, correct_answer):
+    xyz_file1 = resource_path_root / "inputs" / "xyz_files" / f"{name1}.xyz"
+    xyz_file2 = resource_path_root / "inputs" / "xyz_files" / f"{name2}.xyz"
+    mol1, mol2 = mol3D(), mol3D()
+    mol1.readfromxyz(xyz_file1)
+    mol2.readfromxyz(xyz_file2)
+    distance = mol1.distance(mol2)
+    assert np.isclose(distance, correct_answer, atol=1e-5)
 
 
 @pytest.mark.parametrize('name, geometry_str', [
