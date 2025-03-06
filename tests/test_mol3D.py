@@ -773,7 +773,7 @@ def test_getBondedAtomsH(resource_path_root, name, idx, correct_answer):
     mol.readfromxyz(xyz_file)
     nats = mol.getBondedAtomsH(idx)
     assert nats == correct_answer
-    
+
 
 @pytest.mark.parametrize(
     "name, idx, correct_answer",
