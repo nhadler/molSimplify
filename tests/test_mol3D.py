@@ -6,6 +6,12 @@ from molSimplify.Classes.atom3D import atom3D
 from molSimplify.Classes.globalvars import globalvars
 
 
+# TODO getAtoms test
+
+# TODO getDistToMetal
+
+# TODO getAtomwithinds
+
 def test_adding_and_deleting_atoms():
     mol = mol3D()
     mol.addAtom(atom3D(Sym='Fe'))
@@ -432,7 +438,7 @@ def test_geo_geometry_type_distance(resource_path_root, geo_type, ref):
     "co",
     "cr3_f6_optimization",
     ])
-def test_graph_hash(resource_path_root, geo):
+def test_get_graph_hash(resource_path_root, geo):
     # Note: May fail if a very different version of networkx is used
     # compared to that used for the reference.
     mol = mol3D()

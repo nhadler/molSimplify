@@ -3843,6 +3843,7 @@ class mol3D:
     def get_coordinate_array(self):
         """
         Get the coordinate array of the molecule.
+        Same as coordsvect.
 
         Parameters
         ----------

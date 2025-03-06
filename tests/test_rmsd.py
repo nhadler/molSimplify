@@ -45,10 +45,10 @@ def test_methane_rotation(atol=1e-3):
         f"H    {d * np.cos(theta):8.5f}   {-d * np.sin(theta):8.5f}   -0.36300\n"
     )
     mol1 = mol3D()
-    mol1.readfromstring(xyz_string)
+    mol1.readfromxyz(xyz_string, readstring=True)
 
     mol2 = mol3D()
-    mol2.readfromstring(xyz_string)
+    mol2.readfromxyz(xyz_string, readstring=True)
     # rotate 180 degrees around the z axis
     mol2 = rotate_around_axis(mol2, [0.0, 0.0, 0.0], [0.0, 0.0, 1.0], 180)
     #assert rigorous_rmsd(mol1, mol2, reorder='none') < atol
@@ -70,7 +70,7 @@ def test_tbpd_rotation(atol=1e-3):
         """
     )
     mol1 = mol3D()
-    mol1.readfromstring(xyz_string)
+    mol1.readfromxyz(xyz_string, readstring=True)
 
     mol2 = mol3D()
     mol2.copymol3D(mol1)
