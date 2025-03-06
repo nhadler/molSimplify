@@ -360,22 +360,6 @@ def test_mindist(resource_path_root, name1, name2, correct_answer):
     assert np.isclose(mindist, correct_answer, atol=1e-5)
 
 
-@pytest.mark.parametrize(
-    "name, idx, correct_answer",
-    [
-    ("caffeine", 5, []),
-    ("caffeine", 19, [20,21,22]),
-    ("caffeine", 7, [23]),
-    ("FIrpic", 16, [17]),
-    ])
-def test_getBondedAtomsH(resource_path_root, name, idx, correct_answer):
-    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
-    mol = mol3D()
-    mol.readfromxyz(xyz_file)
-    nats = mol.getBondedAtomsH(idx)
-    assert nats == correct_answer
-
-
 def test_alignmol():
     pass
 
@@ -774,6 +758,22 @@ def test_getBondedAtomsSmart(resource_path_root, name, idx, oct_flag, correct_an
     nats = mol.getBondedAtomsSmart(idx, oct=oct_flag)
     assert nats == correct_answer
 
+
+@pytest.mark.parametrize(
+    "name, idx, correct_answer",
+    [
+    ("caffeine", 5, []),
+    ("caffeine", 19, [20,21,22]),
+    ("caffeine", 7, [23]),
+    ("FIrpic", 16, [17]),
+    ])
+def test_getBondedAtomsH(resource_path_root, name, idx, correct_answer):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+    nats = mol.getBondedAtomsH(idx)
+    assert nats == correct_answer
+    
 
 @pytest.mark.parametrize(
     "name, idx, correct_answer",
