@@ -64,10 +64,6 @@ def startgen_pythonic(input_dict={'-core': 'fe', '-lig': 'cl,cl,cl,cl,cl,cl'},
         return (strfiles, emsg, this_diag)
 
 
-# Coordinates subroutines
-#  @param argv Argument list
-#  @param flag Flag for printing information
-#  @return Error messages
 def startgen(argv, flag, inputfile_str=None, write_files=True):
     """Coordinates subroutines.
 

@@ -43,10 +43,10 @@ def type_convert(structures):
                 mol.readfrommol2(x)
             # checking for number at start of string -> indicates xyz string
             elif (len(x.split('\n')) > 3) & (x.split('\n')[0].replace(' ', '').isnumeric()):
-                mol.readfromstring(x)
+                mol.readfromxyz(x, readstring=True)
             # checking for similar file without header
             elif (len(x.split('\n')[0].split()) == 4) and x.split('\n')[0].split()[0]:
-                mol.readfromstring(x)
+                mol.readfromxyz(x, readstring=True)
             else:
                 raise ValueError('Not Recognized Structure Type for index: ' + str(i))
             outlist.append(mol)
@@ -64,10 +64,10 @@ def type_convert(structures):
             mol.readfrommol2(x)
         # checking for number at start of string -> indicates xyz string
         elif (len(x.split('\n')) > 3) & (x.split('\n')[0].replace(' ', '').isnumeric()):
-            mol.readfromstring(x)
+            mol.readfromxyz(x, readstring=True)
         # checking for similar file without header
         elif (len(x.split('\n')[0].split()) == 4) and x.split('\n')[0].split()[0]:
-            mol.readfromstring(x)
+            mol.readfromxyz(x, readstring=True)
         else:
             raise ValueError('Not Recognized Structure Type Passed')
         outlist.append(mol)

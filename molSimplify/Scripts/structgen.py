@@ -435,7 +435,7 @@ def init_ligand(args: Namespace, lig: mol3D, tcats,
     # if SMILES string, copy connecting atoms list to mol3D properties
     if not lig.cat and tcats[i]:
         if 'c' in tcats[i]:
-            lig.cat = [lig.natoms]
+            lig.cat = [lig.getNumAtoms()]
         else:
             lig.cat = tcats[i]
     # change name
@@ -450,7 +450,7 @@ def init_ligand(args: Namespace, lig: mol3D, tcats,
             lig3Dpiatoms.addAtom(lig3D.getAtom(k))
         ligpiatoms = lig.cat[:-1]
         lig3D.addAtom(atom3D('C', lig3Dpiatoms.centermass()))
-        lig.cat = [lig3D.natoms-1]
+        lig.cat = [lig3D.getNumAtoms()-1]
         rempi = True
     # perform FF optimization if requested (not supported for pi-coordinating ligands)
     if args.ff and 'b' in args.ffoption and not rempi:
@@ -586,7 +586,7 @@ def smartreorderligs(ligs: List[str], dentl: List[int],
     for ligand in ligs:
         lig, _ = lig_load(ligand)  # load ligand
         lig.convert2mol3D()
-        lsizes.append(lig.natoms)
+        lsizes.append(lig.getNumAtoms())
     # sort ligands into subsets by denticity, since set() sort the items
     # this list goes from lowest to highest denticity, e.g. first list entry
     # contains all monodentate indices, second all bidentates...
@@ -744,7 +744,7 @@ def openbabel_ffopt(ff: str, mol: mol3D, connected: List[int], constopt: int,
             # identify bridging atoms in the case of bimetallic cores,
             # as well as single-atom ligands (oxo, nitrido)
             # these are immune to deletion
-            for i in range(mol.natoms):
+            for i in range(mol.getNumAtoms()):
                 nbondedmetals = len([idx for idx in range(len(mol.getBondedAtoms(
                     i))) if mol.getAtom(mol.getBondedAtoms(i)[idx]).ismetal()])
                 if nbondedmetals > 1 or (nbondedmetals == 1 and len(mol.getBondedAtoms(i)) == 1):
@@ -898,7 +898,7 @@ def xtb_opt(ff: str, mol: mol3D, connected: List[int], constopt: int,
             Forcefield energy of optimized molecule.
 
     """
-    logger.debug(f'xtbopt() called with {mol.natoms} atoms '
+    logger.debug(f'xtbopt() called with {mol.getNumAtoms()} atoms '
                  f'constopt: {constopt}, frozenats: {frozenats}, '
                  f'frozenangles: {frozenangles}, nsteps: {nsteps}, '
                  f'spin {spin}, inertial {inertial}')
@@ -1094,7 +1094,7 @@ def align_lig_centersym(corerefcoords, lig3D, atom0, core3D, EnableAutoLinearBen
     d1 = distance(r0, lig3Db.centersym())
     lig3D = lig3D if (d1 < d2) else lig3Db  # pick best one
     # additional rotation for bent terminal connecting atom:
-    if auxmol.natoms == 1:
+    if auxmol.getNumAtoms() == 1:
         if (distance(auxmol.getAtomCoords(0), lig3D.getAtomCoords(atom0))
                 > 0.8*(auxmol.getAtom(0).rad + lig3D.getAtom(atom0).rad)
                 and EnableAutoLinearBend):
@@ -1294,7 +1294,7 @@ def check_rotate_linear_lig(corerefcoords, lig3D, atom0):
     lig3D_aligned = mol3D()
     for at in lig3D.getBondedAtoms(atom0):
         auxm.addAtom(lig3D.getAtom(at))
-    if auxm.natoms > 1:
+    if auxm.getNumAtoms() > 1:
         r0 = lig3D.getAtom(atom0).coords()
         r1 = auxm.getAtom(0).coords()
         r2 = auxm.getAtom(1).coords()
@@ -1445,7 +1445,7 @@ def rotate_catom_fix_Hs(lig3D, catoms, n, mcoords, core3D):
         for atom in danglinggroup:
             confrag3D.addAtom(lig3D.getAtom(atom))
             confragatomlist.append(atom)
-        if confrag3D.natoms > 1:
+        if confrag3D.getNumAtoms() > 1:
             # terminal connecting atom
             confrag3Dtmp = mol3D()
             confrag3Dtmp.copymol3D(confrag3D)
@@ -1472,7 +1472,7 @@ def rotate_catom_fix_Hs(lig3D, catoms, n, mcoords, core3D):
                         auxmol2 = mol3D()
                         auxmol2.copymol3D(confrag3Dtmp)
                         # objs.append(distance(mcoords,auxmol.centersym()))
-                        if auxmol2.natoms > 3:
+                        if auxmol2.getNumAtoms() > 3:
                             obj = auxmol2.mindisttopoint(mcoords)
                         else:
                             obj = distance(mcoords, auxmol1.centersym())
@@ -1916,7 +1916,7 @@ def align_dent2_catom2_refined(args, lig3D, catoms, bondl, r1, r0, core3D, rtarg
         # Relax the ligand
         lig3Dtmp, enl = ffopt(args.ff, lig3Dtmp, [catoms[1]], 2, [
                               catoms[0]], False, MLoptbds[-2:-1], 200, debug=args.debug)
-        lig3Dtmp.deleteatom(lig3Dtmp.natoms-1)
+        lig3Dtmp.deleteatom(lig3Dtmp.getNumAtoms()-1)
     lig3Dtmp, en_final = ffopt(
         args.ff, lig3Dtmp, [], 1, [], False, [], 0, debug=args.debug)
     if en_final - en_start > 20:
@@ -1998,11 +1998,11 @@ def align_dent1_lig(args, cpoint, core3D, coreref, ligand, lig3D, catoms,
             lig3D = align_linear_pi_lig(corerefcoords, lig3D, atom0, ligpiatoms)
         else:  # 5 and 6 membered rings dealt with here
             lig3D = align_pi_ring_lig(corerefcoords, lig3D, atom0, ligpiatoms, u)
-    elif lig3D.natoms > 1:
+    elif lig3D.getNumAtoms() > 1:
         # align ligand center of symmetry
         lig3D = align_lig_centersym(
             corerefcoords, lig3D, atom0, core3D, EnableAutoLinearBend)
-        if lig3D.natoms > 2:
+        if lig3D.getNumAtoms() > 2:
             # check for linear molecule and align
             lig3D = check_rotate_linear_lig(corerefcoords, lig3D, atom0)
             # check for symmetric molecule
@@ -2100,7 +2100,7 @@ def align_dent2_lig(args, cpoint, batoms, m3D, core3D, coreref, ligand, lig3D,
     # freeze local geometry
     lats = lig3D.getBondedAtoms(catoms[0])+lig3D.getBondedAtoms(catoms[1])
     for lat in list(set(lats)):
-        frozenats.append(lat+core3D.natoms)
+        frozenats.append(lat+core3D.getNumAtoms())
     lig3D_aligned = mol3D()
     lig3D_aligned.copymol3D(lig3D)
     return lig3D_aligned, frozenats, MLoptbds
@@ -2246,7 +2246,7 @@ def align_dent3_lig(args, cpoint, batoms, m3D, core3D, coreref, ligand, lig3D,
     # freeze local geometry
     lats = lig3D.getBondedAtoms(catoms[0])+lig3D.getBondedAtoms(catoms[1])
     for lat in list(set(lats)):
-        frozenats.append(lat+core3D.natoms)
+        frozenats.append(lat+core3D.getNumAtoms())
     lig3D_aligned = mol3D()
     lig3D_aligned.copymol3D(lig3D)
     return lig3D_aligned, frozenats, MLoptbds
@@ -2457,7 +2457,7 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
         for comb_i, comb in enumerate(batslist):
             for i in comb:
                 if i == 1:
-                    batslist[comb_i][i] = m3D.natoms - coord + 1
+                    batslist[comb_i][i] = m3D.getNumAtoms() - coord + 1
     # initialize ANN
     ANN_flag, ANN_bondl, ANN_reason, ANN_attributes, catalysis_flag = init_ANN(
         args, ligands, occs, dents, batslist, tcats, licores)
@@ -2465,7 +2465,7 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
     this_diag.set_ANN(ANN_flag, ANN_reason, ANN_attributes, catalysis_flag)
 
     # freeze core
-    for i in range(0, core3D.natoms):
+    for i in range(0, core3D.getNumAtoms()):
         frozenats.append(i)
 
     # loop over ligands and begin functionalization
@@ -2516,7 +2516,7 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
             if not (ligand == 'x' or ligand == 'X') and (totlig-1+denticity < coord):
                 # add atoms to connected atoms list
                 catoms = lig.cat  # connection atoms
-                initatoms = core3D.natoms  # initial number of atoms in core3D
+                initatoms = core3D.getNumAtoms()  # initial number of atoms in core3D
                 if args.debug:
                     print((ligand.lower()))
                     print((args.mlig))
@@ -2699,11 +2699,11 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
                 complex2D.append(lig2D)
 
                 if 'a' not in lig.ffopt.lower():
-                    for latdix in range(0, lig3D.natoms):
+                    for latdix in range(0, lig3D.getNumAtoms()):
                         if args.debug:
                             print(('a is not ff.lower, so adding atom:  ' +
-                                   str(latdix+core3D.natoms) + ' to freeze'))
-                        frozenats.append(latdix+core3D.natoms)
+                                   str(latdix+core3D.getNumAtoms()) + ' to freeze'))
+                        frozenats.append(latdix+core3D.getNumAtoms())
 
 
 
@@ -2727,14 +2727,14 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
                 # remove dummy cm atom if requested
                 if rempi:
                     # remove the fictitious center atom, for aromatic-bonding ligands like benzene
-                    core3D.deleteatom(core3D.natoms-1)
+                    core3D.deleteatom(core3D.getNumAtoms()-1)
                 if args.debug:
-                    print(('number of atoms in lig3D is ' + str(lig3D.natoms)))
-                if lig3D.natoms < 3:
-                    frozenats += list(range(core3D.natoms-2, core3D.natoms))
+                    print(('number of atoms in lig3D is ' + str(lig3D.getNumAtoms())))
+                if lig3D.getNumAtoms() < 3:
+                    frozenats += list(range(core3D.getNumAtoms()-2, core3D.getNumAtoms()))
                     if args.debug:
                         print(
-                            (str(list(range(core3D.natoms-2, core3D.natoms))) + ' are frozen.'))
+                            (str(list(range(core3D.getNumAtoms()-2, core3D.getNumAtoms()))) + ' are frozen.'))
                 if args.calccharge:
                     core3D.charge += lig3D.charge
                     if args.debug:
@@ -2913,7 +2913,7 @@ def generate_report(args: Namespace, ligands: List[str], ligoc: List[int]
         for comb_i, comb in enumerate(batslist):
             for i in comb:
                 if i == 1:
-                    batslist[comb_i][i] = m3D.natoms - coord + 1
+                    batslist[comb_i][i] = m3D.getNumAtoms() - coord + 1
     ANN_flag, ANN_bondl, ANN_reason, ANN_attributes, catalysis_flag = init_ANN(
         args, ligands, occs, dents, batslist, tcats, licores)
 

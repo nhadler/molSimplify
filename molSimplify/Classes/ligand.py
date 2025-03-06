@@ -45,10 +45,10 @@ class ligand:
                 thismol.readfrommol2(read_lig)
             # checking for number at start of string -> indicates xyz string
             elif (len(read_lig.split('\n')) > 3) & (read_lig.split('\n')[0].replace(' ', '').isnumeric()):
-                thismol.readfromstring(read_lig)
+                thismol.readfromxyz(read_lig, readstring=True)
             # checking for similar file without header
             elif (len(read_lig.split('\n')[0].split()) == 4) and read_lig.split('\n')[0].split()[0]:
-                thismol.readfromstring(read_lig)
+                thismol.readfromxyz(read_lig, readstring=True)
             else:
                 raise ValueError('Not Recognized Structure Type!')
             self.master_mol = thismol

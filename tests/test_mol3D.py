@@ -6,6 +6,138 @@ from molSimplify.Classes.atom3D import atom3D
 from molSimplify.Classes.globalvars import globalvars
 
 
+def test_addAtom():
+    mol = mol3D()
+    assert mol.natoms == 0
+    mol.addAtom(atom3D(Sym='Cu', xyz=[1,2,3]))
+    assert mol.natoms == 1
+    cu_mass = 63.546
+    assert mol.mass == cu_mass
+    assert len(mol.atoms) == 1
+    assert mol.atoms[0].symbol() == 'Cu'
+    assert mol.atoms[0].coords() == [1,2,3]
+
+
+def test_getAtoms():
+    mol = mol3D()
+    symbols = ['O','H','H']
+    coords = [
+    [-3.73751, 1.29708, 0.00050],
+    [-2.74818, 1.33993, -0.00035],
+    [-4.02687, 2.24392, -0.01831],
+    ]
+    for sym, coord in zip(symbols, coords):
+        mol.addAtom(atom3D(Sym=sym, xyz=coord))
+
+    atoms = mol.getAtoms()
+    assert len(atoms) == 3
+    for atom, sym, coord in zip(atoms, symbols, coords):
+        assert atom.symbol() == sym
+        assert atom.coords() == coord
+
+
+def test_getDistToMetal():
+    mol = mol3D()
+    symbols = ['Fe','O','H']
+    coords = [
+    [-2.56324, 0.91197, 0.05066],
+    [-1.78774, 2.62609, -0.27042],
+    [-1.90753, 3.11615, 0.58170],
+    ]
+    for sym, coord in zip(symbols, coords):
+        mol.addAtom(atom3D(Sym=sym, xyz=coord))
+
+    # Note, this method works even with non-metals.
+    assert np.isclose(mol.getDistToMetal(0, 1), 1.90859, atol=1e-5)
+    assert np.isclose(mol.getDistToMetal(0, 2), 2.36016, atol=1e-5)
+    assert np.isclose(mol.getDistToMetal(1, 2), 0.99026, atol=1e-5)
+
+
+@pytest.mark.parametrize(
+    "idxs",
+    [
+    [0,1],
+    [2],
+    [1,2],
+    [0,2],
+    ])
+def test_getAtomwithinds(idxs):
+    mol = mol3D()
+    symbols = ['Fe','O','H']
+    coords = [
+    [-2.56324, 0.91197, 0.05066],
+    [-1.78774, 2.62609, -0.27042],
+    [-1.90753, 3.11615, 0.58170],
+    ]
+    symbols, coords = np.array(symbols), np.array(coords)
+    for sym, coord in zip(symbols, coords):
+        mol.addAtom(atom3D(Sym=sym, xyz=coord))
+
+    atom_list = mol.getAtomwithinds(idxs)
+    assert len(atom_list) == len(idxs)
+
+    for atom, sym, coord in zip(atom_list, symbols[idxs], coords[idxs]):
+        assert atom.symbol() == sym
+        assert atom.coords() == list(coord)
+
+
+@pytest.mark.parametrize(
+    "make_graph, make_obmol",
+    [
+    (False, False),
+    (True, False),
+    (False, True),
+    (True, True),
+    ])
+def test_copymol3D(make_graph, make_obmol):
+    mol = mol3D()
+    symbols = ['O','H','H']
+    coords = [
+    [-3.73751, 1.29708, 0.00050],
+    [-2.74818, 1.33993, -0.00035],
+    [-4.02687, 2.24392, -0.01831],
+    ]
+    for sym, coord in zip(symbols, coords):
+        mol.addAtom(atom3D(Sym=sym, xyz=coord))
+
+    if make_graph:
+        mol.createMolecularGraph()
+    if make_obmol:
+        mol.convert2OBMol()
+
+    mol2 = mol3D()
+    mol2.copymol3D(mol)
+
+    atoms = mol2.getAtoms()
+    assert len(atoms) == 3
+    for atom, sym, coord in zip(atoms, symbols, coords):
+        assert atom.symbol() == sym
+        assert atom.coords() == coord
+
+    assert np.array_equal(mol.graph, mol2.graph)
+    assert mol.charge == mol2.charge
+    assert mol.OBMol == mol2.OBMol
+
+
+def test_initialize():
+    mol = mol3D()
+    symbols = ['O','H']
+    coords = [
+    [-3.73751, 1.29708, 0.00050],
+    [-2.74818, 1.33993, -0.00035],
+    ]
+    for sym, coord in zip(symbols, coords):
+        mol.addAtom(atom3D(Sym=sym, xyz=coord))
+
+    mol.createMolecularGraph()
+    mol.initialize()
+    assert mol.atoms == []
+    assert mol.natoms == 0
+    assert mol.mass == 0
+    assert mol.size == 0
+    assert mol.graph == []
+
+
 def test_adding_and_deleting_atoms():
     mol = mol3D()
     mol.addAtom(atom3D(Sym='Fe'))
@@ -163,6 +295,104 @@ def test_readfromxyz(resource_path_root):
 
     for atom, ref in zip(mol.atoms, atoms_ref):
         assert (atom.symbol(), atom.coords()) == ref
+
+
+@pytest.mark.parametrize(
+    "name, correct_answer",
+    [
+    ('caffeine', [-4.33630, -0.26098, 0.0]),
+    ('penicillin', [0.49611, 1.45173, -0.36520]),
+    ])
+def test_centersym(resource_path_root, name, correct_answer):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    center_of_symmetry = mol.centersym()
+    assert np.allclose(center_of_symmetry, correct_answer, atol=1e-5)
+
+
+@pytest.mark.parametrize(
+    "name, correct_answer",
+    [
+    ('caffeine', [-4.41475,-0.30732,0]),
+    ('HKUST-1_sbu', [-4.64738,-2.68238,7.59]),
+    ])
+def test_centermass(resource_path_root, name, correct_answer):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+    center_of_mass = mol.centermass()
+    assert np.allclose(center_of_mass, correct_answer, atol=1e-5)
+
+
+@pytest.mark.parametrize(
+    "name1, name2, correct_answer",
+    [
+    ('benzene', 'taurine', 1.29003),
+    ('taurine', 'benzene', 1.29003),
+    ('phenanthroline', 'benzene', 1.97510),
+    ])
+def test_distance(resource_path_root, name1, name2, correct_answer):
+    xyz_file1 = resource_path_root / "inputs" / "xyz_files" / f"{name1}.xyz"
+    xyz_file2 = resource_path_root / "inputs" / "xyz_files" / f"{name2}.xyz"
+    mol1, mol2 = mol3D(), mol3D()
+    mol1.readfromxyz(xyz_file1)
+    mol2.readfromxyz(xyz_file2)
+    distance = mol1.distance(mol2)
+    assert np.isclose(distance, correct_answer, atol=1e-5)
+
+
+@pytest.mark.parametrize(
+    "name1, name2, correct_answer",
+    [
+    ('co', 'far_co', 30.61876),
+    ('far_co', 'co', 30.61876),
+    ('far_co', 'benzene', 27.36368),
+    ])
+def test_mindist(resource_path_root, name1, name2, correct_answer):
+    xyz_file1 = resource_path_root / "inputs" / "xyz_files" / f"{name1}.xyz"
+    xyz_file2 = resource_path_root / "inputs" / "xyz_files" / f"{name2}.xyz"
+    mol1, mol2 = mol3D(), mol3D()
+    mol1.readfromxyz(xyz_file1)
+    mol2.readfromxyz(xyz_file2)
+    mindist = mol1.mindist(mol2)
+    assert np.isclose(mindist, correct_answer, atol=1e-5)
+
+
+@pytest.mark.parametrize(
+    "name1, name2, idx1, idx2, correct_answer",
+    [
+    ('co', 'far_co', 0, 0, np.array([
+        [9.60627, 22.98702, -16.46037],
+        [10.39914, 22.28802, -16.46037],
+        ])),
+    ('far_co', 'co', 0, 0, np.array([
+        [-3.39222, 0.46228, 0.],
+        [-2.59935, -0.23672, 0.]
+        ])),
+    ('far_co', 'co', 0, 1, np.array([
+        [-2.59935, -0.23672, 0.],
+        [-1.80648, -0.93572, 0.],
+        ])),
+    ('far_co', 'benzene', 0, 5, np.array([
+        [-0.16423, 1.06026, 0.],
+        [0.62864, 0.36126, 0.],
+        ])),
+    ])
+def test_alignmol(resource_path_root, name1, name2, idx1, idx2, correct_answer):
+    xyz_file1 = resource_path_root / "inputs" / "xyz_files" / f"{name1}.xyz"
+    xyz_file2 = resource_path_root / "inputs" / "xyz_files" / f"{name2}.xyz"
+    mol1, mol2 = mol3D(), mol3D()
+    mol1.readfromxyz(xyz_file1)
+    mol2.readfromxyz(xyz_file2)
+
+    mol1.alignmol(mol1.getAtom(idx1), mol2.getAtom(idx2))
+    coords = mol1.get_coordinate_array()
+    assert np.allclose(coords, correct_answer, atol=1e-5)
+
+    elem_list = mol1.get_element_list()
+    assert elem_list == ['C', 'O']
 
 
 @pytest.mark.parametrize('name, geometry_str', [
@@ -432,7 +662,7 @@ def test_geo_geometry_type_distance(resource_path_root, geo_type, ref):
     "co",
     "cr3_f6_optimization",
     ])
-def test_graph_hash(resource_path_root, geo):
+def test_get_graph_hash(resource_path_root, geo):
     # Note: May fail if a very different version of networkx is used
     # compared to that used for the reference.
     mol = mol3D()
@@ -557,6 +787,22 @@ def test_getBondedAtomsSmart(resource_path_root, name, idx, oct_flag, correct_an
     mol.readfromxyz(xyz_file)
 
     nats = mol.getBondedAtomsSmart(idx, oct=oct_flag)
+    assert nats == correct_answer
+
+
+@pytest.mark.parametrize(
+    "name, idx, correct_answer",
+    [
+    ("caffeine", 5, []),
+    ("caffeine", 19, [20,21,22]),
+    ("caffeine", 7, [23]),
+    ("FIrpic", 16, [17]),
+    ])
+def test_getBondedAtomsH(resource_path_root, name, idx, correct_answer):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+    nats = mol.getBondedAtomsH(idx)
     assert nats == correct_answer
 
 
@@ -713,20 +959,6 @@ def test_get_smiles(resource_path_root, name, canonicalize, use_mol2, correct_sm
     mol.readfromxyz(xyz_file)
     smiles = mol.get_smiles(canonicalize=canonicalize, use_mol2=use_mol2)
     assert smiles == correct_smiles
-
-
-@pytest.mark.parametrize(
-    "name, correct_answer",
-    [
-    ('caffeine', [-4.41475,-0.30732,0]),
-    ('HKUST-1_sbu', [-4.64738,-2.68238,7.59]),
-    ])
-def test_centermass(resource_path_root, name, correct_answer):
-    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
-    mol = mol3D()
-    mol.readfromxyz(xyz_file)
-    center_of_mass = mol.centermass()
-    assert np.allclose(center_of_mass, correct_answer, atol=1e-5)
 
 
 @pytest.mark.parametrize(
