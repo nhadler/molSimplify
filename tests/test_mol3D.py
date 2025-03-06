@@ -138,10 +138,6 @@ def test_initialize():
     assert mol.graph == []
 
 
-def test_centersym():
-    pass
-
-
 def test_distance():
     pass
 
@@ -315,6 +311,35 @@ def test_readfromxyz(resource_path_root):
 
     for atom, ref in zip(mol.atoms, atoms_ref):
         assert (atom.symbol(), atom.coords()) == ref
+
+
+@pytest.mark.parametrize(
+    "name, correct_answer",
+    [
+    ('caffeine', [-4.33630, -0.26098, 0.0]),
+    ('penicillin', [0.49611, 1.45173, -0.36520]),
+    ])
+def test_centersym(resource_path_root, name, correct_answer):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    center_of_symmetry = mol.centersym()
+    assert np.allclose(center_of_symmetry, correct_answer, atol=1e-5)
+
+
+@pytest.mark.parametrize(
+    "name, correct_answer",
+    [
+    ('caffeine', [-4.41475,-0.30732,0]),
+    ('HKUST-1_sbu', [-4.64738,-2.68238,7.59]),
+    ])
+def test_centermass(resource_path_root, name, correct_answer):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+    center_of_mass = mol.centermass()
+    assert np.allclose(center_of_mass, correct_answer, atol=1e-5)
 
 
 @pytest.mark.parametrize('name, geometry_str', [
@@ -865,20 +890,6 @@ def test_get_smiles(resource_path_root, name, canonicalize, use_mol2, correct_sm
     mol.readfromxyz(xyz_file)
     smiles = mol.get_smiles(canonicalize=canonicalize, use_mol2=use_mol2)
     assert smiles == correct_smiles
-
-
-@pytest.mark.parametrize(
-    "name, correct_answer",
-    [
-    ('caffeine', [-4.41475,-0.30732,0]),
-    ('HKUST-1_sbu', [-4.64738,-2.68238,7.59]),
-    ])
-def test_centermass(resource_path_root, name, correct_answer):
-    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
-    mol = mol3D()
-    mol.readfromxyz(xyz_file)
-    center_of_mass = mol.centermass()
-    assert np.allclose(center_of_mass, correct_answer, atol=1e-5)
 
 
 @pytest.mark.parametrize(
