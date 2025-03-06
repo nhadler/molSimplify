@@ -138,18 +138,6 @@ def test_initialize():
     assert mol.graph == []
 
 
-def test_mindist():
-    pass
-
-
-def test_getBondedAtomsH():
-    pass
-
-
-def test_alignmol():
-    pass
-
-
 def test_adding_and_deleting_atoms():
     mol = mol3D()
     mol.addAtom(atom3D(Sym='Fe'))
@@ -353,6 +341,43 @@ def test_distance(resource_path_root, name1, name2, correct_answer):
     mol2.readfromxyz(xyz_file2)
     distance = mol1.distance(mol2)
     assert np.isclose(distance, correct_answer, atol=1e-5)
+
+
+@pytest.mark.parametrize(
+    "name1, name2, correct_answer",
+    [
+    ('co', 'far_co', 30.61876),
+    ('far_co', 'co', 30.61876),
+    ('far_co', 'benzene', 27.36368),
+    ])
+def test_mindist(resource_path_root, name1, name2, correct_answer):
+    xyz_file1 = resource_path_root / "inputs" / "xyz_files" / f"{name1}.xyz"
+    xyz_file2 = resource_path_root / "inputs" / "xyz_files" / f"{name2}.xyz"
+    mol1, mol2 = mol3D(), mol3D()
+    mol1.readfromxyz(xyz_file1)
+    mol2.readfromxyz(xyz_file2)
+    mindist = mol1.mindist(mol2)
+    assert np.isclose(mindist, correct_answer, atol=1e-5)
+
+
+@pytest.mark.parametrize(
+    "name, idx, correct_answer",
+    [
+    ("caffeine", 5, []),
+    ("caffeine", 19, [20,21,22]),
+    ("caffeine", 7, [23]),
+    ("FIrpic", 16, [17]),
+    ])
+def test_getBondedAtomsH(resource_path_root, name, idx, correct_answer):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+    nats = mol.getBondedAtomsH(idx)
+    assert nats == correct_answer
+
+
+def test_alignmol():
+    pass
 
 
 @pytest.mark.parametrize('name, geometry_str', [
