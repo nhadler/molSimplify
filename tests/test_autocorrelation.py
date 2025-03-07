@@ -47,15 +47,59 @@ def test_construct_property_vector(resource_path_root, load_complex1, prop):
     # For saving np arrays to json, need to cast to list.
     # Convert back for comparison.
     ref_w = np.array(ref_w)
-    assert np.allclose(w, ref_w)
+    assert np.array_equal(w, ref_w)
 
 
-def test_autocorrelation():
-    pass
+@ pytest.mark.parametrize(
+    "orig, d, oct_flag, use_dist, size_normalize",
+    [
+    (0, 3, True, False, False),
+    (0, 2, True, False, False),
+    (5, 3, True, False, False),
+    (5, 3, False, False, False),
+    (5, 3, False, True, False),
+    (5, 3, False, True, True),
+    ])
+def test_autocorrelation(resource_path_root, load_complex1, orig, d, oct_flag, use_dist, size_normalize):
+    # Will focus on electronegativity for this test.
+    prop = 'electronegativity'
+
+    w = construct_property_vector(load_complex1, prop)
+    v = autocorrelation(load_complex1, w, orig, d, oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize)
+    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "autocorrelation" / f"{orig}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
+    with open(reference_path, 'r') as f:
+        ref_v = json.load(f)
+
+    # For saving np arrays to json, need to cast to list.
+    # Convert back for comparison.
+    ref_v = np.array(ref_v)
+    assert np.array_equal(v, ref_v)
 
 
-def test_deltametric():
-    pass
+@ pytest.mark.parametrize(
+    "orig, d, oct_flag, use_dist, size_normalize",
+    [
+    (0, 3, True, False, False),
+    (0, 2, True, False, False),
+    (5, 3, True, False, False),
+    (5, 3, False, False, False),
+    (5, 3, False, True, False),
+    (5, 3, False, True, True),
+    ])
+def test_deltametric(resource_path_root, load_complex1, orig, d, oct_flag, use_dist, size_normalize):
+    # Will focus on nuclear charge for this test.
+    prop = 'nuclear_charge'
+
+    w = construct_property_vector(load_complex1, prop)
+    v = deltametric(load_complex1, w, orig, d, oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize)
+    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "deltametric" / f"{orig}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
+    with open(reference_path, 'r') as f:
+        ref_v = json.load(f)
+
+    # For saving np arrays to json, need to cast to list.
+    # Convert back for comparison.
+    ref_v = np.array(ref_v)
+    assert np.array_equal(v, ref_v)
 
 
 def test_full_autocorrelation():
