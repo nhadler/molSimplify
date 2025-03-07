@@ -105,7 +105,7 @@ def autocorrelation(mol, prop_vec, orig, d, oct=True, use_dist=False, size_norma
     ----------
         mol : mol3D
             mol3D object to calculate autocorrelation over.
-        prop_vec : list
+        prop_vec : np.array
             Property of atoms in mol in order of index.
         orig : int
             Zero-indexed starting atom.
@@ -120,7 +120,7 @@ def autocorrelation(mol, prop_vec, orig, d, oct=True, use_dist=False, size_norma
 
     Returns
     -------
-        result_vector : list
+        result_vector : np.array
             assembled products autocorrelations
 
     """
@@ -162,7 +162,7 @@ def autocorrelation_derivative(mol, prop_vec, orig, d, oct=True):
     ----------
         mol : mol3D
             mol3D object to calculate derivatives over.
-        prop_vec : list
+        prop_vec : np.array
             Property of atoms in mol in order of index.
         orig : int
             Zero-indexed starting atom.
@@ -173,7 +173,7 @@ def autocorrelation_derivative(mol, prop_vec, orig, d, oct=True):
 
     Returns
     -------
-        derivative_mat : list
+        derivative_mat : np.array
             RAC derivatives matrix.
 
     """
@@ -215,7 +215,7 @@ def deltametric(mol, prop_vec, orig, d, oct=True, use_dist=False, size_normalize
     ----------
         mol : mol3D
             mol3D object to calculate deltametric autocorrelation over.
-        prop_vec : list
+        prop_vec : np.array
             Property of atoms in mol in order of index.
         orig : int
             Zero-indexed starting atom.
@@ -230,7 +230,7 @@ def deltametric(mol, prop_vec, orig, d, oct=True, use_dist=False, size_normalize
 
     Returns
     -------
-        results_vector : list
+        results_vector : np.array
             Deltametric autocorrelations.
 
     """
@@ -270,7 +270,7 @@ def deltametric_derivative(mol, prop_vec, orig, d, oct=True):
     ----------
         mol : mol3D
             mol3D object to calculate deltametric autocorrelation derivative over.
-        prop_vec : list
+        prop_vec : np.array
             Property of atoms in mol in order of index.
         orig : int
             Zero-indexed starting atom.
@@ -281,7 +281,7 @@ def deltametric_derivative(mol, prop_vec, orig, d, oct=True):
 
     Returns
     -------
-        derivative_mat : list
+        derivative_mat : np.array
             Deltametric autocorrelation derivatives matrix.
 
     """
@@ -338,7 +338,7 @@ def construct_property_vector(mol, prop, oct=True, modifier=False, MRdiag_dict={
 
     Returns
     -------
-        w : list
+        w : np.array
             Property vector for mol by atom.
 
     """
@@ -477,7 +477,7 @@ def full_autocorrelation(mol, prop, d, oct=True, modifier=False, use_dist=False,
 
     Returns
     -------
-        autocorrelation_vector : list
+        autocorrelation_vector : np.array
             Full scope product autocorrelation values.
 
     """
@@ -512,7 +512,7 @@ def full_autocorrelation_derivative(mol, prop, d, oct=True, modifier=False):
 
     Returns
     -------
-        autocorrelation_derivative_mat : list
+        autocorrelation_derivative_mat : np.array
             Full scope autocorrelation derivative matrix.
 
     """
@@ -681,7 +681,7 @@ def atom_only_autocorrelation(mol, prop, d, atomIdx, oct=True, use_dist=False, s
 
     Returns
     -------
-        autocorrelation_vector : list
+        autocorrelation_vector : np.array
             List of atom-only autocorrelations.
 
     """
@@ -719,7 +719,7 @@ def atom_only_autocorrelation_derivative(mol, prop, d, atomIdx, oct=True):
 
     Returns
     -------
-        autocorrelation_derivative_mat : list
+        autocorrelation_derivative_mat : np.array
             List of atom-only autocorrelation derivatives.
 
     """
@@ -774,7 +774,7 @@ def metal_only_autocorrelation(
 
     Returns
     -------
-        autocorrelation_vector: list
+        autocorrelation_vector: np.array
             MC atom-only RACs vector.
 
     """
@@ -818,7 +818,7 @@ def metal_only_autocorrelation_derivative(
 
     Returns
     -------
-        autocorrelation_vector: list
+        autocorrelation_vector: np.array
             MC atom-only RAC derivatives vector (matrix).
 
     """
@@ -865,7 +865,7 @@ def atom_only_deltametric(mol, prop, d, atomIdx, oct=True, modifier=False,
 
     Returns
     -------
-        autocorrelation_vector : list
+        deltametric_vector : np.array
             List of atom-only deltametric autocorrelations.
 
     """
@@ -904,7 +904,7 @@ def atom_only_deltametric_derivative(mol, prop, d, atomIdx, oct=True, modifier=F
 
     Returns
     -------
-        deltametric_derivative_mat : list
+        deltametric_derivative_mat : np.array
             Matrix of atom-only deltametric autocorrelation derivatives.
 
     """
@@ -955,7 +955,7 @@ def metal_only_deltametric(
 
     Returns
     -------
-        deltametric_vector : list
+        deltametric_vector : np.array
             Metal-centered deltametric RAC vector.
 
     """
@@ -998,7 +998,7 @@ def metal_only_deltametric_derivative(
 
     Returns
     -------
-        deltametric_vector_derivative : list
+        deltametric_vector_derivative : np.array
             Metal-centered deltametric derivatives vector (matrix).
 
     """
