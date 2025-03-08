@@ -19,7 +19,11 @@ from molSimplify.Informatics.autocorrelation import (
     )
 from molSimplify.Informatics.lacRACAssemble import get_descriptor_vector
 
-@pytest.fixture(scope='module')
+
+# Don't want to use anything more than function scope,
+# since graph attribute of mol3D class can get set
+# by createMolecularGraph when autocorrelation is called.
+@pytest.fixture
 def load_complex1(resource_path_root):
     # Monometallic TMC.
     xyz_file = resource_path_root / "inputs" / "xyz_files" / "ni_porphyrin_complex.xyz"
@@ -28,7 +32,7 @@ def load_complex1(resource_path_root):
     return mol
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture
 def load_complex2(resource_path_root):
     # Multimetal cluster.
     xyz_file = resource_path_root / "inputs" / "xyz_files" / "UiO-66_sbu.xyz"
@@ -165,6 +169,8 @@ def test_atom_only_autocorrelation(resource_path_root, load_complex1, atomIdx, d
     elif type(atomIdx) is list:
         mod_atomIdx = [str(i) for i in atomIdx]
         atomIdx_str = '-'.join(mod_atomIdx)
+    else:
+        raise ValueError()
 
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "atom_only_autocorrelation" / f"{atomIdx_str}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
     with open(reference_path, 'r') as f:
@@ -198,6 +204,8 @@ def test_atom_only_deltametric(resource_path_root, load_complex1, atomIdx, d, oc
     elif type(atomIdx) is list:
         mod_atomIdx = [str(i) for i in atomIdx]
         atomIdx_str = '-'.join(mod_atomIdx)
+    else:
+        raise ValueError()
 
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "atom_only_deltametric" / f"{atomIdx_str}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
     with open(reference_path, 'r') as f:
