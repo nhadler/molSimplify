@@ -217,12 +217,7 @@ def test_atom_only_deltametric(resource_path_root, load_complex1, atomIdx, d, oc
 def test_metal_only_autocorrelation_1(resource_path_root, load_complex1, prop, d, oct_flag, use_dist, size_normalize):
     v = metal_only_autocorrelation(load_complex1, prop, d, oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize)
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "metal_only_autocorrelation_1" / f"{prop}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
-    with open(reference_path, 'r') as f:
-        ref_v = json.load(f)
-
-    # For saving np arrays to json, need to cast to list.
-    # Convert back for comparison.
-    ref_v = np.array(ref_v)
+    ref_v = get_ref(reference_path)
     assert np.array_equal(v, ref_v)
 
 
@@ -330,7 +325,7 @@ def test_metal_only_deltametric_4(load_complex3):
 
 
 @pytest.mark.parametrize(
-    "atomIdx, depth, oct_flag, NumB, Gval, polarizability",
+    "atomIdx, depth, oct_flag, Gval, NumB, polarizability",
     [
     (0, 3, True, False, False, False),
     (0, 2, True, False, False, False),
@@ -341,12 +336,12 @@ def test_metal_only_deltametric_4(load_complex3):
     ([0, 5, 10, 15], 3, False, False, True, False),
     (5, 3, False, True, True, True),
     ])
-def test_generate_atomonly_autocorrelations(resource_path_root, load_complex1, atomIdx, depth, oct_flag, NumB, Gval, polarizability):
+def test_generate_atomonly_autocorrelations(resource_path_root, load_complex1, atomIdx, depth, oct_flag, Gval, NumB, polarizability):
     d = generate_atomonly_autocorrelations(load_complex1, atomIdx, depth=depth, oct=oct_flag,
         NumB=NumB, Gval=Gval, polarizability=polarizability)
     atomIdx_str = get_atomIdx_str(atomIdx)
 
-    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "generate_atomonly_autocorrelations" / f"{atomIdx_str}_{depth}_{oct_flag}_{NumB}_{Gval}_{polarizability}.json"
+    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "generate_atomonly_autocorrelations" / f"{atomIdx_str}_{depth}_{oct_flag}_{Gval}_{NumB}_{polarizability}.json"
     ref_d = get_ref(reference_path, np_array=False)
     assert d.keys() == ref_d.keys()
     assert d['colnames'] == ref_d['colnames']
@@ -354,7 +349,7 @@ def test_generate_atomonly_autocorrelations(resource_path_root, load_complex1, a
 
 
 @pytest.mark.parametrize(
-    "atomIdx, depth, oct_flag, NumB, Gval, polarizability",
+    "atomIdx, depth, oct_flag, Gval, NumB, polarizability",
     [
     (0, 3, True, False, False, False),
     (0, 2, True, False, False, False),
@@ -365,24 +360,182 @@ def test_generate_atomonly_autocorrelations(resource_path_root, load_complex1, a
     ([0, 5, 10, 15], 3, False, False, True, False),
     (5, 3, False, True, True, True),
     ])
-def test_generate_atomonly_deltametrics(resource_path_root, load_complex1, atomIdx, depth, oct_flag, NumB, Gval, polarizability):
+def test_generate_atomonly_deltametrics(resource_path_root, load_complex1, atomIdx, depth, oct_flag, Gval, NumB, polarizability):
     d = generate_atomonly_deltametrics(load_complex1, atomIdx, depth=depth, oct=oct_flag,
         NumB=NumB, Gval=Gval, polarizability=polarizability)
     atomIdx_str = get_atomIdx_str(atomIdx)
 
-    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "generate_atomonly_deltametrics" / f"{atomIdx_str}_{depth}_{oct_flag}_{NumB}_{Gval}_{polarizability}.json"
+    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "generate_atomonly_deltametrics" / f"{atomIdx_str}_{depth}_{oct_flag}_{Gval}_{NumB}_{polarizability}.json"
     ref_d = get_ref(reference_path, np_array=False)
     assert d.keys() == ref_d.keys()
     assert d['colnames'] == ref_d['colnames']
     assert np.array_equal(d['results'], ref_d['results'])
 
 
-def test_generate_metal_autocorrelations():
-    pass
+@pytest.mark.parametrize(
+    "depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability",
+    [
+    (3, True, False, False, False, False, False),
+    (2, True, False, False, False, False, False),
+    (3, True, False, False, False, False, False),
+    (3, False, False, False, False, False, False),
+    (3, False, True, False, False, False, False),
+    (3, False, True, True, False, False, False),
+    (3, True, False, False, True, False, False),
+    (3, True, False, False, False, True, False),
+    (3, True, False, False, True, True, True),        
+    ])
+def test_generate_metal_autocorrelations_1(resource_path_root, load_complex1, depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability):
+    d = generate_metal_autocorrelations(load_complex1, depth=depth, oct=oct_flag,
+        use_dist=use_dist, size_normalize=size_normalize,
+        Gval=Gval, NumB=NumB, polarizability=polarizability)
+
+    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "generate_metal_autocorrelations_1" / f"{depth}_{oct_flag}_{use_dist}_{size_normalize}_{Gval}_{NumB}_{polarizability}.json"
+    ref_d = get_ref(reference_path, np_array=False)
+    assert d.keys() == ref_d.keys()
+    assert d['colnames'] == ref_d['colnames']
+    assert np.array_equal(d['results'], ref_d['results'])
 
 
-def test_generate_metal_deltametrics():
-    pass
+@pytest.mark.parametrize(
+    "depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability",
+    [
+    (3, True, False, False, False, False, False),
+    (2, True, False, False, False, False, False),
+    (3, True, False, False, False, False, False),
+    (3, False, False, False, False, False, False),
+    (3, False, True, False, False, False, False),
+    (3, False, True, True, False, False, False),
+    (3, True, False, False, True, False, False),
+    (3, True, False, False, False, True, False),
+    (3, True, False, False, True, True, True),        
+    ])
+def test_generate_metal_autocorrelations_2(resource_path_root, load_complex2, depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability):
+    d = generate_metal_autocorrelations(load_complex2, depth=depth, oct=oct_flag,
+        use_dist=use_dist, size_normalize=size_normalize,
+        Gval=Gval, NumB=NumB, polarizability=polarizability)
+
+    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "generate_metal_autocorrelations_2" / f"{depth}_{oct_flag}_{use_dist}_{size_normalize}_{Gval}_{NumB}_{polarizability}.json"
+    ref_d = get_ref(reference_path, np_array=False)
+    assert d.keys() == ref_d.keys()
+    assert d['colnames'] == ref_d['colnames']
+    assert np.array_equal(d['results'], ref_d['results'])
+
+
+@pytest.mark.parametrize(
+    "depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability",
+    [
+    (3, True, False, False, False, False, False),
+    (2, True, False, False, False, False, False),
+    (3, True, False, False, False, False, False),
+    (3, False, False, False, False, False, False),
+    (3, False, True, False, False, False, False),
+    (3, False, True, True, False, False, False),
+    (3, True, False, False, True, False, False),
+    (3, True, False, False, False, True, False),
+    (3, True, False, False, True, True, True),        
+    ])
+def test_generate_metal_autocorrelations_3(resource_path_root, load_complex3, depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability):
+    d = generate_metal_autocorrelations(load_complex3, depth=depth, oct=oct_flag,
+        use_dist=use_dist, size_normalize=size_normalize,
+        Gval=Gval, NumB=NumB, polarizability=polarizability,
+        transition_metals_only=False)
+
+    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "generate_metal_autocorrelations_3" / f"{depth}_{oct_flag}_{use_dist}_{size_normalize}_{Gval}_{NumB}_{polarizability}.json"
+    ref_d = get_ref(reference_path, np_array=False)
+    assert d.keys() == ref_d.keys()
+    assert d['colnames'] == ref_d['colnames']
+    assert np.array_equal(d['results'], ref_d['results'])
+
+
+def test_generate_metal_autocorrelations_4(load_complex3):
+    # This should throw an exception,
+    # since complex3 has no transition metals.
+    with pytest.raises(Exception):
+        generate_metal_autocorrelations(load_complex3)
+
+
+@pytest.mark.parametrize(
+    "depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability",
+    [
+    (3, True, False, False, False, False, False),
+    (2, True, False, False, False, False, False),
+    (3, True, False, False, False, False, False),
+    (3, False, False, False, False, False, False),
+    (3, False, True, False, False, False, False),
+    (3, False, True, True, False, False, False),
+    (3, True, False, False, True, False, False),
+    (3, True, False, False, False, True, False),
+    (3, True, False, False, True, True, True),        
+    ])
+def test_generate_metal_deltametrics_1(resource_path_root, load_complex1, depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability):
+    d = generate_metal_deltametrics(load_complex1, depth=depth, oct=oct_flag,
+        use_dist=use_dist, size_normalize=size_normalize,
+        Gval=Gval, NumB=NumB, polarizability=polarizability)
+
+    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "generate_metal_deltametrics_1" / f"{depth}_{oct_flag}_{use_dist}_{size_normalize}_{Gval}_{NumB}_{polarizability}.json"
+    ref_d = get_ref(reference_path, np_array=False)
+    assert d.keys() == ref_d.keys()
+    assert d['colnames'] == ref_d['colnames']
+    assert np.array_equal(d['results'], ref_d['results'])
+
+
+@pytest.mark.parametrize(
+    "depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability",
+    [
+    (3, True, False, False, False, False, False),
+    (2, True, False, False, False, False, False),
+    (3, True, False, False, False, False, False),
+    (3, False, False, False, False, False, False),
+    (3, False, True, False, False, False, False),
+    (3, False, True, True, False, False, False),
+    (3, True, False, False, True, False, False),
+    (3, True, False, False, False, True, False),
+    (3, True, False, False, True, True, True),        
+    ])
+def test_generate_metal_deltametrics_2(resource_path_root, load_complex2, depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability):
+    d = generate_metal_deltametrics(load_complex2, depth=depth, oct=oct_flag,
+        use_dist=use_dist, size_normalize=size_normalize,
+        Gval=Gval, NumB=NumB, polarizability=polarizability)
+
+    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "generate_metal_deltametrics_2" / f"{depth}_{oct_flag}_{use_dist}_{size_normalize}_{Gval}_{NumB}_{polarizability}.json"
+    ref_d = get_ref(reference_path, np_array=False)
+    assert d.keys() == ref_d.keys()
+    assert d['colnames'] == ref_d['colnames']
+    assert np.array_equal(d['results'], ref_d['results'])
+
+
+@pytest.mark.parametrize(
+    "depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability",
+    [
+    (3, True, False, False, False, False, False),
+    (2, True, False, False, False, False, False),
+    (3, True, False, False, False, False, False),
+    (3, False, False, False, False, False, False),
+    (3, False, True, False, False, False, False),
+    (3, False, True, True, False, False, False),
+    (3, True, False, False, True, False, False),
+    (3, True, False, False, False, True, False),
+    (3, True, False, False, True, True, True),        
+    ])
+def test_generate_metal_deltametrics_3(resource_path_root, load_complex3, depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability):
+    d = generate_metal_deltametrics(load_complex3, depth=depth, oct=oct_flag,
+        use_dist=use_dist, size_normalize=size_normalize,
+        Gval=Gval, NumB=NumB, polarizability=polarizability,
+        transition_metals_only=False)
+
+    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "generate_metal_deltametrics_3" / f"{depth}_{oct_flag}_{use_dist}_{size_normalize}_{Gval}_{NumB}_{polarizability}.json"
+    ref_d = get_ref(reference_path, np_array=False)
+    assert d.keys() == ref_d.keys()
+    assert d['colnames'] == ref_d['colnames']
+    assert np.array_equal(d['results'], ref_d['results'])
+
+
+def test_generate_metal_deltametrics_4(load_complex3):
+    # This should throw an exception,
+    # since complex3 has no transition metals.
+    with pytest.raises(Exception):
+        generate_metal_deltametrics(load_complex3)
 
 
 def test_generate_full_complex_autocorrelations():

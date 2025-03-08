@@ -528,7 +528,7 @@ def generate_full_complex_autocorrelations(mol,
                                            depth=4, oct=True,
                                            flag_name=False, modifier=False,
                                            use_dist=False, size_normalize=False,
-                                           NumB=False, Gval=False, polarizability=False,
+                                           Gval=False, NumB=False, polarizability=False,
                                            MRdiag_dict={}):
     """
     Utility to manage full complex autocorrelation generation and labeling.
@@ -550,10 +550,10 @@ def generate_full_complex_autocorrelations(mol,
             Weigh autocorrelations by interatomic distances, by default False.
         size_normalize : bool, optional
             Whether or not to normalize by the number of atoms.
-        NumB : bool, optional
-            Use number of bonds as RAC, by default False.
         Gval : bool, optional
             Use G value as RAC, by default False.
+        NumB : bool, optional
+            Use number of bonds as RAC, by default False.
         polarizability : bool, optional
             Use polarizability (alpha) as RAC, by default False.
         MRdiag_dict : dict, optional
@@ -602,7 +602,7 @@ def generate_full_complex_autocorrelations(mol,
 
 
 def generate_full_complex_autocorrelation_derivatives(mol, depth=4, oct=True, flag_name=False,
-                                                      modifier=False, NumB=False, Gval=False):
+                                                      modifier=False, Gval=False, NumB=False):
     """
     Utility to manage full complex autocorrelation derivative generation and labeling.
 
@@ -618,10 +618,10 @@ def generate_full_complex_autocorrelation_derivatives(mol, depth=4, oct=True, fl
             Prepend "f_all" to results to track full complex, by default False.
         modifier : bool, optional
             Use ox_modifier on metal charge, by default False.
-        NumB : bool, optional
-            Use number of bonds as RAC, by default False.
         Gval : bool, optional
             Use G value as RAC, by default False.
+        NumB : bool, optional
+            Use number of bonds as RAC, by default False.
 
     Returns
     -------
@@ -786,7 +786,7 @@ def metal_only_autocorrelation(
         raise Exception('No metal found in mol object.')
     n_met = len(metal_idxs)
 
-    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, MRdiag_dict=MRdiag_dict)
+    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, MRdiag_dict=MRdiag_dict, transition_metals_only=transition_metals_only)
     for metal_ind in metal_idxs:
         autocorrelation_vector += func(mol, w, metal_ind, d, oct=oct, use_dist=use_dist, size_normalize=size_normalize)
     autocorrelation_vector = np.divide(autocorrelation_vector, n_met)
@@ -830,7 +830,7 @@ def metal_only_autocorrelation_derivative(
         raise Exception('No metal found in mol object.')
     n_met = len(metal_idxs)
 
-    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
+    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, transition_metals_only=transition_metals_only)
     for metal_ind in metal_idxs:
         autocorrelation_vector_derivative += func(mol, w, metal_ind, d, oct=oct)
     autocorrelation_vector_derivative = np.divide(autocorrelation_vector_derivative, n_met)
@@ -967,7 +967,7 @@ def metal_only_deltametric(
         raise Exception('No metal found in mol object.')
     n_met = len(metal_idxs)
 
-    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, MRdiag_dict=MRdiag_dict)
+    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, MRdiag_dict=MRdiag_dict, transition_metals_only=transition_metals_only)
     for metal_ind in metal_idxs:
         deltametric_vector += func(mol, w, metal_ind, d, oct=oct, use_dist=use_dist, size_normalize=size_normalize)
     deltametric_vector = np.divide(deltametric_vector, n_met)
@@ -1010,7 +1010,7 @@ def metal_only_deltametric_derivative(
         raise Exception('No metal found in mol object.')
     n_met = len(metal_idxs)
 
-    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier)
+    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, transition_metals_only=transition_metals_only)
     for metal_ind in metal_idxs:
         deltametric_vector_derivative += func(mol, w, metal_ind, d, oct=oct)
     deltametric_vector_derivative = np.divide(deltametric_vector_derivative, n_met)
@@ -1293,7 +1293,7 @@ def generate_metal_deltametric_derivatives(mol, depth=4, oct=True, flag_name=Fal
     return results_dictionary
 
 
-def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, NumB=False, Gval=False, polarizability=False):
+def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, Gval=False, NumB=False, polarizability=False):
     """
     This function gets autocorrelations for a molecule starting in one single atom only.
 
@@ -1308,10 +1308,10 @@ def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, NumB=Fal
         oct : bool, optional
             Use octahedral criteria for structure evaluation, by default True.
             If complex is octahedral, will use better bond checks.
-        NumB : bool, optional
-            Use number of bonds as descriptor property, by default False.
         Gval : bool, optional
             Use G value as RAC, by default False.
+        NumB : bool, optional
+            Use number of bonds as descriptor property, by default False.
         polarizability : bool, optional
             Use polarizability (alpha) as RAC, by default False.
 
@@ -1376,7 +1376,7 @@ def generate_atomonly_autocorrelation_derivatives(mol, atomIdx, depth=4, oct=Tru
     return results_dictionary
 
 
-def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, NumB=False, Gval=False, polarizability=False):
+def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, NumB=False, polarizability=False):
     """
     This function gets deltametrics for a molecule starting in one single atom only.
 
@@ -1391,10 +1391,10 @@ def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, NumB=False, 
         oct : bool, optional
             Use octahedral criteria for structure evaluation, by default True.
             If complex is octahedral, will use better bond checks.
-        NumB : bool, optional
-            Use number of bonds as descriptor property, by default False.
         Gval : bool, optional
             Use G value as RAC, by default False.
+        NumB : bool, optional
+            Use number of bonds as descriptor property, by default False.
         polarizability : bool, optional
             Use polarizability (alpha) as RAC, by default False.
 
