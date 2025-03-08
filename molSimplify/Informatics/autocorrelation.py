@@ -563,6 +563,8 @@ def generate_full_complex_autocorrelations(mol,
     -------
         results_dictionary : dict
             Formatted dictionary with {'colnames': colnames, 'results': result}.
+            For key colnames, value is list of lists.
+            For key results, value is list of np.array.
 
     """
     result = list()
@@ -1055,6 +1057,8 @@ def generate_metal_autocorrelations(mol, depth=4, oct=True, flag_name=False,
         results_dictionary: dict
             Dictionary of all geo-based MC-RAC product descriptors -
             {'colnames': colnames, 'results': result}.
+            For key colnames, value is list of lists.
+            For key results, value is list of np.array.
 
     """
     result = list()
@@ -1191,6 +1195,8 @@ def generate_metal_deltametrics(mol, depth=4, oct=True, flag_name=False,
         results_dictionary: dict
             Dictionary of all geo-based MC-RAC deltametric descriptors -
             {'colnames': colnames, 'results': result}.
+            For key colnames, value is list of lists.
+            For key results, value is list of np.array.
 
     """
     result = list()
@@ -1313,6 +1319,8 @@ def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, NumB=Fal
     -------
         results_dictionary : dict
             Dictionary of atom only RAC names and values.
+            For key colnames, value is list of lists.
+            For key results, value is list of np.array.
 
     """
     result = list()
@@ -1394,6 +1402,8 @@ def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, NumB=False, 
     -------
         results_dictionary : dict
             Dictionary of atom only deltametric names and values.
+            For key colnames, value is list of lists.
+            For key results, value is list of np.array.
 
     """
     result = list()
