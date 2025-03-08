@@ -289,7 +289,7 @@ def test_metal_only_autocorrelation_4(load_complex3):
     # This should throw an exception,
     # since complex3 has no transition metals.
     with pytest.raises(Exception):
-        v = metal_only_autocorrelation(load_complex3, "ident", 3)
+        metal_only_autocorrelation(load_complex3, "ident", 3)
 
 
 def test_metal_only_deltametric():
