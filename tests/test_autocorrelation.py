@@ -59,7 +59,7 @@ def get_ref(ref_path, np_array=True):
         # Convert back for comparison.
         ref = np.array(ref)
     else:
-        # In this case, need to change the 'results' entry 
+        # In this case, need to change the 'results' entry
         # of a dictionary.
         for idx, val in enumerate(ref['results']):
             ref['results'][idx] = np.array(val)
