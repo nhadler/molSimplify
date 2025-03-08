@@ -383,7 +383,7 @@ def test_generate_atomonly_deltametrics(resource_path_root, load_complex1, atomI
     (3, False, True, True, False, False, False),
     (3, True, False, False, True, False, False),
     (3, True, False, False, False, True, False),
-    (3, True, False, False, True, True, True),        
+    (3, True, False, False, True, True, True),
     ])
 def test_generate_metal_autocorrelations_1(resource_path_root, load_complex1, depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability):
     d = generate_metal_autocorrelations(load_complex1, depth=depth, oct=oct_flag,
@@ -408,7 +408,7 @@ def test_generate_metal_autocorrelations_1(resource_path_root, load_complex1, de
     (3, False, True, True, False, False, False),
     (3, True, False, False, True, False, False),
     (3, True, False, False, False, True, False),
-    (3, True, False, False, True, True, True),        
+    (3, True, False, False, True, True, True),
     ])
 def test_generate_metal_autocorrelations_2(resource_path_root, load_complex2, depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability):
     d = generate_metal_autocorrelations(load_complex2, depth=depth, oct=oct_flag,
@@ -433,7 +433,7 @@ def test_generate_metal_autocorrelations_2(resource_path_root, load_complex2, de
     (3, False, True, True, False, False, False),
     (3, True, False, False, True, False, False),
     (3, True, False, False, False, True, False),
-    (3, True, False, False, True, True, True),        
+    (3, True, False, False, True, True, True),
     ])
 def test_generate_metal_autocorrelations_3(resource_path_root, load_complex3, depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability):
     d = generate_metal_autocorrelations(load_complex3, depth=depth, oct=oct_flag,
@@ -466,7 +466,7 @@ def test_generate_metal_autocorrelations_4(load_complex3):
     (3, False, True, True, False, False, False),
     (3, True, False, False, True, False, False),
     (3, True, False, False, False, True, False),
-    (3, True, False, False, True, True, True),        
+    (3, True, False, False, True, True, True),
     ])
 def test_generate_metal_deltametrics_1(resource_path_root, load_complex1, depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability):
     d = generate_metal_deltametrics(load_complex1, depth=depth, oct=oct_flag,
@@ -491,7 +491,7 @@ def test_generate_metal_deltametrics_1(resource_path_root, load_complex1, depth,
     (3, False, True, True, False, False, False),
     (3, True, False, False, True, False, False),
     (3, True, False, False, False, True, False),
-    (3, True, False, False, True, True, True),        
+    (3, True, False, False, True, True, True),
     ])
 def test_generate_metal_deltametrics_2(resource_path_root, load_complex2, depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability):
     d = generate_metal_deltametrics(load_complex2, depth=depth, oct=oct_flag,
@@ -516,7 +516,7 @@ def test_generate_metal_deltametrics_2(resource_path_root, load_complex2, depth,
     (3, False, True, True, False, False, False),
     (3, True, False, False, True, False, False),
     (3, True, False, False, False, True, False),
-    (3, True, False, False, True, True, True),        
+    (3, True, False, False, True, True, True),
     ])
 def test_generate_metal_deltametrics_3(resource_path_root, load_complex3, depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability):
     d = generate_metal_deltametrics(load_complex3, depth=depth, oct=oct_flag,
