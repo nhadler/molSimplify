@@ -41,7 +41,7 @@ import numpy as np
 def get_descriptor_vector(this_complex,
                           custom_ligand_dict=False,
                           ox_modifier=False,
-                          NumB=False, Gval=False,                          
+                          NumB=False, Gval=False,
                           lacRACs=True, loud=False,
                           smiles_charge=False, eq_sym=False,
                           use_dist=False, size_normalize=False,
