@@ -50,6 +50,30 @@ def load_complex3(resource_path_root):
     return mol
 
 
+def get_ref(ref_path, np_array=True):
+    with open(ref_path, 'r') as f:
+        ref = json.load(f)
+
+    if np_array:
+        # For saving np arrays to json, need to cast to list.
+        # Convert back for comparison.
+        ref = np.array(ref)
+
+    return ref
+
+
+def get_atomIdx_str(atomIdx):
+    if type(atomIdx) is int:
+        atomIdx_str = str(atomIdx)
+    elif type(atomIdx) is list:
+        mod_atomIdx = [str(i) for i in atomIdx]
+        atomIdx_str = '-'.join(mod_atomIdx)
+    else:
+        raise ValueError()
+
+    return atomIdx_str
+
+
 @pytest.mark.parametrize(
     "prop",
     [
@@ -64,16 +88,11 @@ def load_complex3(resource_path_root):
 def test_construct_property_vector(resource_path_root, load_complex1, prop):
     w = construct_property_vector(load_complex1, prop)
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "construct_property_vector" / f"{prop}.json"
-    with open(reference_path, 'r') as f:
-        ref_w = json.load(f)
-
-    # For saving np arrays to json, need to cast to list.
-    # Convert back for comparison.
-    ref_w = np.array(ref_w)
+    ref_w = get_ref(reference_path)
     assert np.array_equal(w, ref_w)
 
 
-@ pytest.mark.parametrize(
+@pytest.mark.parametrize(
     "orig, d, oct_flag, use_dist, size_normalize",
     [
     (0, 3, True, False, False),
@@ -90,16 +109,11 @@ def test_autocorrelation(resource_path_root, load_complex1, orig, d, oct_flag, u
     w = construct_property_vector(load_complex1, prop)
     v = autocorrelation(load_complex1, w, orig, d, oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize)
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "autocorrelation" / f"{orig}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
-    with open(reference_path, 'r') as f:
-        ref_v = json.load(f)
-
-    # For saving np arrays to json, need to cast to list.
-    # Convert back for comparison.
-    ref_v = np.array(ref_v)
+    ref_v = get_ref(reference_path)
     assert np.array_equal(v, ref_v)
 
 
-@ pytest.mark.parametrize(
+@pytest.mark.parametrize(
     "orig, d, oct_flag, use_dist, size_normalize",
     [
     (0, 3, True, False, False),
@@ -116,16 +130,11 @@ def test_deltametric(resource_path_root, load_complex1, orig, d, oct_flag, use_d
     w = construct_property_vector(load_complex1, prop)
     v = deltametric(load_complex1, w, orig, d, oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize)
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "deltametric" / f"{orig}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
-    with open(reference_path, 'r') as f:
-        ref_v = json.load(f)
-
-    # For saving np arrays to json, need to cast to list.
-    # Convert back for comparison.
-    ref_v = np.array(ref_v)
+    ref_v = get_ref(reference_path)
     assert np.array_equal(v, ref_v)
 
 
-@ pytest.mark.parametrize(
+@pytest.mark.parametrize(
     "prop, d, oct_flag, use_dist, size_normalize",
     [
     ("ident", 3, True, False, False),
@@ -138,16 +147,11 @@ def test_deltametric(resource_path_root, load_complex1, orig, d, oct_flag, use_d
 def test_full_autocorrelation(resource_path_root, load_complex1, prop, d, oct_flag, use_dist, size_normalize):
     v = full_autocorrelation(load_complex1, prop, d, oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize)
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "full_autocorrelation" / f"{prop}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
-    with open(reference_path, 'r') as f:
-        ref_v = json.load(f)
-
-    # For saving np arrays to json, need to cast to list.
-    # Convert back for comparison.
-    ref_v = np.array(ref_v)
+    ref_v = get_ref(reference_path)
     assert np.array_equal(v, ref_v)
 
 
-@ pytest.mark.parametrize(
+@pytest.mark.parametrize(
     "atomIdx, d, oct_flag, use_dist, size_normalize",
     [
     (0, 3, True, False, False),
@@ -164,25 +168,14 @@ def test_atom_only_autocorrelation(resource_path_root, load_complex1, atomIdx, d
     prop = 'topology'
 
     v = atom_only_autocorrelation(load_complex1, prop, d, atomIdx, oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize)
-    if type(atomIdx) is int:
-        atomIdx_str = atomIdx
-    elif type(atomIdx) is list:
-        mod_atomIdx = [str(i) for i in atomIdx]
-        atomIdx_str = '-'.join(mod_atomIdx)
-    else:
-        raise ValueError()
+    atomIdx_str = get_atomIdx_str(atomIdx)
 
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "atom_only_autocorrelation" / f"{atomIdx_str}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
-    with open(reference_path, 'r') as f:
-        ref_v = json.load(f)
-
-    # For saving np arrays to json, need to cast to list.
-    # Convert back for comparison.
-    ref_v = np.array(ref_v)
+    ref_v = get_ref(reference_path)
     assert np.array_equal(v, ref_v)
 
 
-@ pytest.mark.parametrize(
+@pytest.mark.parametrize(
     "atomIdx, d, oct_flag, use_dist, size_normalize",
     [
     (0, 3, True, False, False),
@@ -199,25 +192,14 @@ def test_atom_only_deltametric(resource_path_root, load_complex1, atomIdx, d, oc
     prop = 'size'
 
     v = atom_only_deltametric(load_complex1, prop, d, atomIdx, oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize)
-    if type(atomIdx) is int:
-        atomIdx_str = atomIdx
-    elif type(atomIdx) is list:
-        mod_atomIdx = [str(i) for i in atomIdx]
-        atomIdx_str = '-'.join(mod_atomIdx)
-    else:
-        raise ValueError()
+    atomIdx_str = get_atomIdx_str(atomIdx)
 
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "atom_only_deltametric" / f"{atomIdx_str}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
-    with open(reference_path, 'r') as f:
-        ref_v = json.load(f)
-
-    # For saving np arrays to json, need to cast to list.
-    # Convert back for comparison.
-    ref_v = np.array(ref_v)
+    ref_v = get_ref(reference_path)
     assert np.array_equal(v, ref_v)
 
 
-@ pytest.mark.parametrize(
+@pytest.mark.parametrize(
     "prop, d, oct_flag, use_dist, size_normalize",
     [
     ("ident", 3, True, False, False),
@@ -239,7 +221,7 @@ def test_metal_only_autocorrelation_1(resource_path_root, load_complex1, prop, d
     assert np.array_equal(v, ref_v)
 
 
-@ pytest.mark.parametrize(
+@pytest.mark.parametrize(
     "prop, d, oct_flag, use_dist, size_normalize",
     [
     ("ident", 3, True, False, False),
@@ -252,16 +234,11 @@ def test_metal_only_autocorrelation_1(resource_path_root, load_complex1, prop, d
 def test_metal_only_autocorrelation_2(resource_path_root, load_complex2, prop, d, oct_flag, use_dist, size_normalize):
     v = metal_only_autocorrelation(load_complex2, prop, d, oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize)
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "metal_only_autocorrelation_2" / f"{prop}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
-    with open(reference_path, 'r') as f:
-        ref_v = json.load(f)
-
-    # For saving np arrays to json, need to cast to list.
-    # Convert back for comparison.
-    ref_v = np.array(ref_v)
+    ref_v = get_ref(reference_path)
     assert np.array_equal(v, ref_v)
 
 
-@ pytest.mark.parametrize(
+@pytest.mark.parametrize(
     "prop, d, oct_flag, use_dist, size_normalize",
     [
     ("ident", 3, True, False, False),
@@ -276,12 +253,7 @@ def test_metal_only_autocorrelation_3(resource_path_root, load_complex3, prop, d
         oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize,
         transition_metals_only=False)
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "metal_only_autocorrelation_3" / f"{prop}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
-    with open(reference_path, 'r') as f:
-        ref_v = json.load(f)
-
-    # For saving np arrays to json, need to cast to list.
-    # Convert back for comparison.
-    ref_v = np.array(ref_v)
+    ref_v = get_ref(reference_path)
     assert np.array_equal(v, ref_v)
 
 
@@ -292,11 +264,86 @@ def test_metal_only_autocorrelation_4(load_complex3):
         metal_only_autocorrelation(load_complex3, "ident", 3)
 
 
-def test_metal_only_deltametric():
-    pass
+@pytest.mark.parametrize(
+    "prop, d, oct_flag, use_dist, size_normalize",
+    [
+    ("ident", 3, True, False, False),
+    ("topology", 2, True, False, False),
+    ("size", 3, True, False, False),
+    ("group_number", 3, False, False, False),
+    ("polarizability", 3, False, True, False),
+    ("nuclear_charge", 3, False, True, True),
+    ])
+def test_metal_only_deltametric_1(resource_path_root, load_complex1, prop, d, oct_flag, use_dist, size_normalize):
+    v = metal_only_deltametric(load_complex1, prop, d, oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize)
+    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "metal_only_deltametric_1" / f"{prop}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
+    ref_v = get_ref(reference_path)
+    assert np.array_equal(v, ref_v)
 
 
-def test_generate_atomonly_autocorrelations():
+@pytest.mark.parametrize(
+    "prop, d, oct_flag, use_dist, size_normalize",
+    [
+    ("ident", 3, True, False, False),
+    ("topology", 2, True, False, False),
+    ("size", 3, True, False, False),
+    ("group_number", 3, False, False, False),
+    ("polarizability", 3, False, True, False),
+    ("nuclear_charge", 3, False, True, True),
+    ])
+def test_metal_only_deltametric_2(resource_path_root, load_complex2, prop, d, oct_flag, use_dist, size_normalize):
+    v = metal_only_deltametric(load_complex2, prop, d, oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize)
+    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "metal_only_deltametric_2" / f"{prop}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
+    ref_v = get_ref(reference_path)
+    assert np.array_equal(v, ref_v)
+
+
+@pytest.mark.parametrize(
+    "prop, d, oct_flag, use_dist, size_normalize",
+    [
+    ("ident", 3, True, False, False),
+    ("topology", 2, True, False, False),
+    ("size", 3, True, False, False),
+    ("group_number", 3, False, False, False),
+    ("polarizability", 3, False, True, False),
+    ("nuclear_charge", 3, False, True, True),
+    ])
+def test_metal_only_deltametric_3(resource_path_root, load_complex3, prop, d, oct_flag, use_dist, size_normalize):
+    v = metal_only_deltametric(load_complex3, prop, d,
+        oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize,
+        transition_metals_only=False)
+    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "metal_only_deltametric_3" / f"{prop}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
+    ref_v = get_ref(reference_path)
+    assert np.array_equal(v, ref_v)
+
+
+def test_metal_only_deltametric_4(load_complex3):
+    # This should throw an exception,
+    # since complex3 has no transition metals.
+    with pytest.raises(Exception):
+        metal_only_deltametric(load_complex3, "ident", 3)
+
+
+@pytest.mark.parametrize(
+    "atomIdx, depth, oct_flag, NumB, Gval, polarizability",
+    [
+    (0, 3, True, False, False, False),
+    (0, 2, True, False, False, False),
+    ([0, 5, 10, 15], 3, True, False, False, False),
+    (5, 3, True, False, False, False),
+    (5, 3, False, False, False, False),
+    (5, 3, False, True, False, False),
+    ([0, 5, 10, 15], 3, False, False, True, False),
+    (5, 3, False, True, True, True),
+    ])
+def test_generate_atomonly_autocorrelations(resource_path_root, load_complex1, atomIdx, depth, oct_flag, NumB, Gval, polarizability):
+    # d = generate_atomonly_autocorrelations(load_complex1, atomIdx, depth=depth, oct=oct_flag,
+    #     NumB=NumB, Gval=Gval, polarizability=polarizability)
+    # atomIdx_str = get_atomIdx_str(atomIdx)
+
+    # reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "generate_atomonly_autocorrelations" / f"{atomIdx_str}_{depth}_{oct_flag}_{NumB}_{Gval}_{polarizability}.json"
+    # ref_d = get_ref(reference_path, type='dict')
+    # assert d == ref_d
     pass
 
 
