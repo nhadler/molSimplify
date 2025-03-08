@@ -735,7 +735,7 @@ def test_createMolecularGraph(resource_path_root, name, oct_flag):
     mol.readfromxyz(xyz_file)
     mol.createMolecularGraph(oct=oct_flag)
 
-    reference_path = resource_path_root / "refs" / "json" / "createMolecularGraph" / f"{name}_oct_{oct_flag}_graph.json"
+    reference_path = resource_path_root / "refs" / "json" / "test_mol3D" / "createMolecularGraph" / f"{name}_oct_{oct_flag}_graph.json"
     with open(reference_path, 'r') as f:
         reference_graph = json.load(f)
 
@@ -859,7 +859,7 @@ def test_assign_graph_from_net(resource_path_root, name, return_graph):
         mol.assign_graph_from_net(net_file, return_graph=return_graph)
         graph = mol.get_graph()
 
-    reference_path = resource_path_root / "refs" / "json" / "assign_graph_from_net" / f"{name}_graph.json"
+    reference_path = resource_path_root / "refs" / "json" / "test_mol3D" / "assign_graph_from_net" / f"{name}_graph.json"
     with open(reference_path, 'r') as f:
         reference_graph = json.load(f)
 
@@ -882,7 +882,7 @@ def test_assign_graph_from_net(resource_path_root, name, return_graph):
     ])
 def test_convert2OBMol(resource_path_root, name, force_clean_flag):
     xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
-    reference_path = resource_path_root / "refs" / "json" / "convert2OBMol" / f"{name}_fc_{force_clean_flag}_OB_dict.json"
+    reference_path = resource_path_root / "refs" / "json" / "test_mol3D" / "convert2OBMol" / f"{name}_fc_{force_clean_flag}_OB_dict.json"
     with open(reference_path, 'r') as f:
         reference_dict = json.load(f)
 
@@ -913,10 +913,10 @@ def test_convert2OBMol(resource_path_root, name, force_clean_flag):
     ])
 def test_convert2OBMol2(resource_path_root, name):
     xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
-    reference_path = resource_path_root / "refs" / "json" / "convert2OBMol2" /  f"{name}_OB_dict.json"
+    reference_path = resource_path_root / "refs" / "json" / "test_mol3D" / "convert2OBMol2" /  f"{name}_OB_dict.json"
     with open(reference_path, 'r') as f:
         reference_dict = json.load(f)
-    reference_path = resource_path_root / "refs" / "json" / "convert2OBMol2" /  f"{name}_BO_mat.json"
+    reference_path = resource_path_root / "refs" / "json" / "test_mol3D" / "convert2OBMol2" /  f"{name}_BO_mat.json"
     with open(reference_path, 'r') as f:
         reference_BO_mat = json.load(f)
 
@@ -977,7 +977,7 @@ def test_populateBOMatrix(resource_path_root, name, bonddict):
     molBOMat = mol.populateBOMatrix(bonddict=bonddict)
 
     if bonddict:
-        reference_path = resource_path_root / "refs" / "json" / "populateBOMatrix" /  f"{name}_bo_dict_{bonddict}.json"
+        reference_path = resource_path_root / "refs" / "json" / "test_mol3D" / "populateBOMatrix" /  f"{name}_bo_dict_{bonddict}.json"
         with open(reference_path, 'r') as f:
             reference_bo_dict = json.load(f)
         # Needed to adjust the reference dictionary in order
@@ -987,7 +987,7 @@ def test_populateBOMatrix(resource_path_root, name, bonddict):
         mod_bo_dict = {str(k): v for k, v in mol.bo_dict.items()}
         assert mod_bo_dict == reference_bo_dict
 
-    reference_path = resource_path_root / "refs" / "json" / "populateBOMatrix" /  f"{name}_molBOMat.json"
+    reference_path = resource_path_root / "refs" / "json" / "test_mol3D" / "populateBOMatrix" /  f"{name}_molBOMat.json"
     with open(reference_path, 'r') as f:
         reference_BOMat = json.load(f)
 
@@ -1013,7 +1013,7 @@ def test_deleteatom(resource_path_root, name, idx, bo_dict_flag, graph_flag):
     mol = mol3D()
     mol.readfromxyz(xyz_file)
 
-    reference_path = resource_path_root / "refs" / "json" / "deleteatom" /  f"{name}_bo_dict_{bo_dict_flag}_graph_{graph_flag}.json"
+    reference_path = resource_path_root / "refs" / "json" / "test_mol3D" / "deleteatom" /  f"{name}_bo_dict_{bo_dict_flag}_graph_{graph_flag}.json"
     with open(reference_path, 'r') as f:
         reference_dict = json.load(f)
 
@@ -1066,7 +1066,7 @@ def test_deleteatoms(resource_path_root, name, idxs, bo_dict_flag, graph_flag):
     mol = mol3D()
     mol.readfromxyz(xyz_file)
 
-    reference_path = resource_path_root / "refs" / "json" / "deleteatoms" /  f"{name}_bo_dict_{bo_dict_flag}_graph_{graph_flag}.json"
+    reference_path = resource_path_root / "refs" / "json" / "test_mol3D" / "deleteatoms" /  f"{name}_bo_dict_{bo_dict_flag}_graph_{graph_flag}.json"
     with open(reference_path, 'r') as f:
         reference_dict = json.load(f)
 
@@ -1135,10 +1135,10 @@ def test_readfrommol2(resource_path_root, name, readstring):
         mol.readfrommol2(mol2_file)
 
     # Loading the reference files.
-    reference_path1 = resource_path_root / "refs" / "json" / "readfrommol2" /  f"{name}_graph.json"
-    reference_path2 = resource_path_root / "refs" / "json" / "readfrommol2" /  f"{name}_bo_graph.json"
-    reference_path3 = resource_path_root / "refs" / "json" / "readfrommol2" /  f"{name}_bo_graph_trunc.json"
-    reference_path4 = resource_path_root / "refs" / "json" / "readfrommol2" /  f"{name}_bo_dict.json"
+    reference_path1 = resource_path_root / "refs" / "json" / "test_mol3D" / "readfrommol2" /  f"{name}_graph.json"
+    reference_path2 = resource_path_root / "refs" / "json" / "test_mol3D" / "readfrommol2" /  f"{name}_bo_graph.json"
+    reference_path3 = resource_path_root / "refs" / "json" / "test_mol3D" / "readfrommol2" /  f"{name}_bo_graph_trunc.json"
+    reference_path4 = resource_path_root / "refs" / "json" / "test_mol3D" / "readfrommol2" /  f"{name}_bo_dict.json"
     reference_graph, reference_bo_graph, reference_bo_graph_trunc, reference_bo_dict = quick_load(
         [reference_path1, reference_path2, reference_path3, reference_path4])
 

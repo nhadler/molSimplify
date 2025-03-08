@@ -38,12 +38,16 @@ from molSimplify.Informatics.autocorrelation import (
 import numpy as np
 
 
-def get_descriptor_vector(this_complex, custom_ligand_dict=False,
-                          ox_modifier=False, NumB=False, Gval=False,
+def get_descriptor_vector(this_complex,
+                          custom_ligand_dict=False,
+                          ox_modifier=False,
+                          NumB=False, Gval=False,
                           lacRACs=True, loud=False,
                           smiles_charge=False, eq_sym=False,
                           use_dist=False, size_normalize=False,
-                          alleq=False, MRdiag_dict={}, depth=3):
+                          alleq=False, MRdiag_dict={},
+                          depth=3,
+                          ):
     """
     Calculate and return all geo-based RACs for a given octahedral complex (featurize).
 
@@ -55,25 +59,27 @@ def get_descriptor_vector(this_complex, custom_ligand_dict=False,
             Custom ligand dictionary to evaluate for complex if passed, by default False.
             Skip the ligand breakdown steps -
             in cases where 3D geo is not correct/formed
-            custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list
-            ax_con_int_list ,eq_con_int_list
+            custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list,
+            ax_con_int_list, and eq_con_int_list,
             with types: eq/ax_ligand_list list of mol3D
             eq/ax_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
         ox_modifier : bool, optional
             dict, used to modify prop vector (e.g., for adding
-            ONLY used with  ox_nuclear_charge ox or charge)
-            {"Fe":2, "Co": 3} etc, by default False.
+            ONLY used with ox_nuclear_charge ox or charge)
+            {"Fe": 2, "Co": 3} etc, by default False.
         NumB : bool, optional
-            Use Number of Bonds as additional RAC, by default False.
+            Use Number of Bonds as an atomic property, by default False.
         Gval : bool, optional
-            Use group number as RAC, by default False.
+            Use group number as an atomic property, by default False.
         lacRACs : bool, optional
-            Use ligand_assign_consistent (lac) to represent mol3D given.
+            Use ligand_assign_consistent (lac) to represent the mol3D.
             If False, use ligand_assign_original (older), default True.
         loud : bool, optional
             Print debugging information, by default False.
         smiles_charge : bool, optional
             Use obmol conversion through smiles to assign ligand_misc_charges, by default False.
+        eq_sym : bool, optional
+            Enforce eq plane to have connecting atoms with same symbol. Default is False.
         use_dist : bool, optional
             Whether or not CD-RACs used.
         size_normalize : bool, optional
@@ -87,10 +93,10 @@ def get_descriptor_vector(this_complex, custom_ligand_dict=False,
 
     Returns
     -------
-        descriptor_names : list
-            Compiled list of descriptor names
-        descriptors : list
-            Compiled list of descriptor values
+        descriptor_names : list of str
+            Compiled list of descriptor names.
+        descriptors : list of float
+            Compiled list of descriptor values.
 
     """
     # modifier -
@@ -237,16 +243,16 @@ def get_descriptor_derivatives(this_complex, custom_ligand_dict=False, ox_modifi
             Custom ligand dictionary to evaluate for complex if passed, by default False.
             Skip the ligand breakdown steps -
             in cases where 3D geo is not correct/formed
-            custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list
-            ax_con_int_list ,eq_con_int_list
+            custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list,
+            ax_con_int_list, and eq_con_int_list,
             with types: eq/ax_ligand_list list of mol3D
             eq/ax_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
         ox_modifier : bool, optional
             dict, used to modify prop vector (e.g., for adding
-            ONLY used with  ox_nuclear_charge ox or charge)
+            ONLY used with ox_nuclear_charge ox or charge)
             {"Fe":2, "Co": 3} etc, by default False.
         lacRACs : bool, optional
-            Use ligand_assign_consistent (lac) to represent mol3D given.
+            Use ligand_assign_consistent (lac) to represent the mol3D.
             if False, use ligand_assign_original (older), default True.
         depth : int, optional
             Depth of RACs to calculate, by default 4.
