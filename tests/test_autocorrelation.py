@@ -353,8 +353,28 @@ def test_generate_atomonly_autocorrelations(resource_path_root, load_complex1, a
     assert np.array_equal(d['results'], ref_d['results'])
 
 
-def test_generate_atomonly_deltametrics():
-    pass
+@pytest.mark.parametrize(
+    "atomIdx, depth, oct_flag, NumB, Gval, polarizability",
+    [
+    (0, 3, True, False, False, False),
+    (0, 2, True, False, False, False),
+    ([0, 5, 10, 15], 3, True, False, False, False),
+    (5, 3, True, False, False, False),
+    (5, 3, False, False, False, False),
+    (5, 3, False, True, False, False),
+    ([0, 5, 10, 15], 3, False, False, True, False),
+    (5, 3, False, True, True, True),
+    ])
+def test_generate_atomonly_deltametrics(resource_path_root, load_complex1, atomIdx, depth, oct_flag, NumB, Gval, polarizability):
+    d = generate_atomonly_deltametrics(load_complex1, atomIdx, depth=depth, oct=oct_flag,
+        NumB=NumB, Gval=Gval, polarizability=polarizability)
+    atomIdx_str = get_atomIdx_str(atomIdx)
+
+    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "generate_atomonly_deltametrics" / f"{atomIdx_str}_{depth}_{oct_flag}_{NumB}_{Gval}_{polarizability}.json"
+    ref_d = get_ref(reference_path, np_array=False)
+    assert d.keys() == ref_d.keys()
+    assert d['colnames'] == ref_d['colnames']
+    assert np.array_equal(d['results'], ref_d['results'])
 
 
 def test_generate_metal_autocorrelations():
