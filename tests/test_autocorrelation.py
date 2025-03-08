@@ -58,6 +58,11 @@ def get_ref(ref_path, np_array=True):
         # For saving np arrays to json, need to cast to list.
         # Convert back for comparison.
         ref = np.array(ref)
+    else:
+        # In this case, need to change the 'results' entry 
+        # of a dictionary.
+        for idx, val in enumerate(ref['results']):
+            ref['results'][idx] = np.array(val)
 
     return ref
 
@@ -337,14 +342,15 @@ def test_metal_only_deltametric_4(load_complex3):
     (5, 3, False, True, True, True),
     ])
 def test_generate_atomonly_autocorrelations(resource_path_root, load_complex1, atomIdx, depth, oct_flag, NumB, Gval, polarizability):
-    # d = generate_atomonly_autocorrelations(load_complex1, atomIdx, depth=depth, oct=oct_flag,
-    #     NumB=NumB, Gval=Gval, polarizability=polarizability)
-    # atomIdx_str = get_atomIdx_str(atomIdx)
+    d = generate_atomonly_autocorrelations(load_complex1, atomIdx, depth=depth, oct=oct_flag,
+        NumB=NumB, Gval=Gval, polarizability=polarizability)
+    atomIdx_str = get_atomIdx_str(atomIdx)
 
-    # reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "generate_atomonly_autocorrelations" / f"{atomIdx_str}_{depth}_{oct_flag}_{NumB}_{Gval}_{polarizability}.json"
-    # ref_d = get_ref(reference_path, type='dict')
-    # assert d == ref_d
-    pass
+    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "generate_atomonly_autocorrelations" / f"{atomIdx_str}_{depth}_{oct_flag}_{NumB}_{Gval}_{polarizability}.json"
+    ref_d = get_ref(reference_path, np_array=False)
+    assert d.keys() == ref_d.keys()
+    assert d['colnames'] == ref_d['colnames']
+    assert np.array_equal(d['results'], ref_d['results'])
 
 
 def test_generate_atomonly_deltametrics():
