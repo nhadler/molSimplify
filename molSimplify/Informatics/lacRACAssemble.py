@@ -38,14 +38,16 @@ from molSimplify.Informatics.autocorrelation import (
 import numpy as np
 
 
-def get_descriptor_vector(this_complex, depth=3,
-                          NumB=False, Gval=False,
+def get_descriptor_vector(this_complex,
                           custom_ligand_dict=False,
                           ox_modifier=False,
+                          NumB=False, Gval=False,                          
                           lacRACs=True, loud=False,
                           smiles_charge=False, eq_sym=False,
                           use_dist=False, size_normalize=False,
-                          alleq=False, MRdiag_dict={}):
+                          alleq=False, MRdiag_dict={},
+                          depth=3,
+                          ):
     """
     Calculate and return all geo-based RACs for a given octahedral complex (featurize).
 
@@ -53,12 +55,6 @@ def get_descriptor_vector(this_complex, depth=3,
     ----------
         this_complex : mol3D
             Transition metal complex to be featurized.
-        depth : int, optional
-            The depth of the RACs (how many bonds out the RACs go).
-        NumB : bool, optional
-            Use Number of Bonds as an atomic property, by default False.
-        Gval : bool, optional
-            Use group number as an atomic property, by default False.
         custom_ligand_dict : bool, optional
             Custom ligand dictionary to evaluate for complex if passed, by default False.
             Skip the ligand breakdown steps -
@@ -71,6 +67,10 @@ def get_descriptor_vector(this_complex, depth=3,
             dict, used to modify prop vector (e.g., for adding
             ONLY used with ox_nuclear_charge ox or charge)
             {"Fe": 2, "Co": 3} etc, by default False.
+        NumB : bool, optional
+            Use Number of Bonds as an atomic property, by default False.
+        Gval : bool, optional
+            Use group number as an atomic property, by default False.
         lacRACs : bool, optional
             Use ligand_assign_consistent (lac) to represent the mol3D.
             If False, use ligand_assign_original (older), default True.
@@ -88,6 +88,8 @@ def get_descriptor_vector(this_complex, depth=3,
             Whether or not all ligands are equatorial.
         MRdiag_dict : dict, optional
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
+        depth : int, optional
+            The depth of the RACs (how many bonds out the RACs go).
 
     Returns
     -------
