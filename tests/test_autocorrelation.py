@@ -563,5 +563,32 @@ def test_generate_full_complex_autocorrelations(resource_path_root, load_complex
     assert np.array_equal(d['results'], ref_d['results'])
 
 
-def test_get_descriptor_vector():
-    pass
+@pytest.mark.parametrize(
+    "depth, use_dist, size_normalize, Gval, NumB, lacRACs",
+    [
+    (3, False, False, False, False, False),
+    (2, False, False, False, False, False),
+    (3, True, False, False, False, False),
+    (3, True, True, False, False, False),
+    (3, False, False, True, False, False),
+    (3, False, False, True, True, False),
+    (3, False, False, False, False, True),
+    (3, True, True, True, True, True),
+    ])
+def test_get_descriptor_vector(resource_path_root, load_complex1, depth, use_dist, size_normalize, Gval, NumB, lacRACs):
+    names, vals = get_descriptor_vector(
+        load_complex1, depth=depth, use_dist=use_dist,
+        size_normalize=size_normalize, Gval=Gval,
+        NumB=NumB, lacRACs=lacRACs,
+        )
+
+    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "get_descriptor_vector" / f"{depth}_{use_dist}_{size_normalize}_{Gval}_{NumB}_{lacRACs}_names.json"
+    with open(reference_path, 'r') as f:
+        ref_names = json.load(f)
+
+    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "get_descriptor_vector" / f"{depth}_{use_dist}_{size_normalize}_{Gval}_{NumB}_{lacRACs}_vals.json"
+    with open(reference_path, 'r') as f:
+        ref_vals = json.load(f)
+
+    assert names == ref_names
+    assert vals == ref_vals

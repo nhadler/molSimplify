@@ -87,9 +87,9 @@ def get_descriptor_vector(this_complex, custom_ligand_dict=False,
 
     Returns
     -------
-        descriptor_names : list
+        descriptor_names : list of str
             Compiled list of descriptor names
-        descriptors : list
+        descriptors : list of float
             Compiled list of descriptor values
 
     """
