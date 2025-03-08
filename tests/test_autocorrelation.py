@@ -538,8 +538,29 @@ def test_generate_metal_deltametrics_4(load_complex3):
         generate_metal_deltametrics(load_complex3)
 
 
-def test_generate_full_complex_autocorrelations():
-    pass
+@pytest.mark.parametrize(
+    "depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability",
+    [
+    (3, True, False, False, False, False, False),
+    (2, True, False, False, False, False, False),
+    (3, True, False, False, False, False, False),
+    (3, False, False, False, False, False, False),
+    (3, False, True, False, False, False, False),
+    (3, False, True, True, False, False, False),
+    (3, True, False, False, True, False, False),
+    (3, True, False, False, False, True, False),
+    (3, True, False, False, True, True, True),
+    ])
+def test_generate_full_complex_autocorrelations(resource_path_root, load_complex1, depth, oct_flag, use_dist, size_normalize, Gval, NumB, polarizability):
+    d = generate_full_complex_autocorrelations(load_complex1, depth=depth, oct=oct_flag,
+        use_dist=use_dist, size_normalize=size_normalize,
+        Gval=Gval, NumB=NumB, polarizability=polarizability)
+
+    reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "generate_full_complex_autocorrelations" / f"{depth}_{oct_flag}_{use_dist}_{size_normalize}_{Gval}_{NumB}_{polarizability}.json"
+    ref_d = get_ref(reference_path, np_array=False)
+    assert d.keys() == ref_d.keys()
+    assert d['colnames'] == ref_d['colnames']
+    assert np.array_equal(d['results'], ref_d['results'])
 
 
 def test_get_descriptor_vector():

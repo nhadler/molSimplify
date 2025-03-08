@@ -529,7 +529,8 @@ def generate_full_complex_autocorrelations(mol,
                                            flag_name=False, modifier=False,
                                            use_dist=False, size_normalize=False,
                                            Gval=False, NumB=False, polarizability=False,
-                                           MRdiag_dict={}):
+                                           MRdiag_dict={},
+                                           transition_metals_only=True):
     """
     Utility to manage full complex autocorrelation generation and labeling.
     Works on any molecule, not just TM complexes.
@@ -558,6 +559,8 @@ def generate_full_complex_autocorrelations(mol,
             Use polarizability (alpha) as RAC, by default False.
         MRdiag_dict : dict, optional
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
+        transition_metals_only : bool, optional
+            Flag if only transition metals counted as metals, by default True.
 
     Returns
     -------
@@ -588,7 +591,10 @@ def generate_full_complex_autocorrelations(mol,
     for ii, properties in enumerate(allowed_strings):
         metal_ac = full_autocorrelation(mol, properties, depth,
                                         oct=oct, modifier=modifier,
-                                        use_dist=use_dist, size_normalize=size_normalize, MRdiag_dict=MRdiag_dict)
+                                        use_dist=use_dist,
+                                        size_normalize=size_normalize,
+                                        MRdiag_dict=MRdiag_dict,
+                                        transition_metals_only=transition_metals_only)
         this_colnames = []
         for i in range(0, depth + 1):
             this_colnames.append(labels_strings[ii] + '-' + str(i))
