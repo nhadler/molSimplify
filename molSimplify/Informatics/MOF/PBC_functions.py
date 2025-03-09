@@ -891,7 +891,7 @@ def compute_adj_matrix(distance_mat, all_atom_types, wiggle_room=1, handle_overl
 
 def get_closed_subgraph(linkers, SBU_list, adj_matrix):
     ###############################################################################
-    # This part separates the linkers into their respective subgraphs             #
+    # This part separates the linkers into their respective subgraphs.            #
     # First element is the things you want to find subgraphs of.                  #
     # If this is the linkers, you input that as the first.                        #
     # If you input the SBU as the first, then you get the subgraphs of the SBU.   #

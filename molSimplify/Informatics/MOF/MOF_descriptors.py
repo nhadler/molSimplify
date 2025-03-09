@@ -172,7 +172,7 @@ def gen_and_append_desc(
 
 def make_MOF_SBU_RACs(
         SBU_list, SBU_subgraph, molcif, depth, name, cell_v, anchoring_atoms, sbu_path,
-        linker_anchors_superlist, Gval, connections_list=False, connections_subgraphlist=False,
+        linker_anchors_superlist, Gval, connections_list, connections_subgraphlist,
         transition_metals_only=True):
     """
     Generates RACs on the SBUs of the MOF, as well as on the lc atoms (SBU-connected atoms of linkers).
@@ -1227,7 +1227,7 @@ def get_MOF_descriptors(
     if min_max_linker_length < 3:
         write2file(linker_path, "/short_ligands.txt", tmpstr)
     if min_max_linker_length > 2:
-        # For N-C-C-N ligand ligand.
+        # For N-C-C-N ligand.
         if max_min_linker_length == min_max_linker_length:
             long_ligands = True
         elif min_max_linker_length > 3:
