@@ -536,7 +536,7 @@ def generate_full_complex_autocorrelations(mol,
     Utility to manage full complex autocorrelation generation and labeling.
     Works on any molecule, not just TM complexes.
 
-    Use size_normalize to average over all start atoms (all atoms in molecule),
+    Use size_normalize=True to average over all start atoms (all atoms in molecule),
     mimicking behavior of generate_metal_* and generate_atomonly_* functions.
 
     Parameters
