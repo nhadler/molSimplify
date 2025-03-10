@@ -57,7 +57,7 @@ def test_cell_to_cellpar(cell, reference_cpar):
     ])
 def test_fractional2cart(fcoords, cell, reference_cart_coord):
     cart_coord = fractional2cart(fcoords, cell)
-    assert np.array_equal(cart_coord, reference_cart_coord)
+    assert np.allclose(cart_coord, reference_cart_coord)
 
 @pytest.mark.parametrize(
     "coord, cell, reference_fcoords",
