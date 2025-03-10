@@ -148,8 +148,10 @@ def autocorrelation(mol, prop_vec, orig, d, oct=True, use_dist=False, size_norma
                 result_vector[hopped] += prop_vec[orig] * prop_vec[inds] / this_dist
             historical_set.update(active_set)
         active_set = new_active_set
-        if size_normalize:
-            result_vector[hopped] /= mol.natoms
+
+    if size_normalize:
+        result_vector = result_vector / mol.natoms
+
     return (result_vector)
 
 
@@ -254,8 +256,10 @@ def deltametric(mol, prop_vec, orig, d, oct=True, use_dist=False, size_normalize
                 result_vector[hopped] += (prop_vec[orig] - prop_vec[inds]) / (this_dist + 1e-6)
             historical_set.update(active_set)
         active_set = new_active_set
-        if size_normalize:
-            result_vector[hopped] /= mol.natoms
+
+    if size_normalize:
+        result_vector = result_vector / mol.natoms
+
     return (result_vector)
 
 
@@ -531,6 +535,9 @@ def generate_full_complex_autocorrelations(mol,
     """
     Utility to manage full complex autocorrelation generation and labeling.
     Works on any molecule, not just TM complexes.
+
+    Use size_normalize to average over all start atoms (all atoms in molecule),
+    mimicking behavior of generate_metal_* and generate_atomonly_* functions.
 
     Parameters
     ----------
