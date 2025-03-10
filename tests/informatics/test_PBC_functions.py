@@ -57,7 +57,7 @@ def test_cell_to_cellpar(cell, reference_cpar):
     ])
 def test_fractional2cart(fcoords, cell, reference_cart_coord):
     cart_coord = fractional2cart(fcoords, cell)
-    assert np.allclose(cart_coord, reference_cart_coord)
+    assert np.array_equal(cart_coord, reference_cart_coord)
 
 @pytest.mark.parametrize(
     "coord, cell, reference_fcoords",
@@ -91,7 +91,7 @@ def test_frac_coord(coord, cell, reference_fcoords):
     ])
 def test_compute_image_flag(cell, fcoord1, fcoord2, reference_shift):
     shift = compute_image_flag(cell, fcoord1, fcoord2)
-    assert np.allclose(shift, reference_shift)
+    assert np.array_equal(shift, reference_shift)
 
 def test_writeXYZandGraph(resource_path_root, tmp_path):
     filename = str(tmp_path / 'writeXYZandGraph_test.xyz')

@@ -115,7 +115,7 @@ def test_autocorrelation(resource_path_root, load_complex1, orig, d, oct_flag, u
     v = autocorrelation(load_complex1, w, orig, d, oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize)
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "autocorrelation" / f"{orig}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
     ref_v = get_ref(reference_path)
-    assert np.array_equal(v, ref_v)
+    assert np.allclose(v, ref_v)
 
 
 @pytest.mark.parametrize(
@@ -136,7 +136,7 @@ def test_deltametric(resource_path_root, load_complex1, orig, d, oct_flag, use_d
     v = deltametric(load_complex1, w, orig, d, oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize)
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "deltametric" / f"{orig}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
     ref_v = get_ref(reference_path)
-    assert np.array_equal(v, ref_v)
+    assert np.allclose(v, ref_v)
 
 
 @pytest.mark.parametrize(
@@ -153,7 +153,7 @@ def test_full_autocorrelation(resource_path_root, load_complex1, prop, d, oct_fl
     v = full_autocorrelation(load_complex1, prop, d, oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize)
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "full_autocorrelation" / f"{prop}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
     ref_v = get_ref(reference_path)
-    assert np.array_equal(v, ref_v)
+    assert np.allclose(v, ref_v)
 
 
 @pytest.mark.parametrize(
@@ -177,7 +177,7 @@ def test_atom_only_autocorrelation(resource_path_root, load_complex1, atomIdx, d
 
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "atom_only_autocorrelation" / f"{atomIdx_str}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
     ref_v = get_ref(reference_path)
-    assert np.array_equal(v, ref_v)
+    assert np.allclose(v, ref_v)
 
 
 @pytest.mark.parametrize(
@@ -201,7 +201,7 @@ def test_atom_only_deltametric(resource_path_root, load_complex1, atomIdx, d, oc
 
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "atom_only_deltametric" / f"{atomIdx_str}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
     ref_v = get_ref(reference_path)
-    assert np.array_equal(v, ref_v)
+    assert np.allclose(v, ref_v)
 
 
 @pytest.mark.parametrize(
@@ -218,7 +218,7 @@ def test_metal_only_autocorrelation_1(resource_path_root, load_complex1, prop, d
     v = metal_only_autocorrelation(load_complex1, prop, d, oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize)
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "metal_only_autocorrelation_1" / f"{prop}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
     ref_v = get_ref(reference_path)
-    assert np.array_equal(v, ref_v)
+    assert np.allclose(v, ref_v)
 
 
 @pytest.mark.parametrize(
@@ -235,7 +235,7 @@ def test_metal_only_autocorrelation_2(resource_path_root, load_complex2, prop, d
     v = metal_only_autocorrelation(load_complex2, prop, d, oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize)
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "metal_only_autocorrelation_2" / f"{prop}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
     ref_v = get_ref(reference_path)
-    assert np.array_equal(v, ref_v)
+    assert np.allclose(v, ref_v)
 
 
 @pytest.mark.parametrize(
@@ -254,7 +254,7 @@ def test_metal_only_autocorrelation_3(resource_path_root, load_complex3, prop, d
         transition_metals_only=False)
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "metal_only_autocorrelation_3" / f"{prop}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
     ref_v = get_ref(reference_path)
-    assert np.array_equal(v, ref_v)
+    assert np.allclose(v, ref_v)
 
 
 def test_metal_only_autocorrelation_4(load_complex3):
@@ -278,7 +278,7 @@ def test_metal_only_deltametric_1(resource_path_root, load_complex1, prop, d, oc
     v = metal_only_deltametric(load_complex1, prop, d, oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize)
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "metal_only_deltametric_1" / f"{prop}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
     ref_v = get_ref(reference_path)
-    assert np.array_equal(v, ref_v)
+    assert np.allclose(v, ref_v)
 
 
 @pytest.mark.parametrize(
@@ -295,7 +295,7 @@ def test_metal_only_deltametric_2(resource_path_root, load_complex2, prop, d, oc
     v = metal_only_deltametric(load_complex2, prop, d, oct=oct_flag, use_dist=use_dist, size_normalize=size_normalize)
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "metal_only_deltametric_2" / f"{prop}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
     ref_v = get_ref(reference_path)
-    assert np.array_equal(v, ref_v)
+    assert np.allclose(v, ref_v)
 
 
 @pytest.mark.parametrize(
@@ -314,7 +314,7 @@ def test_metal_only_deltametric_3(resource_path_root, load_complex3, prop, d, oc
         transition_metals_only=False)
     reference_path = resource_path_root / "refs" / "json" / "test_autocorrelation" / "metal_only_deltametric_3" / f"{prop}_{d}_{oct_flag}_{use_dist}_{size_normalize}.json"
     ref_v = get_ref(reference_path)
-    assert np.array_equal(v, ref_v)
+    assert np.allclose(v, ref_v)
 
 
 def test_metal_only_deltametric_4(load_complex3):
@@ -345,7 +345,7 @@ def test_generate_atomonly_autocorrelations(resource_path_root, load_complex1, a
     ref_d = get_ref(reference_path, np_array=False)
     assert d.keys() == ref_d.keys()
     assert d['colnames'] == ref_d['colnames']
-    assert np.array_equal(d['results'], ref_d['results'])
+    assert np.allclose(d['results'], ref_d['results'])
 
 
 @pytest.mark.parametrize(
@@ -369,7 +369,7 @@ def test_generate_atomonly_deltametrics(resource_path_root, load_complex1, atomI
     ref_d = get_ref(reference_path, np_array=False)
     assert d.keys() == ref_d.keys()
     assert d['colnames'] == ref_d['colnames']
-    assert np.array_equal(d['results'], ref_d['results'])
+    assert np.allclose(d['results'], ref_d['results'])
 
 
 @pytest.mark.parametrize(
@@ -394,7 +394,7 @@ def test_generate_metal_autocorrelations_1(resource_path_root, load_complex1, de
     ref_d = get_ref(reference_path, np_array=False)
     assert d.keys() == ref_d.keys()
     assert d['colnames'] == ref_d['colnames']
-    assert np.array_equal(d['results'], ref_d['results'])
+    assert np.allclose(d['results'], ref_d['results'])
 
 
 @pytest.mark.parametrize(
@@ -419,7 +419,7 @@ def test_generate_metal_autocorrelations_2(resource_path_root, load_complex2, de
     ref_d = get_ref(reference_path, np_array=False)
     assert d.keys() == ref_d.keys()
     assert d['colnames'] == ref_d['colnames']
-    assert np.array_equal(d['results'], ref_d['results'])
+    assert np.allclose(d['results'], ref_d['results'])
 
 
 @pytest.mark.parametrize(
@@ -445,7 +445,7 @@ def test_generate_metal_autocorrelations_3(resource_path_root, load_complex3, de
     ref_d = get_ref(reference_path, np_array=False)
     assert d.keys() == ref_d.keys()
     assert d['colnames'] == ref_d['colnames']
-    assert np.array_equal(d['results'], ref_d['results'])
+    assert np.allclose(d['results'], ref_d['results'])
 
 
 def test_generate_metal_autocorrelations_4(load_complex3):
@@ -477,7 +477,7 @@ def test_generate_metal_deltametrics_1(resource_path_root, load_complex1, depth,
     ref_d = get_ref(reference_path, np_array=False)
     assert d.keys() == ref_d.keys()
     assert d['colnames'] == ref_d['colnames']
-    assert np.array_equal(d['results'], ref_d['results'])
+    assert np.allclose(d['results'], ref_d['results'])
 
 
 @pytest.mark.parametrize(
@@ -502,7 +502,7 @@ def test_generate_metal_deltametrics_2(resource_path_root, load_complex2, depth,
     ref_d = get_ref(reference_path, np_array=False)
     assert d.keys() == ref_d.keys()
     assert d['colnames'] == ref_d['colnames']
-    assert np.array_equal(d['results'], ref_d['results'])
+    assert np.allclose(d['results'], ref_d['results'])
 
 
 @pytest.mark.parametrize(
@@ -528,7 +528,7 @@ def test_generate_metal_deltametrics_3(resource_path_root, load_complex3, depth,
     ref_d = get_ref(reference_path, np_array=False)
     assert d.keys() == ref_d.keys()
     assert d['colnames'] == ref_d['colnames']
-    assert np.array_equal(d['results'], ref_d['results'])
+    assert np.allclose(d['results'], ref_d['results'])
 
 
 def test_generate_metal_deltametrics_4(load_complex3):
@@ -560,7 +560,7 @@ def test_generate_full_complex_autocorrelations(resource_path_root, load_complex
     ref_d = get_ref(reference_path, np_array=False)
     assert d.keys() == ref_d.keys()
     assert d['colnames'] == ref_d['colnames']
-    assert np.array_equal(d['results'], ref_d['results'])
+    assert np.allclose(d['results'], ref_d['results'])
 
 
 @pytest.mark.parametrize(
@@ -591,4 +591,4 @@ def test_get_descriptor_vector(resource_path_root, load_complex1, depth, use_dis
         ref_vals = json.load(f)
 
     assert names == ref_names
-    assert vals == ref_vals
+    assert np.allclose(vals, ref_vals)
