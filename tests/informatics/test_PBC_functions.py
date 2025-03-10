@@ -91,7 +91,7 @@ def test_frac_coord(coord, cell, reference_fcoords):
     ])
 def test_compute_image_flag(cell, fcoord1, fcoord2, reference_shift):
     shift = compute_image_flag(cell, fcoord1, fcoord2)
-    assert np.allclose(shift, reference_shift)
+    assert np.array_equal(shift, reference_shift)
 
 def test_writeXYZandGraph(resource_path_root, tmp_path):
     filename = str(tmp_path / 'writeXYZandGraph_test.xyz')
