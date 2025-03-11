@@ -251,11 +251,11 @@ def deltametric(mol, prop_vec, orig, d, oct=True, use_dist=False, size_normalize
                 if (bound_atoms not in historical_set) and (bound_atoms not in active_set):
                     new_active_set.add(bound_atoms)
         for inds in new_active_set:
-            if not use_dist:
-                result_vector[hopped] += prop_vec[orig] - prop_vec[inds]
-            else:
+            if use_dist:
                 this_dist = mol.getDistToMetal(orig, inds)
                 result_vector[hopped] += (prop_vec[orig] - prop_vec[inds]) / (this_dist + 1e-6)
+            else:
+                result_vector[hopped] += prop_vec[orig] - prop_vec[inds]
             historical_set.update(active_set)
         active_set = new_active_set
 
