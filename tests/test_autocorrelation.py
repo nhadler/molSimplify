@@ -377,7 +377,6 @@ def test_generate_atomonly_deltametrics(resource_path_root, load_complex1, atomI
     [
     (3, True, False, False, False, False, False),
     (2, True, False, False, False, False, False),
-    (3, True, False, False, False, False, False),
     (3, False, False, False, False, False, False),
     (3, False, True, False, False, False, False),
     (3, False, True, True, False, False, False),
@@ -402,7 +401,6 @@ def test_generate_metal_autocorrelations_1(resource_path_root, load_complex1, de
     [
     (3, True, False, False, False, False, False),
     (2, True, False, False, False, False, False),
-    (3, True, False, False, False, False, False),
     (3, False, False, False, False, False, False),
     (3, False, True, False, False, False, False),
     (3, False, True, True, False, False, False),
@@ -427,7 +425,6 @@ def test_generate_metal_autocorrelations_2(resource_path_root, load_complex2, de
     [
     (3, True, False, False, False, False, False),
     (2, True, False, False, False, False, False),
-    (3, True, False, False, False, False, False),
     (3, False, False, False, False, False, False),
     (3, False, True, False, False, False, False),
     (3, False, True, True, False, False, False),
@@ -460,7 +457,6 @@ def test_generate_metal_autocorrelations_4(load_complex3):
     [
     (3, True, False, False, False, False, False),
     (2, True, False, False, False, False, False),
-    (3, True, False, False, False, False, False),
     (3, False, False, False, False, False, False),
     (3, False, True, False, False, False, False),
     (3, False, True, True, False, False, False),
@@ -485,7 +481,6 @@ def test_generate_metal_deltametrics_1(resource_path_root, load_complex1, depth,
     [
     (3, True, False, False, False, False, False),
     (2, True, False, False, False, False, False),
-    (3, True, False, False, False, False, False),
     (3, False, False, False, False, False, False),
     (3, False, True, False, False, False, False),
     (3, False, True, True, False, False, False),
@@ -510,7 +505,6 @@ def test_generate_metal_deltametrics_2(resource_path_root, load_complex2, depth,
     [
     (3, True, False, False, False, False, False),
     (2, True, False, False, False, False, False),
-    (3, True, False, False, False, False, False),
     (3, False, False, False, False, False, False),
     (3, False, True, False, False, False, False),
     (3, False, True, True, False, False, False),
@@ -543,7 +537,6 @@ def test_generate_metal_deltametrics_4(load_complex3):
     [
     (3, True, False, False, False, False, False),
     (2, True, False, False, False, False, False),
-    (3, True, False, False, False, False, False),
     (3, False, False, False, False, False, False),
     (3, False, True, False, False, False, False),
     (3, False, True, True, False, False, False),
