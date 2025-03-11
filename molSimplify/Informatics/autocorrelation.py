@@ -128,10 +128,12 @@ def autocorrelation(mol, prop_vec, orig, d, oct=True, use_dist=False, size_norma
     hopped = 0
     active_set = set([orig])
     historical_set = set()
-    if not use_dist:
-        result_vector[hopped] = prop_vec[orig] * prop_vec[orig]
+
+    if use_dist:
+        result_vector[hopped] = 0.5 * abs(prop_vec[orig]) ** 2.4
     else:
-        result_vector[hopped] = 0.5 * abs(prop_vec[orig]) ** 2.4 / mol.natoms
+        result_vector[hopped] = prop_vec[orig] * prop_vec[orig]
+
     while hopped < (d):
         hopped += 1
         new_active_set = set()
@@ -141,11 +143,11 @@ def autocorrelation(mol, prop_vec, orig, d, oct=True, use_dist=False, size_norma
                 if (bound_atoms not in historical_set) and (bound_atoms not in active_set):
                     new_active_set.add(bound_atoms)
         for inds in new_active_set:
-            if not use_dist:
-                result_vector[hopped] += prop_vec[orig] * prop_vec[inds]
-            else:
+            if use_dist:
                 this_dist = mol.getDistToMetal(orig, inds)
                 result_vector[hopped] += prop_vec[orig] * prop_vec[inds] / this_dist
+            else:
+                result_vector[hopped] += prop_vec[orig] * prop_vec[inds]
             historical_set.update(active_set)
         active_set = new_active_set
 
