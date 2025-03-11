@@ -736,7 +736,7 @@ def identify_short_linkers(molcif, initial_SBU_list, initial_SBU_subgraphlist, r
             long_ligands = True
     return min_max_linker_length, long_ligands, SBU_list, remove_list, linker_list, linker_subgraphlist
 
-def make_MOF_fragments(data, path=False, xyz_path=False):
+def make_MOF_fragments(data, path, xyz_path):
     """
     Breaks a MOF into fragments for use with pormake (in silico MOF construction).
     cif for MOF should have P1 symmetry.
@@ -751,10 +751,13 @@ def make_MOF_fragments(data, path=False, xyz_path=False):
     ----------
     data : str
         The path to the cif file for which SBUs and linkers will be identified.
+        Should end in ".cif".
     path : str
-        The parent path to which output will be written. Will contain a folder for SBUs and another for linkers.
+        The parent path to which output will be written.
+        Will contain a folder for SBUs and another for linkers.
     xyz_path : str
         The path to which an xyz file and a net (connectivity) file of the MOF will be written.
+        Should end in ".xyz".
 
     Returns
     -------
@@ -762,9 +765,11 @@ def make_MOF_fragments(data, path=False, xyz_path=False):
         See function description for possible return codes and their meanings.
 
     """
-    if not path:
-        print('Need a directory to place all of the linker and SBU objects. Exiting now.')
-        raise ValueError('Base path must be specified in order to write descriptors.')
+    if type(data) != str or type(path) != str or type(xyz_path) != str:
+        # print('Need a directory to place all of the linker and SBU objects. Exiting now.')
+        raise ValueError('data, path, and xyz_path must be strings.')
+    elif not data.endswith('.cif') or not xyz_path.endswith('.xyz'):
+        raise ValueError('Incorrect file extension for data or xyz_path. Should be .cif and .xyz, respectively.')
     else:
         if path.endswith('/'):
             path = path[:-1]
