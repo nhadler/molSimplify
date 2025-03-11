@@ -121,7 +121,7 @@ def autocorrelation(mol, prop_vec, orig, d, oct=True, use_dist=False, size_norma
     Returns
     -------
         result_vector : np.array
-            assembled products autocorrelations
+            Assembled products autocorrelations.
 
     """
     result_vector = np.zeros(d + 1)
