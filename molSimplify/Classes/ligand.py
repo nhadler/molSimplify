@@ -274,6 +274,8 @@ def ligand_breakdown(mol, BondedOct=False, silent=True, transition_metals_only=T
             Enforce octahedral bonding. Default is False.
         silent : bool, optional
             Silence extra printout. Default is True.
+        transition_metals_only : bool, optional
+            Flag if only transition metals counted as metals, by default True.
 
     Returns
     -------
@@ -285,14 +287,10 @@ def ligand_breakdown(mol, BondedOct=False, silent=True, transition_metals_only=T
             List of ligand connection indices (in mol). Length is the number of ligands
 
     """
-    # this function takes an octahedral
-    # complex and returns ligands
+    # This function takes an octahedral
+    # complex and returns ligands.
     metal_index = mol.findMetal(transition_metals_only=transition_metals_only)[0]
-    # print(BondedOct)
     bondedatoms = mol.getBondedAtomsSmart(metal_index, oct=BondedOct)
-    # print('!!!!!boundatoms', bondedatoms)
-    # print('from get oct' + str(bondedatoms))
-    # print('***\n')
     bonded_atom_symbols = [mol.getAtom(i).symbol() for i in bondedatoms]
     if not silent:
         print(('result of ligand ligand_breakdown', bonded_atom_symbols))
@@ -302,7 +300,7 @@ def ligand_breakdown(mol, BondedOct=False, silent=True, transition_metals_only=T
     for atom in bondedatoms:
         if not silent:
             print(('this atom type is ' + mol.getAtom(atom).symbol()))
-            print(('conection number ' + str(atom) + " of " + str(bondedatoms)))
+            print(('connection number ' + str(atom) + " of " + str(bondedatoms)))
         fragment = mol.findsubMol(atom, metal_index)
         this_cons = [x for x in fragment if (x in bondedatoms)]
         if not silent:

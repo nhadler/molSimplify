@@ -49,7 +49,7 @@ def get_descriptor_vector(this_complex,
                           depth=3,
                           ):
     """
-    Calculate and return all geo-based RACs for a given octahedral complex (featurize).
+    Calculate and return all geo-based RACs for a given octahedral TM complex (featurize).
 
     Parameters
     ----------
@@ -99,7 +99,10 @@ def get_descriptor_vector(this_complex,
             Compiled list of descriptor values.
 
     """
-    # modifier -
+    metals = this_complex.findMetal()
+    if len(metals) != 1:
+        raise Exception('Molecule does not have the expected number of transition metals (1).')
+
     descriptor_names = []
     descriptors = []
     # Generate custom_ligand_dict if one not passed!
