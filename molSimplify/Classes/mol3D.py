@@ -3914,7 +3914,7 @@ class mol3D:
                      use_dist=False, NumB=False, Gval=False, size_normalize=False,
                      alleq=False, strict_cutoff=False, catom_list=None, MRdiag_dict={}, depth=3):
         """
-        Get geo-based RAC features for this complex (if octahedral).
+        Get geo-based RAC features for this transition metal complex (if octahedral).
 
         Parameters
         ----------
@@ -3948,6 +3948,10 @@ class mol3D:
             results, dict
                 Dictionary of {'RACname':RAC} for all geo-based RACs
         """
+
+        metals = self.findMetal()
+        if len(metals) != 1:
+            raise Exception('Molecule does not have the expected number of transition metals (1).')
 
         results = dict()
         from molSimplify.Informatics.lacRACAssemble import get_descriptor_vector
