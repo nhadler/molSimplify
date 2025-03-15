@@ -74,8 +74,6 @@ def tcgen(args, strfiles, method):
     """
 
     # global variables
-    # print('----- args provided to tc gen --------')
-    # print(args)
     globs = globalvars()
     jobdirs = []
     coordfs = []
@@ -198,8 +196,7 @@ def tcgen(args, strfiles, method):
         if 'levelshift' not in jobparams:
             jobparams['levelshift'] = 'yes'
         elif jobparams['levelshift'] != 'yes':
-            print(("Warning! You're doing an unrestricted calculation but have set levelshift = %s" % (
-                jobparams['levelshift'])))
+            print(f"Warning! You're doing an unrestricted calculation but have set levelshift = {jobparams['levelshift']}")
         if 'levelshiftvala' not in jobparams:
             jobparams['levelshiftvala'] = '0.25'
         if 'levelshiftvalb' not in jobparams:
@@ -227,13 +224,12 @@ def tcgen(args, strfiles, method):
                     fixed_atoms = [str(int(i)+1)
                                    for i in fixed_atoms]  # 1-based indices
                     string_to_write = 'dihedral 0 ' + '_'.join(fixed_atoms)
-                    # print(string_to_write)
                     output.write('$constraint_set \n')
                     output.write(string_to_write + '\n')
                 output.write('end\n')
     elif args.jobdir:
         for i, jobd in enumerate(jobdirs):
-            print(('jobd is ' + jobd))
+            print(f'jobd is {jobd}')
             output_filename = "terachem_input"
             if args.name:
                 output_filename = args.name + '.in'
@@ -256,7 +252,6 @@ def tcgen(args, strfiles, method):
                     fixed_atoms = [str(int(i)+1)
                                    for i in fixed_atoms]  # 1-based indices
                     string_to_write = 'dihedral 0 ' + '_'.join(fixed_atoms)
-                    # print(string_to_write)
                     output.write('$constraint_set \n')
                     output.write(string_to_write + '\n')
                 output.write('end\n')
@@ -881,7 +876,7 @@ def ogen(args, strfiles, method):
             unrestricted = True
         else:
             jobparams['method'] = 'B3LYP'
-    print((args.method, method, jobparams['method']))
+    print(args.method, method, jobparams['method'])
     # Check runtype and we accept both ORCA and terachem naming convention
     if (args.runtyp and 'energy' in args.runtyp.lower()):
         jobparams['run'] = 'Sp'
@@ -932,8 +927,7 @@ def ogen(args, strfiles, method):
         if 'levelshift' not in jobparams:
             jobparams['levelshift'] = 'yes'
         elif jobparams['levelshift'] != 'yes':
-            print(("Warning! You're doing an unrestricted calculation but have set levelshift = %s" % (
-                jobparams['levelshift'])))
+            print(f"Warning! You're doing an unrestricted calculation but have set levelshift = {jobparams['levelshift']}")
         if 'levelshiftval' not in jobparams:
             if 'levelshiftvala' in jobparams:
                 jobparams['levelshiftval'] = jobparams['levelshiftvala']
@@ -959,7 +953,7 @@ def ogen(args, strfiles, method):
                     ogenwrt(output, jobparams, coordfs[i])
     elif args.jobdir:
         for i, jobd in enumerate(jobdirs):
-            print(('jobd is ' + jobd))
+            print(f'jobd is {jobd}')
             with open(jobd+'/orca.in', 'w') as output:
                 output.write('# file created with %s\n' % globs.PROGRAM)
                 if 'CC' in jobparams['method'] and jobparams['run'] == 'Opt':
@@ -1118,7 +1112,7 @@ def molcgen(args, strfiles, method):
         jobparams['method'] = method
     else:
         jobparams['method'] = 'CASSCF'
-    print((args.method, method, jobparams['method']))
+    print(args.method, method, jobparams['method'])
     # Check runtype
     if (args.runtyp and 'energy' in args.runtyp.lower()):
         jobparams['run'] = 'energy'
@@ -1186,7 +1180,7 @@ def molcgen(args, strfiles, method):
                 molcwrt(output, jobparams, coordfs[i], i)
     elif args.jobdir:
         for i, jobd in enumerate(jobdirs):
-            print(('jobd is ' + jobd))
+            print(f'jobd is {jobd}')
             with open(jobd+'/molcas.input', 'w') as output:
                 output.write('# file created with %s\n' % globs.PROGRAM)
                 molcwrt(output, jobparams, coordfs[i], i)
@@ -1331,7 +1325,7 @@ def molcbasis(strfiles, basistyp):
                 unsupported += (elems[i].pop()+',')
             print(
                 'Warning! Automatic basis generation not available for heavy elemts in row >4 yet!')
-            print(('Basis was not generated for '+unsupported))
+            print(f'Basis was not generated for {unsupported}')
             break
     if basistyp == 'ANO-rcc':
         while len(elems[1]) > 0:
@@ -1421,8 +1415,8 @@ def molcnactels(strfiles, oxnum):
             if atno > 20 and atno < 31:  # 1st row TM
                 nactel += atno-18-oxnum+4  # 4s3d electron + 4 bonding orbital electrons
             else:
-                print('Warning! Automatic assignment of "nactel"is not available')
-                print(('for heavy atom like ' + temp.getAtom(ind).symbol()+'yet'))
+                print('Warning! Automatic assignment of "nactel" is not available')
+                print(f'for heavy atom like {temp.getAtom(ind).symbol()} yet')
         nactels.append(nactel)
     return nactels
 
@@ -1458,6 +1452,6 @@ def molcfrozens(strfiles):
                 frozen += 9  # 1s2s2p3s3p
             elif atno > 54:
                 print('Warning! Automatic assignment of "frozen"is not available')
-                print(('for heavy atom like ' + atom.symbol()+'yet'))
+                print(f'for heavy atom like {atom.symbol()} yet')
         frozens.append(frozen)
     return frozens

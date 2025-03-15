@@ -307,7 +307,7 @@ def getadjacency(geo):
         return pbp_adjacency
     else:
         print('****************************************************')
-        print(('****** WARNING, '+geo+' not supported by -isomers! *****'))
+        print('****** WARNING, '+geo+' not supported by -isomers! *****')
         print('****************************************************')
         return None
 

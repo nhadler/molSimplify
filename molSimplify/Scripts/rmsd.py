@@ -403,12 +403,12 @@ def rmsd_reorder_rotate(p_atoms, q_atoms, p_coord, q_coord,
 
     """
     if not p_atoms.shape[0] == q_atoms.shape[0]:
-        print(("Warning: Number of atoms do not match!",
-               p_atoms.shape[0], q_atoms[0]))
+        print("Warning: Number of atoms do not match!",
+               p_atoms.shape[0], q_atoms[0])
         return 1000
     elif not len(set(np.unique(p_atoms)) - set(np.unique(q_atoms))) == 0:
-        print(("Warning: Atom types do not match!",
-               np.unique(p_atoms), np.unique(q_atoms)))
+        print("Warning: Atom types do not match!",
+               np.unique(p_atoms), np.unique(q_atoms))
         return 1000
     if translate:
         p_cent = centroid(p_coord)
@@ -439,8 +439,6 @@ def rmsd_reorder_rotate(p_atoms, q_atoms, p_coord, q_coord,
     if not reorder.lower() == "none":
         q_review = reorder_method(p_atoms, q_atoms, p_coord, q_coord)
         q_coord = q_coord[q_review]
-        # q_atoms = q_atoms[q_review]
-        # print("q_review", q_review)
 
     if rotation_method is None:
         result_rmsd = rmsd(p_coord, q_coord)
@@ -482,12 +480,12 @@ def reorder_rotate(p_atoms, q_atoms, p_coord, q_coord,
 
     """
     if not p_atoms.shape[0] == q_atoms.shape[0]:
-        print(("Warning: Number of atoms do not match!",
-               p_atoms.shape[0], q_atoms[0]))
+        print("Warning: Number of atoms do not match!",
+               p_atoms.shape[0], q_atoms[0])
         return 1000
     elif not len(set(np.unique(p_atoms)) - set(np.unique(q_atoms))) == 0:
-        print(("Warning: Atom types do not match!",
-               np.unique(p_atoms), np.unique(q_atoms)))
+        print("Warning: Atom types do not match!",
+               np.unique(p_atoms), np.unique(q_atoms))
         return 1000
     if translate:
         p_cent = centroid(p_coord)

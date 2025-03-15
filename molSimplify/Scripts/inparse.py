@@ -30,13 +30,12 @@ def checkinput(args, calctype="base"):
     if calctype == "base":
         # check core
         if not args.core:
-            print((
-                'WARNING: No core specified. Defaulting to Fe. Available cores are: '+getcores()))
+            print(
+                f'WARNING: No core specified. Defaulting to Fe. Available cores are: {getcores()}')
             args.core = ['fe']
         # convert full element name to symbol for cores:
         if args.core[0].lower() in list(metals_conv.keys()):
-            print(('switching core from ' + str(args.core) +
-                   ' to ' + str(metals_conv[args.core[0].lower()])))
+            print(f'switching core from {args.core} to {metals_conv[args.core[0].lower()]}')
             args.core = [metals_conv[args.core[0].lower()]]
         if (args.core[0][0].upper()+args.core[0][1:].lower() in elementsbynum):
             # convert to titlecase
@@ -44,8 +43,8 @@ def checkinput(args, calctype="base"):
             # check oxidation state
             if not args.oxstate:
                 try:
-                    print(('WARNING: No oxidation state specified. Defaulting to ' +
-                          globs.defaultoxstate[args.core[0].lower()]))
+                    print('WARNING: No oxidation state specified. Defaulting to ' +
+                          globs.defaultoxstate[args.core[0].lower()])
                     args.oxstate = globs.defaultoxstate[args.core[0].lower()]
                 except KeyError:
                     print('WARNING: No oxidation state specified. Defaulting to 2')
@@ -60,8 +59,8 @@ def checkinput(args, calctype="base"):
                     if mtlsdlist[args.core[0].lower()]-max(0, int(oxstatenum)-2) in defaultspins:
                         defaultspinstate = defaultspins[mtlsdlist[args.core[0].lower(
                         )]-max(0, int(oxstatenum)-2)]
-                        print((
-                            'WARNING: No spin multiplicity specified. Defaulting to '+defaultspinstate))
+                        print(
+                            f'WARNING: No spin multiplicity specified. Defaulting to {defaultspinstate}')
                         print(
                             'Please check this against our ANN output (where available)')
                     else:
@@ -118,7 +117,7 @@ def checkinput(args, calctype="base"):
                         occs0[i] += 1
                         toccs += dent_i
                 print(
-                    ('WARNING: No coordination number specified. Calculating from lig, ligocc, and subcatoms and found ' + str(toccs) + '.'))
+                    f'WARNING: No coordination number specified. Calculating from lig, ligocc, and subcatoms and found {toccs}.')
                 args.coord = toccs
             # set default coord if nothing given
             if (not args.coord) and (not args.geometry) and (not args.lig):
@@ -132,8 +131,8 @@ def checkinput(args, calctype="base"):
                 args.lig = ['water']
 
             if args.coord and (not args.geometry or (args.geometry not in geomnames and args.geometry not in geomshorts)):
-                print(('WARNING: No or unknown coordination geometry specified. Defining coordination geometry based on found coordination number: ' +
-                      globs.defaultgeometry[int(args.coord)][1]))
+                print('WARNING: No or unknown coordination geometry specified. Defining coordination geometry based on found coordination number: ' +
+                      globs.defaultgeometry[int(args.coord)][1])
                 args.geometry = globs.defaultgeometry[int(args.coord)][0]
             if args.geometry and not args.coord:
                 if args.geometry not in geomnames and args.geometry not in geomshorts:
@@ -148,12 +147,11 @@ def checkinput(args, calctype="base"):
                         args.coord = coords[geomnames.index(args.geometry)]
                     except ValueError:
                         args.coord = coords[geomshorts.index(args.geometry)]
-                    print((
-                        'WARNING: No coordination number specified. Defaulting to '+str(args.coord)))
+                    print(
+                        f'WARNING: No coordination number specified. Defaulting to {args.coord}')
             # check number of ligands
             if args.coord and not args.ligocc:
-                print(('WARNING: No ligand numbers specified. Defaulting to ' +
-                       str(args.coord)+' of the first ligand and 0 of all others.'))
+                print(f'WARNING: No ligand numbers specified. Defaulting to {args.coord} of the first ligand and 0 of all others.')
                 args.ligocc = [args.coord]
                 for lig in args.lig[1:]:
                     args.ligocc.append(0)
@@ -164,8 +162,8 @@ def checkinput(args, calctype="base"):
             args.substrate[0], 0, args.subcatoms)
         # check core
         if not args.core:
-            print((
-                'WARNING: No core specified. Defaulting to Fe. \nAvailable cores are: '+getcores()))
+            print(
+                f'WARNING: No core specified. Defaulting to Fe. \nAvailable cores are: {getcores()}')
             args.core = ['fe']
         if args.core[0][0].upper()+args.core[0][1:].lower() in elementsbynum:
             # convert to titlecase
@@ -173,8 +171,8 @@ def checkinput(args, calctype="base"):
             # check oxidation state
             if not args.oxstate:
                 try:
-                    print(('WARNING: No oxidation state specified. Defaulting to ' +
-                          globs.defaultoxstate[args.core[0].lower()]))
+                    print('WARNING: No oxidation state specified. Defaulting to ' +
+                          globs.defaultoxstate[args.core[0].lower()])
                     args.oxstate = globs.defaultoxstate[args.core[0].lower()]
                 except KeyError:
                     print('WARNING: No oxidation state specified. Defaulting to 2')
@@ -189,8 +187,8 @@ def checkinput(args, calctype="base"):
                     if mtlsdlist[args.core[0].lower()]-max(0, int(oxstatenum)-2) in defaultspins:
                         defaultspinstate = defaultspins[mtlsdlist[args.core[0].lower(
                         )]-max(0, int(oxstatenum)-2)]
-                        print((
-                            'WARNING: No spin multiplicity specified. Defaulting to '+defaultspinstate))
+                        print(
+                            f'WARNING: No spin multiplicity specified. Defaulting to {defaultspinstate}')
                         print(
                             'Please check this against our ANN output (where available)')
                     else:
@@ -206,19 +204,7 @@ def checkinput(args, calctype="base"):
             if not args.lig and not args.rgen:
                 print('WARNING: No ligands specified. Substrate is placed to core.')
                 args.lig = ['']
-            # if True in [True for i in args.lig if i in args.substrate]:
-            #     print('at least one of the ligans is present in the substrate list.')
-            #     idx_list = []
-            #     for i,ligand in enumerate(args.lig):
-            #         if ligand in args.substrate:
-            #             idx_list.append(i)
-            #     for i in sorted(idx_list,reverse=True):
-            #         del args.lig[i]
-            #         del args.ligocc[i]
-            # if True in [True for i in args.core if i.lower() in args.mlig]:
-            #     print('args.core is in args.mlig.')
-            #     args.lig.append('x')
-            #     args.ligocc.append(1)
+
             # check coordination number and geometry
             if not args.coord and not args.geometry:
                 # calculate occurrences, denticities etc for all ligands
@@ -260,18 +246,17 @@ def checkinput(args, calctype="base"):
                         occs0[i] += 1
                         toccs += dent_i
                 for i, substrate in enumerate(args.substrate):
-                    # if args.core[0].lower() in args.mlig and (substrate not in [lig_i.lower() for lig_i in args.lig]):
                     if args.core[0].lower() in args.mlig:
                         suboc_i = len(
                             [core for core in args.core if core.lower() in args.mlig])
                         for j in range(suboc_i):
                             toccs += 1
                 print(
-                    ('WARNING: No coordination number specified. Calculating from lig, ligocc, and subcatoms and found ' + str(toccs) + '.'))
+                    f'WARNING: No coordination number specified. Calculating from lig, ligocc, and subcatoms and found {toccs}.')
                 args.coord = toccs
             if args.coord and (not args.geometry or (args.geometry not in geomnames and args.geometry not in geomshorts)):
-                print(('WARNING: No or unknown coordination geometry specified. Defining coordination geometry based on found coordination number: ' +
-                      globs.defaultgeometry[int(args.coord)][1]))
+                print('WARNING: No or unknown coordination geometry specified. Defining coordination geometry based on found coordination number: ' +
+                      globs.defaultgeometry[int(args.coord)][1])
                 args.geometry = globs.defaultgeometry[int(args.coord)][0]
             if args.geometry and not args.coord:
                 coords, geomnames, geomshorts, geomgroups = getgeoms()
@@ -287,12 +272,11 @@ def checkinput(args, calctype="base"):
                         args.coord = coords[geomnames.index(args.geometry)]
                     except ValueError:
                         args.coord = coords[geomshorts.index(args.geometry)]
-                    print((
-                        'WARNING: No coordination number specified. Defaulting to '+str(args.coord)))
+                    print(
+                        f'WARNING: No coordination number specified. Defaulting to {args.coord}')
             # check number of ligands
             if args.coord and not args.ligocc:
-                print(('WARNING: No ligand numbers specified. Defaulting to ' +
-                       str(args.coord)+' of the first ligand and 0 of all others.'))
+                print(f'WARNING: No ligand numbers specified. Defaulting to {args.coord} of the first ligand and 0 of all others.')
                 args.ligocc = [args.coord]
                 for lig in args.lig[1:]:
                     args.ligocc.append(0)
@@ -302,7 +286,7 @@ def checkinput(args, calctype="base"):
                 args.substrate = 'methane'
             # check substrate connecting atom
             if args.substrate and not args.subcatoms:
-                print(('WARNING: A substrate is specified for TS generation without the specification of a connection point in the substrate. Defaulting to the numbers stored in the dictionary: ' + str(subcatoms)))
+                print(f'WARNING: A substrate is specified for TS generation without the specification of a connection point in the substrate. Defaulting to the numbers stored in the dictionary: {subcatoms}')
                 args.subcatoms = subcatoms
             # check mcomplex connecting ligand to the substrate
             if args.substrate and not args.mlig:
@@ -552,7 +536,7 @@ def parseinputfile(args, inputfile_str=None):
                 args.rundir = args.rundir.split('-rundir')[1]
                 args.rundir = args.rundir.lstrip(' ')
                 args.rundir = args.rundir.rstrip(' ')
-                print(('The directory for  this calculation is: '+str(args.rundir)))
+                print(f'The directory for this calculation is: {args.rundir}')
 
                 if (args.rundir[-1] == '/'):
                     args.rundir = args.rundir[:-1]
@@ -651,7 +635,6 @@ def parseinputfile(args, inputfile_str=None):
                 args.ff = l[1].lower()
             if (l[0] == '-ffoption' and len(l[1:]) > 0):
                 args.ffoption = l[1:]
-                # print('setting ffoption ' + str(args.ffoption))
             if (l[0] == '-ff_final_opt' and len(l[1:]) > 0):
                 args.ff_final_opt = l[1].lower()
             if (l[0] == '-place' and len(l[1:]) > 0):
@@ -677,16 +660,14 @@ def parseinputfile(args, inputfile_str=None):
                             else:
                                 lloc.append(ll.lower())
                         except ValueError:
-                            print(('ERROR: smicat processing failed at ' + str(ll)))
+                            print(f'ERROR: smicat processing failed at {ll}')
                             print(
                                 'Please use integers or  "pi" and divide by smiles ligand using [],[]')
                     args.smicat.append(lloc)
 
-                print(('final smicat set to ' + str(args.smicat)))
+                print(f'final smicat set to {args.smicat}')
             if (l[0] == '-nconfs' and len(l[1:]) > 0):
                 args.nconfs = l[1]
-            # if (l[0]=='-maxconfs' and len(l[1:]) > 0):
-                # args.maxconfs = l[1]
             if (l[0] == '-scoreconfs'):
                 args.scoreconfs = True
             if '-pangles' in line:
@@ -715,11 +696,8 @@ def parseinputfile(args, inputfile_str=None):
                 local_list = list()
                 if not isinstance(list_to_parse, str):
                     for decor in list_to_parse:
-                        # print('correcting string')
                         decor = str(decor).strip().strip('[]').split(',')
-                        # print(decor)
                         local_list = local_list + [str(i) for i in decor]
-                        # print(local_list)
                         # correct for 0 index
                         list_to_add.append(
                             [int(i.strip('[]'))-1 for i in decor])
@@ -727,7 +705,7 @@ def parseinputfile(args, inputfile_str=None):
                     # correct for 0 index
                     list_to_add = [int(list_to_parse.strip('[]'))-1]
                 args.decoration_index = list_to_add
-                print((args.decoration_index))
+                print(args.decoration_index)
             # parse qc arguments
             if (l[0] == '-qccode' and len(l[1:]) > 0):
                 args.qccode = l[1]
@@ -883,11 +861,9 @@ def parseinputfile(args, inputfile_str=None):
                 args.dbvdent = l[1]
             if (l[0] == '-dbvconns'):
                 ll = [x for x in l[1:]]
-                # ll = filter(None,re.split(' |,|\t',l[1]))
                 args.dbvconns = ll
             if (l[0] == '-dbvhyb'):
                 ll = [x for x in l[1:]]
-                # ll = filter(None,re.split(' |,|\t',l[1]))
                 args.dbvhyb = ll
             if (l[0] == '-dbvlinks'):
                 args.dbvlinks = l[1]
@@ -906,9 +882,7 @@ def parseinputfile(args, inputfile_str=None):
                     for decor in list_to_parse:
                         print('correcting string')
                         decor = str(decor).strip().strip('[]').split(',')
-                        # print(decor)
                         local_list = local_list + [str(i) for i in decor]
-                        # print(local_list)
                         # correct for 0 index
                         list_to_add.append([int(i.strip('[]')) for i in decor])
 
@@ -942,8 +916,6 @@ def parseinputfile(args, inputfile_str=None):
                 args.porbinfo = True
             if (l[0] == '-pdeloc'):
                 args.pdeloc = True
-            # if (l[0]=='-pdorbs'):
-            #    args.pdorbs = True
             if (l[0] == '-pnbo'):
                 args.pnbo = True
             # parse slab building arguments
@@ -1059,10 +1031,11 @@ def parseinputfile(args, inputfile_str=None):
                 args.max_descriptors = [str(i) for i in l[1:]]
     if not set_rundir:
         args.rundir = os.path.join(os.path.abspath('.'), 'Runs')
+
+
 # Parses command line arguments and prints help information
 #  @param parser Parser object
 #  @return Namespace of arguments
-
 
 def parseall(parser):
     parser.add_argument("-i", help="input file")
@@ -1155,7 +1128,6 @@ def parseinputs_advanced(*p):
         "-nconfs", help="Number of conformers to generate for multidentate smiles ligands. Default 1.", default='1')
     parser.add_argument(
         "-scoreconfs", help="Attempt to filter out identical conformers and rank them by rmsd to the desired template, default false", default=False)
-    # parser.add_argument("-maxconfs", help="Stop generation after maxconfs unique conformers or nconfs conformers have been generated, whichever comes first, default infinite", default=10000)
     parser.add_argument(
         "-charge", help="Net complex charge. Recommended NOT to specify, by default this is calculated from the metal oxidation state and ligand charges.")
     parser.add_argument(

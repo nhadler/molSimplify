@@ -103,8 +103,6 @@ def feature_prep(mol, idx):
                     if tidx not in ref_list:
                         t_list.append(tidx)
             tidx_list[i] = t_list
-        # print(sidx_list)
-        # print(tidx_list)
         for i in s_sel_list:
             for sidx in sidx_list[i]:
                 atno_list = tatno_list[i]
@@ -268,7 +266,7 @@ def krr_model_training(csvf, colnum_label, colnum_desc, alpha=1, gamma=1, thresh
     selector.fit(X_norm_train, y_norm_train)
     X_norm_train_impts = selector.feature_importances_
     idxes = np.where(X_norm_train_impts > threshold)[0]
-    print((len(idxes)))
+    print(len(idxes))
     importances = X_norm_train_impts[idxes]
     features_sel = headers[idxes]
     # importance
@@ -315,7 +313,7 @@ def krr_model_training(csvf, colnum_label, colnum_desc, alpha=1, gamma=1, thresh
         else:
             signal = True
         cycle_i += 1
-        print(('gamma is: ', gamma, '. alpha is: ', alpha))
+        print(f'gamma is: {gamma}. alpha is: {alpha}')
     # final model
     regr = KernelRidge(kernel=kernel, alpha=alpha, gamma=gamma)
     regr.fit(X_norm_train_sel, y_norm_train)
@@ -401,14 +399,14 @@ def krr_model_training_loo(csvf, colnum_label, colnum_desc, feature_names=False,
             selector.fit(X_norm_train, y_norm_train)
             X_norm_train_impts = selector.feature_importances_
             idxes = np.where(X_norm_train_impts > threshold)[0]
-            print((len(idxes)))
+            print(len(idxes))
             importances = X_norm_train_impts[idxes]
             features_sel = headers[idxes]
             # importance
             impt_dict = dict(list(zip(features_sel, importances)))
             X_norm_train_sel = X_norm_train.T[idxes].T
             X_norm_test_sel = X_norm_test.T[idxes].T
-            print((sorted(impt_dict, key=impt_dict.get)))
+            print(sorted(impt_dict, key=impt_dict.get))
             print(impt_dict)
         else:
             idxes = [headers.tolist().index(feature_name)
@@ -445,7 +443,6 @@ def krr_model_training_loo(csvf, colnum_label, colnum_desc, feature_names=False,
             alpha = regr.best_params_['alpha']
             if (gamma < gammas[lin / 2 - 1] or gamma > gammas[lin / 2]) or \
                     (alpha < alphas[lin / 2 - 1] or alpha > alphas[lin / 2]):
-                # and cycle_i < 10:
                 signal = False
                 factor_lower *= 0.8
                 factor_higher *= 0.8
@@ -460,7 +457,7 @@ def krr_model_training_loo(csvf, colnum_label, colnum_desc, feature_names=False,
             else:
                 signal = True
             cycle_i += 1
-            print(('gamma is: ', gamma, '. alpha is: ', alpha))
+            print(f'gamma is: {gamma}. alpha is: {alpha}')
         # final model
         regr = KernelRidge(kernel=kernel, alpha=alpha, gamma=gamma)
         regr.fit(X_norm_train_sel, y_norm_train)
@@ -497,7 +494,7 @@ def krr_model_training_loo(csvf, colnum_label, colnum_desc, feature_names=False,
         # perm_dict = dict(zip(perm_names, perms))
         MAEs_test.append(MAE_test)
         MAEs_test_i.append(i)
-        print((str(i) + '/' + str(total_i)))
+        print(f'{i}/{total_i}')
         i += 1
     perm_dict = dict(list(zip(MAEs_test_i, MAEs_test)))
 
@@ -564,7 +561,6 @@ def gbr_model_training(csvf, colnum_i_label, colnum_j_label, colnum_desc):
         features_sel = headers[idxes]
         # importance
         impt_dict = dict(list(zip(features_sel, importances)))
-        # idxes = range(len(X_norm_train.T))
         X_norm_train_sel = X_norm_train.T[idxes].T
         X_norm_test_sel = X_norm_test.T[idxes].T
         # training with gbr
@@ -655,16 +651,12 @@ def ML_model_predict(core3D, spin, train_dict, stat_dict, impt_dict, regr):
             desc_dict = dict(list(zip(desc_names, descs)))
             descs = []
             Xs_train_sel = []
-            # d2s = [0] * len(list(Xs_train.values())[0])
             for key in list(impt_dict.keys()):
                 desc = np.divide((desc_dict[key] - mean_X_dict[key]), std_X_dict[key], out=np.zeros_like(
                     desc_dict[key] - mean_X_dict[key]), where=std_X_dict[key] != 0)
                 descs.append(desc)
                 X_train = Xs_train[key]
                 Xs_train_sel.append(X_train.tolist())
-                # d2s = d2s + np.square(np.array(desc * len(X_train)) - np.array(X_train))
-            # print('The largest desc is ' + str(max(descs)))
-            # ds = np.sqrt(d2s)
             ds = []
             for i in range(len(Xs_train_sel[0])):
                 d = np.linalg.norm(np.array(descs) -
@@ -799,15 +791,10 @@ def krr_model_predict(core3D, spin, mligcatom):
                 descs += descriptors
             desc_dict = dict(list(zip(desc_names, descs)))
             descs = []
-            # Xs_train_sel = []
-            # d2s = [0] * len(Xs_train[0])
             for key in keys:
                 desc = np.divide((desc_dict[key] - mean_X_dict[key]), std_X_dict[key], out=np.zeros_like(
                     desc_dict[key] - mean_X_dict[key]), where=std_X_dict[key] != 0)
                 descs.append(desc)
-                # d2s = d2s + np.square(np.array(desc * len(X_train)) - np.array(X_train))
-            # print('The largest desc is ' + str(max(descs)))
-            # ds = np.sqrt(d2s)
             ds = []
             for i in range(len(Xs_train[0])):
                 d = np.linalg.norm(np.array(descs) - np.array(Xs_train)[i])
@@ -818,14 +805,10 @@ def krr_model_predict(core3D, spin, mligcatom):
             bondls.append(bondl)
             if fidx == mligcatom:
                 descs = []
-                # d2s = [0] * len(X2s_train[0])
                 for key in keys2:
                     desc = np.divide((desc_dict[key] - mean_X2_dict[key]), std_X2_dict[key],
                                      out=np.zeros_like(desc_dict[key] - mean_X2_dict[key]), where=std_X2_dict[key] != 0)
                     descs.append(desc)
-                    # d2s = d2s + np.square(np.array(desc * len(X_train)) - np.array(X_train))
-                # print('The largest desc is ' + str(max(descs)))
-                # ds = np.sqrt(d2s)
                 ds2 = []
                 for i in range(len(X2s_train[0])):
                     d2 = np.linalg.norm(
@@ -837,53 +820,6 @@ def krr_model_predict(core3D, spin, mligcatom):
 
     return bondl_dict, bondl2, ds1, ds2
 
-# ## predict labels using gradient boosting regressor (GBR) with a given csv file
-# #  @param csvf the csv file containing headers (first row), data, and label
-# #  @param colnum_i_label the starting column number for the label column
-# #  @param colnum_j_label the ending column number for the label column + 1
-# #  @param colnum_desc the starting column number for the descriptor columns
-# #  @return y_train_data, y_train_pred, y_test_data, y_test_pred, score
-# def krr_model_predict(core3D, spin, stat_dict, impt_dict, regr):
-#     bondl_keys = []
-#     bondls = []
-#     spin_ohe = [0] * 6
-#     spin_ohe[spin - 1] = 1
-#     mean_y = stat_dict['mean_y']
-#     std_y = stat_dict['std_y']
-#     mean_X = stat_dict['mean_X']
-#     std_X = stat_dict['std_X']
-#     midxes = core3D.findMetal()
-#     for midx in midxes:
-#         matno = core3D.getAtom(midx).atno
-#         fidxes = core3D.getBondedAtoms(midx)
-#         for fidx_i, fidx in enumerate(fidxes):
-#             fprio_list, fd_list, idx_list = feature_prep(core3D, fidx_i)
-#             descs = []
-#             desc_names = []
-#             descs.append(matno)
-#             desc_names.append('matno_0')
-#             descs += spin_ohe
-#             for i in range(len(spin_ohe)):
-#                 desc_names.append('spin' + str(i) + '_ohe')
-#             for idx_i, idx in enumerate(idx_list):
-#                 fidx_ = fidxes[idx]
-#                 descriptor_names, descriptors = get_descriptor_vector_for_atidx(core3D, fidx_)
-#                 for descriptor_name in descriptor_names:
-#                     desc_names.append(descriptor_name + '_' + str(idx_i))
-#                 descs += descriptors
-#             normalize(descs, mean_X, std_X)
-#             desc_dict = dict(zip(desc_names, descs))
-#             descs = []
-#             for key in impt_dict.keys():
-#                 desc = desc_dict[key]
-#                 descs.append(desc)
-#             regr.fit()
-#             bondl = regr.predict([descs]) * std_y + mean_y
-#             bondl_keys.append(fidx)
-#             bondls.append(bondl)
-#     bondl_dict = dict(zip(bondl_keys, bondls))
-#
-#     return bondl_dict
 
 # wrapper to get KRR predictions for bondl_core3D, bondl_m3D, bondl_m3Dsub from a known mol3D using partial charges
 #  @param mol mol3D of the molecule
@@ -925,8 +861,6 @@ def invoke_KRR_from_mol3d_dQ(mol, charge):
         for line in csv.reader(f):
             y_norm_train.append([float(i) for i in line])
     y_norm_train = np.array(y_norm_train)
-    # X_norm_train = pd.read_csv(X_norm_train_csv,header=None)
-    # y_norm_train = pd.read_csv(y_norm_train_csv,header=None)
     kernel = 'rbf'
     keys = []
     bondls = []
@@ -1048,12 +982,9 @@ def generate_revised_atomonly_autocorrelations(mol, atomIdx, loud, depth=4, oct=
     #       loud - bool, print output
     result = list()
     colnames = []
-    # allowed_strings = ['nuclear_charge', 'ident', 'topology']
-    # labels_strings = ['Z', 'I', 'T']
     allowed_strings = ['electronegativity',
                        'nuclear_charge', 'ident', 'topology', 'size']
     labels_strings = ['chi', 'Z', 'I', 'T', 'S']
-    # print('The selected connection type is ' + str(mol.getAtom(atomIdx).symbol()))
     for ii, properties in enumerate(allowed_strings):
         atom_only_ac = atom_only_autocorrelation(
             mol, properties, depth, atomIdx, oct=oct)
@@ -1075,16 +1006,11 @@ def generate_atomonly_ratiometrics(mol, atomIdx, loud, depth=4, oct=True):
     #       loud - bool, print output
     result = list()
     colnames = []
-    # allowed_strings_num = ['electronegativity', 'nuclear_charge']
-    # labels_strings_num = ['chi', 'Z']
     allowed_strings_num = ['electronegativity',
                            'nuclear_charge', 'ident', 'topology', 'size']
     labels_strings_num = ['chi', 'Z', 'I', 'T', 'S']
-    # allowed_strings_den = ['size']
-    # labels_strings_den = ['S']
     allowed_strings_den = ['electronegativity', 'nuclear_charge', 'size']
     labels_strings_den = ['chi', 'Z', 'S']
-    # print('The selected connection type is ' + str(mol.getAtom(atomIdx).symbol()))
     for iii, properties_num in enumerate(allowed_strings_num):
         for iv, properties_den in enumerate(allowed_strings_den):
             atom_only_ac = atom_only_ratiometric(
@@ -1108,12 +1034,9 @@ def generate_atomonly_summetrics(mol, atomIdx, loud, depth=4, oct=True):
     #       loud - bool, print output
     result = list()
     colnames = []
-    # allowed_strings = ['ident', 'topology', 'size']
-    # labels_strings = ['I', 'T', 'S']
     allowed_strings = ['electronegativity',
                        'nuclear_charge', 'ident', 'topology', 'size']
     labels_strings = ['chi', 'Z', 'I', 'T', 'S']
-    # print('The selected connection type is ' + str(mol.getAtom(atomIdx).symbol()))
     for ii, properties in enumerate(allowed_strings):
         atom_only_ac = atom_only_summetric(
             mol, properties, depth, atomIdx, oct=oct)
@@ -1135,12 +1058,9 @@ def generate_revised_atomonly_deltametrics(mol, atomIdx, loud, depth=4, oct=True
     #       loud - bool, print output
     result = list()
     colnames = []
-    # allowed_strings = ['electronegativity', 'ident', 'topology']
-    # labels_strings = ['chi', 'I', 'T']
     allowed_strings = ['electronegativity',
                        'nuclear_charge', 'ident', 'topology', 'size']
     labels_strings = ['chi', 'Z', 'I', 'T', 'S']
-    # print('The selected connection type is ' + str(mol.getAtom(atomIdx).symbol()))
     for ii, properties in enumerate(allowed_strings):
         atom_only_ac = atom_only_deltametric(
             mol, properties, depth, atomIdx, oct=oct)
@@ -1200,10 +1120,7 @@ def default_plot(x, y, name=False):
     # defs for plt
     xlabel = r'distance / ${\rm \AA}$'
     ylabel = r'distance / ${\rm \AA}$'
-    # colors = ['r', 'g', 'b', '.75', 'orange', 'k']
-    # markers = ['o', 's', 'D', 'v', '^', '<', '>']
     font = {'family': 'sans-serif',
-            # 'weight' : 'bold',
             'size': 22}
     # figure size
     plt.figure(figsize=(7, 6))
@@ -1212,10 +1129,7 @@ def default_plot(x, y, name=False):
     y = np.array(y)
     x_min = float(format(np.amin(x), '.1f')) - 0.1
     x_max = float(format(np.amax(x), '.1f')) + 0.1
-    # x_range = x_max - x_min
     plt.xlim(x_min, x_max)
-    # y_min = round(y[0],2)
-    # y_max = round(y[-1],2)
     plt.ylim(x_min, x_max)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
@@ -1257,7 +1171,3 @@ def default_plot(x, y, name=False):
     if name:
         fpath = os.getcwd()
         plt.savefig(fpath + '/' + name + '.eps', dpi=400)
-
-# # plt.imshow(data,interpolation='none')
-# # # plt.imshow(data,interpolation='nearest')
-# # plt.savefig('relative_energies_for_Fe-py4.eps',dpi=400)

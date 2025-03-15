@@ -38,9 +38,6 @@ def read_synthesized_macrocycles(input_file):
         temp_list_first = []
         for i, row in enumerate(data):
             # ### Skip over all contracted rings.
-            # print(row)
-            # temp = row.replace('null','False')
-            # temp_dict = ast.literal_eval(str(temp).strip('\n'))
             temp_dict = ast.literal_eval(str(row).strip('\n'))
             for dictkey in list(temp_dict.keys()):
                 if temp_dict[dictkey] == 'False':

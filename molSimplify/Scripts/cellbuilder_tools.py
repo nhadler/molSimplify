@@ -17,8 +17,6 @@ from math import sqrt, pi
 from molSimplify.Classes.globalvars import globalvars
 from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Scripts.geometry import distance
-# from scipy.spatial import Delaunay, ConvexHull
-# import networkx as nx
 
 
 ###############################
@@ -48,8 +46,6 @@ def cell_ffopt(ff, mol, frozenats):
     # convert mol3D to OBMol via xyz file, because AFTER/END option have coordinates
     backup_mol = mol3D()
     backup_mol.copymol3D(mol)
-    # print('bck ' + str(backup_mol.getAtom(0).coords()))
-    # print('mol_ibf ' + str(mol.getAtom(0).coords()))
     mol.convert2OBMol()
     # initialize constraints
     constr = openbabel.OBFFConstraints()
@@ -140,8 +136,7 @@ def import_from_cif(fst, return_extra_cif_info=False):
                     gamma = float(
                         ''.join(c for c in linesplit[1] if c not in '()').rstrip('.'))
     # create cell vectors
-    print(('cell vectors: ', 'alpha, beta, gamma = ' + str(alpha) +
-           ', ' + str(beta) + ', ' + str(gamma)))
+    print(f'cell vectors: alpha, beta, gamma = {alpha}, {beta}, {gamma}')
     try:
         cell_vector.append([A, 0, 0])
         cell_vector.append([B*numpy.cos((gamma*pi)/180),
@@ -295,7 +290,7 @@ def find_all_surface_atoms(super_cell, tol=1e-2, type_of_atom=False):
     #   - tol: float, max distance from extent plane to look
     #   - type_of_atom: optional, string, gets atoms of the given type on the face plane
     #                   if left out, will not care about types of atoms
-    # OUPUT
+    # OUTPUT
     #   - avail_sites_list: list of int, indices of atoms on the surface
     #
     extents = find_extents(super_cell)
@@ -342,7 +337,6 @@ def distance_2d_torus_next_only(R1, R2, dim):
     dx = abs(R1[0] - R2[0])
     dy = abs(R1[1] - R2[1])
     dz = abs((R1[2] - R2[2]))
-    # print('dx,dy,dz'+str([dx,dy,dz]))
     d1 = sqrt(numpy.power(dim[0] - dx, 2)
               + numpy.power(dim[1] - dy, 2)
               + numpy.power(dz, 2))
@@ -352,11 +346,9 @@ def distance_2d_torus_next_only(R1, R2, dim):
     d3 = sqrt(numpy.power(dx, 2)
               + numpy.power(dim[1] - dy, 2)
               + numpy.power(dz, 2))
-    # print('d1,d2,d3'+str([dx,dy,dz]))
 
     d = min(d1, d2, d3)
     return d
-#
 ################################################################
 
 
@@ -440,9 +432,9 @@ def check_top_layer_correct(super_cell, atom_type):
     trimmed_cell.copymol3D(super_cell)
     globs = globalvars()
     elements = globs.elementsbynum()
-    print(('chekcing surface  for  ' + atom_type + '\n'))
+    print(f'checking surface for {atom_type}\n')
     if atom_type not in elements:
-        print("unkown surface type, unable to trim ")
+        print("unknown surface type, unable to trim ")
         return trimmed_cell
     else:
         stop_flag = False
@@ -452,8 +444,6 @@ def check_top_layer_correct(super_cell, atom_type):
                 trimmed_cell, tol=1e-3, type_of_atom=atom_type)
             top_surf = find_all_surface_atoms(
                 trimmed_cell, tol=1e-3, type_of_atom=False)
-#            print("top surf",top_surf)
-#            print("atom top surf",atom_type_surf)
             if set(atom_type_surf) == set(top_surf):
                 print('match')
                 stop_flag = True
@@ -602,10 +592,9 @@ def fractionate_points_by_plane(super_cell, n, tol=1E-8):
             these_dists = [abs(this_frac-j) for j in vals]
             if min(these_dists) < tol:
                 pass
-                # print('have this point')
             else:
                 vals.append(this_frac)
-                print(('new point at ' + str(this_frac)))
+                print(f'new point at {this_frac}')
         else:
             vals.append(this_frac)
     return vals
@@ -648,13 +637,11 @@ def freeze_under_layer(super_cell):
             if (coords[2] < zmin):
                 zmin = coords[2]
     freeze_list = list()
-    # print('lowest  ' + str(zmin))
     for i, atoms in enumerate(super_cell.getAtoms()):
         coords = atoms.coords()
         if not atoms.frozen:
             if abs(coords[2] - zmin) < TOL:
                 freeze_list.append(i)
-#                    print("freezing at " + str(coords))
     frozen_cell.freezeatoms(freeze_list)
     return frozen_cell
 ##############################
@@ -663,7 +650,7 @@ def freeze_under_layer(super_cell):
 def find_extents(super_cell):
     # INPUT
     #   - super_cell: mol3D class that contains the super cell
-    # OUPUT
+    # OUTPUT
     #   - extents: list of max coords of atoms on the surface
     xmax = 0
     zmax = 0
@@ -684,7 +671,7 @@ def find_extents(super_cell):
 def find_extents_cv(super_cell_vector):
     # INPUT
     #   - super_cell_vector: matrix of the three vectors that define the super cell
-    # OUPUT
+    # OUTPUT
     #   - extents: list of max coords of the super cell
     xmax = 0
     zmax = 0

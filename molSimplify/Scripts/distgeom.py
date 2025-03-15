@@ -346,8 +346,6 @@ def Get3Eigs(G, natoms):
     V = np.zeros((natoms, 3))
     l, v = np.linalg.eigh(G)
     for i in [0, 1, 2]:
-        # print('natoms is '+ str(natoms))
-        # print('l is '+ str(l))
         L[i][i] = sqrt(max(l[natoms-1-i], 0))
         V[:, i] = v[:, natoms-1-i]
     return L, V

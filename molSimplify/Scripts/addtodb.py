@@ -112,7 +112,6 @@ def addtoldb(smimol, sminame, smident, smicat, smigrps, smictg, ffopt, overwrite
             else:
                 with open(ligands_folder + sminame+'.smi', 'w') as f:
                   f.write(smimol)
-            # lig.OBMol.write('smi',ligands_folder + sminame+'.smi')
             snew = str(sminame)+':'+str(sminame)+'.smi,'+str(shortname)+','+str(css)+','+str(grp)+','+str(ffopt)+','+str(lig.charge)
         else:
             # write xyz file in Ligands directory

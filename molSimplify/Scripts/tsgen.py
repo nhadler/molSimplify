@@ -218,8 +218,8 @@ def tsgen(mode, args, rootdir, core, substr, compreact, substreact, globs):
             print('Full FF-based substrate placement specified.')
             en_min = 1e6
             for n, P in enumerate(ligalignpts):
-                print(('Evaluating FF energy of point ' +
-                       str(n+1)+' of '+str(len(ligalignpts))))
+                print('Evaluating FF energy of point ' +
+                       str(n+1)+' of '+str(len(ligalignpts)))
                 coretmp = mol3D()
                 coretmp.copymol3D(core)
                 substrtmp = mol3D()
@@ -251,8 +251,8 @@ def tsgen(mode, args, rootdir, core, substr, compreact, substreact, globs):
             print('Full FF-based substrate placement specified.')
             en_min = 1e6
             for n, P in enumerate(connPts):
-                print(('Evaluating FF energy of point ' +
-                       str(n+1)+' of '+str(len(connPts))))
+                print('Evaluating FF energy of point ' +
+                       str(n+1)+' of '+str(len(connPts)))
                 coretmp = mol3D()
                 coretmp.copymol3D(core)
                 substrtmp = mol3D()
@@ -282,14 +282,14 @@ def tsgen(mode, args, rootdir, core, substr, compreact, substreact, globs):
     # check for molecule sanity
     sanity, d0 = ts3D.sanitycheck(True)
     if args.debug:
-        print(('setting sanity diag, min dist at ' +
-               str(d0) + ' (higher is better)'))
+        print('setting sanity diag, min dist at ' +
+               str(d0) + ' (higher is better)')
     this_diag.set_sanity(sanity, d0)
     this_diag.set_mol(ts3D)
     this_diag.write_report(fname+'.report')
     del ts3D
     if sanity:
-        print(('WARNING: Generated complex is not good! Minimum distance between atoms:' +
-              "{0:.2f}".format(d0)+'A\n'))
-    print(('\nIn folder '+pfold+' generated 1 structure(s)!'))
+        print('WARNING: Generated complex is not good! Minimum distance between atoms:' +
+              "{0:.2f}".format(d0)+'A\n')
+    print('\nIn folder '+pfold+' generated 1 structure(s)!')
     return strfiles, emsg, this_diag

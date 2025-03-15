@@ -571,7 +571,7 @@ def deloc(molf, folder, flog):
         resd = resd.replace('/', '_')+'_'+moln
         print(resd)
         outfile = folder+'/Deloc_files/'+resd+'-deloc.txt'
-        print(('Processing  '+resd+' and writing output to '+outfile))
+        print(f'Processing {resd} and writing output to {outfile}')
         flog.write('Processing  '+resd+'\n')
         # get coordinates of metal
         with open(resf, 'r') as f:

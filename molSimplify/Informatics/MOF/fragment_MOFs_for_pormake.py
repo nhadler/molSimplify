@@ -766,7 +766,7 @@ def make_MOF_fragments(data, path, xyz_path):
 
     """
     if type(data) != str or type(path) != str or type(xyz_path) != str:
-        # print('Need a directory to place all of the linker and SBU objects. Exiting now.')
+        # Need a directory to place all of the linker and SBU objects.
         raise ValueError('data, path, and xyz_path must be strings.')
     elif not data.endswith('.cif') or not xyz_path.endswith('.xyz'):
         raise ValueError('Incorrect file extension for data or xyz_path. Should be .cif and .xyz, respectively.')

@@ -11,32 +11,20 @@ import numpy as np
 from molSimplify.Classes.dft_obs import (dft_observation)
 from sklearn import linear_model, preprocessing, metrics, feature_selection, model_selection
 
-# def test_skl():
-#     valid = 'ok'
-#     try:
-#         from sklearn import linear_model, preprocessing, metrics, feature_selection, model_selection
-#     except:
-#         valid = False
-#     return valid
-
 
 def analysis_supervisor(args, rootdir):
     status = True
     print('looking for scikit-learn')
-    # if test_skl():
-    #     pass
-    # else:
-    #     print("Error, scikit-learn not loadable")
-    #     status = False
+
     if not args.correlate:
         print("Error, correlation path not given")
         status = False
-    print(('looking for file at '+str(args.correlate)))
+    print(f'looking for file at {args.correlate}')
     if not args.correlate:
         print("Error, correlation path not given")
         status = False
     if not os.path.exists(args.correlate) and status:
-        print(("Error, correlation file not found at" + str(args.correlate)))
+        print(f"Error, correlation file not found at {args.correlate}")
         status = False
     if not status:
         print('correlation cannot begin! Exiting...')
@@ -46,7 +34,7 @@ def analysis_supervisor(args, rootdir):
     if args.simple:
         print('using simple autocorrelation descriptors only')
     if args.max_descriptors:
-        print(('using a max of '+str(args.max_descriptors)+' only'))
+        print(f'using a max of {args.max_descriptors} only')
     correlation_supervisor(
         args.correlate, rootdir, args.simple, args.lig_only, args.max_descriptors)
 
@@ -66,14 +54,10 @@ def accquire_file(path):
             # expects csv fomart,
             ### value | path
             for i, lines in enumerate(f):
-                print(('read line: ' + str(i)))
+                print(f'read line: {i}')
                 ll = lines.strip('\n\r').split(",")
                 name = ll[0]
                 if i == 0:
-                    # this is the first line
-                    # y_value_name = ll[1]
-                    # check if path exists:
-                    # paths_name = ll[2].strip('/') + '/'+name+'.xyz'
                     if len(ll) > 3:
                         print('custom descriptors found!')
                         custom_names = [ll[i] for i in range(4, len(ll))]
@@ -82,11 +66,9 @@ def accquire_file(path):
                     y_value = ll[1]
                     # check if path exists:
                     this_path = '/'+ll[2].strip('/') + '/'+name+'.xyz'
-                    # print('name = '+str(name))
                     this_obs = dft_observation(name, this_path)
                     this_obs.sety(y_value)
                     if os.path.isfile(this_path):
-                        # print('path exists')
                         this_obs.obtain_mol3d()
                         if this_obs.health:
                             counter += 1
@@ -109,13 +91,12 @@ def accquire_file(path):
                         ncounter += 1
                         fail_dict.update({counter: this_obs})
     if counter > 0:
-        print(('file import successful, ' + str(counter) + ' geos loaded'))
+        print(f'file import successful, {counter} geos loaded')
     len_fail = len(list(fail_dict.keys()))
     if len_fail > 0:
-        print((str(len_fail) + ' unsuccessful imports :'))
+        print(f'{len_fail} unsuccessful imports :')
         for keys in list(fail_dict.keys()):
-            print(('failed at line ' + str(keys) +
-                   ' for job ' + str(fail_dict[keys].name)))
+            print(f'failed at line {keys} for job {fail_dict[keys].name}')
     return(file_dict, fail_dict)
 
 
@@ -128,7 +109,6 @@ def correlation_supervisor(path, rootdir, simple=False, lig_only=False, max_desc
     for i, keyv in enumerate(file_dict.keys()):
         file_dict[keyv].get_descriptor_vector(
             lig_only, simple, name=False, loud=False)
-        # print('i = ',str(i))
         if i == 0:
             col_names = file_dict[keyv].descriptor_names
         # reorganize the data
@@ -140,10 +120,10 @@ def correlation_supervisor(path, rootdir, simple=False, lig_only=False, max_desc
     # let's do some regression
     # standardize model:
     col_array = np.array(col_names)
-    print(('length of col array is  ' + str(len(col_array))))
+    print(f'length of col array is {len(col_array)}')
     n_tot = len(col_array)
     X = big_mat[:, 1:]
-    print(('dimension of data matrix is ' + str(big_mat.shape)))
+    print(f'dimension of data matrix is {big_mat.shape}')
     n_obs = len(X[:, 1])
     Scaler = preprocessing.StandardScaler().fit(X)
     Xs = Scaler.transform(X)
@@ -172,7 +152,6 @@ def correlation_supervisor(path, rootdir, simple=False, lig_only=False, max_desc
     for i, ranks in enumerate(reductor.ranking_):
         reductor_features.append([col_array[i], ranks])
     reductor_features = sorted(reductor_features, key=lambda x: x[1])
-    # print(reductor_features)
     print('****************************************')
     # select best number using cv
     selector = feature_selection.RFECV(
@@ -189,24 +168,20 @@ def correlation_supervisor(path, rootdir, simple=False, lig_only=False, max_desc
     ranked_features = sorted(ranked_features, key=lambda x: x[1])
     print(ranked_features)
     if max_descriptors:  # check if we need to reduce further
-        print(('a max of ' + str(max_descriptors) + ' were requested'))
+        print(f'a max of {max_descriptors} were requested')
         n_max = int(max_descriptors)
         if n_opt > n_max:
-            print(('the RFE process selected ' +
-                   str(n_opt) + ' varibles as optimal'))
-            print(('discarding an additional ' + str(n_max-n_opt) + ' variables'))
+            print(f'the RFE process selected {n_opt} variables as optimal')
+            print(f'discarding an additional {n_max-n_opt} variables')
             new_variables = list()
             for i in range(0, n_max):
                 new_variables.append(ranked_features[i])
     # report results to user
-    print(('analzyed ' + str(n_obs) + ' molecules'))
-    print(('the full-space R2 is  '+str("%0.2f" %
-                                        rs_all_all) + ' with ' + str(n_tot) + ' features'))
-    print(('optimal number of features is ' +
-           str(n_opt) + ' of total ' + str(n_tot)))
-    print(('the opt R2 is  '+str("%0.2f" % rs)))
+    print(f'analyzed {n_obs} molecules')
+    print(f'the full-space R2 is {rs_all_all:0.2f} with {n_tot} features')
+    print(f'optimal number of features is {n_opt} of total {n_tot}')
+    print(f'the opt R2 is {rs:0.2f}')
 
-    # print(ranked_features)
     X_r = selector.transform(Xs)
     reg_red = linear_model.LinearRegression()
     reg_red.fit(X_r, Y)
@@ -216,17 +191,16 @@ def correlation_supervisor(path, rootdir, simple=False, lig_only=False, max_desc
     mse_all = metrics.mean_squared_error(Y, Ypred_all_all)
     mse_r = metrics.mean_squared_error(Y, Ypred_r)
     if n_opt < 30:
-        print(('the optimal variables are: ' + str(opt_features)))
-        print(('the coefficients are' + str(coefs)))
+        print(f'the optimal variables are: {opt_features}')
+        print(f'the coefficients are {coefs}')
     else:
-        print(('the (first 30) optimal variables are: ' +
-               str(opt_features[0:29])))
-        print(('the (first 30) coefficients are' + str(coefs[0:29])))
-    print(('the intercept is ' + str("%0.2f" % intercept)))
-    print(('the  training MSE with the best feature set is ' + str("%0.2f" % mse_r)))
-    print(('the MSE  with all features  is ' + str("%0.2f" % mse_all)))
-    print(('by eliminating ' + str(n_tot - n_opt) + ' features,' +
-           ' CV-prediction MSE decreased from ' + str("%0.0f" % abs(select_mse[0])) + ' to ' + str("%00f" % abs(select_mse[n_tot - n_opt]))))
+        print(f'the (first 30) optimal variables are: {opt_features[0:29]}')
+        print(f'the (first 30) coefficients are: {coefs[0:29]}')
+    print(f'the intercept is {intercept:0.2f}')
+    print(f'the training MSE with the best feature set is {mse_r:0.2f}')
+    print(f'the MSE with all features is {mse_all:0.2f}')
+    print(f'by eliminating {n_tot - n_opt} features,' +
+           f' CV-prediction MSE decreased from {abs(select_mse[0]):0.2f} to ' + str("%00f" % abs(select_mse[n_tot - n_opt])))
     with open(rootdir+'RFECV_rankings.csv', 'w') as f:
         f.write('RFE_rank,RFE_col,RFECV_rank,RFECV_col, \n')
         for i, items in enumerate(reductor_features):
@@ -272,16 +246,3 @@ def correlation_supervisor(path, rootdir, simple=False, lig_only=False, max_desc
         for items in mse_reduce:
             f.write(str(count)+','+str(items) + '\n')
             count += 1
-# with open('y_full_all.csv','w') as f:
-    # for items in Ypred_all_all:
-        # f.write(str(items) + '\n')
-# with open('rfe_r.csv','w') as f:
-    # for items in r_reduce:
-        # f.write(str(items) + '\n')
-
-# with open('select_mse.csv','w') as f:
-    # for items in select_mse:
-        # f.write(str(items) + '\n')
-# with open('errors.csv','w') as f:
-    # for items in errors:
-        # f.write(str(items) + '\n')

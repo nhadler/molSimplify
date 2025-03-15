@@ -15,10 +15,10 @@ def load_sklearn_model(predictor):
 
 
 def sklearn_supervisor(predictor, descriptors, descriptor_names, debug=False):
-    print(('scikitlearn models activated for ' + str(predictor)))
+    print(f'scikitlearn models activated for {predictor}')
     excitation = tf_ANN_excitation_prepare(predictor, descriptors, descriptor_names)
     if debug:
-        print(('excitation is ' + str(excitation.shape)))
+        print(f'excitation is {excitation.shape}')
         print('fetching non-dimensionalization data... ')
     train_mean_x, train_mean_y, train_var_x, train_var_y = load_normalization_data(predictor)
     if debug:

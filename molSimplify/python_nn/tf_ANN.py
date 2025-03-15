@@ -124,17 +124,17 @@ def matrix_loader(path: str, rownames: bool = False) -> Union[Tuple[List[List[st
 def get_key(predictor: str, suffix: Optional[str] = None) -> str:
     if suffix:
         if predictor in ['ls_ii', 'hs_ii', 'ls_iii', 'hs_iii']:
-            key = 'geos/' + predictor + '_%s' % suffix
+            key = f'geos/{predictor}_{suffix}'
         elif predictor in ['homo', 'gap']:
-            key = 'homolumo/' + predictor + '_%s' % suffix
+            key = f'homolumo/{predictor}_{suffix}'
         elif predictor in ['oxo', 'hat']:
-            key = 'oxocatalysis/' + predictor + '_%s' % suffix
+            key = f'oxocatalysis/{predictor}_{suffix}'
         elif predictor in ['oxo20', 'homo_empty']:
-            key = 'oxoandhomo/' + predictor + '_%s' % suffix
+            key = f'oxoandhomo/{predictor}_{suffix}'
         elif predictor in ['geo_static_clf', 'sc_static_clf']:
-            key = predictor + '/' + predictor + '_%s' % suffix
+            key = f'{predictor}/{predictor}_{suffix}'
         else:
-            key = predictor + '/' + predictor + '_%s' % suffix
+            key = f'{predictor}/{predictor}_{suffix}'
     else:
         if predictor in ['ls_ii', 'hs_ii', 'ls_iii', 'hs_iii']:
             key = 'geos/'
@@ -145,7 +145,7 @@ def get_key(predictor: str, suffix: Optional[str] = None) -> str:
         elif predictor in ['oxo20', 'homo_empty']:
             key = 'oxoandhomo/'
         elif predictor in ['geo_static_clf', 'sc_static_clf']:
-            key = predictor + '/' + predictor + '_%s' % suffix
+            key = f'{predictor}/{predictor}_{suffix}'
         else:
             key = predictor
     return key
@@ -154,7 +154,7 @@ def get_key(predictor: str, suffix: Optional[str] = None) -> str:
 def data_rescale(scaled_dat, train_mean, train_var, debug=False) -> np.ndarray:
     d = np.shape(train_mean)[0]
     if debug:
-        print(('unnormalizing with number of dimensions = ' + str(d)))
+        print(f'unnormalizing with number of dimensions = {d}')
     dat = (np.multiply(scaled_dat.T, np.sqrt(train_var), ) + train_mean).T
     return (dat)
 
@@ -166,16 +166,16 @@ def data_normalize(data, train_mean, train_var, debug=False) -> np.ndarray:
     delete_ind = list()
 
     if debug:
-        print(('normalizing with number of dimensions = ' + str(d)))
+        print(f'normalizing with number of dimensions = {d}')
         print('shape of things in normalize:')
-        print(('data.shape ' + str(data.shape)))
-        print(('train_mean.shape ' + str(train_mean.shape)))
-        print(('train_mean.shape ' + str(train_var.shape)))
+        print(f'data.shape {data.shape}')
+        print(f'train_mean.shape {train_mean.shape}')
+        print(f'train_mean.shape {train_var.shape}')
     for idx, var in enumerate(np.squeeze(train_var)):
         if var < 1e-16:
             delete_ind.append(idx)
     if len(delete_ind) > 0:
-        print(('Note: There are %d features with a variance smaller than 1e-16.' % len(delete_ind)))
+        print(f'Note: There are {len(delete_ind)} features with a variance smaller than 1e-16.')
         print('Please double check your input data if this number is not what you expect...')
         data = np.delete(data, delete_ind, axis=1)
         train_mean = np.delete(train_mean, delete_ind, axis=0)
@@ -218,19 +218,19 @@ def load_normalization_data(name: str):
 
 def get_data_mean_std(predictor: str):
     if predictor in ['ls_ii', 'hs_ii', 'ls_iii', 'hs_iii']:
-        key = 'geos/' + predictor + '_bl_x'
+        key = f'geos/{predictor}_bl_x'
     elif predictor in ['homo', 'gap']:
-        key = 'homolumo/' + predictor + '_train_x'
+        key = f'homolumo/{predictor}_train_x'
     elif predictor in ['oxo', 'hat']:
-        key = 'oxocatalysis/' + predictor + '_train_x'
+        key = f'oxocatalysis/{predictor}_train_x'
     elif predictor in ['oxo20', 'homo_empty']:
-        key = 'oxoandhomo/' + predictor + '_train_x'
+        key = f'oxoandhomo/{predictor}_train_x'
     elif predictor == "split":
-        key = predictor + '/' + predictor + '_x'
+        key = f'{predictor}/{predictor}_x'
     elif predictor in ['geo_static_clf', 'sc_static_clf']:
         key = f'{predictor}/{predictor}_train_x'
     else:
-        key = predictor + '/' + predictor + '_x'
+        key = f'{predictor}/{predictor}_x'
     path_to_feature_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.csv')
     df_feature = pd.read_csv(path_to_feature_file)
     train_mean_x, train_var_x = list(), list()
@@ -239,19 +239,19 @@ def get_data_mean_std(predictor: str):
         train_var_x.append([np.var(np.array(df_feature[col]))])
     ### labels
     if predictor in ['ls_ii', 'hs_ii', 'ls_iii', 'hs_iii']:
-        key = 'geos/' + predictor + '_bl_y'
+        key = f'geos/{predictor}_bl_y'
     elif predictor in ['homo', 'gap']:
-        key = 'homolumo/' + predictor + '_train_y'
+        key = f'homolumo/{predictor}_train_y'
     elif predictor in ['oxo', 'hat']:
-        key = 'oxocatalysis/' + predictor + '_train_y'
+        key = f'oxocatalysis/{predictor}_train_y'
     elif predictor in ['oxo20', 'homo_empty']:
-        key = 'oxoandhomo/' + predictor + '_train_y'
+        key = f'oxoandhomo/{predictor}_train_y'
     elif predictor == "split":
-        key = predictor + '/' + predictor + '_y'
+        key = f'{predictor}/{predictor}_y'
     elif predictor in ['geo_static_clf', 'sc_static_clf']:
         key = f'{predictor}/{predictor}_train_y'
     else:
-        key = predictor + '/' + predictor + '_y'
+        key = f'{predictor}/{predictor}_y'
     path_to_label_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.csv')
     df_label = pd.read_csv(path_to_label_file)
     train_mean_y, train_var_y = list(), list()
@@ -273,114 +273,109 @@ def load_ANN_variables(predictor: str, suffix: str = 'vars') -> List[str]:
 
 def load_training_data(predictor: str) -> List[List[str]]:
     if predictor in ['ls_ii', 'hs_ii', 'ls_iii', 'hs_iii']:
-        key = 'geos/' + predictor + '_bl_x'
+        key = f'geos/{predictor}_bl_x'
     elif predictor in ['homo', 'gap']:
-        key = 'homolumo/' + predictor + '_train_x'
+        key = f'homolumo/{predictor}_train_x'
     elif predictor in ['oxo', 'hat']:
-        key = 'oxocatalysis/' + predictor + '_train_x'
+        key = f'oxocatalysis/{predictor}_train_x'
     elif predictor in ['oxo20', 'homo_empty']:
-        key = 'oxoandhomo/' + predictor + '_train_x'
+        key = f'oxoandhomo/{predictor}_train_x'
     elif predictor == "split":
-        key = predictor + '/' + predictor + '_x'
+        key = f'{predictor}/{predictor}_x'
     elif predictor in ['geo_static_clf', 'sc_static_clf']:
-        key = predictor + '/' + predictor + '_train_x'
+        key = f'{predictor}/{predictor}_train_x'
     else:
-        key = predictor + '/' + predictor + '_x'
+        key = f'{predictor}/{predictor}_x'
     path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.csv')
     with open(path_to_file, "r") as f:
         csv_lines = list(csv.reader(f))
-        # row_names = [row[0] for row in csv_lines]
         mat = [row for row in csv_lines[1:]]
     return mat
 
 
 def load_latent_training_data(predictor):
-    ##### CURRENTLY LATENT TRAINING DATA NOT AVAIL
+    ##### CURRENTLY LATENT TRAINING DATA NOT AVAILABLE
     if predictor in ['ls_ii', 'hs_ii', 'ls_iii', 'hs_iii']:
-        key = 'geos/' + predictor + '_latent_bl_x'
+        key = f'geos/{predictor}_latent_bl_x'
     elif predictor in ['homo', 'gap']:
-        key = 'homolumo/' + predictor + '_latent_train_x'
+        key = f'homolumo/{predictor}_latent_train_x'
     elif predictor in ['oxo', 'hat']:
-        key = 'oxocatalysis/' + predictor + '_latent_train_x'
+        key = f'oxocatalysis/{predictor}_latent_train_x'
     elif predictor in ['oxo20', 'homo_empty']:
-        key = 'oxoandhomo/' + predictor + '_latent_train_x'
+        key = f'oxoandhomo/{predictor}_latent_train_x'
     elif predictor == "split":
-        key = predictor + '/' + predictor + '_latent_x_41_OHE'
+        key = f'{predictor}/{predictor}_latent_x_41_OHE'
     elif predictor in ['geo_static_clf', 'sc_static_clf']:
-        key = predictor + '/' + predictor + '_latent_train_x'
+        key = f'{predictor}/{predictor}_latent_train_x'
     else:
-        key = predictor + '/' + predictor + '_latent_x_OHE'
+        key = f'{predictor}/{predictor}_latent_x_OHE'
     path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.csv')
     with open(path_to_file, "r") as f:
         csv_lines = list(csv.reader(f))
-        # row_names = [row[0] for row in csv_lines]
         mat = [row for row in csv_lines[1:]]
     return mat
 
 
 def load_test_data(predictor):
     if predictor in ['ls_ii', 'hs_ii', 'ls_iii', 'hs_iii']:
-        key = 'geos/' + predictor + '_bl_x'  # Note, this test data is not available, will return train.
+        key = f'geos/{predictor}_bl_x'  # Note, this test data is not available, will return train.
     elif predictor in ['homo', 'gap']:
-        key = 'homolumo/' + predictor + '_test_x'
+        key = f'homolumo/{predictor}_test_x'
     elif predictor in ['oxo', 'hat']:
-        key = 'oxocatalysis/' + predictor + '_test_x'
+        key = f'oxocatalysis/{predictor}_test_x'
     elif predictor == "split":
-        key = predictor + '/' + predictor + '_x'  # Note, this test data is not available, will return train
+        key = f'{predictor}/{predictor}_x'  # Note, this test data is not available, will return train
     elif predictor in ['geo_static_clf', 'sc_static_clf']:
-        key = predictor + '/' + predictor + '_test_x'
+        key = f'{predictor}/{predictor}_test_x'
     else:
-        key = predictor + '/' + predictor + '_x'
+        key = f'{predictor}/{predictor}_x'
     path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.csv')
     with open(path_to_file, "r") as f:
         csv_lines = list(csv.reader(f))
-        # row_names = [row[0] for row in csv_lines]
         mat = [row for row in csv_lines[1:]]
     return mat
 
 
 def load_training_labels(predictor: str) -> List[List[str]]:
     if predictor in ['ls_ii', 'hs_ii', 'ls_iii', 'hs_iii']:
-        key = 'geos/' + predictor + '_bl_y'
+        key = f'geos/{predictor}_bl_y'
     elif predictor in ['homo', 'gap']:
-        key = 'homolumo/' + predictor + '_train_y'
+        key = f'homolumo/{predictor}_train_y'
     elif predictor in ['oxo', 'hat']:
-        key = 'oxocatalysis/' + predictor + '_train_y'
+        key = f'oxocatalysis/{predictor}_train_y'
     elif predictor in ['oxo20', 'homo_empty']:
-        key = 'oxoandhomo/' + predictor + '_train_y'
+        key = f'oxoandhomo/{predictor}_train_y'
     elif predictor == "split":
-        key = predictor + '/' + predictor + '_y'
+        key = f'{predictor}/{predictor}_y'
     elif predictor in ['geo_static_clf', 'sc_static_clf']:
-        key = predictor + '/' + predictor + '_train_y'
+        key = f'{predictor}/{predictor}_train_y'
     else:
-        key = predictor + '/' + predictor + '_y'
+        key = f'{predictor}/{predictor}_y'
     path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.csv')
     with open(path_to_file, "r") as f:
         csv_lines = list(csv.reader(f))
-        # row_names = [row[0] for row in csv_lines]
         mat = [row for row in csv_lines[1:]]
     return mat
 
 
 def load_test_labels(predictor: str) -> List[List[str]]:
     if predictor in ['ls_ii', 'hs_ii', 'ls_iii', 'hs_iii']:
-        key = 'geos/' + predictor + '_bl_y'
+        key = f'geos/{predictor}_bl_y'
     elif predictor in ['homo', 'gap']:
-        key = 'homolumo/' + predictor + '_test_y'
+        key = f'homolumo/{predictor}_test_y'
     elif predictor in ['oxo', 'hat']:
-        key = 'oxocatalysis/' + predictor + '_test_y'
+        key = f'oxocatalysis/{predictor}_test_y'
     elif predictor in ['oxo20', 'homo_empty']:
-        key = 'oxoandhomo/' + predictor + '_test_y'
+        key = f'oxoandhomo/{predictor}_test_y'
     elif predictor == "split":
-        key = predictor + '/' + predictor + '_y'
+        key = f'{predictor}/{predictor}_y'
     elif predictor in ['geo_static_clf', 'sc_static_clf']:
-        key = predictor + '/' + predictor + '_test_y'
+        key = f'{predictor}/{predictor}_test_y'
     else:
-        key = predictor + '/' + predictor + '_y'
+        key = f'{predictor}/{predictor}_y'
     path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.csv')
     with open(path_to_file, "rU") as f:
         csv_lines = list(csv.reader(f))
-        # row_names = [row[0] for row in csv_lines]
         mat = [row for row in csv_lines[1:]]
     return mat
 
@@ -395,7 +390,7 @@ def load_train_info(predictor: str, suffix: str = 'info') -> dict:
 
 def load_keras_ann(predictor: str, suffix: str = 'model', compile: bool = False) -> tf.keras.Model:
     # this function loads the ANN for property
-    # "predcitor"
+    # "predictor"
     # disable TF output text to reduce console spam
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     key = get_key(predictor, suffix)
@@ -421,9 +416,6 @@ def load_keras_ann(predictor: str, suffix: str = 'model', compile: bool = False)
                                                             decay=0.00011224350434148253, lr=0.0006759924688701965),
                                  metrics=['mse', 'mae', 'mape'])
         elif predictor in ['oxo', 'hat']:
-            # loaded_model.compile(loss="mse", optimizer=Adam(beta_2=0.9637165412871632, beta_1=0.7560951483268549,
-            #                                                 decay=0.0006651401379502965, lr=0.0007727366541920176),
-            #                      metrics=['mse', 'mae', 'mape']) #decomissioned on 06/20/2019 by Aditya. Using hyperparams from oxo20.
             loaded_model.compile(loss="mse", optimizer=Adam(lr=0.0012838133056087084, beta_1=0.9811686522122317,
                                                             beta_2=0.8264616523572279, decay=0.0005114008091318582),
                                  metrics=['mse', 'mae', 'mape'])
@@ -443,28 +435,26 @@ def load_keras_ann(predictor: str, suffix: str = 'model', compile: bool = False)
         else:
             loaded_model.compile(loss="mse", optimizer='adam',
                                  metrics=['mse', 'mae', 'mape'])
-    # print("Keras/tf model loaded for " + str(predictor) + " from disk")
     return loaded_model
 
 
 def tf_ANN_excitation_prepare(predictor: str, descriptors: List[float], descriptor_names: List[str]) -> np.ndarray:
     ## this function reforms the provided list of descriptors and their
     ## names to match the expectations of the target ANN model.
-    ## it does NOT perfrom standardization
+    ## it does NOT perform standardization
 
     ## get variable names
     target_names = load_ANN_variables(predictor)
     if len(target_names) > len(descriptors):
-        print('Error: preparing features for ' + str(predictor) + ', recieved '
-              + str(len(descriptors)) + ' descriptors')
-        print(('model requires ' + str(len(target_names)) + ' descriptors, attempting match'))
+        print(f'Error: preparing features for {predictor}, received {len(descriptors)} descriptors')
+        print(f'model requires {len(target_names)} descriptors, attempting match')
     excitation = []
     for var_name in target_names:
         try:
             excitation.append(descriptors[descriptor_names.index(var_name)])
         except ValueError:
-            print(('looking for  ' + str(var_name)))
-            print(('Error! variable  ' + str(var_name) + ' not found!'))
+            print(f'looking for {var_name}')
+            print(f'Error! variable {var_name} not found!')
             break
     output = np.array(excitation)
     output = np.reshape(output, (1, len(target_names)))
@@ -476,14 +466,13 @@ def ANN_supervisor(predictor: str,
                    descriptor_names: List[str],
                    debug: bool = False) -> Tuple[np.ndarray, np.ndarray]:
     if debug:
-        print(('ANN activated for ' + str(predictor)))
+        print(f'ANN activated for {predictor}')
 
     ## form the excitation in the correct order/variables
     excitation = tf_ANN_excitation_prepare(predictor, descriptors, descriptor_names)
     if debug:
-        print(('excitation is ' + str(excitation.shape)))
+        print(f'excitation is {excitation.shape}')
         print('fetching non-dimensionalization data... ')
-    # sardines
     train_mean_x, train_mean_y, train_var_x, train_var_y = load_normalization_data(predictor)
     if debug:
         print('rescaling input excitation...')
@@ -495,9 +484,7 @@ def ANN_supervisor(predictor: str,
     result = data_rescale(loaded_model.predict(excitation, verbose=0), train_mean_y, train_var_y, debug=debug)
     if "clf" not in predictor:
         if debug:
-            print(('LOADED MODEL HAS ' + str(
-                len(loaded_model.layers)) + ' layers, so latent space measure will be from first ' + str(
-                len(loaded_model.layers) - 1) + ' layers'))
+            print(f'LOADED MODEL HAS {len(loaded_model.layers)} layers, so latent space measure will be from first {len(loaded_model.layers) - 1} layers')
         if not version.parse(tf.__version__) >= version.parse('2.0.0'):
             get_outputs = K.function([loaded_model.layers[0].input, K.learning_phase()],
                                      [loaded_model.layers[len(loaded_model.layers) - 2].output])
@@ -538,11 +525,9 @@ def find_true_min_eu_dist(predictor: str,
         if this_dist < min_dist:
             min_dist = this_dist
             min_ind = i
-            # best_row = rownames[i]
-            # min_row = rows
 
     if debug:
-        print(('min dist EU is ' + str(min_dist)))
+        print(f'min dist EU is {min_dist}')
     folder_dict = {'homo': 'homolumo', 'gap': 'homolumo',
                    'oxo': 'oxocatalysis', 'hat': 'oxocatalysis',
                    'oxo20': 'oxoandhomo', 'homo_empty': 'oxoandhomo'}
@@ -551,8 +536,7 @@ def find_true_min_eu_dist(predictor: str,
         path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.csv')
         with open(path_to_file, "r") as f:
             csv_lines = list(csv.reader(f))
-            print(('Closest Euc Dist Structure:  ' + str(csv_lines[min_ind]).strip('[]') + ' for predictor ' + str(
-                predictor)))
+            print(f'Closest Euc Dist Structure: {str(csv_lines[min_ind]).strip("[]")} for predictor {predictor}')
     # need to get normalized distances
 
     ########################################################################################
@@ -561,13 +545,6 @@ def find_true_min_eu_dist(predictor: str,
     # neighbor candidate structures. Now routine normalizes before finding the distance.   #
     ########################################################################################
 
-    # train_mean_x,train_mean_y,train_var_x,train_var_y = load_normalization_data(predictor)
-
-    # flatten min row
-    # min_row = np.reshape(min_row, excitation.shape)
-    # scaled_excitation = data_normalize(excitation,train_mean_x,train_var_x)
-    # scaled_row = data_normalize(min_row,train_mean_x,train_var_x)
-    # min_dist = np.linalg.norm(np.subtract(scaled_row,(scaled_excitation)))
     return (min_dist)
 
 
@@ -575,7 +552,6 @@ def find_ANN_10_NN_normalized_latent_dist(predictor, latent_space_vector, debug=
     # returns scaled euclidean distance to nearest trainning
     # vector in desciptor space
 
-    # average_train_train_10NN = {'homo_empty': 0.43517572, 'oxo20': 0.068675719}
     train_mean_x, train_mean_y, train_var_x, train_var_y = load_normalization_data(predictor)
 
     ## getting train matrix info
@@ -585,9 +561,7 @@ def find_ANN_10_NN_normalized_latent_dist(predictor, latent_space_vector, debug=
     loaded_model = load_keras_ann(predictor)
     if debug:
         print('measuring latent distances:')
-        print(('loaded model has  ' + str(
-            len(loaded_model.layers)) + ' layers, so latent space measure will be from first ' + str(
-            len(loaded_model.layers) - 1) + ' layers'))
+        print(f'loaded model has {len(loaded_model.layers)} layers, so latent space measure will be from first {len(loaded_model.layers) - 1} layers')
     norm_train_mat = []
     for i, row in enumerate(train_mat):
         row = np.array(row)
@@ -604,7 +578,6 @@ def find_ANN_10_NN_normalized_latent_dist(predictor, latent_space_vector, debug=
                                                norm_train_mat, training_flag=False)
         latent_space_train = np.squeeze(np.array(latent_space_train))
     dist_array = np.linalg.norm(np.subtract(np.squeeze(latent_space_train), np.squeeze(latent_space_vector)), axis=1)
-    # train_dist_array =  np.linalg.norm(np.subtract(np.squeeze(latent_space_train), np.squeeze(latent_space_train)),axis=1)
     from scipy.spatial import distance_matrix
     train_dist_array = distance_matrix(latent_space_train, latent_space_train)
     nearest_10_NN_train = []
@@ -634,9 +607,7 @@ def find_ANN_latent_dist(predictor, latent_space_vector, debug=False):
 
     if debug:
         print('measuring latent distances:')
-        print(('loaded model has  ' + str(
-            len(loaded_model.layers)) + ' layers, so latent space measure will be from first ' + str(
-            len(loaded_model.layers) - 1) + ' layers'))
+        print(f'loaded model has {len(loaded_model.layers)} layers, so latent space measure will be from first {len(loaded_model.layers) - 1} layers')
     if not version.parse(tf.__version__) >= version.parse('2.0.0'):
         get_outputs = K.function([loaded_model.layers[0].input, K.learning_phase()],
                                  [loaded_model.layers[len(loaded_model.layers) - 2].output])
@@ -655,7 +626,7 @@ def find_ANN_latent_dist(predictor, latent_space_vector, debug=False):
 
     # flatten min row
     if debug:
-        print(('min dist is ' + str(min_dist) + ' at  ' + str(min_ind)))
+        print(f'min dist is {min_dist} at {min_ind}')
     folder_dict = {'homo': 'homolumo', 'gap': 'homolumo',
                    'oxo': 'oxocatalysis', 'hat': 'oxocatalysis',
                    'oxo20': 'oxoandhomo', 'homo_empty': 'oxoandhomo'}
@@ -664,7 +635,7 @@ def find_ANN_latent_dist(predictor, latent_space_vector, debug=False):
         path_to_file = resource_files("molSimplify.tf_nn").joinpath(f'{key}.csv')
         with open(path_to_file, "r") as f:
             csv_lines = list(csv.reader(f))
-            print(('Closest Latent Dist Structure: ' + str(csv_lines[min_ind]) + ' for predictor ' + str(predictor)))
+            print(f'Closest Latent Dist Structure: {csv_lines[min_ind]} for predictor {predictor}')
     return (min_dist)
 
 
@@ -691,8 +662,6 @@ def find_clf_lse(predictor: str,
     fmat_train = data_normalize(fmat_train, train_mean_x, train_var_x,  debug=debug)
     fmat_train = np.array(fmat_train)
     if not ensemble:
-        # model = base_path + 'model.h5'
-        # loaded_model = load_model(model)
         train_latent = get_layer_outputs(loaded_model, -4, fmat_train, training_flag=False)
         test_latent = get_layer_outputs(loaded_model, -4, excitation, training_flag=False)
         nn_latent_dist_test, nn_dists, nn_labels = dist_neighbor(test_latent, train_latent, labels_train,
@@ -700,13 +669,13 @@ def find_clf_lse(predictor: str,
         lse = get_entropy(nn_dists, nn_labels)
     else:
         print("Using ensemble averaged LSE.")
-        base_path = base_path + 'ensemble_%s/' % modelname
+        base_path = f'{base_path}ensemble_{modelname}/'
         model_list = sorted(glob.glob(base_path + '/*.h5'))
         if len(model_list) != 10:
             print(key)
             print(base_path)
             print(model_list)
-            print(("Error: LSE cannot be calculated with modelname %s--The number of models is wrong." % modelname))
+            print(f"Error: LSE cannot be calculated with modelname {modelname}--The number of models is wrong.")
             return np.zeros_like(excitation)
         fmat_train_split = np.array_split(fmat_train, 10, axis=0)
         labels_train_split = np.array_split(labels_train, 10, axis=0)
@@ -746,8 +715,8 @@ def save_model(model: tf.keras.Model, predictor: str,
     with open("%s.json" % name, "w") as json_file:
         json_file.write(model_json)
     # serialize weights to HDF5
-    model.save_weights("%s.h5" % name)
-    print(("Saved model !%s! to disk" % name.split('/')[-1]))
+    model.save_weights(f"{name}.h5")
+    print("Saved model !%s! to disk" % name.split('/')[-1])
 
 
 def initialize_model_weights(model: tf.keras.Model) -> tf.keras.Model:
@@ -758,5 +727,4 @@ def initialize_model_weights(model: tf.keras.Model) -> tf.keras.Model:
             if hasattr(v_arg, 'initializer'):
                 initializer_method = getattr(v_arg, 'initializer')
                 initializer_method.run(session=session)
-                # print('reinitializing layer {}.{}'.format(layer.name, v))
     return model

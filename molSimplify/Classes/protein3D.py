@@ -202,7 +202,6 @@ class protein3D:
                                 c_ids.append(j[0])
                             elif not in_more_confs:
                                 c_ids.append(self.getIndex(j))
-                        # print(c_ids)
                         self.stripAtoms(c_ids)
                         if type(li) == monomer3D and li in self.aas[c]:
                             self.aas[c].remove(li)
@@ -1070,7 +1069,6 @@ class protein3D:
             res2 = subprocess.Popen(['curl', '-k ', int_dict['location']],
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE)
-            # print('sleeping', t)
             time.sleep(t)
             res2.wait()
             out2, err2 = res2.communicate()

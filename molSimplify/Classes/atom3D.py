@@ -43,7 +43,7 @@ class atom3D:
         globs = globalvars()
         amass = globs.amass()
         if Sym not in amass:  # Assign default values if not in dictionary.
-            print(("We didn't find the atomic mass of %s in the dictionary. Assigning default value of 12!\n" % (Sym)))
+            print(f"We didn't find the atomic mass of {Sym} in the dictionary. Assigning default value of 12!\n")
             # Atomic mass
             self.mass = 12.0  # default atomic mass
             # Atomic number
@@ -214,7 +214,7 @@ class atom3D:
         globs = globalvars()
         amass = globs.amass()
         if newType not in list(amass.keys()):
-            print(('Error, unknown atom atom type transformation to ' + str(newType)))
+            print('Error, unknown atom atom type transformation to ' + str(newType))
             print('no changes made')
         else:
             self.mass = amass[newType][0]

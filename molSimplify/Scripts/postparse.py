@@ -382,7 +382,7 @@ def gampost(resfiles, folder, flog):
         resfp = os.path.relpath(resf, folder)
         resd = resf.rsplit('/', 1)[0]
         resfold = os.path.relpath(resd, folder)
-        print(('Processing '+resfp))
+        print(('Processing ', resfp))
         flog.write('Processing '+resfp+'\n')
         if len(resfold) > 1:
             resfold = resfold[-2]

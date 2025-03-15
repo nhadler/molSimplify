@@ -236,7 +236,7 @@ def ligand_comp_org(file_in, file_init_geo, catoms_arr, flag_deleteH=True, flag_
         for idx, lig in enumerate(liglist):
             lig_init = liglist_init[idx]
             if debug:
-                print(('----This is %d th piece of ligand.' % (idx + 1)))
+                print(f'----This is {idx + 1} th piece of ligand.')
                 print(('ligand is:', lig, lig_init))
             posi_shift = 2
             # Create mol3D without a tmp file.
@@ -259,8 +259,8 @@ def ligand_comp_org(file_in, file_init_geo, catoms_arr, flag_deleteH=True, flag_
             tmp_org_mol = mol3D()
             tmp_org_mol = readfromtxt(tmp_org_mol, foo)
             if debug:
-                print(('# atoms: %d, init: %d' %
-                       (tmp_mol.natoms, tmp_org_mol.natoms)))
+                print('# atoms: %d, init: %d' %
+                       (tmp_mol.natoms, tmp_org_mol.natoms))
                 print(('!!!!atoms:', [x.symbol() for x in tmp_mol.getAtoms()],
                        [x.symbol() for x in tmp_org_mol.getAtoms()]))
             if flag_deleteH:
@@ -512,7 +512,7 @@ def dict_check_processing(dict_info, dict_check, std_not_use,
     flag_list = []
     for key, values in list(dict_check.items()):
         if not dict_info[key] == 'banned_by_user':
-            print((dict_info[key]))
+            print(dict_info[key])
             print(values)
             if dict_info[key] > values:
                 flag_list.append(key)
