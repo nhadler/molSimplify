@@ -357,8 +357,8 @@ def construct_property_vector(mol, prop, oct=True, modifier=False, MRdiag_dict={
     w = np.zeros(mol.natoms)
     done = False
     if prop not in allowed_strings:
-        print(('error, property  ' + str(prop) + ' is not a vaild choice'))
-        print((' options are  ' + str(allowed_strings)))
+        print(f'error, property {prop} is not a vaild choice')
+        print(f'options are {allowed_strings}')
         return False
     if prop == 'electronegativity':
         prop_dict = globs.endict()
@@ -1680,7 +1680,7 @@ def multiatom_only_deltametric(mol, prop, d, oct=True,
 def metal_only_layer_density(mol, prop, d, oct=True):
     try:
         metal_ind = get_metal_index(mol)
-        print(('metal_index is: %d' % metal_ind))
+        print(f'metal_index is: {metal_ind}')
         w = construct_property_vector(mol, prop, oct=oct)
         density_vector = layer_density_in_3D(mol, w, metal_ind, d, oct=oct)
     except IndexError:

@@ -18,7 +18,6 @@ def write_periodic_mol3d_to_qe(mol, cell_vector, path):
 
     unique_atoms = mol.getAtomTypes()
     globs = globalvars()
-    # print(globs)
     # start writing this file:
     with open(path, 'w') as f:
         f.write("&CONTROL\n")

@@ -217,8 +217,7 @@ def startgen(argv, flag, inputfile_str=None, write_files=True):
         analysis_supervisor(args, rundir)
     # add ligand to list
     elif (args.ligadd):
-        print(('adding ' + str(args.ligadd) + ' to ligand database  with name ' +
-               args.ligname + ' and connection atom(s) ' + str(args.ligcon)))
+        print(f'adding {args.ligadd} to ligand database with name {args.ligname} and connection atom(s) {args.ligcon}')
         addtoldb(smimol=args.ligadd, sminame=args.ligname, smident=len(args.ligcon),
                  smicat=str(args.ligcon).strip('[]'), smigrps="custom", smictg="custom", ffopt=args.ligffopt, overwrite=args.overwrite)
 

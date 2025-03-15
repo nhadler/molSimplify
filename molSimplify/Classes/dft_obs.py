@@ -57,8 +57,7 @@ class dft_observation:
                 results_dictionary['colnames'], results_dictionary['result_ax'], 'misc', 'ax')
             self.append_descriptors(
                 results_dictionary['colnames'], results_dictionary['result_eq'], 'misc', 'eq')
-        print(('after adding misc descriptors... ' +
-               str(len(self.descriptor_names))))
+        print(f'after adding misc descriptors... {len(self.descriptor_names)}')
         if self.coord == 6:  # oct only
             results_dictionary = generate_all_ligand_autocorrelations_lac(
                 self.mol, depth=3, loud=loud, flag_name=flag_name)
@@ -66,8 +65,7 @@ class dft_observation:
                 results_dictionary['colnames'], results_dictionary['result_ax_full'], 'f', 'ax')
             self.append_descriptors(
                 results_dictionary['colnames'], results_dictionary['result_eq_full'], 'f', 'eq')
-            print(('after adding full ax/eq descriptors... ' +
-                   str(len(self.descriptor_names))))
+            print(f'after adding full ax/eq descriptors... {len(self.descriptor_names)}')
             if not simple and not lig_only:
                 self.append_descriptors(
                     results_dictionary['colnames'], results_dictionary['result_ax_con'], 'lc', 'ax')
@@ -80,8 +78,7 @@ class dft_observation:
                 self.append_descriptors(
                     results_dictionary['colnames'], results_dictionary['result_eq_con'], 'D_lc', 'eq')
 
-                print(('after adding lc ax/eq descriptors... ' +
-                       str(len(self.descriptor_names))))
+                print(f'after adding lc ax/eq descriptors... {len(self.descriptor_names)}')
         if not lig_only:
             if not simple:
                 results_dictionary = generate_metal_autocorrelations(
@@ -96,8 +93,7 @@ class dft_observation:
                 self.mol, depth=3)
             self.append_descriptors(
                 results_dictionary['colnames'], results_dictionary['results'], 'f', 'all')
-        print(('after adding full complex descriptors... ' +
-               str(len(self.descriptor_names))))
+        print(f'after adding full complex descriptors... {len(self.descriptor_names)}')
 
     def append_descriptors(self, list_of_names, list_of_props, prefix, suffix):
         for names in list_of_names:

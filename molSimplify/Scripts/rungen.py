@@ -291,8 +291,7 @@ def multigenruns(rundir, args, write_files=True):
                 args.keepHs.append(keepHs_dict[ligand])
 
             print('**************************************************************')
-            print(('******************* Generating isomer ' +
-                  str(counter+1) + '! *******************'))
+            print(f'******************* Generating isomer {counter+1}! *******************')
             print('**************************************************************')
             emsg = rungen(rundir, args, write_files=write_files)
         return emsg
@@ -379,7 +378,7 @@ def draw_supervisor(args: Namespace, rundir: str):
         if len(args.substrate) > 1:
             print('Due to technical limitations, we will draw only the first substrate.')
         print('Drawing the substrate.')
-        print((args.substrate[0]))
+        print(args.substrate[0])
         substrate, subcatoms, emsg = substr_load(args.substrate[0], 0, args.subcatoms)
         if substrate is not None:
             substrate.draw_svg(args.substrate[0])
@@ -474,7 +473,7 @@ def rungen(rundir, args: Namespace, chspfname=None, write_files: bool = True):
                                     args, nconf=False, sanity=False, bind=args.bind,
                                     bsmi=args.nambsmi)
         if args.debug:
-            print(('fname is ' + str(fname)))
+            print(f'fname is {fname}')
         rootdir = fname
         # check for charges/spin
         rootcheck = ""
@@ -511,13 +510,13 @@ def rungen(rundir, args: Namespace, chspfname=None, write_files: bool = True):
             # keep both (default)
             else:
                 ifold = 1
-                while glob.glob(rootdir+'_'+str(ifold)):
+                while glob.glob(f'{rootdir}_{ifold}'):
                     ifold += 1
                     rootcheck += '_'+str(ifold)
                     os.mkdir(rootcheck)
         elif rootcheck and (not os.path.isdir(rootcheck) or not args.checkdirt) and not skip:
             if args.debug:
-                print(('rootcheck is  ' + str(rootcheck)))
+                print(f'rootcheck is {rootcheck}')
             args.checkdirt = True
             try:
                 os.mkdir(rootcheck)
@@ -548,7 +547,7 @@ def rungen(rundir, args: Namespace, chspfname=None, write_files: bool = True):
             # keep both (default)
             else:
                 ifold = 1
-                while glob.glob(rootdir+'_'+str(ifold)):
+                while glob.glob(f'{rootdir}_{ifold}'):
                     ifold += 1
                 rootdir += '_'+str(ifold)
                 os.mkdir(rootdir)
@@ -646,7 +645,7 @@ def rungen(rundir, args: Namespace, chspfname=None, write_files: bool = True):
                     with open(ligfilename + '-good.smi', 'a') as f:
                         f.write(args.lig[0])
         elif not emsg:
-            print(('Folder '+rootdir+' was skipped..\n'))
+            print(f'Folder {rootdir} was skipped.\n')
     if write_files:
         return emsg  # Default behavior
     # else:

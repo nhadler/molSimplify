@@ -60,8 +60,6 @@ def fpriority(mol):
                     if tidx not in ref_list:
                         t_list.append(tidx)
             tidx_list[i] = t_list
-        # print(sidx_list)
-        # print(tidx_list)
         for i in s_sel_list:
             for sidx in sidx_list[i]:
                 atno_list = tatno_list[i]

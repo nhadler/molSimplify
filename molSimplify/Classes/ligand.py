@@ -299,8 +299,8 @@ def ligand_breakdown(mol, BondedOct=False, silent=True, transition_metals_only=T
     ligcons = []
     for atom in bondedatoms:
         if not silent:
-            print(('this atom type is ' + mol.getAtom(atom).symbol()))
-            print(('connection number ' + str(atom) + " of " + str(bondedatoms)))
+            print(f'this atom type is {mol.getAtom(atom).symbol()}')
+            print(f'connection number {atom} of {bondedatoms}')
         fragment = mol.findsubMol(atom, metal_index)
         this_cons = [x for x in fragment if (x in bondedatoms)]
         if not silent:
@@ -383,15 +383,15 @@ def ligand_assign_original(mol, liglist, ligdents, ligcons, loud=False, name=Fal
     min_dent = min(ligdents)
     if loud:
         print('********************************************')
-        print(("n_ligs = " + str(n_ligs)))
-        print(("max d = " + str(max_dent)))
-        print(("min_dent = " + str(min_dent)))
-        print(("ligand list is" + str(liglist)))
-        print(('denticities are  ' + str(ligdents)))
+        print(f"n_ligs = {n_ligs}")
+        print(f"max d = {max_dent}")
+        print(f"min_dent = {min_dent}")
+        print(f"ligand list is {liglist}")
+        print(f'denticities are {ligdents}')
     if (max(ligdents) == 4) and (min(ligdents) != 1):
         valid = False
-        print(('bad denticities: ' + str(ligdents)))
-        print(('min denticities: ' + str(min(ligdents))))
+        print(f'bad denticities: {ligdents}')
+        print(f'min denticities: {min(ligdents)}')
     if max(ligdents) > 4:
         # ### Handling of pentadentate ligands goes here. #####
         if max(ligdents) == 5 and min(ligdents) == 1:
@@ -400,11 +400,11 @@ def ligand_assign_original(mol, liglist, ligdents, ligcons, loud=False, name=Fal
             hexadentate = True
         else:
             valid = False
-            print(('bad denticities: ' + str(ligdents)))
-            print(('max denticities: ' + str(min(ligdents))))
+            print(f'bad denticities: {ligdents}')
+            print(f'max denticities: {min(ligdents)}')
     if n_ligs > 3 and min(ligdents) > 1:
         valid = False
-        print(('too many ligs ' + str((n_ligs))))
+        print(f'too many ligs {n_ligs}')
     eq_lig_list = list()
     ax_lig_list = list()
     ax_con_list = list()
@@ -412,15 +412,13 @@ def ligand_assign_original(mol, liglist, ligdents, ligcons, loud=False, name=Fal
     for i, ligand_indices in enumerate(liglist):
         this_ligand = ligand(mol, ligand_indices, ligdents[i])
         this_ligand.obtain_mol3d()
-        # lig_natoms_list.append(this_ligand.mol.natoms) ## old one with obtain_mol3d
         built_ligand_list.append(this_ligand)
         lig_natoms_list.append(len(this_ligand.index_list))
     for j, built_ligs in enumerate(built_ligand_list):
         # test if ligand is unique
         sl = [atom.symbol() for atom in built_ligs.master_mol.getAtomwithinds(built_ligs.index_list)]
-        # _sl = [atom.symbol() for atom in built_ligs.mol.getAtoms()] ## old one with obtain_mol3d
         if loud:
-            print(('checking lig ' + str(j) + ' : ' + str(sl)))
+            print(f'checking lig {j} : {sl}')
         unique = 1
         for i, other_sl in enumerate(unique_ligands):
             if sorted(sl) == sorted(other_sl):
@@ -438,15 +436,13 @@ def ligand_assign_original(mol, liglist, ligdents, ligcons, loud=False, name=Fal
         for i, other_sl in enumerate(unique_ligands):
             if sorted(sl) == sorted(other_sl):
                 # duplicate
-                # print(i,ligand_counts[i])
                 all_ligand_counts[j] = ligand_counts[i]
 
     if loud:
-        print(('unique ligands' + str(unique_ligands)))
-        print(('ligand counts' + str(ligand_counts)))
-        print(('ligand records ' + str(ligand_records)))
-        print((str(max(ligand_counts)) +
-               ' is the max and min in  ' + str(min(ligand_counts))))
+        print(f'unique ligands {unique_ligands}')
+        print(f'ligand counts {ligand_counts}')
+        print(f'ligand records {ligand_records}')
+        print(f'{max(ligand_counts)} is the max and min in {min(ligand_counts)}')
     n_unique_ligs = len(unique_ligands)
     if (n_ligs == 3) or (n_ligs == 4):  # most common case,
         # one/two equatorial and 2 axial mono
@@ -456,12 +452,12 @@ def ligand_assign_original(mol, liglist, ligdents, ligcons, loud=False, name=Fal
                 # have higher than 4 n_ligs
                 ax_lig_list.append(i)
                 if loud:
-                    print(('choosing ' + str(i) + ' as ax based on dent =1'))
+                    print(f'choosing {i} as ax based on dent = 1')
                 ax_con_list.append(ligcons[i])
             if (ligdents[i] >= 2) and (min_dent == 1):
                 eq_lig_list.append(i)
                 if loud:
-                    print(('choosing lig ' + str(i) + ' as eq based on high dent'))
+                    print(f'choosing lig {i} as eq based on high dent')
                 eq_con_list.append(ligcons[i])
         if (n_ligs == 3) and (min_dent == max_dent):
             if n_unique_ligs == 1:
@@ -483,7 +479,7 @@ def ligand_assign_original(mol, liglist, ligdents, ligcons, loud=False, name=Fal
                     elif all_ligand_counts[i] == 1:
                         ax_lig_list.append(i)
                         ax_con_list.append(ligcons[i])
-    elif (n_ligs == 6):  # all mono  case,
+    elif (n_ligs == 6):  # all mono case,
         minz = 500
         maxz = -500
         if loud:
@@ -498,13 +494,13 @@ def ligand_assign_original(mol, liglist, ligdents, ligcons, loud=False, name=Fal
                 bot_lig = j
                 bot_con = ligcons[j]
             if loud:
-                print(('updating bot axial to ' + str(bot_lig)))
+                print(f'updating bot axial to {bot_lig}')
             if this_z > maxz:
                 maxz = this_z
                 top_lig = j
                 top_con = ligcons[j]
             if loud:
-                print(('updating top axial to ' + str(top_lig)))
+                print(f'updating top axial to {top_lig}')
         not_eq.append(bot_lig)
         not_eq.append(top_lig)
 
@@ -516,16 +512,14 @@ def ligand_assign_original(mol, liglist, ligdents, ligcons, loud=False, name=Fal
         ax_lig_list = [top_lig, bot_lig]
         ax_con_list = [top_con, bot_con]
         if loud:
-            print(('geometric eq_list ' + str(eq_lig_list)))
-            print(('geometric ax_list ' + str(eq_lig_list)))
+            print(f'geometric eq_list {eq_lig_list}')
+            print(f'geometric ax_list {ax_lig_list}')
         if (max(ligand_counts) != 4) or (min(ligand_counts) != 2):
             if loud:
                 print('not a 4-6 case')
             if (max(ligand_counts) == 6):
                 if loud:
                     print('6-homoleptic, using geo values')
-            # ax=ligand_records[ligand_counts.index(6)]
-            # eq_lig=ligand_records[ligand_counts.index(6)]
             else:
                 if loud:
                     print('monodentates not the same, using geo values ')
@@ -548,7 +542,6 @@ def ligand_assign_original(mol, liglist, ligdents, ligcons, loud=False, name=Fal
         for j, built_ligs in enumerate(built_ligand_list):
             if len(ligcons[j]) == 1:
                 # ### This is the axial ligand ####
-                # print(j, 'axial lig')
                 top_lig = j
                 top_con = ligcons[j]
                 not_eq.append(top_lig)
@@ -588,7 +581,6 @@ def ligand_assign_original(mol, liglist, ligdents, ligcons, loud=False, name=Fal
                 not_ax_points = combo_list[np.argmin(error_list)]
                 if len(set(not_ax_points)) != 4:
                     print('The equatorial plane is not being assigned correctly. Please check.')
-                    # sardines
                 else:
                     bot_idx = list(set(range(5)) - set(not_ax_points))[0]
                     if loud:
@@ -623,7 +615,6 @@ def ligand_assign_original(mol, liglist, ligdents, ligcons, loud=False, name=Fal
             if loud:
                 print('hexadentate coord LIST!')
                 print(hexadentate_coord_list)
-            # point_combos = combinations([1,2,3,4,5,6],4)
             pair_combos = list(combinations([0, 1, 2, 3, 4, 5], 2))
             angle_list = []
             pair_list = []
@@ -634,7 +625,6 @@ def ligand_assign_original(mol, liglist, ligdents, ligcons, loud=False, name=Fal
                 m = np.array([mol.getAtom(mol.findMetal()[0]).coords()])
                 v1u = np.squeeze(np.array((m - p1) / np.linalg.norm((m - p1))))
                 v2u = np.squeeze(np.array((m - p2) / np.linalg.norm((m - p2))))
-                # print('v1v2',v1u,v2u)
                 angle = np.rad2deg(np.arccos(np.clip(np.dot(v1u, v2u), -1.0, 1.0)))
                 if loud:
                     print(('pair of atoms, then angle', pair, angle))
@@ -679,7 +669,6 @@ def ligand_assign_original(mol, liglist, ligdents, ligcons, loud=False, name=Fal
                 for point_num in temp_ax:
                     coordlist = hexadentate_coord_list[point_num]
                     planez = [coordlist[0], coordlist[1], 1] * temp_fit
-                    # planez = temp_fit[0] * coordlist[0] + temp_fit[1] * coordlist[1] + fit[2]
                     plane_coords = [coordlist[0], coordlist[1], planez]
                     adjusted_coords = [coordlist[0], coordlist[1], coordlist[2]]
                     squared_dist = np.sum((np.array(adjusted_coords) - np.array(plane_coords)) ** 2)
@@ -693,7 +682,6 @@ def ligand_assign_original(mol, liglist, ligdents, ligcons, loud=False, name=Fal
             not_ax_points = combo_list[perpcombo[np.argmax(np.array(perpdist))]]
             if len(set(not_ax_points)) != 4:
                 print('The equatorial plane is not being assigned correctly. Please check.')
-                # sardines
             else:
                 bot_idx = list(set(range(6)) - set(not_ax_points))[0]
                 top_idx = list(set(range(6)) - set(not_ax_points))[1]
@@ -715,38 +703,30 @@ def ligand_assign_original(mol, liglist, ligdents, ligcons, loud=False, name=Fal
             print(('con lists', eq_con_list, ax_con_list))
 
     # ############## DONE WITH CLASSIFICATION ######
-    # ax_lig=ligand_records[ligand_counts.index(2)]
-    # eq_lig=ligand_records[ligand_counts.index(4)]
     ax_ligand_list = [built_ligand_list[i] for i in ax_lig_list]
     eq_ligand_list = [built_ligand_list[i] for i in eq_lig_list]
     if loud and valid:
         print(('lig_nat_list', lig_natoms_list))
         print(('eq_liq is ind ', eq_lig_list))
         print(('ax_liq is ind ', ax_lig_list))
-        print(('ax built lig [0] ext ind :' +
-               str(list(built_ligand_list[ax_lig_list[0]].ext_int_dict.keys()))))
+        print('ax built lig [0] ext ind :' +
+               str(list(built_ligand_list[ax_lig_list[0]].ext_int_dict.keys())))
         if len(ax_lig_list) > 1:
-            print(('ax built lig [1] ext ind :' +
-                   str(list(built_ligand_list[ax_lig_list[1]].ext_int_dict.keys()))))
-        print(('eq built lig [0] ext ind: ' +
-               str(list(built_ligand_list[eq_lig_list[0]].ext_int_dict.keys()))))
-        print(('eq_con is ' + str((eq_con_list))))
-        print(('ax_con is ' + str((ax_con_list))))
+            print('ax built lig [1] ext ind :' +
+                   str(list(built_ligand_list[ax_lig_list[1]].ext_int_dict.keys())))
+        print('eq built lig [0] ext ind: ' +
+               str(list(built_ligand_list[eq_lig_list[0]].ext_int_dict.keys())))
+        print(f'eq_con is {eq_con_list}')
+        print(f'ax_con is {ax_con_list}')
     for j, ax_con in enumerate(ax_con_list):
         current_ligand_index_list = built_ligand_list[ax_lig_list[j]].index_list
         ax_con_int_list.append([current_ligand_index_list.index(i) for i in ax_con])
-        # ax_con_int_list.append(
-        #     [built_ligand_list[ax_lig_list[j]].ext_int_dict[i] for i in ax_con])
-        # # convert to interal index ## old one with obtain_mol3d
     for j, eq_con in enumerate(eq_con_list):
         current_ligand_index_list = built_ligand_list[eq_lig_list[j]].index_list
         eq_con_int_list.append([current_ligand_index_list.index(i) for i in eq_con])
-        # eq_con_int_list.append(
-        #     [built_ligand_list[eq_lig_list[j]].ext_int_dict[i] for i in eq_con])
-        # # convert to interal index ## old one with obtain_mol3d
     if loud:
-        print(('int eq ' + str(eq_con_int_list)))
-        print(('ext eq ' + str(eq_con_list)))
+        print(f'int eq {eq_con_int_list}')
+        print(f'ext eq {eq_con_list}')
         print('**********************************************')
     for ax_lig in ax_lig_list:
         ax_natoms_list.append(lig_natoms_list[ax_lig])
@@ -838,8 +818,6 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
     # ## Below, take all combinations of two atoms, and measure their angles through the metal center
 
     def getAngle(coord_list, pair, m_coord):  # Get Angle of atom pair through metal center (stored at coord_list[0])
-        # print("coord_list: ", coord_list)
-        # print("pair: ", pair)
         try:
             p1 = np.squeeze(np.array(coord_list[pair[0]]))
             p2 = np.squeeze(np.array(coord_list[pair[1]]))
@@ -847,17 +825,16 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
             v1u = np.squeeze(np.array((m - p1) / np.linalg.norm((m - p1))))
             v2u = np.squeeze(np.array((m - p2) / np.linalg.norm((m - p2))))
             angle = np.rad2deg(np.arccos(np.clip(np.dot(v1u, v2u), -1.0, 1.0)))
-            # print("angle: ", angle)
         except IndexError:
             angle = 0
         return angle
     if loud:
         print('********************************************')
-        print(("n_ligs = " + str(n_ligs)))
-        print(("max d = " + str(max_dent)))
-        print(("min_dent = " + str(min_dent)))
-        print(("ligand list is" + str(liglist)))
-        print(('denticities are  ' + str(ligdents)))
+        print(f"n_ligs = {n_ligs}")
+        print(f"max d = {max_dent}")
+        print(f"min_dent = {min_dent}")
+        print(f"ligand list is {liglist}")
+        print(f'denticities are {ligdents}')
     # Flag Hexa/Pentadentate, check if denticities incorrect for Octahedral Complex
     if max(ligdents) > 4:  # Hexa/Pentadentate ligands flagging
         print(max(ligdents))
@@ -870,11 +847,11 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
             hexadentate = True
         else:
             valid = False
-            print(('bad denticities: ' + str(ligdents)))
-            print(('max denticities: ' + str(min(ligdents))))
+            print(f'bad denticities: {ligdents}')
+            print(f'max denticities: {min(ligdents)}')
     elif n_ligs > 3 and min(ligdents) > 1:  # Catch errors in ligands
         valid = False
-        print(('too many ligs ' + str((n_ligs))))
+        print(f'too many ligs {n_ligs}')
     # Build Ligands and get MWs of ligands
     built_ligand_list = list()
     lig_natoms_list = list()
@@ -909,7 +886,7 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
         symbol_list.append(sl)
         lig_con_symbols_list.append(sl_ligcons)
         if loud:
-            print(('checking lig ' + str(j) + ' : ' + str(sl)))
+            print(f'checking lig {j} : {sl}')
         unique = 1  # Flag for detecting unique ligands
         for i, other_sl in enumerate(unique_ligands):
             if sl == other_sl and sl_ligcons == unique_ligcons[i]:
@@ -994,15 +971,14 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
         symmetric = False
     # Print out state of affairs if loud
     if loud:
-        print(('unique ligands' + str(unique_ligands)))
-        print(('ligand counts' + str(ligand_counts)))
-        print(('ligand records ' + str(ligand_records)))
-        print((str(max(ligand_counts)) +
-               ' is the max and min in  ' + str(min(ligand_counts))))
+        print(f'unique ligands {unique_ligands}')
+        print(f'ligand counts {ligand_counts}')
+        print(f'ligand records {ligand_records}')
+        print(f'{max(ligand_counts)} is the max and min in {min(ligand_counts)}')
     n_unique_ligs = len(unique_ligands)  # Number of unique ligands
     if (n_ligs == 6):  # All monodentate
         allowed = list(range(0, 6))
-        if n_unique_ligs == 1:  # Purely Homoleptic monodentate, by best fit plane
+        if n_unique_ligs == 1:  # Purely homoleptic monodentate, by best fit plane
             if loud:
                 print('homoleptic monodentate')
             eq_lig_list = eq_points  # Assign 4 lig_cons to equatorial plane, by best fit plane
@@ -1011,7 +987,7 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
             ax_con_list = [ligcons[j] for j in ax_lig_list]
         elif n_unique_ligs == 2:  # Mix of 2 monodentates
             if loud:
-                print(('monodentate {}+{} ligands'.format(max(ligand_counts), min(ligand_counts))))
+                print('monodentate {}+{} ligands'.format(max(ligand_counts), min(ligand_counts)))
                 print((ligand_counts, unique_ligands))
             eq_lig_list = list()
             if use_z:
@@ -1029,13 +1005,13 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
                         bot_lig = j
                         bot_con = ligcons[j]
                     if loud:
-                        print(('updating bot axial to ' + str(bot_lig)))
+                        print(f'updating bot axial to {bot_lig}')
                     if this_z > maxz:
                         maxz = this_z
                         top_lig = j
                         top_con = ligcons[j]
                     if loud:
-                        print(('updating top axial to ' + str(top_lig)))
+                        print(f'updating top axial to {top_lig}')
                 not_eq.append(bot_lig)
                 not_eq.append(top_lig)
                 allowed = [x for x in allowed if ((x not in not_eq))]
@@ -1162,13 +1138,13 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
                         bot_lig = j
                         bot_con = ligcons[j]
                     if loud:
-                        print(('updating bot axial to ' + str(bot_lig)))
+                        print(f'updating bot axial to {bot_lig}')
                     if this_z > maxz:
                         maxz = this_z
                         top_lig = j
                         top_con = ligcons[j]
                     if loud:
-                        print(('updating top axial to ' + str(top_lig)))
+                        print(f'updating top axial to {top_lig}')
                 not_eq.append(bot_lig)
                 not_eq.append(top_lig)
                 allowed = [x for x in allowed if ((x not in not_eq))]
@@ -1270,8 +1246,6 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
                         coord_list_two = np.array([mol.getAtom(ii[0]).coords() for ii in two_repeats_cons])
                         coord_list_three = np.array([mol.getAtom(ii[0]).coords() for ii in three_repeats_cons])
                         angle_list = list()
-                        # unused
-                        # m = np.array([mol.getAtom(mol.findMetal()[0]).coords()])
                         pair_combos = [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2)]
                         for k, pair in enumerate(pair_combos):
                             p1 = np.squeeze(np.array(coord_list_two[pair[0]]))
@@ -1358,15 +1332,11 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
         eq_con_list = [eq_con_list[x] for x in eq_order]
         eq_lig_list = [eq_lig_list[x] for x in eq_order]
     elif (n_ligs == 5):  # 2+1+1+1+1
-        # unused
-        # allowed = list(range(0, 5))
         if loud:
             print('bidentate 2+1+1+1+1 case')
         bidentate_ligand_idx = np.argmax(ligdents)
         bidentate_cons = ligcons[bidentate_ligand_idx]
         mono_dentate_idx_set = list(set(range(len(ligdents)))-set([bidentate_ligand_idx]))
-        # unused
-        # monodentate_cons = [ligcons[val] for val in mono_dentate_idx_set]
         coord_list = np.array([mol.getAtom(ii).coords() for ii in bidentate_cons])
         mono_con_list = list()
         monodentate_eq_cons = list()
@@ -1405,8 +1375,6 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
             tridentate_ligand_idx = np.argmax(ligdents)
             tridentate_cons = ligcons[tridentate_ligand_idx]
             mono_dentate_idx_set = list(set(range(len(ligdents)))-set([tridentate_ligand_idx]))
-            # unused
-            # monodentate_cons = [ligcons[val] for val in mono_dentate_idx_set]
             pair_combos = list(combinations([0, 1, 2], 2))
             angle_list = []
             pair_list = []
@@ -1607,8 +1575,6 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
             else:  # Planar
                 planar = True
                 coord_list = np.array([mol.getAtom(ii).coords() for ii in tridentate_cons])
-                # unused:
-                # m = np.array([mol.getAtom(mol.findMetal()[0]).coords()])
                 bidentate_eq_con = []
                 for bi_con in bidentate_cons:
                     p1 = np.array(mol.getAtom(bi_con).coords())
@@ -1711,8 +1677,6 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
         if ((max(ligdents) == 3) and (min(ligdents) == 3)):  # 3+3
             if loud:
                 print('3+3 dentate case')
-            # unused
-            # allowed = list(range(0, 2))
             tridentate_cons_1 = ligcons[0]
             tridentate_cons_2 = ligcons[1]
             pair_combos = list(combinations([0, 1, 2], 2))
@@ -1764,12 +1728,9 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
         # ### Handling for pentadentate scaffolds ####
         if loud:
             print('pentadentate case')
-        # unused
-        # allowed = [0, 1]
         not_eq = list()
         if len(ligcons[0]) == 1:
             # ### This is the axial ligand ####
-            # print(j, 'axial lig')
             top_lig = 0
             top_con = ligcons[0]
             not_eq.append(top_lig)
@@ -1794,8 +1755,6 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
         bot_idx = np.argmax(np.array(angle_list))
         bot_con = [ligcons[pent_lig][bot_idx]]
         bot_lig = pent_lig
-        # unused:
-        # not_ax_points = combo_list[np.argmin(error_list)]
         if loud:
             print(('This is bot_idx', bot_idx))
             print((flat_ligcons, top_con, bot_con))
@@ -1911,15 +1870,15 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
         print(('lig_nat_list', lig_natoms_list))
         print(('eq_liq is ind ', eq_lig_list))
         print(('ax_liq is ind ', ax_lig_list))
-        print(('ax built lig [0] ext ind :' +
-               str(list(built_ligand_list[ax_lig_list[0]].ext_int_dict.keys()))))
+        print('ax built lig [0] ext ind :' +
+               str(list(built_ligand_list[ax_lig_list[0]].ext_int_dict.keys())))
         if len(ax_lig_list) > 1:
-            print(('ax built lig [1] ext ind :' +
-                   str(list(built_ligand_list[ax_lig_list[1]].ext_int_dict.keys()))))
-        print(('eq built lig [0] ext ind: ' +
-               str(list(built_ligand_list[eq_lig_list[0]].ext_int_dict.keys()))))
-        print(('eq_con is ' + str((eq_con_list))))
-        print(('ax_con is ' + str((ax_con_list))))
+            print('ax built lig [1] ext ind :' +
+                   str(list(built_ligand_list[ax_lig_list[1]].ext_int_dict.keys())))
+        print('eq built lig [0] ext ind: ' +
+               str(list(built_ligand_list[eq_lig_list[0]].ext_int_dict.keys())))
+        print(f'eq_con is {eq_con_list}')
+        print(f'ax_con is {ax_con_list}')
 
     for j, ax_con in enumerate(ax_con_list):
         current_ligand_index_list = built_ligand_list[ax_lig_list[j]].index_list
@@ -1928,8 +1887,8 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
         current_ligand_index_list = built_ligand_list[eq_lig_list[j]].index_list
         eq_con_int_list.append([current_ligand_index_list.index(i) for i in eq_con])
     if loud:
-        print(('int eq ' + str(eq_con_int_list)))
-        print(('ext eq ' + str(eq_con_list)))
+        print(f'int eq {eq_con_int_list}')
+        print(f'ext eq {eq_con_list}')
         print('**********************************************')
     for ax_lig in ax_lig_list:
         ax_natoms_list.append(lig_natoms_list[ax_lig])
@@ -2199,7 +2158,7 @@ def get_lig_symmetry(mol, loud=False, htol=3):
         if n_unique_ligs == 6:
             outstring = '111111'
         elif n_unique_ligs == 5:
-            # Compare all trans positions. If not trans set as cis
+            # Compare all trans positions. If not trans, set as cis
             trans_count = 0
             for pair in trans_pairs:
                 if compare_ligs(pair):

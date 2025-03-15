@@ -999,7 +999,7 @@ class mol3D:
                 _, catoms_arr = init_mol.oct_comp(
                     angle_ref=angle_ref, debug=debug)
         if len(catoms_arr) != num_coord:
-            print(('Error, must have %d connecting atoms for octahedral.' % num_coord))
+            print(f'Error, must have {num_coord} connecting atoms for octahedral.')
             print('Please DO CHECK what happens!!!!')
             flag_oct = 0
             flag_list = ["num_coord_metal"]
@@ -3390,9 +3390,8 @@ class mol3D:
                     else:
                         distance_max = 1.37 * (atom.rad + ratom.rad)  # 1.37 by 07/22/2021
                     if debug:
-                        print(('metal in  cat ' + str(atom.symbol()) +
-                               ' and rat ' + str(ratom.symbol())))
-                        print(('maximum bonded distance is ' + str(distance_max)))
+                        print(f'metal in cat {atom.symbol()} and rat {ratom.symbol()}')
+                        print(f'maximum bonded distance is {distance_max}')
                     if atom.symbol() == 'He' or ratom.symbol() == 'He':
                         distance_max = 1.6 * (atom.rad + ratom.rad)
                     if d < distance_max and i != ind:
@@ -3400,38 +3399,37 @@ class mol3D:
                         if atom.symbol() == 'H' or ratom.symbol() == 'H':
                             if debug:
                                 print('invalid due to hydrogens: ')
-                                print((atom.symbol()))
-                                print((ratom.symbol()))
+                                print(atom.symbol())
+                                print(ratom.symbol())
                             valid = False  # Hydrogen catom control
                         if d < distance_max and i != ind and valid:
                             if atom.symbol() in ["C", "S", "N"]:
                                 if debug:
                                     print('\n')
-                                    print(('this atom in is ' + str(i)))
-                                    print(('this atom sym is ' + str(atom.symbol())))
-                                    print(('this ratom in is ' +
-                                           str(self.getAtom(i).symbol())))
-                                    print(('this ratom sym is ' + str(ratom.symbol())))
+                                    print(f'this atom in is {i}')
+                                    print(f'this atom sym is {atom.symbol()}')
+                                    print(f'this ratom in is {self.getAtom(i).symbol()}')
+                                    print(f'this ratom sym is {ratom.symbol()}')
                                 # In this case, atom might be intruder C!
                                 possible_idxs = self.getBondedAtomsnotH(ind)  # bonded to metal
                                 if debug:
-                                    print(('poss inds are' + str(possible_idxs)))
+                                    print(f'poss inds are {possible_idxs}')
                                 if len(possible_idxs) > CN:
                                     metal_prox = sorted(
                                         possible_idxs,
                                         key=lambda x: self.getDistToMetal(x, ind))
                                     allowed_idxs = metal_prox[0:CN]
                                     if debug:
-                                        print(('ind: ' + str(ind)))
-                                        print(('metal prox: ' + str(metal_prox)))
-                                        print(('trimmed to: ' + str(allowed_idxs)))
+                                        print(f'ind: {ind}')
+                                        print(f'metal prox: {metal_prox}')
+                                        print(f'trimmed to: {allowed_idxs}')
                                         print(allowed_idxs)
-                                        print(('CN is ' + str(CN)))
+                                        print(f'CN is {CN}')
 
                                     if i not in allowed_idxs:
                                         valid = False
                                         if debug:
-                                            print(('bond rejected based on atom: ' + str(i) + ' not in ' + str(allowed_idxs)))
+                                            print(f'bond rejected based on atom: {i} not in {allowed_idxs}')
                                     else:
                                         if debug:
                                             print('Ok based on atom')
@@ -3443,15 +3441,14 @@ class mol3D:
                                 if len(possible_idxs) > CN:
                                     allowed_idxs = metal_prox[0:CN]
                                     if debug:
-                                        print(('ind: ' + str(ind)))
-                                        print(('metal prox:' + str(metal_prox)))
-                                        print(('trimmed to ' + str(allowed_idxs)))
+                                        print(f'ind: {ind}')
+                                        print(f'metal prox: {metal_prox}')
+                                        print(f'trimmed to {allowed_idxs}')
                                         print(allowed_idxs)
                                     if ind not in allowed_idxs:
                                         valid = False
                                         if debug:
-                                            print(('bond rejected based on ratom ' + str(
-                                                ind) + ' with symbol ' + ratom.symbol()))
+                                            print(f'bond rejected based on ratom {ind} with symbol {ratom.symbol()}')
                                     else:
                                         if debug:
                                             print('ok based on ratom...')
@@ -3461,19 +3458,14 @@ class mol3D:
                 if (d < distance_max and i != ind):
                     if valid:
                         if debug:
-                            print(('Valid atom  ind ' + str(i) + ' (' + atom.symbol() + ') and ' + str(
-                                ind) + ' (' + ratom.symbol() + ')'))
-                            print((' at distance ' + str(d) +
-                                   ' (which is less than ' + str(distance_max) + ')'))
+                            print(f'Valid atom ind {i} ({atom.symbol()}) and {ind} ({ratom.symbol()})')
+                            print(f' at distance {d} (which is less than {distance_max})')
                         nats.append(i)
                     else:
                         if debug:
-                            print(('atom  ind ' + str(i) +
-                                   ' (' + atom.symbol() + ')'))
-                            print(('has been disallowed from bond with ' +
-                                   str(ind) + ' (' + ratom.symbol() + ')'))
-                            print((' at distance ' + str(d) + ' (which would normally be less than ' + str(
-                                distance_max) + ')'))
+                            print(f'atom ind {i} ({atom.symbol()})')
+                            print(f'has been disallowed from bond with {ind} ({ratom.symbol()})')
+                            print(f' at distance {d} (which would normally be less than {distance_max})')
                         if d < 2 and not atom.symbol() == 'H' and not ratom.symbol() == 'H':
                             print(
                                 'Error, mol3D could not understand connectivity in mol')
@@ -5425,7 +5417,7 @@ class mol3D:
             for idx, lig in enumerate(liglist):
                 lig_init = liglist_init[idx]
                 if debug:
-                    print(('----This is %d th piece of ligand.' % (idx + 1)))
+                    print(f'----This is {idx+1} th piece of ligand.')
                     print(('ligand is:', lig, lig_init))
                 foo = []
                 for ii, atom in enumerate(mymol_xyz.atoms):
@@ -5446,10 +5438,10 @@ class mol3D:
                 tmp_org_mol = mol3D()
                 tmp_org_mol = readfromtxt(tmp_org_mol, foo)
                 if debug:
-                    print(('# atoms: %d, init: %d' %
-                           (tmp_mol.natoms, tmp_org_mol.natoms)))
-                    print(('!!!!atoms:', [x.symbol() for x in tmp_mol.getAtoms()],
-                           [x.symbol() for x in tmp_org_mol.getAtoms()]))
+                    print('# atoms: %d, init: %d' %
+                           (tmp_mol.natoms, tmp_org_mol.natoms))
+                    print('!!!!atoms:', [x.symbol() for x in tmp_mol.getAtoms()],
+                           [x.symbol() for x in tmp_org_mol.getAtoms()])
                 if flag_deleteH:
                     tmp_mol.deleteHs()
                     tmp_org_mol.deleteHs()
@@ -5651,7 +5643,7 @@ class mol3D:
             print('Ligands cannot match! (Connecting atoms are different)')
             flag_match = False
         if debug:
-            print(('returning: ', liglist_shifted, liglist_init))
+            print('returning: ', liglist_shifted, liglist_init)
         if catoms_arr is not None:  # Force as matching in inspection mode.
             flag_match = True
         return liglist_shifted, liglist_init, flag_match

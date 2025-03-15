@@ -90,7 +90,6 @@ def simple_network_builder_pybrain(layers: List[int], partial_path: str):
 
 
 def csv_loader(path: str) -> List[float]:
-    # print('in csv loader')
     path_to_file = resource_files("molSimplify.python_nn").joinpath(path.strip("/"))
     with open(path_to_file, 'r') as csvfile:
         csv_lines = csv.reader(csvfile, delimiter=',')
@@ -117,34 +116,20 @@ def matrix_loader(path, rownames=False):
         return mat
 
 
-# n = network_builder([25,50,51],"nn_split")
 def simple_splitting_ann(excitation):
-    # print('path to ANN data: ',path_to_file)
     n = simple_network_builder([25, 50, 50], "ms_split")
     excitation, sp_center, sp_shift = excitation_standardizer(excitation, 'split')
-    # print(excitation)
-    # print('center is ' + str(sp_center))
-    # print('scale is '+ str(sp_shift))
-    # print(excitation)
     result = n.activate(excitation)
 
-    # print('result is ' + str(result))
     result = (result*sp_shift) + sp_center
-    # print('result is ' + str(result))
     return result, excitation
 
 
 def simple_slope_ann(slope_excitation):
-    # print('path to ANN data: ',path_to_file)
     n = simple_network_builder([24, 50, 50], "ms_slope")  # no alpha value
-    # print(slope_excitation)
     slope_excitation, sl_center, sl_shift = excitation_standardizer(slope_excitation, 'slope')
-    # print(slope_excitation)
     result = n.activate(slope_excitation)
-    # print('result is ' + str(result))
-    # print('center is ' + str(sl_center) + ' shift  '+ str(sl_shift))
     result = (result*sl_shift) + sl_center
-    # print('result is ' + str(result))
     return result
 
 
@@ -194,5 +179,4 @@ def find_eu_dist(excitation):
         if this_dist < min_dist:
             min_dist = this_dist
             best_row = rownames[i]
-    # print('min dist is ' +str(min_dist))
     return min_dist, best_row

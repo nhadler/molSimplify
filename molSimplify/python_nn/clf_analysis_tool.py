@@ -31,7 +31,6 @@ def dist_neighbor(fmat1, fmat2, labels, l=5, dist_ref=1):  # noqa: E741
     dist_mat = pairwise_distances(fmat1, fmat2, 'manhattan')
     dist_mat = dist_mat * 1.0 / dist_ref
     dist_avrg, dist_list, labels_list = [], [], []
-    # print('shape of dist_mat:', dist_mat.shape)
     for ele in dist_mat:
         dist_arr = np.round(np.array(ele), 4)
         if not dist_ref == 1:
@@ -49,7 +48,6 @@ def dist_neighbor(fmat1, fmat2, labels, l=5, dist_ref=1):  # noqa: E741
             dist_avrg.append(np.mean(_dist[:l]))
         else:
             dist_avrg.append(np.mean(_dist[:l]) * float(l) / (l - 1))
-    # print('-----mean: %f, std: %f---' % (np.mean(dist_avrg), np.std(dist_avrg)))
     dist_avrg = np.array(dist_avrg)
     dist_list = np.array(dist_list)
     labels_list = np.array(labels_list)

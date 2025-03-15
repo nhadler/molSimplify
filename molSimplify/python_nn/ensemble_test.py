@@ -107,7 +107,7 @@ def ensemble_uq(predictor, descriptors=False, descriptor_names=False, suffix=Fal
     if not os.path.exists(base_path):
         print('Ensemble models do not exist now, training...')
         ensemble_maker(predictor)
-    print(('ANN activated for ' + str(predictor)))
+    print(f'ANN activated for {predictor}')
     model_list = glob.glob(base_path + '/*.h5')
 
     labels = load_test_labels(predictor)
@@ -124,10 +124,9 @@ def ensemble_uq(predictor, descriptors=False, descriptor_names=False, suffix=Fal
         mat = np.array(mat, dtype='float64')
         train_mat = data_normalize(mat, train_mean_x, train_var_x)
         excitation = np.array(train_mat)
-    print(('excitation is ' + str(excitation.shape)))
+    print(f'excitation is {excitation.shape}')
     print(('actual label:', labels[:3]))
     results_list = []
-    # print('models', model_list)
     for idx, model in enumerate(model_list):
         _base = model.split('.')[0]
         with open(_base + '.json', 'r') as json_file:
@@ -145,7 +144,6 @@ def ensemble_uq(predictor, descriptors=False, descriptor_names=False, suffix=Fal
             result = np.squeeze(result, axis=1)
         results_list.append(result)
     results_list = np.transpose(np.array(results_list))
-    # print(results_list.shape)
     result_mean, result_std = np.mean(results_list, axis=1), np.std(results_list, axis=1)
     labels = np.squeeze(labels, axis=1)
     print((labels.shape, result_mean.shape))
@@ -168,18 +166,16 @@ def mc_dropout_uq(predictor, descriptors=False, descriptor_names=False, num=500)
         mat = np.array(mat, dtype='float64')
         train_mat = data_normalize(mat, train_mean_x, train_var_x)
         excitation = np.array(train_mat)
-    print(('excitation is ' + str(excitation.shape)))
+    print(f'excitation is {excitation.shape}')
     loaded_model = load_keras_ann(predictor)
     get_outputs = K.function([loaded_model.layers[0].input, K.learning_phase()],
                              [loaded_model.layers[-1].output])
-    print(('LOADED MODEL HAS ' + str(
-        len(loaded_model.layers)) + ' layers, so latent space measure will be from first ' + str(
-        len(loaded_model.layers) - 1) + ' layers'))
+    print(f'LOADED MODEL HAS {len(loaded_model.layers)} layers, so latent space measure will be from first {len(loaded_model.layers) - 1} layers')
     results_list = []
     err_list = []
     for ii in range(num):
         if not np.mod(ii, int(num / 10)):
-            print(('%d / %d' % (ii, num)))
+            print('%d / %d' % (ii, num))
         if 'clf' not in predictor:
             results = data_rescale(np.array(get_outputs([excitation, 1])), train_mean_y,
                                    train_var_y)[0]
@@ -196,7 +192,6 @@ def mc_dropout_uq(predictor, descriptors=False, descriptor_names=False, num=500)
     tau = sp.optimize.minimize(f, 10).x
     result_mean, result_std = np.mean(results_list, axis=1), np.std(results_list, axis=1)
     result_std = np.sqrt(1 / tau + result_std ** 2)
-    # print(tau, result_std[:3])
     labels = np.squeeze(labels, axis=1)
     error_for_mean = np.abs(labels - result_mean)
     return result_mean, result_std, error_for_mean
@@ -209,7 +204,7 @@ def latent_space_uq(predictor, layer_index=-2, descriptors=False, descriptor_nam
     if not os.path.exists(base_path):
         print('Ensemble models do not exist now, training...')
         ensemble_maker(predictor)
-    print(('ANN activated for ' + str(predictor)))
+    print(f'ANN activated for {predictor}')
     model_list = glob.glob(base_path + '/*.h5')
     train_mean_x, train_mean_y, train_var_x, train_var_y = load_normalization_data(predictor)
     if (descriptors and descriptor_names):
@@ -252,8 +247,8 @@ def latent_space_uq(predictor, layer_index=-2, descriptors=False, descriptor_nam
                                  [loaded_model.layers[-1].output])
         get_latent = K.function([loaded_model.layers[0].input, K.learning_phase()],
                                 [loaded_model.layers[layer_index].output])
-        print(('NOTE: you are choosing:', loaded_model.layers[layer_index], loaded_model.layers[layer_index].name,
-              'for the latence space!'))
+        print('NOTE: you are choosing:', loaded_model.layers[layer_index], loaded_model.layers[layer_index].name,
+              'for the latence space!')
         if 'clf' not in predictor:
             results = data_rescale(np.array(get_outputs([excitation_test, 0])), train_mean_y,
                                    train_var_y)[0]
@@ -264,14 +259,11 @@ def latent_space_uq(predictor, layer_index=-2, descriptors=False, descriptor_nam
         nn_latent_dist_train, _, __ = dist_neighbor(training_latent_distance, training_latent_distance, labels_train,
                                                     l=5, dist_ref=1)
         nn_dist_avrg_train = np.mean(nn_latent_dist_train)
-        # print(nn_dist_avrg_train)
         test_latent_distance = np.array(get_latent([excitation_test, 0]))[0]
         nn_latent_dist_test, nn_dists, nn_labels = dist_neighbor(test_latent_distance, training_latent_distance,
                                                                  labels_train,
                                                                  l=5, dist_ref=nn_dist_avrg_train)
         if not entropy:
-            # print(nn_latent_dist_test.shape)
-            # print(min(nn_latent_dist_test), max(nn_latent_dist_test))
             dist_list.append(nn_latent_dist_test)
         else:
             entropy = []

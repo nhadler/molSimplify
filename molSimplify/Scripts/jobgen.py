@@ -26,7 +26,6 @@ def sgejobgen(args, jobdirs):
         # form jobscript identifier
         if args.jname:
             jobname = args.jname+str(args.jid)
-            # jobname = jobname[:8]
         elif args.jobmanager:
             jobname = [f for f in os.listdir(job) if f.endswith('.xyz')][0][:-4]
         else:
@@ -170,7 +169,6 @@ def slurmjobgen(args, jobdirs):
         # form jobscript identifier
         if args.jname:
             jobname = args.jname+str(args.jid)
-            # jobname = jobname[:8]
         elif args.jobmanager:
             jobname = [f for f in os.listdir(job) if f.endswith('.xyz')][0][:-4]
         else:
