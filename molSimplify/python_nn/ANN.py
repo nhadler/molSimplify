@@ -11,7 +11,7 @@
 import csv
 
 import numpy as np
-from importlib_resources import files as resource_fFiles
+from importlib_resources import files as resource_files
 from molSimplify.utils.decorators import deprecated
 from typing import List
 

@@ -499,6 +499,7 @@ def dbsearch(rundir, args, globs):
     # run substructure search #
     nmols = '10000' if not args.dbnsearch else args.dbnsearch
     finger = 'FP2' if not args.dbfinger else args.dbfinger
+    outputf = None
     if args.dbsmarts or args.dbhuman or args.dbsim:
         outputf, flag = getsimilar(
             smistr, nmols, args.dbbase, finger, squery, args)

@@ -586,14 +586,11 @@ def combine_multi_aligned_payload_with_cell(super_cell, super_cell_vector, paylo
                 distorted_payload = force_field_relax_with_slab(
                     super_cell, this_payload, cand_list, its)
                 if debug:
-                    print(f'{this_payload.getAtom(0).symbol()} at {this_payload.getAtom(
-                        cand_list[0]).coords()} target at {surface_coord_list[0]}')
-                    print(f'{distorted_payload.getAtom(0).symbol()} at {distorted_payload.getAtom(
-                        cand_list[0]).coords()} target at {surface_coord_list[0]}')
+                    print(f'{this_payload.getAtom(0).symbol()} at {this_payload.getAtom(cand_list[0]).coords()} target at {surface_coord_list[0]}')
+                    print(f'{distorted_payload.getAtom(0).symbol()} at {distorted_payload.getAtom(cand_list[0]).coords()} target at {surface_coord_list[0]}')
                 final_payload.copymol3D(distorted_payload)
                 if debug:
-                    print(f'{final_payload.getAtom(0).symbol()} at {final_payload.getAtom(
-                        cand_list[0]).coords()} target at {surface_coord_list[0]}')
+                    print(f'{final_payload.getAtom(0).symbol()} at {final_payload.getAtom(cand_list[0]).coords()} target at {surface_coord_list[0]}')
             else:
                 final_payload.copymol3D(this_payload)
             this_step_accepted = True
@@ -1353,21 +1350,6 @@ def slab_module_supervisor(args, rootdir):
         angle = -1*vecangle(cell_vector[0], [1, 0, 0])
         if debug:
             print(f'x-axis angle is {angle}')
-        if abs(angle) > 5 and False:
-            print(f'angle is {angle}')
-            u = [0, 0, 1]
-            print('aligning  with x-axis')
-            print(f'rotating angle {angle} around {u}')
-            super_cell = rotate_around_axis(super_cell, [0, 0, 0], u, angle)
-            super_cell.writexyz(rootdir + 'slab/after_x_align.xyz')
-            cell_vector = [PointRotateAxis(u, [0, 0, 0], list(
-                i), numpy.pi*angle/(180)) for i in cell_vector]
-            ext_duplication_vector = [PointRotateAxis(u, [0, 0, 0], list(
-                i), numpy.pi*angle/(180)) for i in ext_duplication_vector]
-            # threshold:
-            cell_vector = threshold_basis(cell_vector, 1E-6)
-            ext_duplication_vector = threshold_basis(
-                ext_duplication_vector, 1E-6)
 
         stop_flag = False
         if slab_size:

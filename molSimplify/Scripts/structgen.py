@@ -2501,7 +2501,7 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
                     print(ligand.lower())
                     print(args.mlig)
                     print(args.core.lower())
-                    print(f'mligcatoms_ext is {ligcatoms_ext}')
+                    print(f'mligcatoms_ext is {mligcatoms_ext}')
                 for at in catoms:
                     connected.append(initatoms+at)
                 # initialize variables
