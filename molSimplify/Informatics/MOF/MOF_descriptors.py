@@ -460,10 +460,10 @@ def make_MOF_linker_RACs(
         Generate all of the linker based RACs.
         """""""""
         for ii, properties in enumerate(allowed_strings):
-            if list(descriptors):
-                ligand_ac_full += full_autocorrelation(linker_mol, properties, depth, oct=False)
-            else:  # This is the case when just starting and the list is empty.
+            if not list(descriptors):  # This is the case when just starting and the list is empty.
                 ligand_ac_full = full_autocorrelation(linker_mol, properties, depth, oct=False)  # RACs
+            else:
+                ligand_ac_full += full_autocorrelation(linker_mol, properties, depth, oct=False)
 
             this_colnames = []
             for j in range(0, depth+1):

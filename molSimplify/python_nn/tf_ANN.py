@@ -609,7 +609,7 @@ def find_ANN_latent_dist(predictor, latent_space_vector, debug=False):
         print('measuring latent distances:')
         print(f'loaded model has {len(loaded_model.layers)} layers, so latent space measure will be from first {len(loaded_model.layers) - 1} layers')
     if version.parse(tf.__version__) >= version.parse('2.0.0'):
-        raise Exception('Invalid TensorFlow version. <2.0.0 required.')
+        get_outputs = None
     else:
         get_outputs = K.function([loaded_model.layers[0].input, K.learning_phase()],
                                  [loaded_model.layers[len(loaded_model.layers) - 2].output])
