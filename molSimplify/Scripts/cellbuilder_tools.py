@@ -434,7 +434,7 @@ def check_top_layer_correct(super_cell, atom_type):
     elements = globs.elementsbynum()
     print(f'checking surface for {atom_type}\n')
     if atom_type not in elements:
-        print("unknown surface type, unable to trim ")
+        print("unknown surface type, unable to trim")
         return trimmed_cell
     else:
         stop_flag = False

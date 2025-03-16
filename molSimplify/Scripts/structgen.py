@@ -122,7 +122,7 @@ def getnupdateb(backbatoms: List[List[int]], denticity: int) -> Tuple[List[int],
     for i in dlist:
         del backbatoms[i]
     if len(batoms) < 1:
-        print('No more connecting points available..')
+        print('No more connecting points available.')
     return batoms, backbatoms
 
 
@@ -275,7 +275,7 @@ def init_template(args: Namespace, cpoints_required: int) -> Tuple[mol3D, mol3D,
             geom = geomshorts[geomnames.index(args.geometry)]
         else:
             emsg = "Requested geometry not available." + \
-                "Defaulting to "+geomgroups[coord-1][0]
+                "Defaulting to " + geomgroups[coord-1][0]
             print(emsg)
         # load predefined backbone coordinates
         corexyz = loadcoord(geom)
@@ -332,7 +332,6 @@ def init_template(args: Namespace, cpoints_required: int) -> Tuple[mol3D, mol3D,
                 conatom3D = atom3D(core3D.getAtom(
                     ccatoms[i]).sym, core3D.getAtom(ccatoms[i]).coords())
                 corerefatoms.addAtom(conatom3D)
-                # corerefatoms.append(ccatoms[i])
                 # add connecting points to template
                 m3D.addAtom(atom3D(Sym='X', xyz=cpoint))
             else:
@@ -731,8 +730,7 @@ def openbabel_ffopt(ff: str, mol: mol3D, connected: List[int], constopt: int,
             if constopt == 1 or frozenangles:
                 constr.AddAtomConstraint(catom+1)  # indexing babel
                 if debug:
-                    print('using connnected opt to freeze atom number: '
-                          + str(catom))
+                    print(f'using connected opt to freeze atom number: {catom}')
             else:
                 constr.AddDistanceConstraint(
                     midx[0]+1, catom+1, mlbonds[ii])  # indexing babel
@@ -1421,7 +1419,6 @@ def rotate_catom_fix_Hs(lig3D, catoms, n, mcoords, core3D):
         if len(list(set(subm).intersection(catoms_other))) == 0:
             danglinggroup = subm
         else:
-            # bridginggroup = subm
             if list(set(subm).intersection(lig3D.getBondedAtoms(catoms[n])))[0] not in anchoratoms:
                 anchoratoms.append(list(set(subm).intersection(
                     lig3D.getBondedAtoms(catoms[n])))[0])
@@ -1441,10 +1438,8 @@ def rotate_catom_fix_Hs(lig3D, catoms, n, mcoords, core3D):
                     refpt = confrag3D.getAtomCoords(0)
                     u = vecdiff(refpt, anchor)
                     dtheta = 5
-                    # objs = []
                     objopt = 0
                     thetaopt = 0
-                    # localmaxs = []
                     thetas = list(range(0, 360, dtheta))
                     for theta in thetas:
                         confrag3Dtmp = rotate_around_axis(
@@ -1456,7 +1451,6 @@ def rotate_catom_fix_Hs(lig3D, catoms, n, mcoords, core3D):
                         auxmol1.addAtom(lig3D.getAtom(anchoratom))
                         auxmol2 = mol3D()
                         auxmol2.copymol3D(confrag3Dtmp)
-                        # objs.append(distance(mcoords,auxmol.centersym()))
                         if auxmol2.getNumAtoms() > 3:
                             obj = auxmol2.mindisttopoint(mcoords)
                         else:
@@ -1464,17 +1458,8 @@ def rotate_catom_fix_Hs(lig3D, catoms, n, mcoords, core3D):
                         if obj > objopt:
                             objopt = obj
                             thetaopt = theta
-                    # for i,obj in enumerate(objs):
-                        # try:
-                            # if objs[i] > objs[i-1] and objs[i] > objs[i+1]:
-                            # localmaxs.append(thetas[i])
-                        # except IndexError:
-                            # pass
-                    # in future, compare multiple local maxima
-                    # if localmaxs == []:
-                    #     localmaxs = [0]
+
                     confrag3D = rotate_around_axis(confrag3D, refpt, u, thetaopt)
-                # confrag3D = rotate_around_axis(confrag3D,refpt,u,localmaxs[0])
             # non-terminal connecting atom
             elif len(anchoratoms) == 2:
                 refpt = confrag3D.getAtomCoords(0)
@@ -1530,7 +1515,6 @@ def rotate_catoms_fix_Hs(lig3D: mol3D, catoms: List[int], mcoords, core3D: mol3D
 
     """
     for i, n in enumerate(catoms):
-        # if len(lig3D.getHsbyIndex(n)) > 0:
         lig3D = rotate_catom_fix_Hs(lig3D, catoms, i, mcoords, core3D)
     lig3D_aligned = mol3D()
     lig3D_aligned.copymol3D(lig3D)
@@ -1747,11 +1731,9 @@ def align_dent2_catom2_coarse(args, lig3D, core3D, catoms, r1, r0, m3D, batoms, 
     if lig3D.mindist(core3D) < md:
         lig3D = rotate_around_axis(lig3D, r0l, vecdiff(r1l, r0l), 180.0)
     # correct plane
-    # r0b = m3D.getAtom(batoms[0]).coords()
     r1b = m3D.getAtom(batoms[1]).coords()
     r0l = lig3D.getAtom(catoms[0]).coords()
     r1l = lig3D.getAtom(catoms[1]).coords()
-    # rm = lig3D.centermass()
     urot = vecdiff(r1l, r0l)
     # theta,ub = rotation_params(corerefcoords,r0b,r1b)
     # theta,ul = rotation_params(rm,r0l,r1l)
@@ -2463,7 +2445,7 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
     for i, ligand in enumerate(ligands):
         if args.debug:
             print('************')
-            print(f'loading ligand {ligand}, number  {i} of {len(ligands)}')
+            print(f'loading ligand {ligand}, number {i} of {len(ligands)}')
         if not (ligand == 'x' or ligand == 'X'):
 
             # load ligand
@@ -2683,8 +2665,6 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
                             print(f'a is not ff.lower, so adding atom: {latdix+core3D.getNumAtoms()} to freeze')
                         frozenats.append(latdix+core3D.getNumAtoms())
 
-
-
                 # combine molecules
                 if len(core3D.atoms) == 1 and copied == False:
                     core3D_copy = mol3D()
@@ -2695,7 +2675,6 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
                     core3D_copy.copymol3D(core3D)
                     copied = True
                 core3D_copy = core3D_copy.roland_combine(lig3D_copy, catoms)
-
 
                 # combine molecules
                 core3D = core3D.combine(lig3D)
@@ -2726,8 +2705,7 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
                     if args.debug:
                         print('FF optimizing molecule after placing ligand')
                         print(
-                            ('in the relax function, passing connected atoms list: ' + str(connected)))
-                    # (ff,mol,connected,constopt,frozenats,frozenangles,mlbonds,nsteps,debug=False):
+                            f'in the relax function, passing connected atoms list: {connected}')
                     core3D, enc = ffopt(ff=args.ff,
                                         mol=core3D,
                                         connected=connected,
@@ -2740,9 +2718,8 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
                                         debug=args.debug)
                     if args.debug:
                         print(
-                            ('saving a copy of the complex named complex_'+str(i)+'_'+str(j) + '_ff.xyz'))
-                        core3D.writexyz('complex_'+str(i) +
-                                        '_'+str(j) + '_ff.xyz')
+                            f'saving a copy of the complex named complex_{i}_{j}_ff.xyz')
+                        core3D.writexyz(f'complex_{i}_{j}_ff.xyz')
                 if args.debug:
                     print(f'done with pair of inds {i} and {j}')
                     print('**************************')
@@ -2768,8 +2745,7 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
                             debug=args.debug)
 
         if args.debug:
-            print(
-                'saving a final debug copy of the complex named complex_after_final_ff.xyz')
+            print('saving a final debug copy of the complex named complex_after_final_ff.xyz')
             core3D.writexyz('complex_after_final_ff.xyz')
         # core3D,enc = ffopt(args.ff,core3D,connected,1,frozenats,freezeangles,MLoptbds,'Adaptive',args.debug)
 
@@ -2790,7 +2766,6 @@ def generate_report(args: Namespace, ligands: List[str], ligoc: List[int]
     complex3D: List[mol3D] = []
     occs0 = []      # occurrences of each ligand
     toccs = 0       # total occurrence count (number of ligands)
-    # catsmi = []     # SMILES ligands connection atoms
     smilesligs = 0  # count how many smiles strings
     cats0: List[List[Union[int, str]]] = []      # connection atoms for ligands
     dentl = []      # denticity of ligands
@@ -3032,7 +3007,7 @@ def structgen(args: Namespace, rootdir: str, ligands: List[str], ligoc: List[int
                                 norm = distance(
                                     atom1.coords(), atom0.coords())/(atom1.rad+atom0.rad)
                                 errors_dict.update(
-                                    {atom1.sym + str(ii)+'-'+atom0.sym+str(jj)+'_normdist': norm})
+                                    {f'{atom1.sym}{ii}-{atom0.sym}{jj}_normdist': norm})
                                 if distance(atom1.coords(), atom0.coords()) < mind:
                                     mind = distance(atom1.coords(), atom0.coords())
                                     if mind == 0.0:
@@ -3120,6 +3095,6 @@ def structgen(args: Namespace, rootdir: str, ligands: List[str], ligoc: List[int
     del core3D  # Legacy code, unsure if needed
 
     pfold = rootdir.split('/', 1)[-1]
-    print(f'\nIn folder {rootdir} generated 1 structure!')
+    print(f'\nIn folder {rootdir}, generated 1 structure!')
 
     return strfiles, emsg, this_diag

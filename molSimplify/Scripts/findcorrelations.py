@@ -200,7 +200,7 @@ def correlation_supervisor(path, rootdir, simple=False, lig_only=False, max_desc
     print(f'the training MSE with the best feature set is {mse_r:0.2f}')
     print(f'the MSE with all features is {mse_all:0.2f}')
     print(f'by eliminating {n_tot - n_opt} features,' +
-           f' CV-prediction MSE decreased from {abs(select_mse[0]):0.2f} to ' + str("%00f" % abs(select_mse[n_tot - n_opt])))
+           f' CV-prediction MSE decreased from {abs(select_mse[0]):0.2f} to {abs(select_mse[n_tot - n_opt]):0.2f}')
     with open(rootdir+'RFECV_rankings.csv', 'w') as f:
         f.write('RFE_rank,RFE_col,RFECV_rank,RFECV_col, \n')
         for i, items in enumerate(reductor_features):
