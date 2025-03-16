@@ -127,10 +127,7 @@ def make_MOF_linker_RACs(linker_list, linker_subgraphlist, molcif, depth, name, 
 
 
 def get_MOF_descriptors(data, depth, path=False, xyz_path = False):
-    if not path:
-        print('Need a directory to place all of the linker, SBU, and ligand objects. Exiting now.')
-        raise ValueError('Base path must be specified in order to write descriptors.')
-    else:
+    if path:
         if path.endswith('/'):
             path = path[:-1]
         if not os.path.isdir(path+'/ligands'):
@@ -143,6 +140,9 @@ def get_MOF_descriptors(data, depth, path=False, xyz_path = False):
             os.mkdir(path+'/xyz')
         if not os.path.isdir(path+'/logs'):
             os.mkdir(path+'/logs')
+    else:
+        print('Need a directory to place all of the linker, SBU, and ligand objects. Exiting now.')
+        raise ValueError('Base path must be specified in order to write descriptors.')
     ligand_path = path+'/ligands'
     linker_path = path+'/linkers'
     sbu_path = path+'/sbus'
@@ -307,13 +307,7 @@ def get_MOF_descriptors(data, depth, path=False, xyz_path = False):
                     at.coords() for at in [molcif.getAtom(val) for val in sbu_temp]])
                 sbu_adjmat = pbc_funs.slice_mat(adj_matrix.todense(),sbu_temp)
                 pr_image_sbu = pbc_funs.ligand_detect(cell_v,sbu_cart_coords,sbu_adjmat,set(range(len(linker_anchors_list))))
-                if not (len(np.unique(pr_image_sbu, axis=0))==1 and len(np.unique(pr_image_organic, axis=0))==1): # linker
-                    max_min_linker_length = max(min_length,max_min_linker_length)
-                    min_max_linker_length = min(max_length,min_max_linker_length)
-                    tmpstr = f'{name}, Anchors list: {sbu_anchors_list}, SBU connectlist: {sbu_connect_list} set to be linker\n'
-                    pbc_funs.write2file(ligand_path,"/ambiguous.txt",tmpstr)
-                    continue
-                else: #  all anchoring atoms are in the same unitcell -> ligand
+                if len(np.unique(pr_image_sbu, axis=0))==1 and len(np.unique(pr_image_organic, axis=0))==1: #  all anchoring atoms are in the same unitcell -> ligand
                     remove_list.update(set(templist[ii])) # we also want to remove these ligands
                     SBU_list.update(set(templist[ii])) # we also want to remove these ligands
                     linker_list.pop(ii)
@@ -322,6 +316,12 @@ def get_MOF_descriptors(data, depth, path=False, xyz_path = False):
                     pbc_funs.write2file(ligand_path,"/ambiguous.txt",tmpstr)
                     tmpstr = f'{name}{ii}, Anchors list: {sbu_anchors_list}, SBU connectlist: {sbu_connect_list}\n'
                     pbc_funs.write2file(ligand_path,"/ligand.txt",tmpstr)
+                else: # linker
+                    max_min_linker_length = max(min_length,max_min_linker_length)
+                    min_max_linker_length = min(max_length,min_max_linker_length)
+                    tmpstr = f'{name}, Anchors list: {sbu_anchors_list}, SBU connectlist: {sbu_connect_list} set to be linker\n'
+                    pbc_funs.write2file(ligand_path,"/ambiguous.txt",tmpstr)
+                    continue
         else: # definite ligand
             pbc_funs.write2file(log_path,"/%s.log"%name,"found ligand\n")
             remove_list.update(set(templist[ii])) # we also want to remove these ligands
@@ -350,18 +350,7 @@ def get_MOF_descriptors(data, depth, path=False, xyz_path = False):
     linker_length_list = [len(linker_val) for linker_val in linker_list]
     if len(set(linker_length_list)) != 1:
         pbc_funs.write2file(linker_path,"/uneven.txt",str(name)+'\n')
-    if not min_max_linker_length < 2: # treating the 2 atom ligands differently! Need caution
-        if long_ligands:
-            tmpstr = "\nStructure has LONG ligand\n\n"
-            pbc_funs.write2file(log_path,"/%s.log"%name,tmpstr)
-            [[SBU_list.add(val) for val in  molcif.getBondedAtomsSmart(zero_first_shell)] for zero_first_shell in SBU_list.copy()] # First account for all of the carboxylic acid type linkers, add in the carbons.
-        truncated_linkers = all_atoms - SBU_list
-        SBU_list, SBU_subgraphlist = pbc_funs.get_closed_subgraph(SBU_list, truncated_linkers, adj_matrix)
-        if not long_ligands:
-            tmpstr = "\nStructure has SHORT ligand\n\n"
-            pbc_funs.write2file(log_path,"/%s.log"%name,tmpstr)
-            SBU_list, SBU_subgraphlist = pbc_funs.include_extra_shells(SBU_list, molcif, adj_matrix)
-    else:
+    if min_max_linker_length < 2:
         tmpstr = "Structure %s has extremely short ligands, check the outputs\n"%name
         pbc_funs.write2file(ligand_path,"/ambiguous.txt",tmpstr)
         tmpstr = "Structure has extremely short ligands\n"
@@ -372,6 +361,18 @@ def get_MOF_descriptors(data, depth, path=False, xyz_path = False):
         SBU_list, SBU_subgraphlist = pbc_funs.get_closed_subgraph(remove_list, truncated_linkers, adj_matrix)
         SBU_list, SBU_subgraphlist = pbc_funs.include_extra_shells(SBU_list, molcif, adj_matrix)
         SBU_list, SBU_subgraphlist = pbc_funs.include_extra_shells(SBU_list, molcif, adj_matrix)
+    else: # treating the 2 atom ligands differently! Need caution
+        if long_ligands:
+            tmpstr = "\nStructure has LONG ligand\n\n"
+            pbc_funs.write2file(log_path,"/%s.log"%name,tmpstr)
+            [[SBU_list.add(val) for val in  molcif.getBondedAtomsSmart(zero_first_shell)] for zero_first_shell in SBU_list.copy()] # First account for all of the carboxylic acid type linkers, add in the carbons.
+        truncated_linkers = all_atoms - SBU_list
+        SBU_list, SBU_subgraphlist = pbc_funs.get_closed_subgraph(SBU_list, truncated_linkers, adj_matrix)
+        if not long_ligands:
+            tmpstr = "\nStructure has SHORT ligand\n\n"
+            pbc_funs.write2file(log_path,"/%s.log"%name,tmpstr)
+            SBU_list, SBU_subgraphlist = pbc_funs.include_extra_shells(SBU_list, molcif, adj_matrix)
+
     make_MOF_SBU_RACs(SBU_list, SBU_subgraphlist, molcif, depth, name, cell_v,anc_atoms, sbu_path, connections_list, connections_subgraphlist)
     make_MOF_linker_RACs(linker_list, linker_subgraphlist, molcif, depth, name, cell_v, linker_path)
     return None, None

@@ -68,12 +68,12 @@ def decorate_molecule(mol: mol3D, dec_list, dec_idxs,
     if debug:
         print(f'dec_idxs is {dec_idxs}')
     licores = getlicores()
-    if not isinstance(mol, mol3D):
-        mol, emsg = lig_load(mol, licores)
-    else:
+    if isinstance(mol, mol3D):
         mol.bo_dict = False # To avoid errors.
         mol.convert2OBMol()
         mol.charge = mol.OBMol.GetTotalCharge()
+    else:
+        mol, emsg = lig_load(mol, licores)
     mol.convert2mol3D()  # Convert to mol3D.
 
     # Create the new molecule.

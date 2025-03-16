@@ -214,7 +214,7 @@ class atom3D:
         globs = globalvars()
         amass = globs.amass()
         if newType not in list(amass.keys()):
-            print('Error, unknown atom atom type transformation to ' + str(newType))
+            print(f'Error, unknown atom type transformation to {newType}')
             print('no changes made')
         else:
             self.mass = amass[newType][0]

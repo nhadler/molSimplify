@@ -121,7 +121,9 @@ def tcgen(args, strfiles, method):
             mdir = rdir+'/'+nametrunc+mmd
             if not os.path.exists(mdir):
                 os.makedirs(mdir)
-        if not args.jobdir:
+        if args.jobdir:
+            jobdirs.append(rdir)
+        else:
             jobdirs.append(mdir)
             if not args.reportonly:
                 shutil.copy2(xyzf, mdir)
@@ -132,8 +134,6 @@ def tcgen(args, strfiles, method):
                              mdir.replace('.xyz', '.report'))
             except FileNotFoundError:
                 pass
-        elif args.jobdir:
-            jobdirs.append(rdir)
     # if report only specified, end here
     if args.reportonly:
         return jobdirs
@@ -202,12 +202,16 @@ def tcgen(args, strfiles, method):
         if 'levelshiftvalb' not in jobparams:
             jobparams['levelshiftvalb'] = '0.25'
     # Now we're ready to start building the input file
-    if not args.jobdir:
+
+    if args.jobdir:
         for i, jobd in enumerate(jobdirs):
-            output_name = "terachem_input"
-            if args.jobmanager:
-                output_name = coordfs[i][:-4] + '.in'
-            with open(f'{jobd}/{output_name}', 'w') as output:
+            print(f'jobd is {jobd}')
+            output_filename = "terachem_input"
+            if args.name:
+                output_filename = args.name + '.in'
+            elif args.jobmanager:
+                output_filename = coordfs[i][:-4] + '.in'
+            with open(f'{jobd}/{output_filename}', 'w') as output:
                 output.write('# file created with %s\n' % globs.PROGRAM)
                 jobparams['coordinates'] = coordfs[i]
                 for keys in list(jobparams.keys()):
@@ -227,15 +231,12 @@ def tcgen(args, strfiles, method):
                     output.write('$constraint_set \n')
                     output.write(string_to_write + '\n')
                 output.write('end\n')
-    elif args.jobdir:
+    else:
         for i, jobd in enumerate(jobdirs):
-            print(f'jobd is {jobd}')
-            output_filename = "terachem_input"
-            if args.name:
-                output_filename = args.name + '.in'
-            elif args.jobmanager:
-                output_filename = coordfs[i][:-4] + '.in'
-            with open(f'{jobd}/{output_filename}', 'w') as output:
+            output_name = "terachem_input"
+            if args.jobmanager:
+                output_name = coordfs[i][:-4] + '.in'
+            with open(f'{jobd}/{output_name}', 'w') as output:
                 output.write('# file created with %s\n' % globs.PROGRAM)
                 jobparams['coordinates'] = coordfs[i]
                 for keys in list(jobparams.keys()):
@@ -843,7 +844,9 @@ def ogen(args, strfiles, method):
                     os.makedirs(mdir)
                 except FileExistsError:
                     pass
-        if not args.jobdir:
+        if args.jobdir:
+            jobdirs.append(rdir)
+        else:
             jobdirs.append(mdir)
             shutil.copy2(xyzf, mdir)
             shutil.copy2(xyzf.replace('.xyz', '.molinp'),
@@ -853,8 +856,7 @@ def ogen(args, strfiles, method):
                              mdir.replace('.xyz', '.report'))
             except FileNotFoundError:
                 pass
-        elif args.jobdir:
-            jobdirs.append(rdir)
+
     # parse extra arguments
     # Method parsing, does not check if a garbage method is used here:
     unrestricted = False
@@ -938,8 +940,10 @@ def ogen(args, strfiles, method):
         if 'ErrOff' not in jobparams:
             jobparams['ErrOff'] = 0.00001
     # Now we're ready to start building the input file
-    if not args.jobdir:
+
+    if args.jobdir:
         for i, jobd in enumerate(jobdirs):
+            print(f'jobd is {jobd}')
             with open(jobd+'/orca.in', 'w') as output:
                 output.write('# file created with %s\n' % globs.PROGRAM)
                 if 'CC' in jobparams['method'] and jobparams['run'] == 'Opt':
@@ -951,9 +955,8 @@ def ogen(args, strfiles, method):
                     ogenwrt(output, jobparams, '')
                 else:
                     ogenwrt(output, jobparams, coordfs[i])
-    elif args.jobdir:
+    else:
         for i, jobd in enumerate(jobdirs):
-            print(f'jobd is {jobd}')
             with open(jobd+'/orca.in', 'w') as output:
                 output.write('# file created with %s\n' % globs.PROGRAM)
                 if 'CC' in jobparams['method'] and jobparams['run'] == 'Opt':
@@ -1094,7 +1097,9 @@ def molcgen(args, strfiles, method):
                     os.makedirs(mdir)
                 except FileExistsError:
                     pass
-        if not args.jobdir:
+        if args.jobdir:
+            jobdirs.append(rdir)
+        else:
             jobdirs.append(mdir)
             shutil.copy2(xyzf, mdir)
             shutil.copy2(xyzf.replace('.xyz', '.molinp'),
@@ -1104,8 +1109,6 @@ def molcgen(args, strfiles, method):
                              mdir.replace('.xyz', '.report'))
             except FileNotFoundError:
                 pass
-        elif args.jobdir:
-            jobdirs.append(rdir)
     # parse extra arguments
     # Method parsing, does not check if a garbage method is used here:
     if method:
@@ -1173,17 +1176,18 @@ def molcgen(args, strfiles, method):
             break
 
     # Now we're ready to start building the input file
-    if not args.jobdir:
-        for i, jobd in enumerate(jobdirs):
-            with open(jobd+'/molcas.input', 'w') as output:
-                output.write('# file created with %s\n' % globs.PROGRAM)
-                molcwrt(output, jobparams, coordfs[i], i)
-    elif args.jobdir:
+    if args.jobdir:
         for i, jobd in enumerate(jobdirs):
             print(f'jobd is {jobd}')
             with open(jobd+'/molcas.input', 'w') as output:
                 output.write('# file created with %s\n' % globs.PROGRAM)
                 molcwrt(output, jobparams, coordfs[i], i)
+    else:
+        for i, jobd in enumerate(jobdirs):
+            with open(jobd+'/molcas.input', 'w') as output:
+                output.write('# file created with %s\n' % globs.PROGRAM)
+                molcwrt(output, jobparams, coordfs[i], i)
+
     return jobdirs
 
 

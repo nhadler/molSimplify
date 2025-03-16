@@ -100,7 +100,9 @@ def obtain_truncation_metal(mol, hops):
 
 
 def create_graph(mol):
-    if not len(mol.graph):
+    if len(mol.graph):
+        A = mol.graph
+    else:
         # create connectivity matrix from mol3D information
         index_set = range(0, mol.natoms)
         A = np.zeros((mol.natoms, mol.natoms))
@@ -109,8 +111,6 @@ def create_graph(mol):
             for j in index_set:
                 if j in this_bonded_atoms:
                     A[i, j] = 1
-    else:
-        A = mol.graph
     return A
 
 

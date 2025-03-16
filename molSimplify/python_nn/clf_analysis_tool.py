@@ -33,12 +33,12 @@ def dist_neighbor(fmat1, fmat2, labels, l=5, dist_ref=1):  # noqa: E741
     dist_avrg, dist_list, labels_list = [], [], []
     for ele in dist_mat:
         dist_arr = np.round(np.array(ele), 4)
-        if not dist_ref == 1:
+        if dist_ref == 1:
+            _count = l
+        else:
             _count = (dist_arr < 10).sum()
             _count = l if _count < l else _count
             _count = _count if _count < 300 else 300
-        else:
-            _count = l
         ind = dist_arr.argsort()[:_count]
         _dist = dist_arr[ind]
         dist_list.append(_dist)
@@ -98,13 +98,13 @@ def get_entropy(dists, neighbor_targets) -> np.ndarray:
 
 def get_layer_outputs(model, layer_index, input,
                       training_flag=False) -> np.ndarray:
-    if not version.parse(tf.__version__) >= version.parse('2.0.0'):
+    if version.parse(tf.__version__) >= version.parse('2.0.0'):
+        partial_model = Model(model.inputs, model.layers[layer_index].output)  # type: Callable
+        nn_outputs = partial_model([input], training=training_flag).numpy()  # runs the model in training mode
+    else:
         get_outputs = K.function([model.layers[0].input, K.learning_phase()],
                                  [model.layers[layer_index].output])
         nn_outputs = get_outputs([input, training_flag])[0]
-    else:
-        partial_model = Model(model.inputs, model.layers[layer_index].output)  # type: Callable
-        nn_outputs = partial_model([input], training=training_flag).numpy()  # runs the model in training mode
     return nn_outputs
 
 

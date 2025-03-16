@@ -522,14 +522,15 @@ def dict_check_processing(dict_info, dict_check, std_not_use,
             (dict_info['num_coord_metal'] == -1 or dict_info['num_coord_metal'] > num_coord):
         dict_info['num_coord_metal'] = num_coord
         flag_list.remove('num_coord_metal')
-    if not len(flag_list):
-        flag_oct = 1  # good structure
-        flag_list = 'None'
-    else:
+    if len(flag_list):
         flag_oct = 0
         flag_list = ', '.join(flag_list)
         print('------bad structure!-----')
         print(('flag_list:', flag_list))
+    else:
+        flag_oct = 1  # good structure
+        flag_list = 'None'
+
     return flag_oct, flag_list, dict_info
 
 
@@ -552,14 +553,15 @@ def Oct_inspection(file_in, file_init_geo=None, catoms_arr=None, dict_check=dict
                                                   catoms_arr=catoms_arr,
                                                   debug=debug,
                                                   BondedOct=BondedOct)
-    if not rmsd_max == 'lig_mismatch':
-        oct_angle_devi, oct_dist_del, max_del_sig_angle, catoms_arr = oct_comp(file_in, angle_ref, catoms_arr,
-                                                                               debug=debug)
-    else:
+    if rmsd_max == 'lig_mismatch':
         num_coord_metal = -1
         rmsd_max, atom_dist_max = -1, -1
         print('!!!!!Should always match. WRONG!!!!!')
         quit()
+    else:
+        oct_angle_devi, oct_dist_del, max_del_sig_angle, catoms_arr = oct_comp(file_in, angle_ref, catoms_arr,
+                                                                               debug=debug)
+
     dict_angle_linear, dict_orientation = check_angle_linear(
         file_in, catoms_arr)
     if debug:
@@ -638,10 +640,10 @@ def IsOct(file_in, file_init_geo=None, dict_check=dict_oct_check_st,
     flag_oct, flag_list, dict_oct_info = dict_check_processing(dict_oct_info, dict_check,
                                                                std_not_use, num_coord=6,
                                                                debug=debug)
-    if not flag_catoms:
-        return flag_oct, flag_list, dict_oct_info
-    else:
+    if flag_catoms:
         return flag_oct, flag_list, dict_oct_info, catoms_arr
+    else:
+        return flag_oct, flag_list, dict_oct_info
 
 
 def IsStructure(file_in, file_init_geo=None, dict_check=dict_oneempty_check_st,
@@ -681,10 +683,10 @@ def IsStructure(file_in, file_init_geo=None, dict_check=dict_oneempty_check_st,
     flag_struct, flag_list, dict_struct_info = dict_check_processing(dict_struct_info, dict_check,
                                                                      std_not_use, num_coord=num_coord,
                                                                      debug=debug)
-    if not flag_catoms:
-        return flag_struct, flag_list, dict_struct_info
-    else:
+    if flag_catoms:
         return flag_struct, flag_list, dict_struct_info, catoms_arr
+    else:
+        return flag_struct, flag_list, dict_struct_info
 
 
 # input: _path: path for opt geo.

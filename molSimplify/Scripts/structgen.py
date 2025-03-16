@@ -324,17 +324,7 @@ def init_template(args: Namespace, cpoints_required: int) -> Tuple[mol3D, mol3D,
         core3D.copymol3D(core)
         m3D.copymol3D(core3D)
         for i in range(cpoints_required):
-            if not args.replig:
-                # not replacing ligands: add Xs to ccatoms
-                # NOTE: ccatoms should be a list with # elements = cpoints_required
-                cpoint = getconnection(m3D, ccatoms[i], 2)
-                # store core reference atom
-                conatom3D = atom3D(core3D.getAtom(
-                    ccatoms[i]).sym, core3D.getAtom(ccatoms[i]).coords())
-                corerefatoms.addAtom(conatom3D)
-                # add connecting points to template
-                m3D.addAtom(atom3D(Sym='X', xyz=cpoint))
-            else:
+            if args.replig:
                 try:
                     # replacing ligands
                     cpoint = core3D.getAtom(ccatoms[i]).coords()
@@ -388,6 +378,17 @@ def init_template(args: Namespace, cpoints_required: int) -> Tuple[mol3D, mol3D,
 
                 except IndexError:
                     pass
+            else:
+                # not replacing ligands: add Xs to ccatoms
+                # NOTE: ccatoms should be a list with # elements = cpoints_required
+                cpoint = getconnection(m3D, ccatoms[i], 2)
+                # store core reference atom
+                conatom3D = atom3D(core3D.getAtom(
+                    ccatoms[i]).sym, core3D.getAtom(ccatoms[i]).coords())
+                corerefatoms.addAtom(conatom3D)
+                # add connecting points to template
+                m3D.addAtom(atom3D(Sym='X', xyz=cpoint))
+            
             nums = m3D.findAtomsbySymbol('X')
             backbatoms = getbackbcombsall(nums)
     # set charge from oxidation state if desired

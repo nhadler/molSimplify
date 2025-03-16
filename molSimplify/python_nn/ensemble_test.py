@@ -263,13 +263,13 @@ def latent_space_uq(predictor, layer_index=-2, descriptors=False, descriptor_nam
         nn_latent_dist_test, nn_dists, nn_labels = dist_neighbor(test_latent_distance, training_latent_distance,
                                                                  labels_train,
                                                                  l=5, dist_ref=nn_dist_avrg_train)
-        if not entropy:
-            dist_list.append(nn_latent_dist_test)
-        else:
+        if entropy:
             entropy = []
             for idx, _dists in enumerate(nn_dists):
                 entropy.append(get_entropy(_dists, nn_labels[idx]))
             dist_list.append(np.array(entropy))
+        else:
+            dist_list.append(nn_latent_dist_test)
         results = results.squeeze(axis=1)
         err = np.linalg.norm(labels - results) ** 2
         results_list.append(results)

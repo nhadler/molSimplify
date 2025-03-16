@@ -485,13 +485,13 @@ def ANN_supervisor(predictor: str,
     if "clf" not in predictor:
         if debug:
             print(f'LOADED MODEL HAS {len(loaded_model.layers)} layers, so latent space measure will be from first {len(loaded_model.layers) - 1} layers')
-        if not version.parse(tf.__version__) >= version.parse('2.0.0'):
+        if version.parse(tf.__version__) >= version.parse('2.0.0'):
+            latent_space_vector = get_layer_outputs(loaded_model, len(loaded_model.layers) - 2,
+                                                    excitation, training_flag=False)
+        else:
             get_outputs = K.function([loaded_model.layers[0].input, K.learning_phase()],
                                      [loaded_model.layers[len(loaded_model.layers) - 2].output])
             latent_space_vector = get_outputs([excitation, 0])  # Using test phase.
-        else:
-            latent_space_vector = get_layer_outputs(loaded_model, len(loaded_model.layers) - 2,
-                                                    excitation, training_flag=False)
         if debug:
             print('calling ANN model...')
     else:
@@ -569,14 +569,14 @@ def find_ANN_10_NN_normalized_latent_dist(predictor, latent_space_vector, debug=
         norm_train_mat.append(scaled_excitation)
     norm_train_mat = np.squeeze(np.array(norm_train_mat))
     loaded_model = load_keras_ann(predictor)
-    if not version.parse(tf.__version__) >= version.parse('2.0.0'):
-        get_outputs = K.function([loaded_model.layers[0].input, K.learning_phase()],
-                                 [loaded_model.layers[len(loaded_model.layers) - 2].output])
-        latent_space_train = np.squeeze(np.array(get_outputs([norm_train_mat, 0])))
-    else:
+    if version.parse(tf.__version__) >= version.parse('2.0.0'):
         latent_space_train = get_layer_outputs(loaded_model, len(loaded_model.layers) - 2,
                                                norm_train_mat, training_flag=False)
         latent_space_train = np.squeeze(np.array(latent_space_train))
+    else:
+        get_outputs = K.function([loaded_model.layers[0].input, K.learning_phase()],
+                                 [loaded_model.layers[len(loaded_model.layers) - 2].output])
+        latent_space_train = np.squeeze(np.array(get_outputs([norm_train_mat, 0])))
     dist_array = np.linalg.norm(np.subtract(np.squeeze(latent_space_train), np.squeeze(latent_space_vector)), axis=1)
     from scipy.spatial import distance_matrix
     train_dist_array = distance_matrix(latent_space_train, latent_space_train)
@@ -614,11 +614,11 @@ def find_ANN_latent_dist(predictor, latent_space_vector, debug=False):
     for i, rows in enumerate(train_mat):
         scaled_row = np.squeeze(
             data_normalize(rows, train_mean_x.T, train_var_x.T, debug=debug))  # Normalizing the row before finding the distance
-        if not version.parse(tf.__version__) >= version.parse('2.0.0'):
-            latent_train_row = get_outputs([np.array([scaled_row]), 0])
-        else:
+        if version.parse(tf.__version__) >= version.parse('2.0.0'):
             latent_train_row = get_layer_outputs(loaded_model, len(loaded_model.layers) - 2,
                                                  [np.array([scaled_row])], training_flag=False)
+        else:
+            latent_train_row = get_outputs([np.array([scaled_row]), 0])
         this_dist = np.linalg.norm(np.subtract(np.squeeze(latent_train_row), np.squeeze(latent_space_vector)))
         if this_dist < min_dist:
             min_dist = this_dist
@@ -661,13 +661,8 @@ def find_clf_lse(predictor: str,
     fmat_train = np.array(load_training_data(predictor), dtype='float64')
     fmat_train = data_normalize(fmat_train, train_mean_x, train_var_x,  debug=debug)
     fmat_train = np.array(fmat_train)
-    if not ensemble:
-        train_latent = get_layer_outputs(loaded_model, -4, fmat_train, training_flag=False)
-        test_latent = get_layer_outputs(loaded_model, -4, excitation, training_flag=False)
-        nn_latent_dist_test, nn_dists, nn_labels = dist_neighbor(test_latent, train_latent, labels_train,
-                                                                 l=5, dist_ref=avrg_latent_dist)
-        lse = get_entropy(nn_dists, nn_labels)
-    else:
+
+    if ensemble:
         print("Using ensemble averaged LSE.")
         base_path = f'{base_path}ensemble_{modelname}/'
         model_list = sorted(glob.glob(base_path + '/*.h5'))
@@ -696,6 +691,12 @@ def find_clf_lse(predictor: str,
             entropies = get_entropy(nn_dists, nn_labels)
             entropies_list.append(entropies)
         lse = np.mean(np.array(entropies_list), axis=0)
+    else:
+        train_latent = get_layer_outputs(loaded_model, -4, fmat_train, training_flag=False)
+        test_latent = get_layer_outputs(loaded_model, -4, excitation, training_flag=False)
+        nn_latent_dist_test, nn_dists, nn_labels = dist_neighbor(test_latent, train_latent, labels_train,
+                                                                 l=5, dist_ref=avrg_latent_dist)
+        lse = get_entropy(nn_dists, nn_labels)
     return lse
 
 

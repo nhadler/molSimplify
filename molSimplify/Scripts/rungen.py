@@ -489,7 +489,9 @@ def rungen(rundir, args: Namespace, chspfname=None, write_files: bool = True):
             # check for top directory
         if rootcheck and os.path.isdir(rootcheck) and not args.checkdirt and not skip:
             args.checkdirt = True
-            if not args.rprompt:
+            if args.rprompt:
+                flagdir = 'replace'
+            else:
                 flagdir = get_input('\nDirectory ' + rootcheck +
                                     ' already exists. Keep both (k), replace (r) or skip (s) k/r/s: ')
                 if 'k' in flagdir.lower():
@@ -498,9 +500,7 @@ def rungen(rundir, args: Namespace, chspfname=None, write_files: bool = True):
                     flagdir = 'skip'
                 else:
                     flagdir = 'replace'
-            else:
-                flagdir = 'replace'
-                # replace existing directory
+            # replace existing directory
             if (flagdir == 'replace'):
                 shutil.rmtree(rootcheck)
                 os.mkdir(rootcheck)
@@ -526,7 +526,9 @@ def rungen(rundir, args: Namespace, chspfname=None, write_files: bool = True):
             # check for actual directory
         if os.path.isdir(rootdir) and not args.checkdirb and not skip and not args.jobdir:
             args.checkdirb = True
-            if not args.rprompt:
+            if args.rprompt:
+                flagdir = 'replace'
+            else:
                 flagdir = get_input(
                     '\nDirectory '+rootdir + ' already exists. Keep both (k), replace (r) or skip (s) k/r/s: ')
                 if 'k' in flagdir.lower():
@@ -535,8 +537,6 @@ def rungen(rundir, args: Namespace, chspfname=None, write_files: bool = True):
                     flagdir = 'skip'
                 else:
                     flagdir = 'replace'
-            else:
-                flagdir = 'replace'
             # replace existing directory
             if (flagdir == 'replace'):
                 shutil.rmtree(rootdir)

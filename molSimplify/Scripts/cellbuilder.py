@@ -101,10 +101,10 @@ def cut_cell_to_index(unit_cell, cell_vector, miller_index):
     non_zero_indices = list()
     zero_indices = list()
     for i in [0, 1, 2]:
-        if not (miller_index[i] == 0):
-            non_zero_indices.append(i)
-        else:
+        if miller_index[i] == 0:
             zero_indices.append(i)
+        else:
+            non_zero_indices.append(i)
 
     print(('nz ind', non_zero_indices))
     plane_normal = numpy.zeros(3)
@@ -1214,10 +1214,10 @@ def slab_module_supervisor(args, rootdir):
         non_zero_indices = list()
         zero_indices = list()
         for i in [0, 1, 2]:
-            if not (miller_index[i] == 0):
-                non_zero_indices.append(i)
-            else:
+            if miller_index[i] == 0:
                 zero_indices.append(i)
+            else:
+                non_zero_indices.append(i)
 
     # Main calls
     if slab_gen:
