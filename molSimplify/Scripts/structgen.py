@@ -730,7 +730,7 @@ def openbabel_ffopt(ff: str, mol: mol3D, connected: List[int], constopt: int,
             if constopt == 1 or frozenangles:
                 constr.AddAtomConstraint(catom+1)  # indexing babel
                 if debug:
-                    print(f'using connnected opt to freeze atom number: {catom}')
+                    print(f'using connected opt to freeze atom number: {catom}')
             else:
                 constr.AddDistanceConstraint(
                     midx[0]+1, catom+1, mlbonds[ii])  # indexing babel
@@ -2718,7 +2718,7 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
                                         debug=args.debug)
                     if args.debug:
                         print(
-                            (f'saving a copy of the complex named complex_{i}_{j}_ff.xyz'))
+                            f'saving a copy of the complex named complex_{i}_{j}_ff.xyz')
                         core3D.writexyz(f'complex_{i}_{j}_ff.xyz')
                 if args.debug:
                     print(f'done with pair of inds {i} and {j}')
