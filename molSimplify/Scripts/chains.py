@@ -153,7 +153,7 @@ def remove_closest_h(mol, other_mol):
     return new_mol
 
 
-def grow_linear_step(chain, new_unit, dim, interv, conatom, freezhead):
+def grow_linear_step(chain, new_unit, dim, interv, conatom, freezehead):
     combined_mol = mol3D()
     combined_mol.copymol3D(chain)
     combined_mol.convert2OBMol()
@@ -164,7 +164,7 @@ def grow_linear_step(chain, new_unit, dim, interv, conatom, freezhead):
 
     chain_inds = list(range(0, chain.natoms))
     print(('chain_inds', chain_inds))
-    print(f'freezehead is {freezhead}')
+    print(f'freezehead is {freezehead}')
     basic_lengths = find_extents(chain)
     print(f'extents are {basic_lengths}')
     basic_dist = basic_lengths[dim]
@@ -182,7 +182,7 @@ def grow_linear_step(chain, new_unit, dim, interv, conatom, freezhead):
 
     # ffopt(ff,mol,connected,constopt,frozenats,frozenangles,mlbonds,nsteps,debug=False):
     combined_mol, en = ffopt('MMFF94', mol=combined_mol, connected=[], constopt=0,
-                             frozenats=list(range(0, freezhead+1)), frozenangles=[],
+                             frozenats=list(range(0, freezehead+1)), frozenangles=[],
                              mlbonds=[], nsteps=200, debug=False)
     combined_mol.convert2mol3D()
     combined_mol.writexyz('pre.xyz')
@@ -295,7 +295,7 @@ def chain_builder_supervisor(args, rundir):
 
         locked_atoms = my_dim.natoms - 1
         my_dim = grow_linear_step(
-            my_dim, repu, 0, interv, conatom, freezhead=locked_atoms)
+            my_dim, repu, 0, interv, conatom, freezehead=locked_atoms)
         interv = [interv[i] + interv0[i] for i in [0, 1, 2]]
         print(f'con is {conatom}')
         print(f'old nat is {old_nat}')
@@ -306,7 +306,7 @@ def chain_builder_supervisor(args, rundir):
     print('build start')
     locked_atoms = my_dim.natoms - 1
     my_dim = grow_linear_step(my_dim, end, 0, interv,
-                              conatom-1, freezhead=locked_atoms)
+                              conatom-1, freezehead=locked_atoms)
     my_dim.writexyz('poly.xyz')
     my_dim, en = ffopt('MMFF94', my_dim, [], 0, [], mlbonds=[],
                        frozenangles=[], nsteps=200, debug=False)

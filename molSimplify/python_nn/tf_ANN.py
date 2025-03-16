@@ -170,7 +170,7 @@ def data_normalize(data, train_mean, train_var, debug=False) -> np.ndarray:
         print('shape of things in normalize:')
         print(f'data.shape {data.shape}')
         print(f'train_mean.shape {train_mean.shape}')
-        print(f'train_mean.shape {train_var.shape}')
+        print(f'train_var.shape {train_var.shape}')
     for idx, var in enumerate(np.squeeze(train_var)):
         if var < 1e-16:
             delete_ind.append(idx)

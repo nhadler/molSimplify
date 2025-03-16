@@ -55,7 +55,7 @@ def setupdb(dbselect):
     else:
         dbf1 = dbdir + dbsdf[0]
     if len(dbfs) == 0:
-        print(f'{dbselect} fastsearch database file missing from {dbdir}. Please make sure file {dbselect}.fs is there, it speeds up search significantly..')
+        print(f'{dbselect} fastsearch database file missing from {dbdir}. Please make sure file {dbselect}.fs is there, it speeds up search significantly.')
         dbf2 = False
     else:
         dbf2 = dbdir + dbfs[0]
@@ -437,14 +437,14 @@ def dbsearch(rundir, args, globs):
                     smistr = f.read()
             else:
                 print(f'File {args.dbsmarts} does not exist. Check your input.')
-                print('Substructure search terminating..')
+                print('Substructure search terminating.')
                 return 1
         elif ('.mol' in args.dbsmarts or '.xyz' in args.dbsmarts):
             if glob.glob(args.dbsmarts):
                 smistr = pymol.write("smi")
             else:
                 print(f'File {args.dbsmarts} does not exist. Check your input.')
-                print('Substructure search terminating..')
+                print('Substructure search terminating.')
                 return True
         else:
             smistr = args.dbsmarts
@@ -511,7 +511,7 @@ def dbsearch(rundir, args, globs):
     if args.debug:
         print(f'after similarity search, outf is {outputf}')
     if flag:
-        print("No matches found in search..")
+        print("No matches found in search.")
         return True
     # strip metals and clean-up, remove duplicates etc
     if args.dbsmarts or args.dbhuman:

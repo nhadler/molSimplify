@@ -78,7 +78,7 @@ def check_ligands(ligs, batlist, dents, tcats):
         for i in range(0, n_ligs):
             this_lig = ligs[i]
             this_dent = dents[i]
-            # mulitple points
+            # multiple points
             if not (this_lig in unique_ligs):
                 unique_ligs.append(this_lig)
                 ucats.append(tcats[i])
@@ -92,7 +92,7 @@ def check_ligands(ligs, batlist, dents, tcats):
             ax_tcat = eq_tcat
         elif len(unique_ligs) == 2:
             for i, uligs in enumerate(unique_ligs):
-                if not (uligs in equatorial_ligs):  # only occured once
+                if not (uligs in equatorial_ligs):  # only occurred once
                     axial_ligs.append(uligs)
                     ax_dent = 2
                     ax_tcat = ucats[i]
@@ -103,8 +103,7 @@ def check_ligands(ligs, batlist, dents, tcats):
             this_bat = batlist[i]
             this_lig = ligs[i]
             this_dent = dents[i]
-#            print(this_bat,this_lig,this_dent)
-            # mulitple points
+            # multiple points
             if len(this_bat) == 1:
                 if (5 in this_bat) or (6 in this_bat):
                     if not (this_lig in axial_ligs):
@@ -142,7 +141,6 @@ def check_metal(metal: str, oxidation_state: str) -> Tuple[bool, str]:
         oxidation_state = romans[oxidation_state]
     outcome = False
     if metal in list(supported_metal_dict.keys()):
-        #        print('metal in',supported_metal_dict[metal])
         if int(oxidation_state) in supported_metal_dict[metal]:
             outcome = True
     return outcome, oxidation_state
@@ -402,8 +400,7 @@ def ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
     ANN_attributes.update({'ANN_closest_train': best_row})
     print('distance to training data is ' +
            "{0:.2f}".format(train_dist) + ' ANN trust: ' + "{0:.2f}".format(max(0.01, 1.0-train_dist)))
-    print(' with closest training row ' +
-           best_row[:-2] + ' at  ' + str(best_row[-2:]) + '% HFX')
+    print(f' with closest training row {best_row[:-2]} at {best_row[-2:]}% HFX')
     ANN_trust = 'not set'
     if float(train_dist) < 0.25:
         print('ANN results should be trustworthy for this complex ')

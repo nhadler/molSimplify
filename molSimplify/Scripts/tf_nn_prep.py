@@ -114,10 +114,10 @@ def tf_check_ligands(ligs: List[str], batslist: List[List[int]],
 
     n_ligs = len(ligs)
     if debug:
-        print('nligs ' + str(n_ligs))
-        print('ligs ' + str(ligs))
-        print('occs in function  ' + str(occs))
-        print('tcats in function  ' + str(tcats))
+        print(f'nligs {n_ligs}')
+        print(f'ligs {ligs}')
+        print(f'occs in function {occs}')
+        print(f'tcats in function {tcats}')
 
     axial_ind_list = []
     equatorial_ind_list = []
@@ -141,7 +141,7 @@ def tf_check_ligands(ligs: List[str], batslist: List[List[int]],
             valid = False
         for i in range(0, n_ligs):
             this_lig = ligs[i]
-            # mulitple points
+            # multiple points
             if not (this_lig in unique_ligs):
                 unique_ligs.append(this_lig)
                 ucats.append(tcats[i])
@@ -182,23 +182,22 @@ def tf_check_ligands(ligs: List[str], batslist: List[List[int]],
             this_occ = occs[i]
             if debug:
                 print('\n')
-                print('iteration  ' + str(i))
-                print('this_lig  ' + str(this_lig))
-                print('this_dent  ' + str(this_dent))
-                print('this_occ  ' + str(this_occ))
-                print('this backbone atom  ' +
-                      str(this_bat) + ' from ' + str(batslist))
-            # mulitple points
+                print(f'iteration {i}')
+                print(f'this_lig {this_lig}')
+                print(f'this_dent {this_dent}')
+                print(f'this_occ {this_occ}')
+                print(f'this backbone atom {this_bat} from {batslist}')
+            # multiple points
             if len(this_bat) > 1:
                 if debug:
-                    print('adding ' + str(this_lig) + ' to equatorial')
+                    print(f'adding {this_lig} to equatorial')
                 equatorial_ligs.append(this_lig)
                 eq_dent = 4
                 eq_tcat = tcats[i]
                 eq_occs.append(1)
                 equatorial_ind_list.append(i)
             if debug:
-                print('adding ' + str(this_lig) + ' to axial')
+                print(f'adding {this_lig} to axial')
             axial_ligs.append(this_lig)
             ax_dent = 1
             ax_tcat = tcats[i]
@@ -213,17 +212,16 @@ def tf_check_ligands(ligs: List[str], batslist: List[List[int]],
             this_occ = occs[i]
             if debug:
                 print('\n')
-                print('iteration  ' + str(i))
-                print('this_lig  ' + str(this_lig))
-                print('this_dent  ' + str(this_dent))
-                print('this_occ  ' + str(this_occ))
-                print('this backbone atom  ' +
-                       str(this_bat) + ' from ' + str(batslist))
-            # mulitple points
+                print(f'iteration {i}')
+                print(f'this_lig {this_lig}')
+                print(f'this_dent {this_dent}')
+                print(f'this_occ {this_occ}')
+                print(f'this backbone atom {this_bat} from {batslist}')
+            # multiple points
             if len(this_bat) == 1:
                 if (5 in this_bat) or (6 in this_bat):
                     if debug:
-                        print('adding ' + str(this_lig) + ' to axial')
+                        print(f'adding {this_lig} to axial')
                     axial_ligs.append(this_lig)
                     ax_dent = this_dent
                     if this_lig not in ['x', 'oxo', 'hydroxyl']:
@@ -232,7 +230,7 @@ def tf_check_ligands(ligs: List[str], batslist: List[List[int]],
                     axial_ind_list.append(i)
                 else:
                     if debug:
-                        print('adding ' + str(this_lig) + ' to equatorial')
+                        print(f'adding {this_lig} to equatorial')
                     equatorial_ligs.append(this_lig)
                     eq_dent = this_dent
                     eq_tcat = tcats[i]
@@ -249,8 +247,8 @@ def tf_check_ligands(ligs: List[str], batslist: List[List[int]],
               axial_ligs, ax_dent, ax_tcat, ax_occs)
         valid = False
     if debug:
-        print('eq occupations  ' + str(eq_occs))
-        print('eq dent   ' + str(eq_dent))
+        print(f'eq occupations {eq_occs}')
+        print(f'eq dent {eq_dent}')
     if not (4.0 / (float(eq_dent) * sum(eq_occs)) == 1):
         print('ANN setup error: equatorial ligs error: ',
               equatorial_ligs, eq_dent, eq_tcat)
@@ -273,7 +271,6 @@ def check_metal(metal: str, oxidation_state: str) -> Tuple[bool, str]:
         oxidation_state = romans[oxidation_state]
     outcome = False
     if metal in list(supported_metal_dict):
-        #        print('metal in',supported_metal_dict[metal])
         if int(oxidation_state) in supported_metal_dict[metal]:
             outcome = True
     return outcome, oxidation_state
@@ -310,8 +307,8 @@ def tf_ANN_preproc(metal: str, oxstate, spin, ligs: List[str], occs: List[int], 
     for i, lig in enumerate(ligs):
         this_occ = occs[i]
         if debug:
-            print('working on lig: ' + str(lig))
-            print('occ is  ' + str(this_occ))
+            print(f'working on lig: {lig}')
+            print(f'occ is {this_occ}')
         for j in range(0, int(this_occ)):
             count += 1
             newligs.append(lig)
@@ -355,7 +352,7 @@ def tf_ANN_preproc(metal: str, oxstate, spin, ligs: List[str], occs: List[int], 
         # generate key in descriptor space
         ox = int(oxidation_state)
         if debug:
-            print('metal is ' + str(this_metal))
+            print(f'metal is {this_metal}')
             print('metal validity', valid)
     if not valid and not catalysis:
         emsg.append("\n The only metals that are supported are Fe, Mn, Cr, Co, and Ni")
@@ -381,7 +378,7 @@ def tf_ANN_preproc(metal: str, oxstate, spin, ligs: List[str], occs: List[int], 
         ligs, batslist, dents, tcats, occs, debug)
 
     if debug:
-        print("ligand validity is  " + str(valid))
+        print(f"ligand validity is {valid}")
         print('Occs', occs)
         print('Ligands', ligs)
         print('Dents', dents)
@@ -415,7 +412,7 @@ def tf_ANN_preproc(metal: str, oxstate, spin, ligs: List[str], occs: List[int], 
         if ax_tcat:
             ax_lig3D.cat = ax_tcat
             if debug:
-                print('custom ax connect atom given (0-ind) ' + str(ax_tcat))
+                print(f'custom ax connect atom given (0-ind) {ax_tcat}')
         if pentadentate and len(ax_lig3D.cat) > 1:
             ax_lig3D.cat = [ax_lig3D.cat[-1]]
         this_lig = ligand(mol3D(), [], ax_dent)
@@ -424,21 +421,20 @@ def tf_ANN_preproc(metal: str, oxstate, spin, ligs: List[str], occs: List[int], 
         # check decoration index
         if newdecs:
             if newdecs[axial_ind_list[ii]]:
-                print('decorating ' + str(axl) + ' with ' + str(newdecs[axial_ind_list[ii]]) + ' at sites ' + str(
-                    newdec_inds[axial_ind_list[ii]]))
+                print(f'decorating {axl} with {newdecs[axial_ind_list[ii]]} at sites {newdec_inds[axial_ind_list[ii]]}')
                 ax_lig3D = decorate_molecule(
                     axl, newdecs[axial_ind_list[ii]], newdec_inds[axial_ind_list[ii]], debug)
         ax_lig3D.convert2mol3D()  # mol3D representation of ligand
         for jj in range(0, ax_occs[ii]):
             ax_ligands_list.append(this_lig)
     if debug:
-        print(f'Obtained the net ligand charge, which is... {net_lig_charge}')
+        print(f'Obtained the net ligand charge, which is {net_lig_charge}')
         print('ax_ligands_list:')
         print(ax_ligands_list)
         print([h.mol.cat for h in ax_ligands_list])
 
     if debug:
-        print('loading equatorial ligands ' + str(equatorial_ligs))
+        print(f'loading equatorial ligands {equatorial_ligs}')
     for ii, eql in enumerate(equatorial_ligs):
         eq_lig3D, r_emsg = lig_load(eql, licores)  # load ligand
         net_lig_charge += eq_lig3D.charge
@@ -447,19 +443,18 @@ def tf_ANN_preproc(metal: str, oxstate, spin, ligs: List[str], occs: List[int], 
         if eq_tcat:
             eq_lig3D.cat = eq_tcat
             if debug:
-                print('custom eq connect atom given (0-ind) ' + str(eq_tcat))
+                print(f'custom eq connect atom given (0-ind) {eq_tcat}')
         if pentadentate and len(eq_lig3D.cat) > 1:
             eq_lig3D.cat = eq_lig3D.cat[0:4]
 
         if newdecs:
             if debug:
-                print('newdecs' + str(newdecs))
-                print('equatorial_ind_list is ' + str(equatorial_ind_list))
+                print(f'newdecs {newdecs}')
+                print(f'equatorial_ind_list is {equatorial_ind_list}')
             c = 0
             if newdecs[equatorial_ind_list[ii]]:
                 if debug:
-                    print('decorating ' + str(eql) + ' with ' + str(
-                        newdecs[equatorial_ind_list[ii]]) + ' at sites ' + str(newdec_inds[equatorial_ind_list[ii]]))
+                    print(f'decorating {eql} with {newdecs[equatorial_ind_list[ii]]} at sites {newdec_inds[equatorial_ind_list[ii]]}')
                 eq_lig3D = decorate_molecule(eql, newdecs[equatorial_ind_list[ii]],
                                            newdec_inds[equatorial_ind_list[ii]], debug)
                 c += 1
@@ -474,11 +469,11 @@ def tf_ANN_preproc(metal: str, oxstate, spin, ligs: List[str], occs: List[int], 
         print('eq_ligands_list:')
         print(eq_ligands_list)
         print(
-            ('writing copies of ligands as used  in ANN to currrent dir : ' + os.getcwd()))
+            ('writing copies of ligands as used in ANN to currrent dir : ' + os.getcwd()))
         for kk, l in enumerate(ax_ligands_list):
-            l.mol.writexyz('axlig-' + str(kk) + '.xyz')
+            l.mol.writexyz(f'axlig-{kk}.xyz')
         for kk, l in enumerate(eq_ligands_list):
-            l.mol.writexyz('eqlig-' + str(kk) + '.xyz')
+            l.mol.writexyz(f'eqlig-{kk}.xyz')
     # make description of complex
     custom_ligand_dict = {"eq_ligand_list": eq_ligands_list,
                           "ax_ligand_list": ax_ligands_list,
@@ -496,7 +491,7 @@ def tf_ANN_preproc(metal: str, oxstate, spin, ligs: List[str], occs: List[int], 
         print(custom_ligand_dict)
 
     if debug:
-        print('finished checking ligands, valid is ' + str(valid))
+        print(f'finished checking ligands, valid is {valid}')
         print('assembling RAC custom ligand configuration dictionary')
 
     if valid:
@@ -539,7 +534,6 @@ def evaluate_tmc_anns(this_complex: mol3D, metal: str, ox: int, spin: int,
     flag_oct, geo_lse = ANN_supervisor(
         "geo_static_clf", descriptors, descriptor_names, debug=debug)
     # Test for scikit-learn models
-    # flag_oct, geo_lse = sklearn_supervisor("geo_static_clf", descriptors, descriptor_names, debug=False)
     sc_pred, sc_lse = ANN_supervisor(
         "sc_static_clf", descriptors, descriptor_names, debug=debug)
     ANN_attributes.update({"geo_label": 0 if flag_oct[0, 0] <= 0.5 else 1,
@@ -634,7 +628,7 @@ def evaluate_tmc_anns(this_complex: mol3D, metal: str, ox: int, spin: int,
         ANN_attributes.update({'ANN_ground_state': spin_ops[0]})
     else:
         ANN_attributes.update(
-            {'ANN_ground_state': 'dgen ' + str(spin_ops)})
+            {'ANN_ground_state': f'dgen {spin_ops}'})
 
     ANN_attributes.update({'homo': homo[0][0]})
     ANN_attributes.update({'gap': gap[0][0]})
@@ -666,16 +660,16 @@ def evaluate_tmc_anns(this_complex: mol3D, metal: str, ox: int, spin: int,
     HOMO_ANN_trust_message = ""
     # Not quite sure if this should be divided by 3 or not, since RAC-155 descriptors
     if float(homo_dist) < 3:
-        HOMO_ANN_trust_message = 'ANN results should be trustworthy for this complex '
+        HOMO_ANN_trust_message = 'ANN results should be trustworthy for this complex'
         HOMO_ANN_trust = 'high'
     elif float(homo_dist) < 5:
-        HOMO_ANN_trust_message = 'ANN results are probably useful for this complex '
+        HOMO_ANN_trust_message = 'ANN results are probably useful for this complex'
         HOMO_ANN_trust = 'medium'
     elif float(homo_dist) <= 10:
-        HOMO_ANN_trust_message = 'ANN results are fairly far from training data, be cautious '
+        HOMO_ANN_trust_message = 'ANN results are fairly far from training data, be cautious'
         HOMO_ANN_trust = 'low'
     elif float(homo_dist) > 10:
-        HOMO_ANN_trust_message = 'ANN results are too far from training data, be cautious '
+        HOMO_ANN_trust_message = 'ANN results are too far from training data, be cautious'
         HOMO_ANN_trust = 'very low'
     ANN_attributes.update({'homo_trust': HOMO_ANN_trust})
     ANN_attributes.update({'gap_trust': HOMO_ANN_trust})
@@ -683,16 +677,16 @@ def evaluate_tmc_anns(this_complex: mol3D, metal: str, ox: int, spin: int,
     ANN_trust = 'not set'
     ANN_trust_message = ""
     if float(split_dist / 3) < 0.25:
-        ANN_trust_message = 'ANN results should be trustworthy for this complex '
+        ANN_trust_message = 'ANN results should be trustworthy for this complex'
         ANN_trust = 'high'
     elif float(split_dist / 3) < 0.75:
-        ANN_trust_message = 'ANN results are probably useful for this complex '
+        ANN_trust_message = 'ANN results are probably useful for this complex'
         ANN_trust = 'medium'
     elif float(split_dist / 3) < 1.0:
-        ANN_trust_message = 'ANN results are fairly far from training data, be cautious '
+        ANN_trust_message = 'ANN results are fairly far from training data, be cautious'
         ANN_trust = 'low'
     elif float(split_dist / 3) > 1.0:
-        ANN_trust_message = 'ANN results are too far from training data, be cautious '
+        ANN_trust_message = 'ANN results are too far from training data, be cautious'
         ANN_trust = 'very low'
     ANN_attributes.update({'split_trust': ANN_trust})
 
@@ -788,8 +782,6 @@ def evaluate_catalytic_anns(this_complex: mol3D, metal: str, ox: int, spin: int,
 
     ANN_attributes.update({'oxo20': oxo20[0][0]})
     ANN_attributes.update({'oxo20_dist': oxo20_dist})
-    # _ = find_ANN_latent_dist("oxo20", latent_oxo20, debug)
-    # _ = find_true_min_eu_dist("oxo20", descriptors, descriptor_names, latent_space_vector=latent_oxo20)
 
     with DebugTimer('home_empty ANN', debug):
         homo_empty, latent_homo_empty = ANN_supervisor('homo_empty', descriptors, descriptor_names, debug)
@@ -799,23 +791,21 @@ def evaluate_catalytic_anns(this_complex: mol3D, metal: str, ox: int, spin: int,
 
     ANN_attributes.update({'homo_empty': homo_empty[0][0]})
     ANN_attributes.update({'homo_empty_dist': homo_empty_dist})
-    # _ = find_ANN_latent_dist("homo_empty", latent_homo_empty, debug)
-    # _ = find_true_min_eu_dist("homo_empty", descriptors, descriptor_names, latent_space_vector=latent_homo_empty)
 
     Oxo20_ANN_trust = 'not set'
     Oxo20_ANN_trust_message = ""
     # Not quite sure if this should be divided by 3 or not, since RAC-155 descriptors
     if float(oxo20_dist) < 0.75:
-        Oxo20_ANN_trust_message = 'Oxo20 ANN results should be trustworthy for this complex '
+        Oxo20_ANN_trust_message = 'Oxo20 ANN results should be trustworthy for this complex'
         Oxo20_ANN_trust = 'high'
     elif float(oxo20_dist) < 1:
-        Oxo20_ANN_trust_message = 'Oxo20 ANN results are probably useful for this complex '
+        Oxo20_ANN_trust_message = 'Oxo20 ANN results are probably useful for this complex'
         Oxo20_ANN_trust = 'medium'
     elif float(oxo20_dist) <= 1.25:
-        Oxo20_ANN_trust_message = 'Oxo20 ANN results are fairly far from training data, be cautious '
+        Oxo20_ANN_trust_message = 'Oxo20 ANN results are fairly far from training data, be cautious'
         Oxo20_ANN_trust = 'low'
     elif float(oxo20_dist) > 1.25:
-        Oxo20_ANN_trust_message = 'Oxo20 ANN results are too far from training data, be cautious '
+        Oxo20_ANN_trust_message = 'Oxo20 ANN results are too far from training data, be cautious'
         Oxo20_ANN_trust = 'very low'
     ANN_attributes.update({'oxo20_trust': Oxo20_ANN_trust})
 
@@ -823,16 +813,16 @@ def evaluate_catalytic_anns(this_complex: mol3D, metal: str, ox: int, spin: int,
     homo_empty_ANN_trust_message = ""
     # Not quite sure if this should be divided by 3 or not, since RAC-155 descriptors
     if float(homo_empty_dist) < 0.75:
-        homo_empty_ANN_trust_message = 'homo_empty ANN results should be trustworthy for this complex '
+        homo_empty_ANN_trust_message = 'homo_empty ANN results should be trustworthy for this complex'
         homo_empty_ANN_trust = 'high'
     elif float(homo_empty_dist) < 1:
-        homo_empty_ANN_trust_message = 'homo_empty ANN results are probably useful for this complex '
+        homo_empty_ANN_trust_message = 'homo_empty ANN results are probably useful for this complex'
         homo_empty_ANN_trust = 'medium'
     elif float(homo_empty_dist) <= 1.25:
-        homo_empty_ANN_trust_message = 'homo_empty ANN results are fairly far from training data, be cautious '
+        homo_empty_ANN_trust_message = 'homo_empty ANN results are fairly far from training data, be cautious'
         homo_empty_ANN_trust = 'low'
     elif float(homo_empty_dist) > 1.25:
-        homo_empty_ANN_trust_message = 'homo_empty ANN results are too far from training data, be cautious '
+        homo_empty_ANN_trust_message = 'homo_empty ANN results are too far from training data, be cautious'
         homo_empty_ANN_trust = 'very low'
     ANN_attributes.update({'homo_empty_trust': homo_empty_ANN_trust})
 
@@ -842,16 +832,16 @@ def evaluate_catalytic_anns(this_complex: mol3D, metal: str, ox: int, spin: int,
     Oxo_ANN_trust_message = ""
     # Not quite sure if this should be divided by 3 or not, since RAC-155 descriptors
     if float(oxo_dist) < 3:
-        Oxo_ANN_trust_message = 'Oxo ANN results should be trustworthy for this complex '
+        Oxo_ANN_trust_message = 'Oxo ANN results should be trustworthy for this complex'
         Oxo_ANN_trust = 'high'
     elif float(oxo_dist) < 5:
-        Oxo_ANN_trust_message = 'Oxo ANN results are probably useful for this complex '
+        Oxo_ANN_trust_message = 'Oxo ANN results are probably useful for this complex'
         Oxo_ANN_trust = 'medium'
     elif float(oxo_dist) <= 10:
-        Oxo_ANN_trust_message = 'Oxo ANN results are fairly far from training data, be cautious '
+        Oxo_ANN_trust_message = 'Oxo ANN results are fairly far from training data, be cautious'
         Oxo_ANN_trust = 'low'
     elif float(oxo_dist) > 10:
-        Oxo_ANN_trust_message = 'Oxo ANN results are too far from training data, be cautious '
+        Oxo_ANN_trust_message = 'Oxo ANN results are too far from training data, be cautious'
         Oxo_ANN_trust = 'very low'
     ANN_attributes.update({'oxo_trust': Oxo_ANN_trust})
 
@@ -859,16 +849,16 @@ def evaluate_catalytic_anns(this_complex: mol3D, metal: str, ox: int, spin: int,
     HAT_ANN_trust_message = ""
     # Not quite sure if this should be divided by 3 or not, since RAC-155 descriptors
     if float(hat_dist) < 3:
-        HAT_ANN_trust_message = 'HAT ANN results should be trustworthy for this complex '
+        HAT_ANN_trust_message = 'HAT ANN results should be trustworthy for this complex'
         HAT_ANN_trust = 'high'
     elif float(hat_dist) < 5:
-        HAT_ANN_trust_message = 'HAT ANN results are probably useful for this complex '
+        HAT_ANN_trust_message = 'HAT ANN results are probably useful for this complex'
         HAT_ANN_trust = 'medium'
     elif float(hat_dist) <= 10:
-        HAT_ANN_trust_message = 'HAT ANN results are fairly far from training data, be cautious '
+        HAT_ANN_trust_message = 'HAT ANN results are fairly far from training data, be cautious'
         HAT_ANN_trust = 'low'
     elif float(hat_dist) > 10:
-        HAT_ANN_trust_message = 'HAT ANN results are too far from training data, be cautious '
+        HAT_ANN_trust_message = 'HAT ANN results are too far from training data, be cautious'
         HAT_ANN_trust = 'very low'
     ANN_attributes.update({'hat_trust': HAT_ANN_trust})
     print("*******************************************************************")
