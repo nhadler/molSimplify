@@ -720,7 +720,7 @@ class globalvars(metaclass=Singleton):
         if transition_metals_only:
             return metalslist
         else:
-            return metalslist + alkali_and_alkaline_earth + heavy_metals_and_metalloids            
+            return metalslist + alkali_and_alkaline_earth + heavy_metals_and_metalloids
 
     def groups(self):
         """Returns dict of elements by groups.

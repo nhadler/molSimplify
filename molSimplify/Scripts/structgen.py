@@ -388,7 +388,7 @@ def init_template(args: Namespace, cpoints_required: int) -> Tuple[mol3D, mol3D,
                 corerefatoms.addAtom(conatom3D)
                 # add connecting points to template
                 m3D.addAtom(atom3D(Sym='X', xyz=cpoint))
-            
+
             nums = m3D.findAtomsbySymbol('X')
             backbatoms = getbackbcombsall(nums)
     # set charge from oxidation state if desired
