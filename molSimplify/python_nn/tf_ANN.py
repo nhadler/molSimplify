@@ -611,6 +611,8 @@ def find_ANN_latent_dist(predictor, latent_space_vector, debug=False):
     if not version.parse(tf.__version__) >= version.parse('2.0.0'):
         get_outputs = K.function([loaded_model.layers[0].input, K.learning_phase()],
                                  [loaded_model.layers[len(loaded_model.layers) - 2].output])
+    else:
+        raise Exception('Invalid TensorFlow version. >= 2.0.0 required.')
     for i, rows in enumerate(train_mat):
         scaled_row = np.squeeze(
             data_normalize(rows, train_mean_x.T, train_var_x.T, debug=debug))  # Normalizing the row before finding the distance

@@ -399,7 +399,6 @@ def krr_model_training_loo(csvf, colnum_label, colnum_desc, feature_names=False,
                      for feature_name in feature_names]
             X_norm_train_sel = X_norm_train.T[idxes].T
             X_norm_test_sel = X_norm_test.T[idxes].T
-            features_sel = feature_names
             impt_dict = None
         else:
             selector = RandomForestRegressor(random_state=0, n_estimators=100)
