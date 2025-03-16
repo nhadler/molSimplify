@@ -1097,12 +1097,7 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
                         seesaw = False
                         # ### In the planar set, the two monodentates are axial, and tetradentate is equatorial.
                         axial_pair = list(set(allowed) - set(four_repeats))
-                    if not seesaw:
-                        eq_lig_list = four_repeats
-                        eq_con_list = four_repeats_cons  # ADDED
-                        ax_lig_list = axial_pair
-                        ax_con_list = [ligcons[axial_pair[0]], ligcons[axial_pair[1]]]
-                    else:  # 2 points in eq plane, seesaw case
+                    if seesaw:  # 2 points in eq plane, seesaw case
                         # ### In the seesaw, the two furthest apart are denoted as axial.
                         # ### The equatorial plane consists of 2 seesaw connecting atoms, and two monodentates.
                         eq_plane_cons = list(set(flat_ligcons) - set([val[0] for val in axial_pair]))
@@ -1110,6 +1105,12 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
                         eq_lig_list = [i for i in range(len(ligcons)) if ligcons[i] in eq_plane_cons]
                         ax_lig_list = [i for i in range(len(ligcons)) if ligcons[i] not in eq_plane_cons]
                         ax_con_list = [ligcons[j] for j in range(len(ligcons)) if ligcons[j] not in eq_plane_cons]
+                    else:
+                        eq_lig_list = four_repeats
+                        eq_con_list = four_repeats_cons  # ADDED
+                        ax_lig_list = axial_pair
+                        ax_con_list = [ligcons[axial_pair[0]], ligcons[axial_pair[1]]]
+
                 else:  # 3,3 monodentate case - just use the planes to define ax vs eq by maximum MW
                     if symmetric:  # If MWs of ligands match, but connecting atoms different, choose max MW con atom
                         eq_ligcons = list(set([flat_ligcons[j] for j in eq_points_max_con_mw]))
@@ -1195,12 +1196,7 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
                         seesaw = False
                         # ### In the planar set, the two monodentates are axial, and tetradentate is equatorial.
                         axial_pair = list(set(allowed) - set(four_repeats))
-                    if not seesaw:  # Planar
-                        eq_lig_list = four_repeats
-                        eq_con_list = four_repeats_cons  # ADDED
-                        ax_lig_list = axial_pair
-                        ax_con_list = [ligcons[axial_pair[0]], ligcons[axial_pair[1]]]
-                    else:  # 2 points in eq plane, seesaw case
+                    if seesaw:  # 2 points in eq plane, seesaw case
                         # ### In the seesaw, the two furthest apart are denoted as axial.
                         # ### The equatorial plane consists of 2 seesaw connecting atoms, and two monodentates.
                         eq_plane_cons = list(set(flat_ligcons) - set([val[0] for val in axial_pair]))
@@ -1208,6 +1204,12 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
                         eq_lig_list = [i for i in range(len(ligcons)) if ligcons[i] in eq_plane_cons]
                         ax_lig_list = [i for i in range(len(ligcons)) if ligcons[i] not in eq_plane_cons]
                         ax_con_list = [ligcons[j] for j in range(len(ligcons)) if ligcons[j] not in eq_plane_cons]
+                    else:  # Planar
+                        eq_lig_list = four_repeats
+                        eq_con_list = four_repeats_cons  # ADDED
+                        ax_lig_list = axial_pair
+                        ax_con_list = [ligcons[axial_pair[0]], ligcons[axial_pair[1]]]
+
                 elif max(ligand_counts) == 3:  # 3+2+1 - Planar 3 or not
                     three_repeats = list()
                     two_repeats = list()
@@ -1357,16 +1359,17 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
                     monodentate_eq_idxs.append(mono_dentate_idx)
         if len(monodentate_eq_cons) < 2:
             bidentate_axial = True
-        if not bidentate_axial:  # Normal
-            eq_lig_list = [bidentate_ligand_idx, monodentate_eq_idxs[0], monodentate_eq_idxs[1]]
-            eq_con_list = [bidentate_cons, monodentate_eq_cons[0], monodentate_eq_cons[1]]  # ADDED
-            ax_lig_list = [val for val in mono_dentate_idx_set if val not in monodentate_eq_idxs]
-            ax_con_list = [[val] for val in mono_con_list if val not in [x[0] for x in monodentate_eq_cons]]
-        else:
+        if bidentate_axial:
             ax_lig_list = [bidentate_ligand_idx, bidentate_ligand_idx]
             ax_con_list = [[val] for val in bidentate_cons]
             eq_lig_list = [val for val in mono_dentate_idx_set]
             eq_con_list = [[val] for val in mono_con_list]
+        else:  # Normal
+            eq_lig_list = [bidentate_ligand_idx, monodentate_eq_idxs[0], monodentate_eq_idxs[1]]
+            eq_con_list = [bidentate_cons, monodentate_eq_cons[0], monodentate_eq_cons[1]]  # ADDED
+            ax_lig_list = [val for val in mono_dentate_idx_set if val not in monodentate_eq_idxs]
+            ax_con_list = [[val] for val in mono_con_list if val not in [x[0] for x in monodentate_eq_cons]]
+
     elif (n_ligs == 4):  # 2+2+1+1 and 3+1+1+1 cases
         allowed = list(range(0, 4))
         if max(ligdents) == 3:
@@ -1466,12 +1469,8 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
                 axial_pair = [[temp_cons[val]] for val in list(pair_list[np.argmax(np.array(angle_list))])]
             else:
                 seesaw = False
-            if not seesaw:  # Planar
-                eq_lig_list = [bidentate_ligand_idx1, bidentate_ligand_idx2]
-                eq_con_list = [bidentate_cons1, bidentate_cons2]
-                ax_lig_list = list(set(allowed)-set([bidentate_ligand_idx1, bidentate_ligand_idx2]))
-                ax_con_list = [ligcons[j] for j in ax_lig_list]
-            else:  # 2 points in eq plane, seesaw case
+
+            if seesaw:  # 2 points in eq plane, seesaw case
                 ax_con_list = axial_pair
                 flat_ax_con_list = [item for sublist in ax_con_list for item in sublist]
                 ax_lig_list = [j for j, val in enumerate(ligcons) if flat_ax_con_list[0] in val] + \
@@ -1489,6 +1488,12 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
                 eq_lig_list = [
                     j for j, val in enumerate(ligcons) if
                     len(set(val).intersection(set(flat_eq_con_list))) > 0]
+            else:  # Planar
+                eq_lig_list = [bidentate_ligand_idx1, bidentate_ligand_idx2]
+                eq_con_list = [bidentate_cons1, bidentate_cons2]
+                ax_lig_list = list(set(allowed)-set([bidentate_ligand_idx1, bidentate_ligand_idx2]))
+                ax_con_list = [ligcons[j] for j in ax_lig_list]
+
     elif (n_ligs == 3):  # 2+2+2 or 4+1+1, can be seesaw/planar or 3+2+1, seesaw/planar
         if max(ligdents) == 4:  # 4+1+1
             if loud:
@@ -1519,12 +1524,7 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
                 seesaw = False
                 # ### In the planar set, the two monodentates are axial, and tetradentate is equatorial.
                 axial_pair = list(set(allowed) - set([tetradentate_ligand_idx]))
-            if not seesaw:  # Planar
-                eq_lig_list = [tetradentate_ligand_idx]
-                eq_con_list = [tetradentate_cons]  # ADDED
-                ax_lig_list = axial_pair
-                ax_con_list = [ligcons[axial_pair[0]], ligcons[axial_pair[1]]]
-            else:  # 2 points in eq plane, seesaw case
+            if seesaw:  # 2 points in eq plane, seesaw case
                 eq_plane = list(set(flat_ligcons) - set(axial_pair))
                 # ### Find the two connecting atoms of the seesaw that lie in the equatorial plane
                 tet_eq = list(set(eq_plane).intersection(set(tetradentate_cons)))
@@ -1532,6 +1532,12 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
                 eq_lig_list = allowed
                 ax_lig_list = [tetradentate_ligand_idx, tetradentate_ligand_idx]
                 ax_con_list = [[axial_pair[0]], [axial_pair[1]]]
+            else:  # Planar
+                eq_lig_list = [tetradentate_ligand_idx]
+                eq_con_list = [tetradentate_cons]  # ADDED
+                ax_lig_list = axial_pair
+                ax_con_list = [ligcons[axial_pair[0]], ligcons[axial_pair[1]]]
+
         elif max(ligdents) == 3:  # 3+2+1
             if loud:
                 print('3+2+1 case')
@@ -1661,7 +1667,12 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
             bidentate_axial = False
             if len(np.where(np.array(angle_list) > angle_cutoff)[0]) > 1:
                 bidentate_axial = True
-            if not bidentate_axial:
+            if bidentate_axial:  # Bidentate is axial
+                ax_lig_list = [bidentate_ligand_idx, bidentate_ligand_idx]
+                ax_con_list = [[val] for val in bidentate_cons]
+                eq_lig_list = [tetradentate_ligand_idx]
+                eq_con_list = [tetradentate_cons]
+            else:
                 axial_pair = [tetradentate_cons[val] for val in list(pair_list[np.argmax(np.array(angle_list))])]
                 eq_plane = list(set(flat_ligcons) - set(axial_pair))
                 tet_eq = list(set(eq_plane).intersection(set(tetradentate_cons)))
@@ -1669,11 +1680,7 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
                 eq_lig_list = allowed
                 ax_lig_list = [tetradentate_ligand_idx, tetradentate_ligand_idx]
                 ax_con_list = [[axial_pair[0]], [axial_pair[1]]]
-            else:  # Bidentate is Axial
-                ax_lig_list = [bidentate_ligand_idx, bidentate_ligand_idx]
-                ax_con_list = [[val] for val in bidentate_cons]
-                eq_lig_list = [tetradentate_ligand_idx]
-                eq_con_list = [tetradentate_cons]
+
         if ((max(ligdents) == 3) and (min(ligdents) == 3)):  # 3+3
             if loud:
                 print('3+3 dentate case')
@@ -1698,15 +1705,7 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
                 planar = False
             else:
                 planar = True
-            if not planar:  # Seesaw
-                eq_ligcons = set([flat_ligcons[j] for j in eq_points_max_con_mw])
-                eq_con_list = [list(set(tridentate_cons_1).intersection(eq_ligcons)),
-                               list(set(tridentate_cons_2).intersection(eq_ligcons))]
-                ax_con_list = [list(set(tridentate_cons_1) - set(eq_con_list[0])),
-                               list(set(tridentate_cons_2) - set(eq_con_list[1]))]
-                eq_lig_list = [0, 1]
-                ax_lig_list = [0, 1]
-            else:  # Planar
+            if planar:  # Planar
                 eq_ligcons = set([flat_ligcons[j] for j in eq_points_max_mw])
                 eq_lig1 = list(set(tridentate_cons_1).intersection(eq_ligcons))
                 eq_lig2 = list(set(tridentate_cons_2).intersection(eq_ligcons))
@@ -1724,6 +1723,15 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
                 else:
                     ax_con_list = [list(set(tridentate_cons_2) - set(eq_lig2))]
                     ax_lig_list = [1]
+            else:  # Seesaw
+                eq_ligcons = set([flat_ligcons[j] for j in eq_points_max_con_mw])
+                eq_con_list = [list(set(tridentate_cons_1).intersection(eq_ligcons)),
+                               list(set(tridentate_cons_2).intersection(eq_ligcons))]
+                ax_con_list = [list(set(tridentate_cons_1) - set(eq_con_list[0])),
+                               list(set(tridentate_cons_2) - set(eq_con_list[1]))]
+                eq_lig_list = [0, 1]
+                ax_lig_list = [0, 1]
+
     elif (n_ligs == 2 and pentadentate):  # 5+1
         # ### Handling for pentadentate scaffolds ####
         if loud:

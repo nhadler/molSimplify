@@ -108,7 +108,11 @@ def get_descriptor_vector(this_complex,
     # Generate custom_ligand_dict if one not passed!
     if not custom_ligand_dict:
         liglist, ligdents, ligcons = ligand_breakdown(this_complex, BondedOct=True) # Complex is assumed to be octahedral
-        if not alleq:
+        if alleq:
+            from molSimplify.Classes.ligand import ligand_assign_alleq
+            ax_ligand_list, eq_ligand_list, ax_con_int_list, eq_con_int_list = ligand_assign_alleq(
+                this_complex, liglist, ligdents, ligcons)
+        else:
             if lacRACs:
                 assignment_func = ligand_assign_consistent
             else:
@@ -116,10 +120,7 @@ def get_descriptor_vector(this_complex,
             ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, \
                 ax_con_int_list, eq_con_int_list, ax_con_list, eq_con_list, \
                 built_ligand_list = assignment_func(this_complex, liglist, ligdents, ligcons, loud, eq_sym_match=eq_sym)
-        else:
-            from molSimplify.Classes.ligand import ligand_assign_alleq
-            ax_ligand_list, eq_ligand_list, ax_con_int_list, eq_con_int_list = ligand_assign_alleq(
-                this_complex, liglist, ligdents, ligcons)
+
         custom_ligand_dict = {'ax_ligand_list': ax_ligand_list,
                               'eq_ligand_list': eq_ligand_list,
                               'ax_con_int_list': ax_con_int_list,
@@ -392,16 +393,17 @@ def generate_all_ligand_misc(mol, loud=False, custom_ligand_dict=False, smiles_c
     result_ax = list()
     result_eq = list()
     colnames = ['dent', 'charge']
-    if not custom_ligand_dict:
-        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
-        ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list, eq_con_int_list, \
-            ax_con_list, eq_con_list, built_ligand_list = ligand_assign_consistent(
-                mol, liglist, ligdents, ligcons, loud)
-    else:
+    if custom_ligand_dict:
         ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
         eq_ligand_list = custom_ligand_dict["eq_ligand_list"]
         # ax_con_int_list = custom_ligand_dict["ax_con_int_list"]
         # eq_con_int_list = custom_ligand_dict["eq_con_int_list"]
+    else:
+        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
+        ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list, eq_con_int_list, \
+            ax_con_list, eq_con_list, built_ligand_list = ligand_assign_consistent(
+                mol, liglist, ligdents, ligcons, loud)
+
     # count ligands
     n_ax = len(ax_ligand_list)
     n_eq = len(eq_ligand_list)
@@ -417,18 +419,19 @@ def generate_all_ligand_misc(mol, loud=False, custom_ligand_dict=False, smiles_c
                 ax_ligand_list[i].mol.convert2OBMol2()
             else:
                 ax_ligand_list[i].mol.convert2OBMol()
-            if not (i == 0):
-                result_ax_dent += ax_ligand_list[i].dent
-                if smiles_charge:
-                    result_ax_charge += ax_ligand_list[i].mol.get_smilesOBmol_charge()
-                else:
-                    result_ax_charge += ax_ligand_list[i].mol.OBMol.GetTotalCharge()
-            else:
+            if i == 0:
                 result_ax_dent = ax_ligand_list[i].dent
                 if smiles_charge:
                     result_ax_charge = ax_ligand_list[i].mol.get_smilesOBmol_charge()
                 else:
                     result_ax_charge = ax_ligand_list[i].mol.OBMol.GetTotalCharge()
+            else:
+                result_ax_dent += ax_ligand_list[i].dent
+                if smiles_charge:
+                    result_ax_charge += ax_ligand_list[i].mol.get_smilesOBmol_charge()
+                else:
+                    result_ax_charge += ax_ligand_list[i].mol.OBMol.GetTotalCharge()
+
         # average axial results
         result_ax_dent = np.divide(result_ax_dent, n_ax)
         result_ax_charge = np.divide(result_ax_charge, n_ax)
@@ -439,18 +442,20 @@ def generate_all_ligand_misc(mol, loud=False, custom_ligand_dict=False, smiles_c
                 eq_ligand_list[i].mol.convert2OBMol2()
             else:
                 eq_ligand_list[i].mol.convert2OBMol()
-            if not (i == 0):
-                result_eq_dent += eq_ligand_list[i].dent
-                if smiles_charge:
-                    result_eq_charge += eq_ligand_list[i].mol.get_smilesOBmol_charge()
-                else:
-                    result_eq_charge += eq_ligand_list[i].mol.OBMol.GetTotalCharge()
-            else:
+
+            if i == 0:
                 result_eq_dent = eq_ligand_list[i].dent
                 if smiles_charge:
                     result_eq_charge = eq_ligand_list[i].mol.get_smilesOBmol_charge()
                 else:
                     result_eq_charge = eq_ligand_list[i].mol.OBMol.GetTotalCharge()
+            else:
+                result_eq_dent += eq_ligand_list[i].dent
+                if smiles_charge:
+                    result_eq_charge += eq_ligand_list[i].mol.get_smilesOBmol_charge()
+                else:
+                    result_eq_charge += eq_ligand_list[i].mol.OBMol.GetTotalCharge()
+
         # average eq results
         result_eq_dent = np.divide(result_eq_dent, n_eq)
         result_eq_charge = np.divide(result_eq_charge, n_eq)
@@ -518,16 +523,17 @@ def generate_all_ligand_autocorrelations_lac(mol, loud=False, depth=4, flag_name
     result_eq_full = list()
     result_ax_con = list()
     result_eq_con = list()
-    if not custom_ligand_dict:
-        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
-        (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list, eq_con_int_list,
-         ax_con_list, eq_con_list, built_ligand_list) = ligand_assign_consistent(
-            mol, liglist, ligdents, ligcons, loud)
-    else:
+
+    if custom_ligand_dict:
         ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
         eq_ligand_list = custom_ligand_dict["eq_ligand_list"]
         ax_con_int_list = custom_ligand_dict["ax_con_int_list"]
         eq_con_int_list = custom_ligand_dict["eq_con_int_list"]
+    else:
+        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
+        (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list, eq_con_int_list,
+         ax_con_list, eq_con_list, built_ligand_list) = ligand_assign_consistent(
+            mol, liglist, ligdents, ligcons, loud)
     # count ligands
     n_ax = len(ax_ligand_list)
     n_eq = len(eq_ligand_list)
@@ -538,42 +544,46 @@ def generate_all_ligand_autocorrelations_lac(mol, loud=False, depth=4, flag_name
         ax_ligand_ac_full = []
         eq_ligand_ac_full = []
         for i in range(0, n_ax):
-            if not list(ax_ligand_ac_full):
-                ax_ligand_ac_full = full_autocorrelation(ax_ligand_list[i].mol, properties, depth, use_dist=use_dist,
-                                                         size_normalize=size_normalize, MRdiag_dict=MRdiag_dict)
-            else:
+            if list(ax_ligand_ac_full):
                 ax_ligand_ac_full += full_autocorrelation(ax_ligand_list[i].mol, properties, depth, use_dist=use_dist,
                                                           size_normalize=size_normalize, MRdiag_dict=MRdiag_dict)
+            else:
+                ax_ligand_ac_full = full_autocorrelation(ax_ligand_list[i].mol, properties, depth, use_dist=use_dist,
+                                                         size_normalize=size_normalize, MRdiag_dict=MRdiag_dict)
+
         ax_ligand_ac_full = np.divide(ax_ligand_ac_full, n_ax)
         for i in range(0, n_eq):
-            if not list(eq_ligand_ac_full):
-                eq_ligand_ac_full = full_autocorrelation(eq_ligand_list[i].mol, properties, depth, use_dist=use_dist,
-                                                         size_normalize=size_normalize, MRdiag_dict=MRdiag_dict)
-            else:
+            if list(eq_ligand_ac_full):
                 eq_ligand_ac_full += full_autocorrelation(eq_ligand_list[i].mol, properties, depth, use_dist=use_dist,
                                                           size_normalize=size_normalize, MRdiag_dict=MRdiag_dict)
+            else:
+                eq_ligand_ac_full = full_autocorrelation(eq_ligand_list[i].mol, properties, depth, use_dist=use_dist,
+                                                         size_normalize=size_normalize, MRdiag_dict=MRdiag_dict)
+
         eq_ligand_ac_full = np.divide(eq_ligand_ac_full, n_eq)
         ax_ligand_ac_con = []
         eq_ligand_ac_con = []
         for i in range(0, n_ax):
-            if not list(ax_ligand_ac_con):
-                ax_ligand_ac_con = atom_only_autocorrelation(ax_ligand_list[i].mol, properties, depth, ax_con_int_list[i],
-                                                             use_dist=use_dist, size_normalize=size_normalize,
-                                                             MRdiag_dict=MRdiag_dict)
-            else:
+            if list(ax_ligand_ac_con):
                 ax_ligand_ac_con += atom_only_autocorrelation(ax_ligand_list[i].mol, properties, depth, ax_con_int_list[i],
                                                               use_dist=use_dist, size_normalize=size_normalize,
                                                               MRdiag_dict=MRdiag_dict)
-        ax_ligand_ac_con = np.divide(ax_ligand_ac_con, n_ax)
-        for i in range(0, n_eq):
-            if not list(eq_ligand_ac_con):
-                eq_ligand_ac_con = atom_only_autocorrelation(eq_ligand_list[i].mol, properties, depth, eq_con_int_list[i],
+            else:
+                ax_ligand_ac_con = atom_only_autocorrelation(ax_ligand_list[i].mol, properties, depth, ax_con_int_list[i],
                                                              use_dist=use_dist, size_normalize=size_normalize,
                                                              MRdiag_dict=MRdiag_dict)
-            else:
+
+        ax_ligand_ac_con = np.divide(ax_ligand_ac_con, n_ax)
+        for i in range(0, n_eq):
+            if list(eq_ligand_ac_con):
                 eq_ligand_ac_con += atom_only_autocorrelation(eq_ligand_list[i].mol, properties, depth, eq_con_int_list[i],
                                                               use_dist=use_dist, size_normalize=size_normalize,
                                                               MRdiag_dict=MRdiag_dict)
+            else:
+                eq_ligand_ac_con = atom_only_autocorrelation(eq_ligand_list[i].mol, properties, depth, eq_con_int_list[i],
+                                                             use_dist=use_dist, size_normalize=size_normalize,
+                                                             MRdiag_dict=MRdiag_dict)
+
         eq_ligand_ac_con = np.divide(eq_ligand_ac_con, n_eq)
         ################
         this_colnames = []
@@ -638,16 +648,17 @@ def generate_all_ligand_autocorrelation_derivatives_lac(mol, loud=False, depth=4
     if NumB:
         allowed_strings += ["num_bonds"]
         labels_strings += ["NumB"]
-    if not custom_ligand_dict:
-        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
-        ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list, eq_con_int_list, \
-            ax_con_list, eq_con_list, built_ligand_list = ligand_assign_consistent(
-                mol, liglist, ligdents, ligcons, loud)
-    else:
+    if custom_ligand_dict:
         ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
         eq_ligand_list = custom_ligand_dict["eq_ligand_list"]
         ax_con_int_list = custom_ligand_dict["ax_con_int_list"]
         eq_con_int_list = custom_ligand_dict["eq_con_int_list"]
+    else:
+        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
+        ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list, eq_con_int_list, \
+            ax_con_list, eq_con_list, built_ligand_list = ligand_assign_consistent(
+                mol, liglist, ligdents, ligcons, loud)
+
     # count ligands
     n_ax = len(ax_ligand_list)
     n_eq = len(eq_ligand_list)
@@ -772,15 +783,16 @@ def generate_all_ligand_deltametrics_lac(mol, loud=False, depth=4, flag_name=Fal
         for k in list(MRdiag_dict):
             allowed_strings += [k]
             labels_strings += [k]
-    if not custom_ligand_dict:
-        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
-        (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list, eq_con_int_list,
-         ax_con_list, eq_con_list, built_ligand_list) = ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud)
-    else:
+    if custom_ligand_dict:
         ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
         eq_ligand_list = custom_ligand_dict["eq_ligand_list"]
         ax_con_int_list = custom_ligand_dict["ax_con_int_list"]
         eq_con_int_list = custom_ligand_dict["eq_con_int_list"]
+    else:
+        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
+        (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list, eq_con_int_list,
+         ax_con_list, eq_con_list, built_ligand_list) = ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud)
+
     # count ligands
     n_ax = len(ax_ligand_list)
     n_eq = len(eq_ligand_list)
@@ -790,24 +802,26 @@ def generate_all_ligand_deltametrics_lac(mol, loud=False, depth=4, flag_name=Fal
         ax_ligand_ac_con = []
         eq_ligand_ac_con = []
         for i in range(0, n_ax):
-            if not list(ax_ligand_ac_con):
-                ax_ligand_ac_con = atom_only_deltametric(ax_ligand_list[i].mol, properties, depth, ax_con_int_list[i],
-                                                         use_dist=use_dist, size_normalize=size_normalize,
-                                                         MRdiag_dict=MRdiag_dict)
-            else:
+            if list(ax_ligand_ac_con):
                 ax_ligand_ac_con += atom_only_deltametric(ax_ligand_list[i].mol, properties, depth, ax_con_int_list[i],
                                                           use_dist=use_dist, size_normalize=size_normalize,
                                                           MRdiag_dict=MRdiag_dict)
-        ax_ligand_ac_con = np.divide(ax_ligand_ac_con, n_ax)
-        for i in range(0, n_eq):
-            if not list(eq_ligand_ac_con):
-                eq_ligand_ac_con = atom_only_deltametric(eq_ligand_list[i].mol, properties, depth, eq_con_int_list[i],
+            else:
+                ax_ligand_ac_con = atom_only_deltametric(ax_ligand_list[i].mol, properties, depth, ax_con_int_list[i],
                                                          use_dist=use_dist, size_normalize=size_normalize,
                                                          MRdiag_dict=MRdiag_dict)
-            else:
+
+        ax_ligand_ac_con = np.divide(ax_ligand_ac_con, n_ax)
+        for i in range(0, n_eq):
+            if list(eq_ligand_ac_con):
                 eq_ligand_ac_con += atom_only_deltametric(eq_ligand_list[i].mol, properties, depth, eq_con_int_list[i],
                                                           use_dist=use_dist, size_normalize=size_normalize,
                                                           MRdiag_dict=MRdiag_dict)
+            else:
+                eq_ligand_ac_con = atom_only_deltametric(eq_ligand_list[i].mol, properties, depth, eq_con_int_list[i],
+                                                         use_dist=use_dist, size_normalize=size_normalize,
+                                                         MRdiag_dict=MRdiag_dict)
+
         eq_ligand_ac_con = np.divide(eq_ligand_ac_con, n_eq)
         ####################
         this_colnames = []
@@ -865,16 +879,17 @@ def generate_all_ligand_deltametric_derivatives_lac(mol, loud=False, depth=4, fl
     if NumB:
         allowed_strings += ["num_bonds"]
         labels_strings += ["NumB"]
-    if not custom_ligand_dict:
-        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
-        ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list, eq_con_int_list, \
-            ax_con_list, eq_con_list, built_ligand_list = ligand_assign_consistent(
-                mol, liglist, ligdents, ligcons, loud)
-    else:
+    if custom_ligand_dict:
         ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
         eq_ligand_list = custom_ligand_dict["eq_ligand_list"]
         ax_con_int_list = custom_ligand_dict["ax_con_int_list"]
         eq_con_int_list = custom_ligand_dict["eq_con_int_list"]
+    else:
+        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
+        ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list, eq_con_int_list, \
+            ax_con_list, eq_con_list, built_ligand_list = ligand_assign_consistent(
+                mol, liglist, ligdents, ligcons, loud)
+
     # count ligands
     n_ax = len(ax_ligand_list)
     n_eq = len(eq_ligand_list)

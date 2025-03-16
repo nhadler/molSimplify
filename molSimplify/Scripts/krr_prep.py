@@ -394,7 +394,13 @@ def krr_model_training_loo(csvf, colnum_label, colnum_desc, feature_names=False,
         y_norm_train, y_norm_test = y_norm[train_idx], y_norm[test_idx]
         # end
         # feature selection
-        if not feature_names:
+        if feature_names:
+            idxes = [headers.tolist().index(feature_name)
+                     for feature_name in feature_names]
+            X_norm_train_sel = X_norm_train.T[idxes].T
+            X_norm_test_sel = X_norm_test.T[idxes].T
+            impt_dict = None
+        else:
             selector = RandomForestRegressor(random_state=0, n_estimators=100)
             selector.fit(X_norm_train, y_norm_train)
             X_norm_train_impts = selector.feature_importances_
@@ -408,13 +414,6 @@ def krr_model_training_loo(csvf, colnum_label, colnum_desc, feature_names=False,
             X_norm_test_sel = X_norm_test.T[idxes].T
             print(sorted(impt_dict, key=impt_dict.get))
             print(impt_dict)
-        else:
-            idxes = [headers.tolist().index(feature_name)
-                     for feature_name in feature_names]
-            X_norm_train_sel = X_norm_train.T[idxes].T
-            X_norm_test_sel = X_norm_test.T[idxes].T
-            features_sel = feature_names
-            impt_dict = None
         # training with krr
         if i == 0 or (alpha != 1 and gamma != 1):
             signal = True

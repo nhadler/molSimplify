@@ -45,17 +45,17 @@ def append_descriptors(descriptor_names, descriptors, list_of_names, list_of_pro
         basestring = str
 
     for names in list_of_names:
-        if not isinstance(names, basestring):
-            names = ["-".join([prefix, str(i), suffix]) for i in names]
-            descriptor_names += names
-        else:
+        if isinstance(names, basestring):
             names = "-".join([prefix, str(names), suffix])
             descriptor_names.append(names)
-    for values in list_of_props:
-        if not isinstance(names, basestring):
-            descriptors.extend(values)
         else:
+            names = ["-".join([prefix, str(i), suffix]) for i in names]
+            descriptor_names += names
+    for values in list_of_props:
+        if isinstance(names, basestring):
             descriptors.append(values)
+        else:
+            descriptors.extend(values)
     return descriptor_names, descriptors
 
 
@@ -378,16 +378,16 @@ def construct_property_vector(mol, prop, oct=True, modifier=False, MRdiag_dict={
             values = globs.amass()[keys][3]
             prop_dict.update({keys: values})
     elif prop == 'ox_nuclear_charge':
-        if not modifier:
-            print('Error, must give modifier with ox_nuclear_charge')
-            return False
-        else:
+        if modifier:
             at_keys = list(globs.amass().keys())
             for keys in at_keys:
                 values = globs.amass()[keys][1]
                 if keys in list(modifier.keys()):
                     values -= float(modifier[keys])  # assumes oxidation state provided (i.e. Fe(IV))
                 prop_dict.update({keys: values})
+        else:
+            print('Error, must give modifier with ox_nuclear_charge')
+            return False
     elif prop == 'polarizability':
         prop_dict = globs.polarizability()
         for i, atoms in enumerate(mol.getAtoms()):
@@ -417,10 +417,10 @@ def construct_property_vector(mol, prop, oct=True, modifier=False, MRdiag_dict={
         done = True
     elif prop == 'num_bonds':
         for i, atom in enumerate(mol.getAtoms()):
-            if not atom.ismetal(transition_metals_only=transition_metals_only):
-                w[i] = globs.bondsdict()[atom.symbol()]
-            else:
+            if atom.ismetal(transition_metals_only=transition_metals_only):
                 w[i] = len(mol.getBondedAtomsSmart(i, oct=oct))
+            else:
+                w[i] = globs.bondsdict()[atom.symbol()]
         done = True
     elif prop == 'bondvalence_devi':
         assert len(mol.getAtoms()) == len(mol.bvd_dict)
@@ -1733,17 +1733,17 @@ def find_ligand_autocorrelations_oct(mol, prop, loud, depth, name=False,
     # #                                    ax_con_int_list ,eq_con_int_list
     # # with types: eq/ax_ligand_list list of mol3D
     # #             eq/ax_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
-    if not custom_ligand_dict:
+    if custom_ligand_dict:
+        ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
+        eq_ligand_list = custom_ligand_dict["eq_ligand_list"]
+        ax_con_int_list = custom_ligand_dict["ax_con_int_list"]
+        eq_con_int_list = custom_ligand_dict["eq_con_int_list"]
+    else:
         liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=oct)
         (ax_ligand_list, eq_ligand_list, ax_natoms_list,
          eq_natoms_list, ax_con_int_list, eq_con_int_list,
          ax_con_list, eq_con_list, built_ligand_list) = ligand_assign_original(
             mol, liglist, ligdents, ligcons, loud, name=False)
-    else:
-        ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
-        eq_ligand_list = custom_ligand_dict["eq_ligand_list"]
-        ax_con_int_list = custom_ligand_dict["ax_con_int_list"]
-        eq_con_int_list = custom_ligand_dict["eq_con_int_list"]
     # Count ligands.
     n_ax = len(ax_ligand_list)
     n_eq = len(eq_ligand_list)
@@ -1751,16 +1751,16 @@ def find_ligand_autocorrelations_oct(mol, prop, loud, depth, name=False,
     ax_ligand_ac_full = []
     eq_ligand_ac_full = []
     for i in range(0, n_ax):
-        if not list(ax_ligand_ac_full):
-            ax_ligand_ac_full = full_autocorrelation(ax_ligand_list[i].mol, prop, depth)
-        else:
+        if list(ax_ligand_ac_full):
             ax_ligand_ac_full += full_autocorrelation(ax_ligand_list[i].mol, prop, depth)
+        else:
+            ax_ligand_ac_full = full_autocorrelation(ax_ligand_list[i].mol, prop, depth)
     ax_ligand_ac_full = np.divide(ax_ligand_ac_full, n_ax)
     for i in range(0, n_eq):
-        if not list(eq_ligand_ac_full):
-            eq_ligand_ac_full = full_autocorrelation(eq_ligand_list[i].mol, prop, depth)
-        else:
+        if list(eq_ligand_ac_full):
             eq_ligand_ac_full += full_autocorrelation(eq_ligand_list[i].mol, prop, depth)
+        else:
+            eq_ligand_ac_full = full_autocorrelation(eq_ligand_list[i].mol, prop, depth)
     eq_ligand_ac_full = np.divide(eq_ligand_ac_full, n_eq)
 
     # Get partial ligand AC.
@@ -1768,16 +1768,16 @@ def find_ligand_autocorrelations_oct(mol, prop, loud, depth, name=False,
     eq_ligand_ac_con = []
 
     for i in range(0, n_ax):
-        if not list(ax_ligand_ac_con):
-            ax_ligand_ac_con = atom_only_autocorrelation(ax_ligand_list[i].mol, prop, depth, ax_con_int_list[i])
-        else:
+        if list(ax_ligand_ac_con):
             ax_ligand_ac_con += atom_only_autocorrelation(ax_ligand_list[i].mol, prop, depth, ax_con_int_list[i])
+        else:
+            ax_ligand_ac_con = atom_only_autocorrelation(ax_ligand_list[i].mol, prop, depth, ax_con_int_list[i])
     ax_ligand_ac_con = np.divide(ax_ligand_ac_con, n_ax)
     for i in range(0, n_eq):
-        if not list(eq_ligand_ac_con):
-            eq_ligand_ac_con = atom_only_autocorrelation(eq_ligand_list[i].mol, prop, depth, eq_con_int_list[i])
-        else:
+        if list(eq_ligand_ac_con):
             eq_ligand_ac_con += atom_only_autocorrelation(eq_ligand_list[i].mol, prop, depth, eq_con_int_list[i])
+        else:
+            eq_ligand_ac_con = atom_only_autocorrelation(eq_ligand_list[i].mol, prop, depth, eq_con_int_list[i])
     eq_ligand_ac_con = np.divide(eq_ligand_ac_con, n_eq)
 
     return ax_ligand_ac_full, eq_ligand_ac_full, ax_ligand_ac_con, eq_ligand_ac_con
@@ -1797,16 +1797,16 @@ def find_ligand_autocorrelation_derivatives_oct(mol, prop, loud, depth, name=Fal
     # #                                    ax_con_int_list ,eq_con_int_list
     # # with types: eq/ax_ligand_list list of mol3D
     # #             eq/ax_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
-    if not custom_ligand_dict:
-        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=oct)
-        (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list,
-         eq_con_int_list, ax_con_list, eq_con_list, built_ligand_list) = ligand_assign_original(
-            mol, liglist, ligdents, ligcons, loud, name=False)
-    else:
+    if custom_ligand_dict:
         ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
         eq_ligand_list = custom_ligand_dict["eq_ligand_list"]
         ax_con_int_list = custom_ligand_dict["ax_con_int_list"]
         eq_con_int_list = custom_ligand_dict["eq_con_int_list"]
+    else:
+        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=oct)
+        (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list,
+         eq_con_int_list, ax_con_list, eq_con_list, built_ligand_list) = ligand_assign_original(
+            mol, liglist, ligdents, ligcons, loud, name=False)
     # Count ligands.
     n_ax = len(ax_ligand_list)
     n_eq = len(eq_ligand_list)
@@ -1869,9 +1869,7 @@ def find_ligand_autocorrs_and_deltametrics_oct_dimers(mol, prop, depth, name=Fal
     # #                                    ax_con_int_list ,eq_con_int_list
     # # with types: eq/ax_ligand_list list of mol3D
     # #             eq/ax_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
-    if not custom_ligand_dict:
-        raise ValueError('No custom ligand dict provided!')
-    else:
+    if custom_ligand_dict:
         ax1_ligand_list = custom_ligand_dict["ax1_ligand_list"]
         ax2_ligand_list = custom_ligand_dict["ax2_ligand_list"]
         ax3_ligand_list = custom_ligand_dict["ax3_ligand_list"]
@@ -1881,6 +1879,8 @@ def find_ligand_autocorrs_and_deltametrics_oct_dimers(mol, prop, depth, name=Fal
         axligs = [ax1_ligand_list, ax2_ligand_list, ax3_ligand_list]
         axcons = [ax1_con_int_list, ax2_con_int_list, ax3_con_int_list]
         n_axs = [len(i) for i in axligs]
+    else:
+        raise ValueError('No custom ligand dict provided!')
 
     # Get full ligand AC.
     ax_ligand_ac_fulls = [False, False, False]
@@ -1888,10 +1888,10 @@ def find_ligand_autocorrs_and_deltametrics_oct_dimers(mol, prop, depth, name=Fal
     for axnum in range(3):
         ax_ligand_ac_full = list()
         for i in range(0, n_axs[axnum]):
-            if not list(ax_ligand_ac_full):
-                ax_ligand_ac_full = full_autocorrelation(axligs[axnum][i].mol, prop, depth)
-            else:
+            if list(ax_ligand_ac_full):
                 ax_ligand_ac_full += full_autocorrelation(axligs[axnum][i].mol, prop, depth)
+            else:
+                ax_ligand_ac_full = full_autocorrelation(axligs[axnum][i].mol, prop, depth)
         ax_ligand_ac_full = np.divide(ax_ligand_ac_full, n_axs[axnum])
         ax_ligand_ac_fulls[axnum] = ax_ligand_ac_full
 
@@ -1901,10 +1901,10 @@ def find_ligand_autocorrs_and_deltametrics_oct_dimers(mol, prop, depth, name=Fal
     for axnum in range(3):
         ax_ligand_ac_con = list()
         for i in range(0, n_axs[axnum]):
-            if not list(ax_ligand_ac_con):
-                ax_ligand_ac_con = atom_only_autocorrelation(axligs[axnum][i].mol, prop, depth, axcons[axnum][i])
-            else:
+            if list(ax_ligand_ac_con):
                 ax_ligand_ac_con += atom_only_autocorrelation(axligs[axnum][i].mol, prop, depth, axcons[axnum][i])
+            else:
+                ax_ligand_ac_con = atom_only_autocorrelation(axligs[axnum][i].mol, prop, depth, axcons[axnum][i])
         ax_ligand_ac_con = np.divide(ax_ligand_ac_con, n_axs[axnum])
         ax_ligand_ac_cons[axnum] = ax_ligand_ac_con
 
@@ -1914,10 +1914,10 @@ def find_ligand_autocorrs_and_deltametrics_oct_dimers(mol, prop, depth, name=Fal
     for axnum in range(3):
         ax_delta_con = list()
         for i in range(0, n_axs[axnum]):
-            if not list(ax_delta_con):
-                ax_delta_con = atom_only_deltametric(axligs[axnum][i].mol, prop, depth, axcons[axnum][i])
-            else:
+            if list(ax_delta_con):
                 ax_delta_con += atom_only_deltametric(axligs[axnum][i].mol, prop, depth, axcons[axnum][i])
+            else:
+                ax_delta_con = atom_only_deltametric(axligs[axnum][i].mol, prop, depth, axcons[axnum][i])
         ax_delta_con = np.divide(ax_delta_con, n_axs[axnum])
         ax_delta_cons[axnum] = ax_delta_con
 
@@ -1933,16 +1933,16 @@ def find_ligand_deltametrics_oct(mol, prop, loud, depth, name=False, oct=True, c
     # # octahedral complex
     # # and returns deltametrics for
     # # the axial and equatorial ligands.
-    if not custom_ligand_dict:
-        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=oct)
-        (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list,
-         eq_con_int_list, ax_con_list, eq_con_list, built_ligand_list) = ligand_assign_original(
-            mol, liglist, ligdents, ligcons, loud, name=False)
-    else:
+    if custom_ligand_dict:
         ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
         eq_ligand_list = custom_ligand_dict["eq_ligand_list"]
         ax_con_int_list = custom_ligand_dict["ax_con_int_list"]
         eq_con_int_list = custom_ligand_dict["eq_con_int_list"]
+    else:
+        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=oct)
+        (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list,
+         eq_con_int_list, ax_con_list, eq_con_list, built_ligand_list) = ligand_assign_original(
+            mol, liglist, ligdents, ligcons, loud, name=False)
     # Count ligands.
     n_ax = len(ax_ligand_list)
     n_eq = len(eq_ligand_list)
@@ -1952,16 +1952,16 @@ def find_ligand_deltametrics_oct(mol, prop, loud, depth, name=False, oct=True, c
     eq_ligand_ac_con = []
 
     for i in range(0, n_ax):
-        if not list(ax_ligand_ac_con):
-            ax_ligand_ac_con = atom_only_deltametric(ax_ligand_list[i].mol, prop, depth, ax_con_int_list[i])
-        else:
+        if list(ax_ligand_ac_con):
             ax_ligand_ac_con += atom_only_deltametric(ax_ligand_list[i].mol, prop, depth, ax_con_int_list[i])
+        else:
+            ax_ligand_ac_con = atom_only_deltametric(ax_ligand_list[i].mol, prop, depth, ax_con_int_list[i])
     ax_ligand_ac_con = np.divide(ax_ligand_ac_con, n_ax)
     for i in range(0, n_eq):
-        if not list(eq_ligand_ac_con):
-            eq_ligand_ac_con = atom_only_deltametric(eq_ligand_list[i].mol, prop, depth, eq_con_int_list[i])
-        else:
+        if list(eq_ligand_ac_con):
             eq_ligand_ac_con += atom_only_deltametric(eq_ligand_list[i].mol, prop, depth, eq_con_int_list[i])
+        else:
+            eq_ligand_ac_con = atom_only_deltametric(eq_ligand_list[i].mol, prop, depth, eq_con_int_list[i])
     eq_ligand_ac_con = np.divide(eq_ligand_ac_con, n_eq)
 
     return ax_ligand_ac_con, eq_ligand_ac_con
@@ -1976,16 +1976,16 @@ def find_ligand_deltametric_derivatives_oct(mol, prop, loud, depth, name=False, 
     # # octahedral complex
     # # and returns deltametrics for
     # # the axial and equatorial ligands.
-    if not custom_ligand_dict:
-        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=oct)
-        (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list,
-         eq_con_int_list, ax_con_list, eq_con_list, built_ligand_list) = ligand_assign_original(
-            mol, liglist, ligdents, ligcons, loud, name=False)
-    else:
+    if custom_ligand_dict:
         ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
         eq_ligand_list = custom_ligand_dict["eq_ligand_list"]
         ax_con_int_list = custom_ligand_dict["ax_con_int_list"]
         eq_con_int_list = custom_ligand_dict["eq_con_int_list"]
+    else:
+        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=oct)
+        (ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list,
+         eq_con_int_list, ax_con_list, eq_con_list, built_ligand_list) = ligand_assign_original(
+            mol, liglist, ligdents, ligcons, loud, name=False)
 
     # Count ligands.
     n_ax = len(ax_ligand_list)

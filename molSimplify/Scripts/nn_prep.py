@@ -159,16 +159,17 @@ def get_con_at_type(mol, connection_atoms: List[Union[int, str]]) -> Tuple[bool,
         for atoms in connection_atoms:
             this_symbol = mol.getAtom(atoms).symbol()
             if not (this_symbol == this_type):
-                if not been_set:
+                if been_set:
+                    print('different connection atoms in one ligand')
+                    valid = False
+                else:
                     this_type = this_symbol
                     # RM 2022/08/10: added this because I assume this was the
                     # original intention to avoid multidentate ligands with
                     # connecting atoms of different types. Otherwise I have no
                     # idea what 'been_set' was intended for (previously unused)
                     been_set = True
-                else:
-                    print('different connection atoms in one ligand')
-                    valid = False
+
         if this_type not in ['C', 'O', 'Cl', 'N', 'S']:
             valid = False
             print(('untrained atom type: ', this_type))
@@ -445,10 +446,10 @@ def ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
 
     r_ls = get_ls_dist(nn_excitation)
     r_hs = get_hs_dist(nn_excitation)
-    if not high_spin:
-        r = r_ls
-    else:
+    if high_spin:
         r = r_hs
+    else:
+        r = r_ls
 
     print('ANN bond length is predicted to be: ' +
            "{0:.2f}".format(float(r)) + ' angstrom')

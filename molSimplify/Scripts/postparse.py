@@ -459,16 +459,17 @@ def gampost(resfiles, folder, flog):
             else:
                 tm = 'NOT DONE'
             # construct string record of results
-            if not error:
+            if error:
+                tt = resfold.ljust(40)+comp.ljust(12) + \
+                    'ERROR in the calculation\n'
+            else:
                 tt = resfold.ljust(50)+method.ljust(9) + \
                     apgga.ljust(8)+aplda.ljust(8)
                 tt += optim.ljust(9)+conv.ljust(9) + \
                     nosteps.ljust(8)+ssq.ljust(9)+spin.ljust(8)
                 tt += tcharge.ljust(6) + \
                     "{:10.6f}".format(float(en)).ljust(14)+tm+'\n'
-            else:
-                tt = resfold.ljust(40)+comp.ljust(12) + \
-                    'ERROR in the calculation\n'
+
             text.append(tt)
     # sort alphabetically and print
     text = sorted(text)

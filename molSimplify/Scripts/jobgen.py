@@ -36,18 +36,28 @@ def sgejobgen(args, jobdirs):
         output.append('#$ -N %s\n' % (jobname))
         output.append('#$ -R y\n')
         output.append('#$ -cwd\n')
-        if not args.wtime:
-            output.append('#$ -l h_rt=168:00:00\n')
-        else:
+        if args.wtime:
             wtime = args.wtime.split(':')[0]
             wtime = wtime.split('h')[0]
             output.append('#$ -l h_rt='+wtime+':00:00\n')
-        if not args.memory:
-            output.append('#$ -l h_rss=8G\n')
         else:
+            output.append('#$ -l h_rt=168:00:00\n')
+        if args.memory:
             mem = args.memory.split('G')[0]
             output.append('#$ -l h_rss='+mem+'G\n')
-        if not args.queue:
+        else:
+            output.append('#$ -l h_rss=8G\n')
+
+        if args.queue:
+            output.append('#$ -q '+args.queue+'\n')
+            if args.cpus:
+                output.append('#$ -l cpus='+args.cpus+'\n')
+                cpus = args.cpus
+            elif args.gpus:
+                output.append('#$ -l gpus='+args.gpus+'\n')
+            else:
+                output.append('#$ -l gpus=1\n')
+        else:
             if args.qccode and args.qccode in 'terachem TeraChem TERACHEM tc TC Terachem':
                 output.append('#$ -q gpus\n')
                 if args.gpus:
@@ -61,15 +71,7 @@ def sgejobgen(args, jobdirs):
                     cpus = args.cpus
                 else:
                     output.append('#$ -l cpus=1\n')
-        else:
-            output.append('#$ -q '+args.queue+'\n')
-            if args.cpus:
-                output.append('#$ -l cpus='+args.cpus+'\n')
-                cpus = args.cpus
-            elif args.gpus:
-                output.append('#$ -l gpus='+args.gpus+'\n')
-            else:
-                output.append('#$ -l gpus=1\n')
+
         if args.gpus:
             output.append('#$ -pe smp '+args.gpus+'\n')
         elif args.cpus:
@@ -179,24 +181,27 @@ def slurmjobgen(args, jobdirs):
         output.append('#SBATCH --job-name=%s\n' % (jobname))
         output.append('#SBATCH --output=batch.log\n')
         output.append('#SBATCH --export=ALL\n')
-        if not args.wtime:
-            output.append('#SBATCH -t 168:00:00\n')
-        else:
+        if args.wtime:
             wtime = args.wtime.split(':')[0]
             wtime = wtime.split('h')[0]
             output.append('#SBATCH -t '+wtime+':00:00\n')
-        if not args.memory:
-            output.append('#SBATCH --mem==8G\n')
         else:
+            output.append('#SBATCH -t 168:00:00\n')
+
+        if args.memory:
             mem = args.memory.split('G')[0]
             output.append('#SBATCH --mem='+mem+'G\n')
-        if not args.queue:
+        else:
+            output.append('#SBATCH --mem==8G\n')
+
+        if args.queue:
+            output.append('#SBATCH --partition='+args.queue+'\n')
+        else:
             if args.qccode and args.qccode in 'terachem TeraChem TERACHEM tc TC Terachem':
                 output.append('#SBATCH --partition=gpus\n')
             else:
                 output.append('#SBATCH --partition=cpus\n')
-        else:
-            output.append('#SBATCH --partition='+args.queue+'\n')
+
         nod = False
         nnod = False
         if args.joption:

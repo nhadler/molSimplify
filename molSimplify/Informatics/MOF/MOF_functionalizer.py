@@ -1625,12 +1625,12 @@ def main():
                 mkdir_if_absent(super_func_folder)
 
                 func_folder = f'{base_write_path}/{MOF}_{num_func}_functionalization/{func}'
-                if not os.path.exists(func_folder):
+                if os.path.exists(func_folder):
+                    continue
+                else:
                     os.mkdir(func_folder) # Making the folder if it doesn't exist yet.
                     functionalize_MOF(f'{base_database_path_primitive}/{MOF}.cif', func_folder,
                         path_between_functionalizations=path, functionalization_limit=num_func, functional_group=func)
-                else:
-                    continue
 
     # Functionalize by index.
     index_func_folder = f'{mofname}_index_func'

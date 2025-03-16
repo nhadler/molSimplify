@@ -28,10 +28,10 @@ from molSimplify.Scripts.postparse import (gampost,
 
 
 def checkmultiwfn(mdir):
-    if not glob.glob(mdir):
-        return False
-    else:
+    if glob.glob(mdir):
         return True
+    else:
+        return False
 
 # Main postprocessing driver
 #  @param rundir Runs directory

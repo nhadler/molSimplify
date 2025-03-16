@@ -464,6 +464,7 @@ def make_MOF_linker_RACs(
                 ligand_ac_full = full_autocorrelation(linker_mol, properties, depth, oct=False)  # RACs
             else:
                 ligand_ac_full += full_autocorrelation(linker_mol, properties, depth, oct=False)
+
             this_colnames = []
             for j in range(0, depth+1):
                 this_colnames.append('f-lig-'+labels_strings[ii] + '-' + str(j))
@@ -1024,15 +1025,7 @@ def get_MOF_descriptors(
     """""""""
     Getting the adjacency matrix.
     """""""""
-    if not graph_provided:  # Make the adjacency matrix.
-        distance_mat = compute_distance_matrix(cell_v, cart_coords)
-        try:
-            adj_matrix, _ = compute_adj_matrix(distance_mat, all_atom_types, wiggle_room)
-        except NotImplementedError:
-            failure_str = f"Failed to featurize {name}: Atomic overlap.\n"
-            full_names, full_descriptors = failure_response(path, failure_str)
-            return full_names, full_descriptors
-    else:  # Grab the adjacency matrix from the cif file.
+    if graph_provided:  # Grab the adjacency matrix from the cif file.
         adj_matrix_list = []
         max_sofar = 0
         with open(data.replace('primitive', 'cif'), 'r') as f:
@@ -1053,6 +1046,15 @@ def get_MOF_descriptors(
         for i, row in enumerate(adj_matrix_list):
             adj_matrix[row[0], row[1]] = 1  # 1 is indicative of a bond.
             adj_matrix[row[1], row[0]] = 1
+    else:  # Make the adjacency matrix.
+        distance_mat = compute_distance_matrix(cell_v, cart_coords)
+        try:
+            adj_matrix, _ = compute_adj_matrix(distance_mat, all_atom_types, wiggle_room)
+        except NotImplementedError:
+            failure_str = f"Failed to featurize {name}: Atomic overlap.\n"
+            full_names, full_descriptors = failure_response(path, failure_str)
+            return full_names, full_descriptors
+
     adj_matrix = sparse.csr_matrix(adj_matrix)
 
     writeXYZandGraph(xyz_path, all_atom_types, cell_v, fcoords, adj_matrix.todense())
@@ -1193,14 +1195,7 @@ def get_MOF_descriptors(
                     at.coords() for at in [molcif.getAtom(val) for val in sbu_temp]])
                 sbu_adjmat = slice_mat(adj_matrix.todense(), sbu_temp)
                 pr_image_sbu = ligand_detect(cell_v, sbu_cart_coords, sbu_adjmat, set(range(len(linker_anchors_list))))  # Periodic images for the SBU
-                if not (len(np.unique(pr_image_sbu, axis=0)) == 1 and len(np.unique(pr_image_organic, axis=0)) == 1):   # Linker. More than one periodic image for sbu or organic component.
-                    max_min_linker_length = max(min_length, max_min_linker_length)
-                    min_max_linker_length = min(max_length, min_max_linker_length)
-                    tmpstr = str(name)+','+' Anchors list: '+str(sbu_anchors_list) \
-                        + ',' + ' SBU connectlist: ' + str(sbu_connect_list) + ' set to be linker\n'
-                    write2file(ligand_path, "/ambiguous.txt", tmpstr)
-                    continue
-                else: # All anchoring atoms are in the same unitcell -> ligand
+                if len(np.unique(pr_image_sbu, axis=0)) == 1 and len(np.unique(pr_image_organic, axis=0)) == 1: # All anchoring atoms are in the same unitcell -> ligand
                     remove_list.update(set(templist[ii]))  # We also want to remove these ligands.
                     SBU_list.update(set(templist[ii]))     # We also want to remove these SBUs.
                     linker_list.pop(ii)
@@ -1211,6 +1206,14 @@ def get_MOF_descriptors(
                     tmpstr = str(name)+str(ii)+','+' Anchors list: '\
                         + str(sbu_anchors_list) + ',' + ' SBU connectlist: ' + str(sbu_connect_list) + '\n'
                     write2file(ligand_path, "/ligand.txt", tmpstr)
+                else:   # Linker. More than one periodic image for sbu or organic component.
+                    max_min_linker_length = max(min_length, max_min_linker_length)
+                    min_max_linker_length = min(max_length, min_max_linker_length)
+                    tmpstr = str(name)+','+' Anchors list: '+str(sbu_anchors_list) \
+                        + ',' + ' SBU connectlist: ' + str(sbu_connect_list) + ' set to be linker\n'
+                    write2file(ligand_path, "/ambiguous.txt", tmpstr)
+                    continue
+
         else:  # Definite ligand
             write2file(log_path, "/%s.log" % name, "found ligand\n")
             remove_list.update(set(templist[ii]))  # We also want to remove these ligands.
@@ -1240,7 +1243,18 @@ def get_MOF_descriptors(
     linker_length_list = [len(linker_val) for linker_val in linker_list]
     if len(set(linker_length_list)) != 1:
         write2file(linker_path, "/uneven.txt", str(name)+'\n')  # Linkers are different lengths.
-    if not min_max_linker_length < 2:  # Treating the 2 atom ligands differently! Need caution.
+    if min_max_linker_length < 2:
+        tmpstr = "Structure %s has extremely short ligands, check the outputs\n" % name
+        write2file(ligand_path, "/ambiguous.txt", tmpstr)
+        tmpstr = "Structure has extremely short ligands\n"
+        write2file(log_path, "/%s.log" % name, tmpstr)
+        tmpstr = "Structure has extremely short ligands\n"
+        write2file(log_path, "/%s.log" % name, tmpstr)
+        truncated_linkers = all_atoms - remove_list
+        SBU_list, SBU_subgraphlist = get_closed_subgraph(remove_list, truncated_linkers, adj_matrix)
+        SBU_list, SBU_subgraphlist = include_extra_shells(SBU_list, molcif, adj_matrix)
+        SBU_list, SBU_subgraphlist = include_extra_shells(SBU_list, molcif, adj_matrix)
+    else:  # Treating the 2 atom ligands differently! Need caution.
         if long_ligands:
             tmpstr = "\nStructure has LONG ligand\n\n"
             write2file(log_path, "/%s.log" % name, tmpstr)
@@ -1253,17 +1267,7 @@ def get_MOF_descriptors(
             tmpstr = "\nStructure has SHORT ligand\n\n"
             write2file(log_path, "/%s.log" % name, tmpstr)
             SBU_list, SBU_subgraphlist = include_extra_shells(SBU_list, molcif, adj_matrix)
-    else:
-        tmpstr = "Structure %s has extremely short ligands, check the outputs\n" % name
-        write2file(ligand_path, "/ambiguous.txt", tmpstr)
-        tmpstr = "Structure has extremely short ligands\n"
-        write2file(log_path, "/%s.log" % name, tmpstr)
-        tmpstr = "Structure has extremely short ligands\n"
-        write2file(log_path, "/%s.log" % name, tmpstr)
-        truncated_linkers = all_atoms - remove_list
-        SBU_list, SBU_subgraphlist = get_closed_subgraph(remove_list, truncated_linkers, adj_matrix)
-        SBU_list, SBU_subgraphlist = include_extra_shells(SBU_list, molcif, adj_matrix)
-        SBU_list, SBU_subgraphlist = include_extra_shells(SBU_list, molcif, adj_matrix)
+
 
     """""""""
     For the cases that have a linker subgraph, do the featurization.

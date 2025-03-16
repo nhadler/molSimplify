@@ -17,15 +17,16 @@ def generate_all_ligand_misc(mol, loud, custom_ligand_dict=False, force_legacy=F
         colnames = ['dent', 'maxDEN', 'ki', 'tki', 'charge']
     else:
         colnames = ['dent', 'charge']
-    if not custom_ligand_dict:
-        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
-        ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list, eq_con_int_list, ax_con_list, eq_con_list, built_ligand_list = ligand_assign_original(
-            mol, liglist, ligdents, ligcons, loud, name=False)
-    else:
+    if custom_ligand_dict:
         ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
         eq_ligand_list = custom_ligand_dict["eq_ligand_list"]
         ax_con_int_list = custom_ligand_dict["ax_con_int_list"]
         eq_con_int_list = custom_ligand_dict["eq_con_int_list"]
+    else:
+        liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
+        ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list, eq_con_int_list, ax_con_list, eq_con_list, built_ligand_list = ligand_assign_original(
+            mol, liglist, ligdents, ligcons, loud, name=False)
+
     # count ligands
     n_ax = len(ax_ligand_list)
     n_eq = len(eq_ligand_list)
@@ -44,16 +45,7 @@ def generate_all_ligand_misc(mol, loud, custom_ligand_dict=False, force_legacy=F
     if n_ax > 0:
         for i in range(0, n_ax):
             ax_ligand_list[i].mol.convert2OBMol()
-            if not (i == 0):
-                result_ax_dent += ax_ligand_list[i].dent
-                if force_legacy:
-                    result_ax_maxdelen += get_lig_EN(
-                        ax_ligand_list[i].mol, ax_con_int_list[i])
-                    result_ax_ki += kier(ax_ligand_list[i].mol)
-                    result_ax_tki += get_truncated_kier(
-                        ax_ligand_list[i].mol, ax_con_int_list[i])
-                result_ax_charge += ax_ligand_list[i].mol.OBMol.GetTotalCharge()
-            else:
+            if i == 0:
                 result_ax_dent = ax_ligand_list[i].dent
                 if force_legacy:
                     result_ax_maxdelen = get_lig_EN(
@@ -62,6 +54,16 @@ def generate_all_ligand_misc(mol, loud, custom_ligand_dict=False, force_legacy=F
                     result_ax_tki = get_truncated_kier(
                         ax_ligand_list[i].mol, ax_con_int_list[i])
                 result_ax_charge = ax_ligand_list[i].mol.OBMol.GetTotalCharge()
+            else:
+                result_ax_dent += ax_ligand_list[i].dent
+                if force_legacy:
+                    result_ax_maxdelen += get_lig_EN(
+                        ax_ligand_list[i].mol, ax_con_int_list[i])
+                    result_ax_ki += kier(ax_ligand_list[i].mol)
+                    result_ax_tki += get_truncated_kier(
+                        ax_ligand_list[i].mol, ax_con_int_list[i])
+                result_ax_charge += ax_ligand_list[i].mol.OBMol.GetTotalCharge()
+
         # average axial results
         result_ax_dent = np.divide(result_ax_dent, n_ax)
         if force_legacy:
@@ -74,16 +76,7 @@ def generate_all_ligand_misc(mol, loud, custom_ligand_dict=False, force_legacy=F
     if n_eq > 0:
         for i in range(0, n_eq):
             eq_ligand_list[i].mol.convert2OBMol()
-            if not (i == 0):
-                result_eq_dent += eq_ligand_list[i].dent
-                if force_legacy:
-                    result_eq_maxdelen += get_lig_EN(
-                        eq_ligand_list[i].mol, eq_con_int_list[i])
-                    result_eq_ki += kier(eq_ligand_list[i].mol)
-                    result_eq_tki += get_truncated_kier(
-                        eq_ligand_list[i].mol, eq_con_int_list[i])
-                result_eq_charge += eq_ligand_list[i].mol.OBMol.GetTotalCharge()
-            else:
+            if i == 0:
                 result_eq_dent = eq_ligand_list[i].dent
                 if force_legacy:
                     result_eq_maxdelen = get_lig_EN(
@@ -92,6 +85,16 @@ def generate_all_ligand_misc(mol, loud, custom_ligand_dict=False, force_legacy=F
                     result_eq_tki = get_truncated_kier(
                         eq_ligand_list[i].mol, eq_con_int_list[i])
                 result_eq_charge = eq_ligand_list[i].mol.OBMol.GetTotalCharge()
+            else:
+                result_eq_dent += eq_ligand_list[i].dent
+                if force_legacy:
+                    result_eq_maxdelen += get_lig_EN(
+                        eq_ligand_list[i].mol, eq_con_int_list[i])
+                    result_eq_ki += kier(eq_ligand_list[i].mol)
+                    result_eq_tki += get_truncated_kier(
+                        eq_ligand_list[i].mol, eq_con_int_list[i])
+                result_eq_charge += eq_ligand_list[i].mol.OBMol.GetTotalCharge()
+
         # average eq results
         result_eq_dent = np.divide(result_eq_dent, n_eq)
         if force_legacy:
@@ -129,12 +132,7 @@ def generate_all_ligand_misc_dimers(mol, loud, custom_ligand_dict=False):
     result_ax3 = list()
     result_axs = [result_ax1, result_ax2, result_ax3]
     colnames = ['dent', 'maxDEN', 'ki', 'tki', 'charge']
-    if not custom_ligand_dict:
-        raise ValueError('No custom_ligand_dict provided!')
-        #liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True)
-        # ax_ligand_list, eq_ligand_list, ax_natoms_list, eq_natoms_list, ax_con_int_list, eq_con_int_list, ax_con_list, eq_con_list, built_ligand_list = ligand_assign_original(
-        #    mol, liglist, ligdents, ligcons, loud, name=False)
-    else:
+    if custom_ligand_dict:
         ax1_ligand_list = custom_ligand_dict["ax1_ligand_list"]
         ax2_ligand_list = custom_ligand_dict["ax2_ligand_list"]
         ax3_ligand_list = custom_ligand_dict["ax3_ligand_list"]
@@ -144,6 +142,9 @@ def generate_all_ligand_misc_dimers(mol, loud, custom_ligand_dict=False):
         axligs = [ax1_ligand_list, ax2_ligand_list, ax3_ligand_list]
         axcons = [ax1_con_int_list, ax2_con_int_list, ax3_con_int_list]
         n_axs = [len(i) for i in axligs]
+    else:
+        raise ValueError('No custom_ligand_dict provided!')
+
     # allocate
     '''
         result_ax_dent = False

@@ -68,17 +68,18 @@ class run_diag:
         if not self.ANN_is_set:
             self.ANN_is_set = True
         self.ANN_flag = ANN_flag
-        if not ANN_flag:
-            self.ANN_reason = ANN_reason
-        elif ANN_flag:
+        if ANN_flag:
             self.ANN_attributes = ANN_dict
+        else:
+            self.ANN_reason = ANN_reason
+
         if not self.catalysis_is_set:
             self.catalysis_is_set = True
         self.catalysis_flag = catalysis_flag
-        if not catalysis_flag:
-            self.catalysis_reason = catalysis_reason
-        elif catalysis_flag:
+        if catalysis_flag:
             self.ANN_attributes = ANN_dict
+        else:
+            self.catalysis_reason = catalysis_reason
 
     def set_dict_bl(self, dict_bl):
         """Set the ANN properties.
@@ -128,22 +129,24 @@ class run_diag:
                     report.append('Min_dist (A), ' + str(self.min_dist))
             if self.ANN_is_set:
                 report.append('Was ANN used?, '+str(self.ANN_flag))
-                if not self.ANN_flag:
-                    report.append('ANN reason, ' + str(self.ANN_reason))
-                else:
+                if self.ANN_flag:
                     for keys in list(self.ANN_attributes.keys()):
                         report.append(str(keys) + ', ' +
                                       str(self.ANN_attributes[keys]))
+                else:
+                    report.append('ANN reason, ' + str(self.ANN_reason))
+
             if self.catalysis_is_set:
                 report.append('Was Catalytic ANN used?, ' +
                               str(self.catalysis_flag))
-                if not self.catalysis_flag:
-                    report.append('Catalytic ANN reason, ' +
-                                  str(self.catalysis_reason))
-                else:
+                if self.catalysis_flag:
                     for keys in list(self.ANN_attributes.keys()):
                         report.append(str(keys) + ', ' +
                                       str(self.ANN_attributes[keys]))
+                else:
+                    report.append('Catalytic ANN reason, ' +
+                                  str(self.catalysis_reason))
+
             if self.bl_is_set:
                 report.append('ML-bl (database, A), ' + str(self.dict_bondl))
         with open(path, 'w') as f:
