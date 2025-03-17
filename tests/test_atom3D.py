@@ -92,7 +92,7 @@ def test_setcoords(coords):
 @pytest.mark.parametrize(
 	"sym, mass, atno, rad",
 	[
-	("B", 10.83, 5, 0.85),
+	("B", 10.81, 5, 0.85),
 	("Tc", 98.9, 43, 1.56),
 	("Cs", 132.9055, 55, 2.32),
 	])
