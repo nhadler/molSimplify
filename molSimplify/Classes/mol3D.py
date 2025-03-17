@@ -3942,7 +3942,7 @@ class mol3D:
 
         Returns
         -------
-            results, dict
+            results : dict
                 Dictionary of {'RACname':RAC} for all geo-based RACs
         """
 
