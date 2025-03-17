@@ -16,7 +16,7 @@ from typing import Dict, Tuple
 from molSimplify.utils.metaclasses import Singleton
 import numpy as np
 
-# Dictionary containing atomic mass, atomic number, covalent radius, num valence electrons
+# Dictionary containing atomic mass (amu), atomic number, covalent radius (Å), num valence electrons
 # Data from http://www.webelements.com/ (last accessed May 13th 2015)
 amassdict = {'X': (1.0, 0, 0.77, 0), 'H': (1.0079, 1, 0.37, 1),
              'D': (2.0141, 1, 0.37, 1), 'He': (4.002602, 2, 0.46, 2),
@@ -290,7 +290,7 @@ poldict = {"H": 4.50711, "He": 1.38375,
            "Eu": 184, "Gd": 158, "Tb": 170, "Dy": 163, "Ho": 156, "Er": 150, "Tm": 144,
            "Yb": 139, "Lu": 137, "Hf": 103, "Ta": 74, "W": 68, "Re": 62, "Os": 57, "Ir": 54,
            "Pt": 48, "Au": 36, "Hg": 33.91, "Tl": 50, "Pb": 47, "Bi": 48, "Po": 44, "At": 42,
-           "Rn": 35, "Fr": 317.8, "Ra": 246, "Ac": 203, "Th": 217,"Pa": 154, "U": 129, "Np": 151, "Pu": 132,
+           "Rn": 35, "Fr": 317.8, "Ra": 246, "Ac": 203, "Th": 217, "Pa": 154, "U": 129, "Np": 151, "Pu": 132,
            "Am": 131, "Cm": 144, "Bk": 125, "Cf": 122, "Es": 118, "Fm": 113, "Md": 109, "No": 110,
            "Lr": 320, "Rf": 112, "Db": 42, "Sg": 40, "Bh": 38, "Hs": 36, "Mt": 34, "Ds": 32,
            "Rg": 32, "Cn": 28, "Nh": 29, "Fl": 31, "Mc": 71, "Ts": 76, "Og": 58}
