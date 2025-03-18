@@ -89,7 +89,8 @@ def get_descriptor_vector(this_complex,
         MRdiag_dict : dict, optional
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
         depth : int, optional
-            The depth of the RACs (how many bonds out the RACs go).
+            The maximum depth of the RACs (how many bonds out the RACs go).
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
 
     Returns
     -------

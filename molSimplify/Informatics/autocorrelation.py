@@ -110,7 +110,8 @@ def autocorrelation(mol, prop_vec, orig, d, oct=True, use_dist=False, size_norma
         orig : int
             Zero-indexed starting atom.
         d : int
-            Number of hops to travel.
+            Maximum number of hops to travel.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         oct : bool, optional
             Flag is octahedral complex, by default True.
         use_dist : bool, optional
@@ -170,7 +171,8 @@ def autocorrelation_derivative(mol, prop_vec, orig, d, oct=True):
         orig : int
             Zero-indexed starting atom.
         d : int
-            Number of hops to travel.
+            Maximum number of hops to travel.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         oct : bool, optional
             Flag is octahedral complex, by default True.
 
@@ -223,7 +225,8 @@ def deltametric(mol, prop_vec, orig, d, oct=True, use_dist=False, size_normalize
         orig : int
             Zero-indexed starting atom.
         d : int
-            Number of hops to travel.
+            Maximum number of hops to travel.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         oct : bool, optional
             Flag is octahedral complex, by default True.
         use_dist : bool, optional
@@ -278,7 +281,8 @@ def deltametric_derivative(mol, prop_vec, orig, d, oct=True):
         orig : int
             Zero-indexed starting atom.
         d : int
-            Number of hops to travel.
+            Maximum number of hops to travel.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         oct : bool, optional
             Flag is octahedral complex, by default True.
 
@@ -464,7 +468,8 @@ def full_autocorrelation(mol, prop, d, oct=True, modifier=False, use_dist=False,
         prop : str
             Property to evaluate.
         d : int
-            Depth of full scope autocorrelation.
+            Maximum depth of full scope autocorrelation.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         oct : bool, optional
             Is octahedral flag, by default True.
         modifier : bool, optional
@@ -505,7 +510,8 @@ def full_autocorrelation_derivative(mol, prop, d, oct=True, modifier=False):
         prop : str
             Property to evaluate.
         d : int
-            Depth of scope to evaluate.
+            Maximum depth of scope to evaluate.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         oct : bool, optional
             Is octahedral flag, by default True.
         use_dist : bool, optional
@@ -546,7 +552,8 @@ def generate_full_complex_autocorrelations(mol,
         mol : mol3D
             Molecule used for full scope.
         depth : int, optional
-            Depth of autocorrelations to evaluate, by default 4.
+            Maximum depth of autocorrelations to evaluate, by default 4.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         oct : bool, optional
             Is an octahedral complex, by default True.
         flag_name : bool, optional
@@ -623,7 +630,8 @@ def generate_full_complex_autocorrelation_derivatives(mol, depth=4, oct=True, fl
         mol : mol3D
             Molecule used for full scope.
         depth : int, optional
-            Depth of autocorrelations to evaluate, by default 4.
+            Maximum depth of autocorrelations to evaluate, by default 4.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         oct : bool, optional
             Is an octahedral complex, by default True.
         flag_name : bool, optional
@@ -680,7 +688,8 @@ def atom_only_autocorrelation(mol, prop, d, atomIdx, oct=True, use_dist=False, s
         prop : str
             Property to evaluate.
         d : int
-            Depth to calculate derivatives over.
+            Maximum depth to calculate autocorrelation over.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         atomIdx : int or list
             Atoms from which the autocorrelation vector should be centered.
             List of indices or a single index.
@@ -724,7 +733,8 @@ def atom_only_autocorrelation_derivative(mol, prop, d, atomIdx, oct=True):
         prop : str
             Property to evaluate.
         d : int
-            Depth to calculate derivatives over.
+            Maximum depth to calculate derivatives over.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         atomIdx : int or list
             Atoms from which the autocorrelation vector should be centered.
             List of indices or a single index.
@@ -767,7 +777,8 @@ def metal_only_autocorrelation(
         prop : str
             Property to evaluate.
         d : int
-            Depth of autocorrelation.
+            Maximum depth of autocorrelation.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         oct : bool, optional
             Use octahedral geometry evaluations, by default True.
         func : function, optional
@@ -820,7 +831,8 @@ def metal_only_autocorrelation_derivative(
         prop : str
             Property to evaluate.
         d : int
-            Depth of autocorrelation.
+            Maximum depth of autocorrelation.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         oct : bool, optional
             Use octahedral geometry evaluations, by default True.
         func : function, optional
@@ -858,11 +870,12 @@ def atom_only_deltametric(mol, prop, d, atomIdx, oct=True, modifier=False,
     Parameters
     ----------
         mol : mol3D
-            Molecule to calculate atom-only autocorrelations from.
+            Molecule to calculate atom-only deltametrics from.
         prop : str
             Property to evaluate.
         d : int
-            Depth to calculate derivatives over.
+            Maximum depth to calculate deltametric over.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         atomIdx : int or list
             Atoms from which the autocorrelation vector should be centered.
             List of indices or a single index.
@@ -907,7 +920,8 @@ def atom_only_deltametric_derivative(mol, prop, d, atomIdx, oct=True, modifier=F
         prop : str
             Property to evaluate.
         d : int
-            Depth to calculate derivatives over.
+            Maximum depth to calculate derivatives over.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         atomIdx : int or list
             Atoms from which the autocorrelation vector should be centered.
             List of indices or a single index.
@@ -948,7 +962,8 @@ def metal_only_deltametric(
         prop : str
             Property to evaluate.
         d : int
-            Depth of deltametric.
+            Maximum depth of deltametric.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         oct : bool, optional
             Use octahedral geometry evaluations, by default True.
         func : function, optional
@@ -1000,7 +1015,8 @@ def metal_only_deltametric_derivative(
         prop : str
             Property to evaluate.
         d : int
-            Depth of deltametric.
+            Maximum depth of deltametric.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         oct : bool, optional
             Use octahedral geometry evaluations, by default True.
         func : function, optional
@@ -1041,7 +1057,8 @@ def generate_metal_autocorrelations(mol, depth=4, oct=True, flag_name=False,
         mol : mol3D
             Molecule to get mc-RACs for.
         depth : int, optional
-            Depth of RACs to calculate, by default 4.
+            Maximum depth of RACs to calculate, by default 4.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         oct : bool, optional
             Use octahedral criteria for structure evaluation, by default True.
             If complex is octahedral, will use better bond checks.
@@ -1119,7 +1136,8 @@ def generate_metal_autocorrelation_derivatives(mol, depth=4, oct=True, flag_name
         mol : mol3D
             Molecule to get mc-RAC derivatives for.
         depth : int, optional
-            Depth of RACs to calculate, by default 4.
+            Maximum depth of RACs to calculate, by default 4.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         oct : bool, optional
             Use octahedral criteria for structure evaluation, by default True.
             If complex is octahedral, will use better bond checks.
@@ -1179,7 +1197,8 @@ def generate_metal_deltametrics(mol, depth=4, oct=True, flag_name=False,
         mol : mol3D
             Molecule to get D_mc-RACs for.
         depth : int, optional
-            Depth of RACs to calculate, by default 4.
+            Maximum depth of RACs to calculate, by default 4.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         oct : bool, optional
             Use octahedral criteria for structure evaluation, by default True.
             If complex is octahedral, will use better bond checks.
@@ -1258,7 +1277,8 @@ def generate_metal_deltametric_derivatives(mol, depth=4, oct=True, flag_name=Fal
         mol : mol3D
             Molecule to get D_mc-RAC derivatives for.
         depth : int, optional
-            Depth of RACs to calculate, by default 4.
+            Maximum depth of RACs to calculate, by default 4.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         oct : bool, optional
             Use octahedral criteria for structure evaluation, by default True.
             If complex is octahedral, will use better bond checks.
@@ -1316,7 +1336,8 @@ def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, Gval=Fal
         atomIdx : int or list of int
             Index or list of indices of atoms to start autocorrelation from.
         depth : int, optional
-            Depth of autocorrelations.
+            Maximum depth of autocorrelations.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         oct : bool, optional
             Use octahedral criteria for structure evaluation, by default True.
             If complex is octahedral, will use better bond checks.
@@ -1399,7 +1420,8 @@ def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, 
         atomIdx : int
             index of atom3D class.
         depth : int, optional
-            Depth of deltametrics.
+            Maximum depth of deltametrics.
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         oct : bool, optional
             Use octahedral criteria for structure evaluation, by default True.
             If complex is octahedral, will use better bond checks.
@@ -1501,7 +1523,7 @@ def ratiometric(mol, prop_vec_num, prop_vec_den, orig, d, oct=True):
         mol : mol3D class
         prop_vec : vector, property of atoms in mol in order of index
         orig : int, zero-indexed starting atom
-        d : int, number of hops to travel
+        d : int, maximum number of hops to travel
         oct : bool, if complex is octahedral, will use better bond checks
 
     Returns
@@ -1538,7 +1560,7 @@ def summetric(mol, prop_vec, orig, d, oct=True):
         mol : mol3D class
         prop_vec : vector, property of atoms in mol in order of index
         orig : int, zero-indexed starting atom
-        d : int, number of hops to travel
+        d : int, maximum number of hops to travel
         oct : bool, if complex is octahedral, will use better bond checks
 
     Returns
