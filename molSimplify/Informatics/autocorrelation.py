@@ -115,9 +115,10 @@ def autocorrelation(mol, prop_vec, orig, d, oct=True, use_dist=False, size_norma
         oct : bool, optional
             Flag is octahedral complex, by default True.
         use_dist : bool, optional
-            Weigh autocorrelation by physical distance of atom from original, by default False.
+            Weigh autocorrelation by physical distance of scope atom from start atom,
+            by default False.
         size_normalize : bool, optional
-            Whether or not to normalize by the number of atoms.
+            Whether or not to normalize by the number of atoms in molecule.
 
     Returns
     -------
@@ -230,9 +231,10 @@ def deltametric(mol, prop_vec, orig, d, oct=True, use_dist=False, size_normalize
         oct : bool, optional
             Flag is octahedral complex, by default True.
         use_dist : bool, optional
-            Weigh autocorrelation by physical distance of atom from original, by default False.
+            Weigh autocorrelation by physical distance of scope atom from start atom,
+            by default False.
         size_normalize : bool, optional
-            Whether or not to normalize by the number of atoms.
+            Whether or not to normalize by the number of atoms in molecule.
 
     Returns
     -------
@@ -337,7 +339,7 @@ def construct_property_vector(mol, prop, oct=True, modifier=False, MRdiag_dict={
         modifier : bool, optional
             If passed - dict, used to modify prop vector (e.g., for adding
             ONLY used with  ox_nuclear_charge    ox or charge)
-            {"Fe":2, "Co": 3} etc, by default False.
+            {"Fe":2, "Co": 3} etc., by default False.
         MRdiag_dict : dict, optional
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
         transition_metals_only : bool, optional
@@ -459,7 +461,8 @@ def construct_property_vector(mol, prop, oct=True, modifier=False, MRdiag_dict={
 
 def full_autocorrelation(mol, prop, d, oct=True, modifier=False, use_dist=False, size_normalize=False, MRdiag_dict={}, transition_metals_only=True):
     """
-    Calculate full scope product autocorrelations (i.e., start at every atom up to depth d).
+    Calculate full scope product autocorrelations (i.e., start at every atom,
+    and branch out up to depth d).
 
     Parameters
     ----------
@@ -475,9 +478,10 @@ def full_autocorrelation(mol, prop, d, oct=True, modifier=False, use_dist=False,
         modifier : bool, optional
             Use ox modifier, by default False.
         use_dist : bool, optional
-            Weigh autocorrelation by distance of atoms from each other, by default False.
+            Weigh autocorrelation by physical distance of scope atom from start atom,
+            by default False.
         size_normalize : bool, optional
-            Whether or not to normalize by the number of atoms.
+            Whether or not to normalize by the number of atoms in molecule.
         MRdiag_dict : dict, optional
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
         transition_metals_only : bool, optional
@@ -515,7 +519,8 @@ def full_autocorrelation_derivative(mol, prop, d, oct=True, modifier=False):
         oct : bool, optional
             Is octahedral flag, by default True.
         use_dist : bool, optional
-            Weigh autocorrelation by physical distance of atom from original, by default False.
+            Weigh autocorrelation by physical distance of scope atom from start atom,
+            by default False.
         modifier : bool, optional
             Use ox modifier, by default False.
 
@@ -561,9 +566,10 @@ def generate_full_complex_autocorrelations(mol,
         modifier : bool, optional
             Use ox_modifier on metal charge, by default False.
         use_dist : bool, optional
-            Weigh autocorrelations by interatomic distances, by default False.
+            Weigh autocorrelation by physical distance of scope atom from start atom,
+            by default False.
         size_normalize : bool, optional
-            Whether or not to normalize by the number of atoms.
+            Whether or not to normalize by the number of atoms in molecule.
         Gval : bool, optional
             Use G value as RAC, by default False.
         NumB : bool, optional
@@ -678,8 +684,7 @@ def generate_full_complex_autocorrelation_derivatives(mol, depth=4, oct=True, fl
 
 def atom_only_autocorrelation(mol, prop, d, atomIdx, oct=True, use_dist=False, size_normalize=False, MRdiag_dict={}):
     """
-    Calculate product autocorrelation vectors from a given atom or list of atoms
-    (e.g., up to depth 4 from the connecting atoms).
+    Calculate product autocorrelation vectors from a given atom or list of atoms.
 
     Parameters
     ----------
@@ -691,14 +696,15 @@ def atom_only_autocorrelation(mol, prop, d, atomIdx, oct=True, use_dist=False, s
             Maximum depth to calculate autocorrelation over.
             For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         atomIdx : int or list of int
-            Atoms from which the autocorrelation vector should be centered.
+            Atoms from which the autocorrelation vector should be started.
             List of indices or a single index.
         oct : bool, optional
             Use octahedral flag, by default True.
         use_dist : bool, optional
-            Weigh autocorrelation by physical distance of atom from original, by default False.
+            Weigh autocorrelation by physical distance of scope atom from start atom,
+            by default False.
         size_normalize : bool, optional
-            Whether or not to normalize by the number of atoms.
+            Whether or not to normalize by the number of atoms in molecule.
         MRdiag_dict : dict, optional
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
 
@@ -787,11 +793,12 @@ def metal_only_autocorrelation(
             Use ox_modifier, by default False.
             If passed - dict, used to modify prop vector (e.g., for adding
             ONLY used with  ox_nuclear_charge    ox or charge)
-            {"Fe":2, "Co": 3} etc, by default False.
+            {"Fe":2, "Co": 3} etc., by default False.
         use_dist : bool, optional
-            Weigh autocorrelation by physical distance of atom from original, by default False.
+            Weigh autocorrelation by physical distance of scope atom from start atom,
+            by default False.
         size_normalize : bool, optional
-            Whether or not to normalize by the number of atoms.
+            Whether or not to normalize by the number of atoms in molecule.
         MRdiag_dict : dict, optional
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
         transition_metals_only : bool, optional
@@ -864,8 +871,7 @@ def metal_only_autocorrelation_derivative(
 def atom_only_deltametric(mol, prop, d, atomIdx, oct=True, modifier=False,
                           use_dist=False, size_normalize=False, MRdiag_dict={}):
     """
-    Calculate deltametric autocorrelation vectors from a given atom or list of atoms
-    (e.g., up to depth 4 from the connecting atoms).
+    Calculate deltametric autocorrelation vectors from a given atom or list of atoms.
 
     Parameters
     ----------
@@ -877,16 +883,17 @@ def atom_only_deltametric(mol, prop, d, atomIdx, oct=True, modifier=False,
             Maximum depth to calculate deltametric over.
             For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         atomIdx : int or list of int
-            Atoms from which the autocorrelation vector should be centered.
+            Atoms from which the autocorrelation vector should be started.
             List of indices or a single index.
         oct : bool, optional
             Use octahedral flag, by default True.
         modifier : bool, optional
             Use ox modifier, by default False.
         use_dist : bool, optional
-            Weigh autocorrelation by physical distance of atom from original, by default False.
+            Weigh autocorrelation by physical distance of scope atom from start atom,
+            by default False.
         size_normalize : bool, optional
-            Whether or not to normalize by the number of atoms.
+            Whether or not to normalize by the number of atoms in molecule.
         MRdiag_dict : dict, optional
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
 
@@ -972,11 +979,12 @@ def metal_only_deltametric(
             Use ox_modifier, by default False.
             If passed - dict, used to modify prop vector (e.g., for adding
             ONLY used with  ox_nuclear_charge    ox or charge)
-            {"Fe":2, "Co": 3} etc, by default False.
+            {"Fe":2, "Co": 3} etc., by default False.
         use_dist : bool, optional
-            Weigh autocorrelation by physical distance of atom from original, by default False.
+            Weigh autocorrelation by physical distance of scope atom from start atom,
+            by default False.
         size_normalize : bool, optional
-            Whether or not to normalize by the number of atoms.
+            Whether or not to normalize by the number of atoms in molecule.
         MRdiag_dict : dict, optional
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
         transition_metals_only : bool, optional
@@ -1073,9 +1081,10 @@ def generate_metal_autocorrelations(mol, depth=4, oct=True, flag_name=False,
         polarizability : bool, optional
             Use polarizability (alpha) as descriptor property, by default False.
         use_dist : bool, optional
-            Weigh autocorrelation by physical distance of atom from original, by default False.
+            Weigh autocorrelation by physical distance of scope atom from start atom,
+            by default False.
         size_normalize : bool, optional
-            Whether or not to normalize by the number of atoms.
+            Whether or not to normalize by the number of atoms in molecule.
         MRdiag_dict : dict, optional
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
         transition_metals_only : bool, optional
@@ -1213,9 +1222,10 @@ def generate_metal_deltametrics(mol, depth=4, oct=True, flag_name=False,
         polarizability : bool, optional
             Use polarizability (alpha) as descriptor property, by default False.
         use_dist : bool, optional
-            Weigh autocorrelation by physical distance of atom from original, by default False.
+            Weigh autocorrelation by physical distance of scope atom from start atom,
+            by default False.
         size_normalize : bool, optional
-            Whether or not to normalize by the number of atoms.
+            Whether or not to normalize by the number of atoms in molecule.
         MRdiag_dict : dict, optional
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
         transition_metals_only : bool, optional
@@ -1756,7 +1766,7 @@ def find_ligand_autocorrelations_oct(mol, prop, loud, depth, name=False,
     # # custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list
     # #                                    ax_con_int_list ,eq_con_int_list
     # # with types: eq/ax_ligand_list list of mol3D
-    # #             eq/ax_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
+    # #             eq/ax_con_int_list list of list/tuple of int e.g., [[1,2] [1,2]]
     if custom_ligand_dict:
         ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
         eq_ligand_list = custom_ligand_dict["eq_ligand_list"]
@@ -1820,7 +1830,7 @@ def find_ligand_autocorrelation_derivatives_oct(mol, prop, loud, depth, name=Fal
     # # custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list
     # #                                    ax_con_int_list ,eq_con_int_list
     # # with types: eq/ax_ligand_list list of mol3D
-    # #             eq/ax_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
+    # #             eq/ax_con_int_list list of list/tuple of int e.g., [[1,2] [1,2]]
     if custom_ligand_dict:
         ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
         eq_ligand_list = custom_ligand_dict["eq_ligand_list"]
@@ -1892,7 +1902,7 @@ def find_ligand_autocorrs_and_deltametrics_oct_dimers(mol, prop, depth, name=Fal
     # # custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list
     # #                                    ax_con_int_list ,eq_con_int_list
     # # with types: eq/ax_ligand_list list of mol3D
-    # #             eq/ax_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
+    # #             eq/ax_con_int_list list of list/tuple of int e.g., [[1,2] [1,2]]
     if custom_ligand_dict:
         ax1_ligand_list = custom_ligand_dict["ax1_ligand_list"]
         ax2_ligand_list = custom_ligand_dict["ax2_ligand_list"]
@@ -1952,7 +1962,7 @@ def find_ligand_deltametrics_oct(mol, prop, loud, depth, name=False, oct=True, c
     # # custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list
     # #                                    ax_con_int_list ,eq_con_int_list
     # # with types: eq/ax_ligand_list list of mol3D
-    # #             eq/ax_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
+    # #             eq/ax_con_int_list list of list/tuple of int e.g., [[1,2] [1,2]]
     # # This function takes a
     # # octahedral complex
     # # and returns deltametrics for
@@ -1995,7 +2005,7 @@ def find_ligand_deltametric_derivatives_oct(mol, prop, loud, depth, name=False, 
     # # custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list
     # #                                    ax_con_int_list ,eq_con_int_list
     # # with types: eq/ax_ligand_list list of mol3D
-    # #             eq/ax_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
+    # #             eq/ax_con_int_list list of list/tuple of int e.g., [[1,2] [1,2]]
     # # This function takes a
     # # octahedral complex
     # # and returns deltametrics for
@@ -2042,7 +2052,7 @@ def generate_all_ligand_autocorrelations(mol, loud, depth=4, name=False, flag_na
     # # custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list
     # #                                    ax_con_int_list ,eq_con_int_list
     # # with types: eq/ax_ligand_list list of mol3D
-    # #             eq/ax_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
+    # #             eq/ax_con_int_list list of list/tuple of int e.g., [[1,2] [1,2]]
     result_ax_full = list()
     result_eq_full = list()
     result_ax_con = list()
@@ -2096,7 +2106,7 @@ def generate_all_ligand_autocorrelation_derivatives(mol, loud, depth=4, name=Fal
     # # custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list
     # #                                    ax_con_int_list ,eq_con_int_list
     # # with types: eq/ax_ligand_list list of mol3D
-    # #             eq/ax_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
+    # #             eq/ax_con_int_list list of list/tuple of int e.g., [[1,2] [1,2]]
     result_ax_full = None
     result_eq_full = None
     result_ax_con = None
@@ -2158,7 +2168,7 @@ def generate_all_ligand_autocorrs_and_deltametrics_dimers(mol, loud, depth=4, na
     # # custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list
     # #                                    ax_con_int_list ,eq_con_int_list
     # # with types: eq/ax_ligand_list list of mol3D
-    # #             eq/ax_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
+    # #             eq/ax_con_int_list list of list/tuple of int e.g., [[1,2] [1,2]]
     result_ax1_full = list()
     result_ax2_full = list()
     result_ax3_full = list()
@@ -2219,7 +2229,7 @@ def generate_all_ligand_deltametrics(mol, loud, depth=4, name=False, flag_name=F
     # # custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list
     # #                                    ax_con_int_list ,eq_con_int_list
     # # with types: eq/ax_ligand_list list of mol3D
-    # #             eq/ax_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
+    # #             eq/ax_con_int_list list of list/tuple of int e.g., [[1,2] [1,2]]
 
     result_ax_con = list()
     result_eq_con = list()
@@ -2254,7 +2264,7 @@ def generate_all_ligand_deltametric_derivatives(mol, loud, depth=4, name=False, 
     # # custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list
     # #                                    ax_con_int_list ,eq_con_int_list
     # # with types: eq/ax_ligand_list list of mol3D
-    # #             eq/ax_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
+    # #             eq/ax_con_int_list list of list/tuple of int e.g., [[1,2] [1,2]]
 
     result_ax_con = None
     result_eq_con = None
@@ -2314,7 +2324,7 @@ def generate_multiatom_autocorrelations(mol, depth=4, oct=True, flag_name=False,
 def generate_metal_ox_eff_autocorrelations(oxmodifier, mol, depth=4, oct=True, flag_name=False, transition_metals_only=True):
     # # oxmodifier - dict, used to modify prop vector (e.g. for adding
     # #             ONLY used with  ox_nuclear_charge    ox or charge)
-    # #              {"Fe":2, "Co": 3} etc, normally only 1 metal...
+    # #              {"Fe":2, "Co": 3} etc., normally only 1 metal...
     #   oct - bool, if complex is octahedral, will use better bond checks
     result = list()
     colnames = []
@@ -2331,7 +2341,7 @@ def generate_metal_ox_eff_autocorrelations(oxmodifier, mol, depth=4, oct=True, f
 def generate_metal_ox_eff_deltametrics(oxmodifier, mol, depth=4, oct=True, flag_name=False, transition_metals_only=True):
     # # oxmodifier - dict, used to modify prop vector (e.g. for adding
     # #             ONLY used with  ox_nuclear_charge    ox or charge)
-    # #              {"Fe":2, "Co": 3} etc, normally only 1 metal...
+    # #              {"Fe":2, "Co": 3} etc., normally only 1 metal...
     #   oct - bool, if complex is octahedral, will use better bond checks
     result = list()
     colnames = []
@@ -2396,7 +2406,7 @@ def generate_metal_ox_autocorrelations(oxmodifier, mol, depth=4,
                                        use_dist=False, size_normalize=False):
     # # oxmodifier - dict, used to modify prop vector (e.g., for adding
     # #             ONLY used with  ox_nuclear_charge    ox or charge)
-    # #              {"Fe":2, "Co": 3} etc, normally only 1 metal...
+    # #              {"Fe":2, "Co": 3} etc., normally only 1 metal...
     #    oct - bool, if complex is octahedral, will use better bond checks
     result = list()
     colnames = []
@@ -2415,7 +2425,7 @@ def generate_metal_ox_autocorrelations(oxmodifier, mol, depth=4,
 def generate_metal_ox_autocorrelation_derivatives(oxmodifier, mol, depth=4, oct=True, flag_name=False):
     # # oxmodifier - dict, used to modify prop vector (e.g., for adding
     # #             ONLY used with  ox_nuclear_charge    ox or charge)
-    # #              {"Fe":2, "Co": 3} etc, normally only 1 metal...
+    # #              {"Fe":2, "Co": 3} etc., normally only 1 metal...
     #    oct - bool, if complex is octahedral, will use better bond checks
     result = None
     colnames = []
@@ -2432,7 +2442,7 @@ def generate_metal_ox_deltametrics(oxmodifier, mol, depth=4, oct=True,
                                    flag_name=False, use_dist=False, size_normalize=False):
     # # oxmodifier - dict, used to modify prop vector (e.g., for adding
     # #             ONLY used with  ox_nuclear_charge    ox or charge)
-    # #              {"Fe":2, "Co": 3} etc, normally only 1 metal...
+    # #              {"Fe":2, "Co": 3} etc., normally only 1 metal...
     #    oct - bool, if complex is octahedral, will use better bond checks
     result = list()
     colnames = []
@@ -2452,7 +2462,7 @@ def generate_metal_ox_deltametric_derivatives(oxmodifier, mol, depth=4, oct=True
                                               flag_name=False):
     # # oxmodifier - dict, used to modify prop vector (e.g., for adding
     # #             ONLY used with  ox_nuclear_charge    ox or charge)
-    # #              {"Fe":2, "Co": 3} etc, normally only 1 metal...
+    # #              {"Fe":2, "Co": 3} etc., normally only 1 metal...
     #    oct - bool, if complex is octahedral, will use better bond checks
     colnames = []
     metal_ox_ac = metal_only_deltametric_derivative(mol, 'ox_nuclear_charge',
