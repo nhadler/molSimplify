@@ -279,7 +279,7 @@ def get_descriptor_derivatives(this_complex, custom_ligand_dict=False, ox_modifi
         liglist, ligdents, ligcons = ligand_breakdown(this_complex, BondedOct=True) # Complex is assumed to be octahedral
         (ax_ligand_list, eq_ligand_list, _, _,
          ax_con_int_list, eq_con_int_list, _, _,
-         _) = assignment_func(this_complex, liglist, ligdents, ligcons, loud)
+         _) = assignment_func(this_complex, liglist, ligdents, ligcons, loud=loud)
         custom_ligand_dict = {'ax_ligand_list': ax_ligand_list,
                               'eq_ligand_list': eq_ligand_list,
                               'ax_con_int_list': ax_con_int_list,
@@ -402,7 +402,7 @@ def generate_all_ligand_misc(mol, loud=False, custom_ligand_dict=False, smiles_c
         liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
         ax_ligand_list, eq_ligand_list, _, _, _, _, \
             _, _, _ = ligand_assign_consistent(
-                mol, liglist, ligdents, ligcons, loud)
+                mol, liglist, ligdents, ligcons, loud=loud)
 
     # count ligands
     n_ax = len(ax_ligand_list)
@@ -533,7 +533,7 @@ def generate_all_ligand_autocorrelations_lac(mol, loud=False, depth=4, flag_name
         liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
         (ax_ligand_list, eq_ligand_list, _, _, ax_con_int_list, eq_con_int_list,
          _, _, _) = ligand_assign_consistent(
-            mol, liglist, ligdents, ligcons, loud)
+            mol, liglist, ligdents, ligcons, loud=loud)
     # count ligands
     n_ax = len(ax_ligand_list)
     n_eq = len(eq_ligand_list)
@@ -657,7 +657,7 @@ def generate_all_ligand_autocorrelation_derivatives_lac(mol, loud=False, depth=4
         liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
         ax_ligand_list, eq_ligand_list, _, _, ax_con_int_list, eq_con_int_list, \
             _, _, _ = ligand_assign_consistent(
-                mol, liglist, ligdents, ligcons, loud)
+                mol, liglist, ligdents, ligcons, loud=loud)
 
     # count ligands
     n_ax = len(ax_ligand_list)
@@ -791,7 +791,7 @@ def generate_all_ligand_deltametrics_lac(mol, loud=False, depth=4, flag_name=Fal
     else:
         liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
         (ax_ligand_list, eq_ligand_list, _, _, ax_con_int_list, eq_con_int_list,
-         _, _, _) = ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud)
+         _, _, _) = ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=loud)
 
     # count ligands
     n_ax = len(ax_ligand_list)
@@ -888,7 +888,7 @@ def generate_all_ligand_deltametric_derivatives_lac(mol, loud=False, depth=4, fl
         liglist, ligdents, ligcons = ligand_breakdown(mol, BondedOct=True) # Complex is assumed to be octahedral
         ax_ligand_list, eq_ligand_list, _, _, ax_con_int_list, eq_con_int_list, \
             _, _, _ = ligand_assign_consistent(
-                mol, liglist, ligdents, ligcons, loud)
+                mol, liglist, ligdents, ligcons, loud=loud)
 
     # count ligands
     n_ax = len(ax_ligand_list)

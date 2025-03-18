@@ -287,7 +287,7 @@ def ligand_breakdown(mol, BondedOct=False, silent=True, transition_metals_only=T
             List of ligand denticities.
             Length is the number of ligands.
         ligcons : list of list of int
-            List of ligand connection indices (in mol).
+            List of ligand connection indices (in mol, i.e., global).
             Length is the number of ligands.
 
     """
@@ -340,7 +340,7 @@ def ligand_assign_original(mol, liglist, ligdents, ligcons, loud=False, name=Fal
             List of ligand denticities.
             Length is the number of ligands.
         ligcons : list of list of int
-            List of ligand connection indices (in mol).
+            List of ligand connection indices (in mol, i.e., global).
             Length is the number of ligands.
         loud : bool, optional
             Enable extra printout. Default is False.
@@ -775,7 +775,7 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
             List of ligand denticities.
             Length is the number of ligands.
         ligcons : list of list of int
-            List of ligand connection indices (in mol).
+            List of ligand connection indices (in mol, i.e., global).
             Length is the number of ligands.
         loud : bool, optional
             Enable extra printout. Default is False.
@@ -1961,7 +1961,7 @@ def ligand_assign_alleq(mol, liglist, ligdents, ligcons):
             List of ligand denticities.
             Length is the number of ligands.
         ligcons : list of list of int
-            List of ligand connection indices (in mol).
+            List of ligand connection indices (in mol, i.e., global).
             Length is the number of ligands.
 
     Returns
