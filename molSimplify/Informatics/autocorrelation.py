@@ -690,7 +690,7 @@ def atom_only_autocorrelation(mol, prop, d, atomIdx, oct=True, use_dist=False, s
         d : int
             Maximum depth to calculate autocorrelation over.
             For example, if set to 3, depths considered will be 0, 1, 2, and 3.
-        atomIdx : int or list
+        atomIdx : int or list of int
             Atoms from which the autocorrelation vector should be centered.
             List of indices or a single index.
         oct : bool, optional
@@ -735,7 +735,7 @@ def atom_only_autocorrelation_derivative(mol, prop, d, atomIdx, oct=True):
         d : int
             Maximum depth to calculate derivatives over.
             For example, if set to 3, depths considered will be 0, 1, 2, and 3.
-        atomIdx : int or list
+        atomIdx : int or list of int
             Atoms from which the autocorrelation vector should be centered.
             List of indices or a single index.
         oct : bool, optional
@@ -876,7 +876,7 @@ def atom_only_deltametric(mol, prop, d, atomIdx, oct=True, modifier=False,
         d : int
             Maximum depth to calculate deltametric over.
             For example, if set to 3, depths considered will be 0, 1, 2, and 3.
-        atomIdx : int or list
+        atomIdx : int or list of int
             Atoms from which the autocorrelation vector should be centered.
             List of indices or a single index.
         oct : bool, optional
@@ -922,7 +922,7 @@ def atom_only_deltametric_derivative(mol, prop, d, atomIdx, oct=True, modifier=F
         d : int
             Maximum depth to calculate derivatives over.
             For example, if set to 3, depths considered will be 0, 1, 2, and 3.
-        atomIdx : int or list
+        atomIdx : int or list of int
             Atoms from which the autocorrelation vector should be centered.
             List of indices or a single index.
         oct : bool, optional
@@ -1327,7 +1327,8 @@ def generate_metal_deltametric_derivatives(mol, depth=4, oct=True, flag_name=Fal
 
 def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, Gval=False, NumB=False, polarizability=False):
     """
-    This function gets autocorrelations for a molecule starting in one single atom only.
+    This function gets autocorrelations for a molecule starting
+    from specified indices.
 
     Parameters
     ----------
@@ -1411,14 +1412,15 @@ def generate_atomonly_autocorrelation_derivatives(mol, atomIdx, depth=4, oct=Tru
 
 def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, NumB=False, polarizability=False):
     """
-    This function gets deltametrics for a molecule starting in one single atom only.
+    This function gets deltametrics for a molecule starting
+    from specified indices.
 
     Parameters
     ----------
         mol : mol3D
             mol3D molecule to analyze.
-        atomIdx : int
-            index of atom3D class.
+        atomIdx : int or list of int
+            Index or list of indices of atoms to start deltametric from.
         depth : int, optional
             Maximum depth of deltametrics.
             For example, if set to 3, depths considered will be 0, 1, 2, and 3.
