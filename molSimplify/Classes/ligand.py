@@ -22,7 +22,7 @@ class ligand:
         master_mol : mol3D
             mol3D class instance for ligand mol.
         index_list : list
-            List for ligand connection atom indices.
+            List for atom indices in master_mol corresponding to ligand.
         dent : int
             Denticity of the ligand
         read_lig : bool, optional
@@ -37,7 +37,7 @@ class ligand:
             thismol = mol3D()
             if 'TRIPOS' in read_lig:
                 thismol.readfrommol2(read_lig, readstring=True)
-            # Xyz filename
+            # xyz filename
             elif read_lig[-4:] == '.xyz':
                 thismol.readfromxyz(read_lig)
             # mol2 filename
@@ -264,7 +264,7 @@ class ligand:
 
 
 def ligand_breakdown(mol, BondedOct=False, silent=True, transition_metals_only=True):
-    """Extract axial and equatorial components of a octahedral complex.
+    """Extract axial and equatorial components of an octahedral complex.
 
     Parameters
     ----------
@@ -280,11 +280,15 @@ def ligand_breakdown(mol, BondedOct=False, silent=True, transition_metals_only=T
     Returns
     -------
         liglist : list of list of int
-            List of ligands. Length is the number of ligands. Each inner list contains the global indices of a ligand
+            List of ligands.
+            Length is the number of ligands.
+            Each inner list contains the global indices of a ligand.
         ligdents : list of int
-            List of ligand denticities. Length is the number of ligands
+            List of ligand denticities.
+            Length is the number of ligands.
         ligcons : list of list of int
-            List of ligand connection indices (in mol). Length is the number of ligands
+            List of ligand connection indices (in mol).
+            Length is the number of ligands.
 
     """
     # This function takes an octahedral
@@ -328,12 +332,16 @@ def ligand_assign_original(mol, liglist, ligdents, ligcons, loud=False, name=Fal
     ----------
         mol : mol3D
             mol3D class instance for the complex.
-        liglist : list
-            List of ligands
-        ligdents : list
-            List of ligand denticities
-        ligcons : list
-            List of ligand connection indices (in mol)
+        liglist : list of list of int
+            List of ligands.
+            Length is the number of ligands.
+            Each inner list contains the global indices of a ligand.
+        ligdents : list of int
+            List of ligand denticities.
+            Length is the number of ligands.
+        ligcons : list of list of int
+            List of ligand connection indices (in mol).
+            Length is the number of ligands.
         loud : bool, optional
             Enable extra printout. Default is False.
         name : bool, optional
@@ -344,24 +352,37 @@ def ligand_assign_original(mol, liglist, ligdents, ligcons, loud=False, name=Fal
 
     Returns
     -------
-        ax_ligand_list : list
+        ax_ligand_list : list of molSimplify.Classes.ligand objects
             Ligands designated as axial ligands.
-        eq_ligand_list : list
+            Length is the number of axial ligands.
+        eq_ligand_list : list of molSimplify.Classes.ligand objects
             Ligands designated as equatorial ligands.
-        ax_natoms_list : list
-            Number of atoms in axial ligands.
-        eq_natoms_list : list
-            Number of atoms in equatorial ligands.
-        ax_con_int_list : list
-            Connecting atoms indices of axial ligands.
-        eq_con_int_list : list
-            Connecting atoms indices of equatorial ligands.
-        ax_con_list : list
-            Connecting atoms of axial ligands.
-        eq_con_list : list
-            Connecting atoms of equatorial ligands.
-        built_ligand_list : list
-            List of ligand classes for all ligands.
+            Length is the number of equatorial ligands.
+        ax_natoms_list : list of int
+            Number of atoms in each axial ligand.
+            Length is the number of axial ligands.
+        eq_natoms_list : list of int
+            Number of atoms in each equatorial ligand.
+            Length is the number of equatorial ligands.
+        ax_con_int_list : list of list of int
+            Connecting atoms indices of each axial ligand.
+            Local indices (ligand object).
+            Length is the number of axial ligands.
+        eq_con_int_list : list of list of int
+            Connecting atoms indices of each equatorial ligand.
+            Local indices (ligand object).
+            Length is the number of equatorial ligands.
+        ax_con_list : list of list of numpy.int64
+            Connecting atoms of each axial ligand.
+            Global indices.
+            Length is the number of axial ligands.
+        eq_con_list : list of list of numpy.int64
+            Connecting atoms of each equatorial ligand.
+            Global indices.
+            Length is the number of equatorial ligands.
+        built_ligand_list : list of molSimplify.Classes.ligand objects
+            List of ligand objects for all ligands.
+            Length is the number of ligands.
 
     """
     valid = True
@@ -746,12 +767,16 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
     ----------
         mol : mol3D
             mol3D class instance for the complex.
-        liglist : list
-            List of ligands
-        ligdents : list
-            List of ligand denticities
-        ligcons : list
-            List of ligand connection indices (in mol)
+        liglist : list of list of int
+            List of ligands.
+            Length is the number of ligands.
+            Each inner list contains the global indices of a ligand.
+        ligdents : list of int
+            List of ligand denticities.
+            Length is the number of ligands.
+        ligcons : list of list of int
+            List of ligand connection indices (in mol).
+            Length is the number of ligands.
         loud : bool, optional
             Enable extra printout. Default is False.
         name : bool, optional
@@ -764,24 +789,37 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
 
     Returns
     -------
-        ax_ligand_list : list
+        ax_ligand_list : list of molSimplify.Classes.ligand objects
             Ligands designated as axial ligands.
-        eq_ligand_list : list
+            Length is the number of axial ligands.
+        eq_ligand_list : list of molSimplify.Classes.ligand objects
             Ligands designated as equatorial ligands.
-        ax_natoms_list : list
-            Number of atoms in axial ligands.
-        eq_natoms_list : list
-            Number of atoms in equatorial ligands.
-        ax_con_int_list : list
-            Connecting atoms indices of axial ligands.
-        eq_con_int_list : list
-            Connecting atoms indices of equatorial ligands.
-        ax_con_list : list
-            Connecting atoms of axial ligands.
-        eq_con_list : list
-            Connecting atoms of equatorial ligands.
-        built_ligand_list : list
-            List of ligand classes for all ligands.
+            Length is the number of equatorial ligands.
+        ax_natoms_list : list of int
+            Number of atoms in each axial ligand.
+            Length is the number of axial ligands.
+        eq_natoms_list : list of int
+            Number of atoms in each equatorial ligand.
+            Length is the number of equatorial ligands.
+        ax_con_int_list : list of list of int
+            Connecting atoms indices of each axial ligand.
+            Local indices (ligand object).
+            Length is the number of axial ligands.
+        eq_con_int_list : list of list of int
+            Connecting atoms indices of each equatorial ligand.
+            Local indices (ligand object).
+            Length is the number of equatorial ligands.
+        ax_con_list : list of list of numpy.int64
+            Connecting atoms of each axial ligand.
+            Global indices.
+            Length is the number of axial ligands.
+        eq_con_list : list of list of numpy.int64
+            Connecting atoms of each equatorial ligand.
+            Global indices.
+            Length is the number of equatorial ligands.
+        built_ligand_list : list of molSimplify.Classes.ligand objects
+            List of ligand objects for all ligands.
+            Length is the number of ligands.
 
     """
     # ###### This ligand assignment code handles octahedral complexes consistently.
@@ -1907,6 +1945,42 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
 
 
 def ligand_assign_alleq(mol, liglist, ligdents, ligcons):
+    """This ligand assignment code handles octahedral complexes consistently.
+    Assigns any octahedral complex.
+    Takes all ligands to be equatorial.
+
+    Parameters
+    ----------
+        mol : mol3D
+            mol3D class instance for the complex.
+        liglist : list of list of int
+            List of ligands.
+            Length is the number of ligands.
+            Each inner list contains the global indices of a ligand.
+        ligdents : list of int
+            List of ligand denticities.
+            Length is the number of ligands.
+        ligcons : list of list of int
+            List of ligand connection indices (in mol).
+            Length is the number of ligands.
+
+    Returns
+    -------
+        ax_ligand_list : list
+            Ligands designated as axial ligands.
+            Empty list, i.e., [].
+        eq_ligand_list : list of molSimplify.Classes.ligand objects
+            Ligands designated as equatorial ligands.
+            Length is the number of ligands.
+        ax_con_int_list : list
+            Connecting atoms indices of axial ligands.
+            Empty list, i.e., [].
+        eq_con_int_list : list of list of int
+            Connecting atoms indices of equatorial ligands.
+            Local indices (ligand object).
+            Length is the number of ligands.
+
+    """
     ax_ligand_list, ax_con_int_list = [], []
     eq_ligand_list, eq_con_int_list = [], []
     for i, ligand_indices in enumerate(liglist):
