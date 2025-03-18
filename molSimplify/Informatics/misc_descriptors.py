@@ -9,7 +9,7 @@ def generate_all_ligand_misc(mol, loud, custom_ligand_dict=False, force_legacy=F
     # custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list
     ##                                    ax_con_int_list ,eq_con_int_list
     # with types: eq/ax_ligand_list list of mol3D
-    # eq/ax_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
+    # eq/ax_con_int_list list of list/tuple of int e.g., [[1,2] [1,2]]
     # use force_legacy to get kier indices/MCDL
     result_ax = list()
     result_eq = list()
@@ -126,7 +126,7 @@ def generate_all_ligand_misc_dimers(mol, loud, custom_ligand_dict=False):
     # custom_ligand_dict.keys() must be ax1_ligands_list, ax2_ligand_list, ax3_ligand_list
     ##                                    ax1_con_int_list , ax2_con_int_list, ax3_con_int_list
     # with types: ax_{i}_ligand_list list of mol3D
-    # ax_{i}_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
+    # ax_{i}_con_int_list list of list/tuple of int e.g., [[1,2] [1,2]]
     result_ax1 = list()
     result_ax2 = list()
     result_ax3 = list()

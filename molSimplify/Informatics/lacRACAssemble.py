@@ -62,24 +62,25 @@ def get_descriptor_vector(this_complex,
             custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list,
             ax_con_int_list, and eq_con_int_list,
             with types: eq/ax_ligand_list list of mol3D
-            eq/ax_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
+            eq/ax_con_int_list list of list/tuple of int e.g., [[1,2] [1,2]]
         ox_modifier : bool, optional
             dict, used to modify prop vector (e.g., for adding
             ONLY used with ox_nuclear_charge ox or charge)
-            {"Fe": 2, "Co": 3} etc, by default False.
+            {"Fe": 2, "Co": 3} etc., by default False.
         NumB : bool, optional
             Use Number of Bonds as an atomic property, by default False.
         Gval : bool, optional
             Use group number as an atomic property, by default False.
         lacRACs : bool, optional
-            Use ligand_assign_consistent (lac) to represent the mol3D.
+            Use ligand_assign_consistent (lac) to assign ligands as
+            equatorial and axial.
             If False, use ligand_assign_original (older), default True.
         loud : bool, optional
             Print debugging information, by default False.
         smiles_charge : bool, optional
             Use obmol conversion through smiles to assign ligand_misc_charges, by default False.
         eq_sym : bool, optional
-            Enforce eq plane to have connecting atoms with same symbol. Default is False.
+            Enforce equatorial plane to have connecting atoms with same symbol. Default is False.
         use_dist : bool, optional
             Whether or not CD-RACs used.
         size_normalize : bool, optional
@@ -89,7 +90,8 @@ def get_descriptor_vector(this_complex,
         MRdiag_dict : dict, optional
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
         depth : int, optional
-            The depth of the RACs (how many bonds out the RACs go).
+            The maximum depth of the RACs (how many bonds out the RACs go).
+            For example, if set to 3, depths considered will be 0, 1, 2, and 3.
 
     Returns
     -------
@@ -250,13 +252,14 @@ def get_descriptor_derivatives(this_complex, custom_ligand_dict=False, ox_modifi
             custom_ligand_dict.keys() must be eq_ligands_list, ax_ligand_list,
             ax_con_int_list, and eq_con_int_list,
             with types: eq/ax_ligand_list list of mol3D
-            eq/ax_con_int_list list of list/tuple of int e.g,  [[1,2] [1,2]]
+            eq/ax_con_int_list list of list/tuple of int e.g., [[1,2] [1,2]]
         ox_modifier : bool, optional
             dict, used to modify prop vector (e.g., for adding
             ONLY used with ox_nuclear_charge ox or charge)
-            {"Fe":2, "Co": 3} etc, by default False.
+            {"Fe":2, "Co": 3} etc., by default False.
         lacRACs : bool, optional
-            Use ligand_assign_consistent (lac) to represent the mol3D.
+            Use ligand_assign_consistent (lac) to assign ligands as
+            equatorial and axial.
             if False, use ligand_assign_original (older), default True.
         depth : int, optional
             Depth of RACs to calculate, by default 4.
@@ -492,7 +495,8 @@ def generate_all_ligand_autocorrelations_lac(mol, loud=False, depth=4, flag_name
         Gval : bool, optional
             Use G value as descriptor property, by default False.
         use_dist : bool, optional
-            Weigh autocorrelation by physical distance of atom from original, by default False.
+            Weigh autocorrelation by physical distance of scope atom from start atom,
+            by default False.
         size_normalize : bool, optional
             Whether or not to normalize by the number of atoms.
         MRdiag_dict : dict, optional
