@@ -53,7 +53,7 @@ def atom_centered_AC(
     starting_node : int
         index of the starting node
     depth : int, optional
-        depth of the RACs, by default 3
+        maximum depth of the RACs, by default 3
     operation : Callable[[np.ndarray, np.ndarray], np.ndarray], optional
         correlation operation, e.g. operator.mul or operator.sub for product and difference RACs,
         by default operator.mul
@@ -90,7 +90,7 @@ def multi_centered_AC(
     mol : Mol2D
         molecular graph
     depth : int, optional
-        depth of the RACs, by default 3
+        maximum depth of the RACs, by default 3
     operation : Callable[[np.ndarray, np.ndarray], np.ndarray], optional
         correlation operation, e.g. operator.mul or operator.sub for product and difference RACs,
         by default operator.mul
