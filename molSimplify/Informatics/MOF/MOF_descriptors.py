@@ -124,7 +124,9 @@ def gen_and_append_desc(
     target_list : list
         The indices of the atoms of interest in the linker.
     depth : int
-        The depth of the RACs that are generated. See https://doi.org/10.1021/acs.jpca.7b08750 for more information.
+        The maximum depth of the RACs that are generated.
+        For example, if set to 3, depths considered will be 0, 1, 2, and 3.
+        See https://doi.org/10.1021/acs.jpca.7b08750 for more information.
     descriptor_names : list
         The RAC descriptor names. Will be appended to.
     descriptors : list
@@ -186,7 +188,9 @@ def make_MOF_SBU_RACs(
     molcif : molSimplify.Classes.mol3D.mol3D
         The cell of the cif file being analyzed.
     depth : int
-        The depth of the RACs that are generated. See https://doi.org/10.1021/acs.jpca.7b08750 for more information.
+        The maximum depth of the RACs that are generated.
+        For example, if set to 3, depths considered will be 0, 1, 2, and 3.
+        See https://doi.org/10.1021/acs.jpca.7b08750 for more information.
     name : str
         The name of the cif being analyzed.
     cell_v : numpy.ndarray
@@ -387,7 +391,9 @@ def make_MOF_linker_RACs(
     molcif : molSimplify.Classes.mol3D.mol3D
         The cell of the cif file being analyzed.
     depth : int
-        The depth of the RACs that are generated. See https://doi.org/10.1021/acs.jpca.7b08750 for more information.
+        The maximum depth of the RACs that are generated.
+        For example, if set to 3, depths considered will be 0, 1, 2, and 3.
+        See https://doi.org/10.1021/acs.jpca.7b08750 for more information.
     name : str
         The name of the cif being analyzed.
     cell_v : numpy.ndarray
@@ -951,7 +957,8 @@ def get_MOF_descriptors(
         The path to the cif file for which descriptors are generated.
         Should end in ".cif".
     depth : int
-        The depth of the RACs that are generated.
+        The maximum depth of the RACs that are generated.
+        For example, if set to 3, depths considered will be 0, 1, 2, and 3.
         See https://doi.org/10.1021/acs.jpca.7b08750 for more information.
     path : str
         The parent path (folder) to which output will be written.
