@@ -59,7 +59,7 @@ def decorate_molecule(mol: mol3D, dec_list, dec_idxs,
     # Thus, this import needs to be placed here to avoid a circular dependence.
     from molSimplify.Scripts.structgen import ffopt
 
-    if not isinstance(mol, mol3D):
+    if not (isinstance(mol, mol3D) or isinstance(mol, str)):
         raise TypeError('Invalid type for mol.')
     if not isinstance(dec_list, list) or not all(isinstance(i, str) for i in dec_list):
         raise TypeError('Invalid type for dec_list.')
