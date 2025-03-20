@@ -1710,7 +1710,6 @@ class mol3D:
         OBMol = openbabel.OBMol()
         obConversion.ReadFile(OBMol, tempf)
 
-        self.OBMol = []
         self.OBMol = OBMol
 
         os.remove(tempf)
@@ -1747,7 +1746,7 @@ class mol3D:
             obConversion.ReadString(OBMol, mol2string)
             self.OBMol = []
             self.OBMol = OBMol
-            BO_mat = self.populateBOMatrix(bonddict=False, set_BO_mat=True)
+            self.populateBOMatrix(bonddict=False, set_BO_mat=True)
         else:  # If bonddict not assigned - Use OBMol to perceive bond orders
             mol2string = self.writemol2('temporary', writestring=True,
                                         ignoreX=ignoreX, force=True)
@@ -1770,7 +1769,7 @@ class mol3D:
             ######
             self.OBMol = []
             self.OBMol = OBMol
-            BO_mat = self.populateBOMatrix(bonddict=True, set_BO_mat=True)
+            self.populateBOMatrix(bonddict=True, set_BO_mat=True)
 
     def convert2mol3D(self):
         """
@@ -6121,7 +6120,7 @@ class mol3D:
 
         if not self.OBMol:
             print('Need to set OBMol attribute first. Exiting.')
-            return
+            return None
         obiter = openbabel.OBMolBondIter(self.OBMol)
         n = self.natoms
         molBOMat = np.zeros((n, n))
