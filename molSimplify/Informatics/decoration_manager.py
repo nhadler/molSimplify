@@ -24,7 +24,7 @@ my_mol = mol3D()
 my_mol.readfromxyz('benzene.xyz')
 # Assuming that indices 8 and 9 in benzene.xyz are hydrogen atoms.
 # Provide one SMILES group and one ligand group defined in molSimplify/Ligands.
-decorated_mol = decorate_molecule(my_mol, ['Cl', 'ammonia'], [8, 9])
+decorated_mol = decorate_molecule(my_mol, ['CC(C)(C)', 'ammonia'], [8, 9])
 decorated_mol.writexyz('mod_benzene.xyz')
 
 '''
@@ -59,6 +59,8 @@ def decorate_molecule(mol: mol3D, dec_list, dec_idxs,
     # Thus, this import needs to be placed here to avoid a circular dependence.
     from molSimplify.Scripts.structgen import ffopt
 
+    if not isinstance(mol, mol3D):
+        raise TypeError('Invalid type for mol.')
     if not isinstance(dec_list, list) or not all(isinstance(i, str) for i in dec_list):
         raise TypeError('Invalid type for dec_list.')
     if not isinstance(dec_idxs, list) or not all(isinstance(i, int) for i in dec_idxs):
