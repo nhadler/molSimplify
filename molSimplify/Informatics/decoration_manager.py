@@ -100,14 +100,20 @@ def decorate_molecule(mol: mol3D, dec_list, dec_idxs,
             print(merged_mol.getAtom(dec_idxs[i]).coords())
             merged_mol.writexyz('basic.xyz')
         Hs = dec.getHsbyIndex(0)
-        if len(Hs) > 0 and (not len(dec.cat)):
+        if len(Hs) and (not len(dec.cat)):
+            # Delete one hydrogen atom from the zero-index atom
+            # if .cat (connection atoms list) is empty.
             dec.deleteatom(Hs[0])
             dec.charge = dec.charge - 1
 
-        if len(dec.cat) > 0:
+        if len(dec.cat):
             decind = dec.cat[0]
         else:
+            # Use the zero-index atom as the connecting point
+            # if .cat is empty.
             decind = 0
+        # Translate decoration so that its connecting point
+        # overlaps with the atom to be replaced in mol.
         dec.alignmol(dec.getAtom(decind), merged_mol.getAtom(dec_idxs[i]))
         r1 = dec.getAtom(decind).coords()
         r2 = dec.centermass()
@@ -139,23 +145,30 @@ def decorate_molecule(mol: mol3D, dec_list, dec_idxs,
         for at in dec.getBondedAtoms(decind):
             auxm.addAtom(dec.getAtom(at))
         if auxm.natoms > 1:
+            # Decoration has multiple
+            # atoms bonded to the connecting atom.
             r0 = dec.getAtom(decind).coords()
             r1 = auxm.getAtom(0).coords()
             r2 = auxm.getAtom(1).coords()
             if checkcolinear(r1, r0, r2):
+                # Rotate to fix colinearity.
                 theta, urot = rotation_params(r1, merged_mol.getAtom(dec_idxs[i]).coords(), r2)
                 theta = vecangle(vecdiff(r0, merged_mol.getAtom(dec_idxs[i]).coords()), urot)
                 dec = rotate_around_axis(dec, r0, urot, theta)
 
         # Get the default distance between atoms in question.
-        connection_neighbours = merged_mol.getAtom(merged_mol.getBondedAtomsnotH(dec_idxs[i])[0])
+        # connection_anchor is the atom in the molecule being modified (decorated)
+        # to which the decoration is added.
+        connection_anchor = merged_mol.getAtom(merged_mol.getBondedAtomsnotH(dec_idxs[i])[0])
         new_atom = dec.getAtom(decind)
-        target_distance = connection_neighbours.rad + new_atom.rad
-        position_to_place = vecdiff(new_atom.coords(), connection_neighbours.coords())
-        old_dist = norm(position_to_place)
+        target_distance = connection_anchor.rad + new_atom.rad # Sum of atom radii.
+        dec_vec = vecdiff(new_atom.coords(), connection_anchor.coords())
+        old_dist = norm(dec_vec)
         missing = (target_distance - old_dist)/2
-        dec.translate([missing*position_to_place[j] for j in [0, 1, 2]])
+        # Move the decoration.
+        dec.translate([missing*dec_vec[j] for j in [0, 1, 2]])
 
+        # Finding the optimal rotation.
         r1 = dec.getAtom(decind).coords()
         u = vecdiff(r1, merged_mol.getAtom(dec_idxs[i]).coords())
         dtheta = 2
@@ -194,7 +207,7 @@ def decorate_molecule(mol: mol3D, dec_list, dec_idxs,
                     bond_partner = j
                 else:
                     bond_partner = j - 1
-                if len(dec.cat) > 0:
+                if len(dec.cat):
                     bonds_to_add.append((bond_partner, (merged_mol.natoms-1)+dec.cat[0], els))
                 else:
                     bonds_to_add.append((bond_partner, merged_mol.natoms-1, els))
