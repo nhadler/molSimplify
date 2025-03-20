@@ -1747,8 +1747,7 @@ class mol3D:
             obConversion.ReadString(OBMol, mol2string)
             self.OBMol = []
             self.OBMol = OBMol
-            BO_mat = self.populateBOMatrix(bonddict=False)
-            self.BO_mat = BO_mat
+            BO_mat = self.populateBOMatrix(bonddict=False, set_BO_mat=True)
         else:  # If bonddict not assigned - Use OBMol to perceive bond orders
             mol2string = self.writemol2('temporary', writestring=True,
                                         ignoreX=ignoreX, force=True)
@@ -1771,8 +1770,7 @@ class mol3D:
             ######
             self.OBMol = []
             self.OBMol = OBMol
-            BO_mat = self.populateBOMatrix(bonddict=True)
-            self.BO_mat = BO_mat
+            BO_mat = self.populateBOMatrix(bonddict=True, set_BO_mat=True)
 
     def convert2mol3D(self):
         """
@@ -6104,7 +6102,7 @@ class mol3D:
                     break
         return overlap
 
-    def populateBOMatrix(self, bonddict=False):
+    def populateBOMatrix(self, bonddict=False, set_BO_mat=False):
         """
         Populate the bond order matrix using openbabel.
 
@@ -6112,6 +6110,8 @@ class mol3D:
         ----------
             bonddict : bool
                 Flag for if the obmol bond dictionary should be saved. Default is False.
+            set_BO_mat : bool
+                Flag for whether self.BO_mat and self.graph should be set. Default is False.
 
         Returns
         -------
@@ -6135,9 +6135,11 @@ class mol3D:
                 sorted([these_inds[0]-1, these_inds[1]-1]))] = this_order
         if bonddict:
             self.bo_dict = bond_dict
-            return molBOMat
-        else:
-            return molBOMat
+        if set_BO_mat:
+            self.BO_mat = molBOMat
+            self.graph = (molBOMat > 0).astype(int)
+
+        return molBOMat
 
     def populateBOMatrixAug(self):
         """
