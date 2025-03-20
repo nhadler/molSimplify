@@ -1744,7 +1744,6 @@ class mol3D:
                                         ignoreX=ignoreX)
             OBMol = openbabel.OBMol()
             obConversion.ReadString(OBMol, mol2string)
-            self.OBMol = []
             self.OBMol = OBMol
             self.populateBOMatrix(bonddict=False, set_BO_mat=True)
         else:  # If bonddict not assigned - Use OBMol to perceive bond orders
@@ -1767,7 +1766,6 @@ class mol3D:
                 if '.' in line.split()[5]:
                     self.atoms[i].name = line.split()[5].split('.')[1]
             ######
-            self.OBMol = []
             self.OBMol = OBMol
             self.populateBOMatrix(bonddict=True, set_BO_mat=True)
 
