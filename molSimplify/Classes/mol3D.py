@@ -6366,7 +6366,7 @@ class mol3D:
             split_line = line.split()
 
             # Counts block
-            if len(split_line) == 11:
+            if len(split_line) == 11 or len(split_line) == 12:
                 counts_block_line_idx = idx
                 num_atoms = int(split_line[0])
                 num_bonds = int(split_line[1])
@@ -6388,6 +6388,7 @@ class mol3D:
             self.addAtom(my_atom)
 
         self.graph = np.zeros((num_atoms, num_atoms))
+        self.BO_mat = np.zeros((num_atoms, num_atoms))
         self.bo_dict = {}
 
         # Bonds block
@@ -6400,6 +6401,8 @@ class mol3D:
 
             self.graph[atom1_idx, atom2_idx] = 1
             self.graph[atom2_idx, atom1_idx] = 1
+            self.BO_mat[atom1_idx, atom2_idx] = bond_type
+            self.BO_mat[atom2_idx, atom1_idx] = bond_type
 
             self.bo_dict[tuple(sorted([atom1_idx, atom2_idx]))] = bond_type
 
@@ -6491,6 +6494,7 @@ class mol3D:
         if isinstance(graph, np.ndarray):  # Enforce mol2 molecular graph if it exists.
             self.graph = graph
             self.bo_graph = bo_graph
+            self.BO_mat = bo_graph
             if len(X_inds):
                 self.bo_graph_trunc = np.delete(np.delete(bo_graph, X_inds[0], 0), X_inds[0], 1)
             else:
@@ -6499,6 +6503,7 @@ class mol3D:
         else:
             self.graph = []
             self.bo_graph = []
+            self.BO_mat = []
             self.bo_graph_trunc = []
             self.bo_dict = []
 
