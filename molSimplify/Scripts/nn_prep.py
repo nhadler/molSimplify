@@ -280,7 +280,7 @@ def ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
     if newdecs:
         if newdecs[axial_ind_list[0]]:
             ax_lig3D = decorate_molecule(
-                axial_ligs[0], newdecs[axial_ind_list[0]], newdec_inds[axial_ind_list[0]], args.debug)
+                axial_ligs[0], newdecs[axial_ind_list[0]], newdec_inds[axial_ind_list[0]], args.debug, save_bond_info=False)
 
     ax_lig3D.convert2mol3D()  # mol3D representation of ligand
     # eq
@@ -288,7 +288,8 @@ def ANN_preproc(args, ligs: List[str], occs: List[int], dents: List[int],
     if newdecs:
         if newdecs[equatorial_ind_list[0]]:
             eq_lig3D = decorate_molecule(
-                equatorial_ligs[0], newdecs[equatorial_ind_list[0]], newdec_inds[equatorial_ind_list[0]], args.debug)
+                equatorial_ligs[0], newdecs[equatorial_ind_list[0]], newdec_inds[equatorial_ind_list[0]], args.debug,
+                save_bond_info=False)
     if r_emsg:
         emsg += r_emsg
     eq_lig3D.convert2mol3D()  # mol3D representation of ligand

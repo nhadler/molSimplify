@@ -30,7 +30,7 @@ decorated_mol.writexyz('mod_benzene.xyz')
 '''
 
 def decorate_molecule(mol: mol3D, dec_list, dec_idxs,
-                    debug: bool = False) -> mol3D:
+                    debug: bool = False, save_bond_info = True) -> mol3D:
     """
     This function is useful for functionalization.
     Adding functional groups to a base molecule.
@@ -48,6 +48,9 @@ def decorate_molecule(mol: mol3D, dec_list, dec_idxs,
             Zero-indexed.
         debug: bool
             Debugging flag for additional printed information.
+        save_bond_info : bool
+            Whether bo_dict, BO_mat, and graph attributes in merged_mol
+            should be set.
 
     Returns
     -------
@@ -229,7 +232,7 @@ def decorate_molecule(mol: mol3D, dec_list, dec_idxs,
 
     merged_mol.convert2OBMol()
     merged_mol, _ = ffopt('MMFF94', merged_mol, [], 0, [], False, [], 100)
-    BO_mat = merged_mol.populateBOMatrix()
+    BO_mat = merged_mol.populateBOMatrix(bonddict=save_bond_info, set_BO_mat=save_bond_info)
     if debug:
         merged_mol.writexyz('merged_relaxed.xyz')
         print(BO_mat)

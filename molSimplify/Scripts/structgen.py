@@ -2458,7 +2458,7 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
                         if args.debug:
                             print(f'decorating {ligand} with {args.decoration[i]} at sites {args.decoration_index}')
                         lig = decorate_molecule(
-                            lig, args.decoration[i], args.decoration_index[i], args.debug)
+                            lig, args.decoration[i], args.decoration_index[i], args.debug, save_bond_info=False)
             lig.convert2mol3D()
 
 
