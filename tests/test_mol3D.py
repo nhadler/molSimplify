@@ -6,6 +6,14 @@ from molSimplify.Classes.atom3D import atom3D
 from molSimplify.Classes.globalvars import globalvars
 
 
+def quick_load(file_list):
+    result = []
+    for i in file_list:
+        with open(i, 'r') as f:
+            result.append(json.load(f))
+    return result
+
+
 def test_addAtom():
     mol = mol3D()
     assert mol.natoms == 0
@@ -1110,13 +1118,6 @@ def test_deleteatoms(resource_path_root, name, idxs, bo_dict_flag, graph_flag):
     ("formaldehyde", False),
     ])
 def test_readfrommol2(resource_path_root, name, readstring):
-    def quick_load(file_list):
-        result = []
-        for i in file_list:
-            with open(i, 'r') as f:
-                result.append(json.load(f))
-        return result
-
     if name == "BOWROX_comp_0":
         mol2_file = resource_path_root / "inputs" / "hapticity_compounds" / f"{name}.mol2"
     elif name == "formaldehyde":
@@ -1148,11 +1149,53 @@ def test_readfrommol2(resource_path_root, name, readstring):
     mod_bo_graph = np.nan_to_num(mol.bo_graph, nan=-1)
     mod_bo_graph_trunc = np.nan_to_num(mol.bo_graph_trunc, nan=-1)
 
+    # Needed to adjust the reference dictionary in order
+    # to save to json.
     mod_bo_dict = {str(k): v for k, v in mol.bo_dict.items()}
 
     assert np.array_equal(mol.graph, np.array(reference_graph))
     assert np.array_equal(mod_bo_graph, np.array(reference_bo_graph))
     assert np.array_equal(mod_bo_graph_trunc, np.array(reference_bo_graph_trunc))
+    assert mod_bo_dict == reference_bo_dict
+
+    mol_reference = mol3D()
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol_reference.readfromxyz(xyz_file)
+
+    c_array1, c_array2 = mol.get_coordinate_array(), mol_reference.get_coordinate_array()
+    assert np.array_equal(c_array1, c_array1)
+
+    e_list1, e_list2 = mol.get_element_list(), mol_reference.get_element_list()
+    assert e_list1 == e_list2
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+    "pdms_unit",
+    "pdp",
+    ])
+def test_readfrommol(resource_path_root, name):
+    mol_file = resource_path_root / "inputs" / "mol_files" / f"{name}.mol"
+    mol = mol3D()
+    mol.readfrommol(mol_file)
+
+    # Loading the reference files.
+    reference_path1 = resource_path_root / "refs" / "json" / "test_mol3D" / "readfrommol" /  f"{name}_graph.json"
+    reference_path2 = resource_path_root / "refs" / "json" / "test_mol3D" / "readfrommol" /  f"{name}_BO_mat.json"
+    reference_path3 = resource_path_root / "refs" / "json" / "test_mol3D" / "readfrommol" /  f"{name}_bo_dict.json"
+    reference_graph, reference_BO_mat, reference_bo_dict = quick_load(
+        [reference_path1, reference_path2, reference_path3])
+
+    # Needed to adjust the reference dictionary in order
+    # to save to json.
+    mod_bo_dict = {str(k): v for k, v in mol.bo_dict.items()}
+
+    # For saving np arrays to json, need to cast to list.
+    # Convert back for comparison.
+
+    assert np.array_equal(mol.graph, np.array(reference_graph))
+    assert np.array_equal(mol.BO_mat, np.array(reference_BO_mat))
     assert mod_bo_dict == reference_bo_dict
 
     mol_reference = mol3D()
