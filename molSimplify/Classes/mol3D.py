@@ -6402,7 +6402,7 @@ class mol3D:
             self.graph[atom1_idx, atom2_idx] = 1
             self.graph[atom2_idx, atom1_idx] = 1
             self.BO_mat[atom1_idx, atom2_idx] = bond_type
-            self.BO_mat[atom2_idx, atom1_idx] = bond_type 
+            self.BO_mat[atom2_idx, atom1_idx] = bond_type
 
             self.bo_dict[tuple(sorted([atom1_idx, atom2_idx]))] = bond_type
 
