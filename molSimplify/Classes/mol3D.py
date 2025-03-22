@@ -3941,7 +3941,7 @@ class mol3D:
                 Default is False.
             two_key : bool
                 Whether return dictionary should only have two keys,
-                'colnames' and 'results', with values that are 
+                'colnames' and 'results', with values that are
                 lists of feature names and values, respectively.
 
         Returns
