@@ -544,7 +544,8 @@ def generate_full_complex_autocorrelations(mol,
                                            use_dist=False, size_normalize=False,
                                            Gval=False, NumB=False, polarizability=False,
                                            MRdiag_dict={},
-                                           transition_metals_only=True):
+                                           transition_metals_only=True,
+                                           flatten=False):
     """
     Utility to manage full complex autocorrelation generation and labeling.
     Works on any molecule, not just TM complexes.
@@ -580,12 +581,15 @@ def generate_full_complex_autocorrelations(mol,
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
         transition_metals_only : bool, optional
             Flag if only transition metals counted as metals, by default True.
+        flatten : bool, optional
+            Flag to change format of returned dictionary, by default False.
+            Makes values of dictionary not be nested lists.
 
     Returns
     -------
         results_dictionary : dict
             Formatted dictionary with {'colnames': colnames, 'results': result}.
-            For key colnames, value is list of lists.
+            For key colnames, value is list of lists of str.
             For key results, value is list of np.array.
 
     """
@@ -619,6 +623,9 @@ def generate_full_complex_autocorrelations(mol,
             this_colnames.append(labels_strings[ii] + '-' + str(i))
         colnames.append(this_colnames)
         result.append(metal_ac)
+    if flatten:
+        colnames = [i for j in colnames for i in j]
+        result = [i for j in result for i in j]
     if flag_name:
         results_dictionary = {'colnames': colnames, 'results_f_all': result}
     else:
@@ -1056,7 +1063,7 @@ def metal_only_deltametric_derivative(
 def generate_metal_autocorrelations(mol, depth=4, oct=True, flag_name=False,
                                     modifier=False, Gval=False, NumB=False, polarizability=False,
                                     use_dist=False, size_normalize=False, MRdiag_dict={},
-                                    transition_metals_only=True):
+                                    transition_metals_only=True, flatten=False):
     """
     Utility for generating all metal-centered product autocorrelations for a complex.
 
@@ -1089,13 +1096,16 @@ def generate_metal_autocorrelations(mol, depth=4, oct=True, flag_name=False,
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
         transition_metals_only : bool, optional
             Flag if only transition metals counted as metals, by default True.
+        flatten : bool, optional
+            Flag to change format of returned dictionary, by default False.
+            Makes values of dictionary not be nested lists.
 
     Returns
     -------
         results_dictionary: dict
             Dictionary of all geo-based MC-RAC product descriptors -
             {'colnames': colnames, 'results': result}.
-            For key colnames, value is list of lists.
+            For key colnames, value is list of lists of str.
             For key results, value is list of np.array.
 
     """
@@ -1128,6 +1138,9 @@ def generate_metal_autocorrelations(mol, depth=4, oct=True, flag_name=False,
             this_colnames.append(labels_strings[ii] + '-' + str(i))
         colnames.append(this_colnames)
         result.append(metal_ac)
+    if flatten:
+        colnames = [i for j in colnames for i in j]
+        result = [i for j in result for i in j]
     if flag_name:
         results_dictionary = {'colnames': colnames, 'results_mc_ac': result}
     else:
@@ -1197,7 +1210,7 @@ def generate_metal_autocorrelation_derivatives(mol, depth=4, oct=True, flag_name
 def generate_metal_deltametrics(mol, depth=4, oct=True, flag_name=False,
                                 modifier=False, Gval=False, NumB=False, polarizability=False,
                                 use_dist=False, size_normalize=False, MRdiag_dict={},
-                                transition_metals_only=True):
+                                transition_metals_only=True, flatten=False):
     """
     Utility for generating all metal-centered deltametric autocorrelations for a complex.
 
@@ -1230,13 +1243,16 @@ def generate_metal_deltametrics(mol, depth=4, oct=True, flag_name=False,
             Keys are ligand identifiers, values are MR diagnostics like E_corr.
         transition_metals_only : bool, optional
             Flag if only transition metals counted as metals, by default True.
+        flatten : bool, optional
+            Flag to change format of returned dictionary, by default False.
+            Makes values of dictionary not be nested lists.
 
     Returns
     -------
         results_dictionary: dict
             Dictionary of all geo-based MC-RAC deltametric descriptors -
             {'colnames': colnames, 'results': result}.
-            For key colnames, value is list of lists.
+            For key colnames, value is list of lists of str.
             For key results, value is list of np.array.
 
     """
@@ -1269,6 +1285,9 @@ def generate_metal_deltametrics(mol, depth=4, oct=True, flag_name=False,
             this_colnames.append(labels_strings[ii] + '-' + str(i))
         colnames.append(this_colnames)
         result.append(metal_ac)
+    if flatten:
+        colnames = [i for j in colnames for i in j]
+        result = [i for j in result for i in j]
     if flag_name:
         results_dictionary = {'colnames': colnames, 'results_mc_del': result}
     else:
@@ -1335,7 +1354,8 @@ def generate_metal_deltametric_derivatives(mol, depth=4, oct=True, flag_name=Fal
     return results_dictionary
 
 
-def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, Gval=False, NumB=False, polarizability=False):
+def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, Gval=False, NumB=False, polarizability=False,
+    flatten=False):
     """
     This function gets autocorrelations for a molecule starting
     from specified indices.
@@ -1358,12 +1378,15 @@ def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, Gval=Fal
             Use number of bonds as descriptor property, by default False.
         polarizability : bool, optional
             Use polarizability (alpha) as RAC, by default False.
+        flatten : bool, optional
+            Flag to change format of returned dictionary, by default False.
+            Makes values of dictionary not be nested lists.
 
     Returns
     -------
         results_dictionary : dict
             Dictionary of atom only RAC names and values.
-            For key colnames, value is list of lists.
+            For key colnames, value is list of lists of str.
             For key results, value is list of np.array.
 
     """
@@ -1387,6 +1410,9 @@ def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, Gval=Fal
             this_colnames.append(labels_strings[ii] + '-' + str(i))
         colnames.append(this_colnames)
         result.append(atom_only_ac)
+    if flatten:
+        colnames = [i for j in colnames for i in j]
+        result = [i for j in result for i in j]
     results_dictionary = {'colnames': colnames, 'results': result}
     return results_dictionary
 
@@ -1420,7 +1446,8 @@ def generate_atomonly_autocorrelation_derivatives(mol, atomIdx, depth=4, oct=Tru
     return results_dictionary
 
 
-def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, NumB=False, polarizability=False):
+def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, NumB=False, polarizability=False,
+    flatten=False):
     """
     This function gets deltametrics for a molecule starting
     from specified indices.
@@ -1443,12 +1470,15 @@ def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, 
             Use number of bonds as descriptor property, by default False.
         polarizability : bool, optional
             Use polarizability (alpha) as RAC, by default False.
+        flatten : bool, optional
+            Flag to change format of returned dictionary, by default False.
+            Makes values of dictionary not be nested lists.
 
     Returns
     -------
         results_dictionary : dict
             Dictionary of atom only deltametric names and values.
-            For key colnames, value is list of lists.
+            For key colnames, value is list of lists of str.
             For key results, value is list of np.array.
 
     """
@@ -1472,6 +1502,9 @@ def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, 
             this_colnames.append(labels_strings[ii] + '-' + str(i))
         colnames.append(this_colnames)
         result.append(atom_only_ac)
+    if flatten:
+        colnames = [i for j in colnames for i in j]
+        result = [i for j in result for i in j]
     results_dictionary = {'colnames': colnames, 'results': result}
     return results_dictionary
 
