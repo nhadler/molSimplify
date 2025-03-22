@@ -3904,7 +3904,7 @@ class mol3D:
 
     def get_features(self, lac=True, force_generate=False, eq_sym=False,
                      use_dist=False, NumB=False, Gval=False, size_normalize=False,
-                     alleq=False, strict_cutoff=False, catom_list=None, MRdiag_dict={},
+                     alleq=False, strict_cutoff=False, catom_list=None, custom_property_dict={},
                      depth=3, loud=False, two_key=False):
         """
         Get geo-based RAC features for this transition metal complex (if octahedral).
@@ -3931,8 +3931,12 @@ class mol3D:
                 Strict bonding cutoff for fullerene and SACs.
             catom_list : list, optional
                 List of indices of coordinating atoms.
-            MRdiag_dict : dict, optional
-                Keys are ligand identifiers, values are MR diagnostics like E_corr.
+            custom_property_dict : dict, optional
+                Keys are custom property names,
+                values are dictionaries mapping atom symbols to
+                the numerical property for that atom.
+                If provided, other property RACs (e.g., Z, S, T)
+                will not be made.
             depth : int, optional
                 The maximum depth of the RACs (how many bonds out the RACs go).
                 For example, if set to 3, depths considered will be 0, 1, 2, and 3.
@@ -3965,7 +3969,7 @@ class mol3D:
         if force_generate or geo_type['geometry'] == 'octahedral':
             names, racs = get_descriptor_vector(self, lacRACs=lac, eq_sym=eq_sym, use_dist=use_dist,
                                                 NumB=NumB, Gval=Gval, size_normalize=size_normalize,
-                                                alleq=alleq, MRdiag_dict=MRdiag_dict, depth=depth)
+                                                alleq=alleq, custom_property_dict=custom_property_dict, depth=depth)
             if two_key:
                 results = {
                 'colnames': names,

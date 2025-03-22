@@ -321,7 +321,8 @@ def deltametric_derivative(mol, prop_vec, orig, d, oct=True):
     return (derivative_mat)
 
 
-def construct_property_vector(mol, prop, oct=True, modifier=False, MRdiag_dict={}, transition_metals_only=True):
+def construct_property_vector(mol, prop, oct=True, modifier=False, custom_property_dict={},
+    transition_metals_only=True, custom_prop_dict={}):
     """
     Assigns the value of property for atom i (zero index) in mol to position i in returned vector.
 
@@ -340,8 +341,10 @@ def construct_property_vector(mol, prop, oct=True, modifier=False, MRdiag_dict={
             If passed - dict, used to modify prop vector (e.g., for adding
             ONLY used with  ox_nuclear_charge    ox or charge)
             {"Fe":2, "Co": 3} etc., by default False.
-        MRdiag_dict : dict, optional
-            Keys are ligand identifiers, values are MR diagnostics like E_corr.
+        custom_property_dict : dict, optional
+            Keys are custom property names,
+            values are dictionaries mapping atom symbols to
+            the numerical property for that atom.
         transition_metals_only : bool, optional
             Flag if only transition metals counted as metals, by default True.
 
@@ -354,10 +357,11 @@ def construct_property_vector(mol, prop, oct=True, modifier=False, MRdiag_dict={
     allowed_strings = [
     'electronegativity', 'nuclear_charge', 'ident', 'topology',
     'ox_nuclear_charge', 'size', 'vdwrad', 'group_number', 'polarizability',
-    'bondvalence', 'num_bonds', 'bondvalence_devi', 'bodavrg', 'bodstd', 'charge',
+    'bondvalence', 'num_bonds', 'bondvalence_devi', 'bodavrg', 'bodstd',
+    'charge',
     ]
-    if len(MRdiag_dict):
-        for k in list(MRdiag_dict):
+    if len(custom_property_dict):
+        for k in list(custom_property_dict):
             allowed_strings += [k]
     prop_dict = dict()
     w = np.zeros(mol.natoms)
@@ -389,7 +393,7 @@ def construct_property_vector(mol, prop, oct=True, modifier=False, MRdiag_dict={
             for keys in at_keys:
                 values = globs.amass()[keys][1]
                 if keys in list(modifier.keys()):
-                    values -= float(modifier[keys])  # assumes oxidation state provided (i.e. Fe(IV))
+                    values -= float(modifier[keys])  # assumes oxidation state provided (i.e., Fe(IV))
                 prop_dict.update({keys: values})
         else:
             print('Error, must give modifier with ox_nuclear_charge')
@@ -448,10 +452,12 @@ def construct_property_vector(mol, prop, oct=True, modifier=False, MRdiag_dict={
         for i, atoms in enumerate(mol.getAtoms()):
             w[i] = mol.charge_dict[i]
         done = True
-    elif prop in ['A25PBE', 'B1', 'rND_PBE', 'IND_PBE', 'nLUMO_MP2', 'T1',
-                  'largest_amp', 'TAE', 'C0^2', 'nLUMO_CAS', '%CorrE_orca']:
-        for i, atoms in enumerate(mol.getAtoms()):
-            w[i] = MRdiag_dict[prop][mol.getAtom(i).symbol()]
+    elif prop in custom_property_dict:
+        for i, atom in enumerate(mol.getAtoms()):
+            try:
+                w[i] = custom_property_dict[prop][atom.symbol()]
+            except KeyError:
+                raise KeyError(f'custom_property_dict dictionary for property {prop} is missing an entry for the element {atom.symbol()}.')
         done = True
     if not done:
         for i, atoms in enumerate(mol.getAtoms()):
@@ -459,7 +465,7 @@ def construct_property_vector(mol, prop, oct=True, modifier=False, MRdiag_dict={
     return (w)
 
 
-def full_autocorrelation(mol, prop, d, oct=True, modifier=False, use_dist=False, size_normalize=False, MRdiag_dict={}, transition_metals_only=True):
+def full_autocorrelation(mol, prop, d, oct=True, modifier=False, use_dist=False, size_normalize=False, custom_property_dict={}, transition_metals_only=True):
     """
     Calculate full scope product autocorrelations (i.e., start at every atom,
     and branch out up to depth d).
@@ -482,8 +488,10 @@ def full_autocorrelation(mol, prop, d, oct=True, modifier=False, use_dist=False,
             by default False.
         size_normalize : bool, optional
             Whether or not to normalize by the number of atoms in molecule.
-        MRdiag_dict : dict, optional
-            Keys are ligand identifiers, values are MR diagnostics like E_corr.
+        custom_property_dict : dict, optional
+            Keys are custom property names,
+            values are dictionaries mapping atom symbols to
+            the numerical property for that atom.
         transition_metals_only : bool, optional
             Flag if only transition metals counted as metals, by default True.
 
@@ -493,7 +501,7 @@ def full_autocorrelation(mol, prop, d, oct=True, modifier=False, use_dist=False,
             Full scope product autocorrelation values.
 
     """
-    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, MRdiag_dict=MRdiag_dict, transition_metals_only=transition_metals_only)
+    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, custom_property_dict=custom_property_dict, transition_metals_only=transition_metals_only)
     index_set = list(range(0, mol.natoms))
     autocorrelation_vector = np.zeros(d + 1)
     for centers in index_set:
@@ -543,7 +551,7 @@ def generate_full_complex_autocorrelations(mol,
                                            flag_name=False, modifier=False,
                                            use_dist=False, size_normalize=False,
                                            Gval=False, NumB=False, polarizability=False,
-                                           MRdiag_dict={},
+                                           custom_property_dict={},
                                            transition_metals_only=True,
                                            flatten=False):
     """
@@ -577,8 +585,12 @@ def generate_full_complex_autocorrelations(mol,
             Use number of bonds as RAC, by default False.
         polarizability : bool, optional
             Use polarizability (alpha) as RAC, by default False.
-        MRdiag_dict : dict, optional
-            Keys are ligand identifiers, values are MR diagnostics like E_corr.
+        custom_property_dict : dict, optional
+            Keys are custom property names,
+            values are dictionaries mapping atom symbols to
+            the numerical property for that atom.
+            If provided, other property RACs (e.g., Z, S, T)
+            will not be made.
         transition_metals_only : bool, optional
             Flag if only transition metals counted as metals, by default True.
         flatten : bool, optional
@@ -606,9 +618,9 @@ def generate_full_complex_autocorrelations(mol,
     if polarizability:
         allowed_strings += ["polarizability"]
         labels_strings += ["alpha"]
-    if len(MRdiag_dict):
+    if len(custom_property_dict):
         allowed_strings, labels_strings = [], []
-        for k in list(MRdiag_dict):
+        for k in list(custom_property_dict):
             allowed_strings += [k]
             labels_strings += [k]
     for ii, properties in enumerate(allowed_strings):
@@ -616,7 +628,7 @@ def generate_full_complex_autocorrelations(mol,
                                         oct=oct, modifier=modifier,
                                         use_dist=use_dist,
                                         size_normalize=size_normalize,
-                                        MRdiag_dict=MRdiag_dict,
+                                        custom_property_dict=custom_property_dict,
                                         transition_metals_only=transition_metals_only)
         this_colnames = []
         for i in range(0, depth + 1):
@@ -689,7 +701,7 @@ def generate_full_complex_autocorrelation_derivatives(mol, depth=4, oct=True, fl
     return results_dictionary
 
 
-def atom_only_autocorrelation(mol, prop, d, atomIdx, oct=True, use_dist=False, size_normalize=False, MRdiag_dict={}):
+def atom_only_autocorrelation(mol, prop, d, atomIdx, oct=True, use_dist=False, size_normalize=False, custom_property_dict={}):
     """
     Calculate product autocorrelation vectors from a given atom or list of atoms.
 
@@ -712,8 +724,10 @@ def atom_only_autocorrelation(mol, prop, d, atomIdx, oct=True, use_dist=False, s
             by default False.
         size_normalize : bool, optional
             Whether or not to normalize by the number of atoms in molecule.
-        MRdiag_dict : dict, optional
-            Keys are ligand identifiers, values are MR diagnostics like E_corr.
+        custom_property_dict : dict, optional
+            Keys are custom property names,
+            values are dictionaries mapping atom symbols to
+            the numerical property for that atom.
 
     Returns
     -------
@@ -721,7 +735,7 @@ def atom_only_autocorrelation(mol, prop, d, atomIdx, oct=True, use_dist=False, s
             List of atom-only autocorrelations.
 
     """
-    w = construct_property_vector(mol, prop, oct, MRdiag_dict=MRdiag_dict)
+    w = construct_property_vector(mol, prop, oct, custom_property_dict=custom_property_dict)
     autocorrelation_vector = np.zeros(d + 1)
     if hasattr(atomIdx, "__len__"): # Indicative of a list of indices.
         for elements in atomIdx:
@@ -775,7 +789,7 @@ def metal_only_autocorrelation(
     mol, prop, d, oct=True,
     func=autocorrelation, modifier=False,
     use_dist=False, size_normalize=False,
-    MRdiag_dict={}, transition_metals_only=True
+    custom_property_dict={}, transition_metals_only=True
     ):
     """
     Calculate the metal_only product autocorrelations
@@ -806,8 +820,10 @@ def metal_only_autocorrelation(
             by default False.
         size_normalize : bool, optional
             Whether or not to normalize by the number of atoms in molecule.
-        MRdiag_dict : dict, optional
-            Keys are ligand identifiers, values are MR diagnostics like E_corr.
+        custom_property_dict : dict, optional
+            Keys are custom property names,
+            values are dictionaries mapping atom symbols to
+            the numerical property for that atom.
         transition_metals_only : bool, optional
             Flag if only transition metals counted as metals, by default True.
 
@@ -823,7 +839,7 @@ def metal_only_autocorrelation(
         raise Exception('No metal found in mol object.')
     n_met = len(metal_idxs)
 
-    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, MRdiag_dict=MRdiag_dict, transition_metals_only=transition_metals_only)
+    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, custom_property_dict=custom_property_dict, transition_metals_only=transition_metals_only)
     for metal_ind in metal_idxs:
         autocorrelation_vector += func(mol, w, metal_ind, d, oct=oct, use_dist=use_dist, size_normalize=size_normalize)
     autocorrelation_vector = np.divide(autocorrelation_vector, n_met)
@@ -876,7 +892,7 @@ def metal_only_autocorrelation_derivative(
 
 
 def atom_only_deltametric(mol, prop, d, atomIdx, oct=True, modifier=False,
-                          use_dist=False, size_normalize=False, MRdiag_dict={}):
+                          use_dist=False, size_normalize=False, custom_property_dict={}):
     """
     Calculate deltametric autocorrelation vectors from a given atom or list of atoms.
 
@@ -901,8 +917,10 @@ def atom_only_deltametric(mol, prop, d, atomIdx, oct=True, modifier=False,
             by default False.
         size_normalize : bool, optional
             Whether or not to normalize by the number of atoms in molecule.
-        MRdiag_dict : dict, optional
-            Keys are ligand identifiers, values are MR diagnostics like E_corr.
+        custom_property_dict : dict, optional
+            Keys are custom property names,
+            values are dictionaries mapping atom symbols to
+            the numerical property for that atom.
 
     Returns
     -------
@@ -910,7 +928,7 @@ def atom_only_deltametric(mol, prop, d, atomIdx, oct=True, modifier=False,
             List of atom-only deltametric autocorrelations.
 
     """
-    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, MRdiag_dict=MRdiag_dict)
+    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, custom_property_dict=custom_property_dict)
     deltametric_vector = np.zeros(d + 1)
     if hasattr(atomIdx, "__len__"):
         for elements in atomIdx:
@@ -965,7 +983,7 @@ def metal_only_deltametric(
     mol, prop, d, oct=True,
     func=deltametric, modifier=False,
     use_dist=False, size_normalize=False,
-    MRdiag_dict={}, transition_metals_only=True):
+    custom_property_dict={}, transition_metals_only=True):
     """
     Gets the metal atom-only deltametric RAC.
 
@@ -992,8 +1010,10 @@ def metal_only_deltametric(
             by default False.
         size_normalize : bool, optional
             Whether or not to normalize by the number of atoms in molecule.
-        MRdiag_dict : dict, optional
-            Keys are ligand identifiers, values are MR diagnostics like E_corr.
+        custom_property_dict : dict, optional
+            Keys are custom property names,
+            values are dictionaries mapping atom symbols to
+            the numerical property for that atom.
         transition_metals_only : bool, optional
             Flag if only transition metals counted as metals, by default True.
 
@@ -1009,7 +1029,7 @@ def metal_only_deltametric(
         raise Exception('No metal found in mol object.')
     n_met = len(metal_idxs)
 
-    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, MRdiag_dict=MRdiag_dict, transition_metals_only=transition_metals_only)
+    w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, custom_property_dict=custom_property_dict, transition_metals_only=transition_metals_only)
     for metal_ind in metal_idxs:
         deltametric_vector += func(mol, w, metal_ind, d, oct=oct, use_dist=use_dist, size_normalize=size_normalize)
     deltametric_vector = np.divide(deltametric_vector, n_met)
@@ -1062,7 +1082,7 @@ def metal_only_deltametric_derivative(
 
 def generate_metal_autocorrelations(mol, depth=4, oct=True, flag_name=False,
                                     modifier=False, Gval=False, NumB=False, polarizability=False,
-                                    use_dist=False, size_normalize=False, MRdiag_dict={},
+                                    use_dist=False, size_normalize=False, custom_property_dict={},
                                     transition_metals_only=True, flatten=False):
     """
     Utility for generating all metal-centered product autocorrelations for a complex.
@@ -1092,8 +1112,12 @@ def generate_metal_autocorrelations(mol, depth=4, oct=True, flag_name=False,
             by default False.
         size_normalize : bool, optional
             Whether or not to normalize by the number of atoms in molecule.
-        MRdiag_dict : dict, optional
-            Keys are ligand identifiers, values are MR diagnostics like E_corr.
+        custom_property_dict : dict, optional
+            Keys are custom property names,
+            values are dictionaries mapping atom symbols to
+            the numerical property for that atom.
+            If provided, other property RACs (e.g., Z, S, T)
+            will not be made.
         transition_metals_only : bool, optional
             Flag if only transition metals counted as metals, by default True.
         flatten : bool, optional
@@ -1122,16 +1146,16 @@ def generate_metal_autocorrelations(mol, depth=4, oct=True, flag_name=False,
     if polarizability:
         allowed_strings += ['polarizability']
         labels_strings += ['alpha']
-    if len(MRdiag_dict):
+    if len(custom_property_dict):
         allowed_strings, labels_strings = [], []
-        for k in list(MRdiag_dict):
+        for k in list(custom_property_dict):
             allowed_strings += [k]
             labels_strings += [k]
     for ii, properties in enumerate(allowed_strings):
         metal_ac = metal_only_autocorrelation(mol, properties, depth, oct=oct,
                                               modifier=modifier, use_dist=use_dist,
                                               size_normalize=size_normalize,
-                                              MRdiag_dict=MRdiag_dict,
+                                              custom_property_dict=custom_property_dict,
                                               transition_metals_only=transition_metals_only)
         this_colnames = []
         for i in range(0, depth + 1):
@@ -1209,7 +1233,7 @@ def generate_metal_autocorrelation_derivatives(mol, depth=4, oct=True, flag_name
 
 def generate_metal_deltametrics(mol, depth=4, oct=True, flag_name=False,
                                 modifier=False, Gval=False, NumB=False, polarizability=False,
-                                use_dist=False, size_normalize=False, MRdiag_dict={},
+                                use_dist=False, size_normalize=False, custom_property_dict={},
                                 transition_metals_only=True, flatten=False):
     """
     Utility for generating all metal-centered deltametric autocorrelations for a complex.
@@ -1239,8 +1263,12 @@ def generate_metal_deltametrics(mol, depth=4, oct=True, flag_name=False,
             by default False.
         size_normalize : bool, optional
             Whether or not to normalize by the number of atoms in molecule.
-        MRdiag_dict : dict, optional
-            Keys are ligand identifiers, values are MR diagnostics like E_corr.
+        custom_property_dict : dict, optional
+            Keys are custom property names,
+            values are dictionaries mapping atom symbols to
+            the numerical property for that atom.
+            If provided, other property RACs (e.g., Z, S, T)
+            will not be made.
         transition_metals_only : bool, optional
             Flag if only transition metals counted as metals, by default True.
         flatten : bool, optional
@@ -1269,16 +1297,16 @@ def generate_metal_deltametrics(mol, depth=4, oct=True, flag_name=False,
     if polarizability:
         allowed_strings += ['polarizability']
         labels_strings += ['alpha']
-    if len(MRdiag_dict):
+    if len(custom_property_dict):
         allowed_strings, labels_strings = [], []
-        for k in list(MRdiag_dict):
+        for k in list(custom_property_dict):
             allowed_strings += [k]
             labels_strings += [k]
     for ii, properties in enumerate(allowed_strings):
         metal_ac = metal_only_deltametric(mol, properties, depth, oct=oct,
                                           modifier=modifier,
                                           use_dist=use_dist, size_normalize=size_normalize,
-                                          MRdiag_dict=MRdiag_dict,
+                                          custom_property_dict=custom_property_dict,
                                           transition_metals_only=transition_metals_only)
         this_colnames = []
         for i in range(0, depth + 1):
@@ -1355,7 +1383,7 @@ def generate_metal_deltametric_derivatives(mol, depth=4, oct=True, flag_name=Fal
 
 
 def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, Gval=False, NumB=False, polarizability=False,
-    flatten=False):
+    use_dist=False, size_normalize=False, custom_property_dict={}, flatten=False):
     """
     This function gets autocorrelations for a molecule starting
     from specified indices.
@@ -1378,6 +1406,17 @@ def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, Gval=Fal
             Use number of bonds as descriptor property, by default False.
         polarizability : bool, optional
             Use polarizability (alpha) as RAC, by default False.
+        use_dist : bool, optional
+            Weigh autocorrelation by physical distance of scope atom from start atom,
+            by default False.
+        size_normalize : bool, optional
+            Whether or not to normalize by the number of atoms in molecule.
+        custom_property_dict : dict, optional
+            Keys are custom property names,
+            values are dictionaries mapping atom symbols to
+            the numerical property for that atom.
+            If provided, other property RACs (e.g., Z, S, T)
+            will not be made.
         flatten : bool, optional
             Flag to change format of returned dictionary, by default False.
             Makes values of dictionary not be nested lists.
@@ -1403,8 +1442,14 @@ def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, Gval=Fal
     if polarizability:
         allowed_strings += ['polarizability']
         labels_strings += ['alpha']
+    if len(custom_property_dict):
+        allowed_strings, labels_strings = [], []
+        for k in list(custom_property_dict):
+            allowed_strings += [k]
+            labels_strings += [k]
     for ii, properties in enumerate(allowed_strings):
-        atom_only_ac = atom_only_autocorrelation(mol, properties, depth, atomIdx, oct=oct)
+        atom_only_ac = atom_only_autocorrelation(mol, properties, depth, atomIdx, oct=oct,
+            use_dist=use_dist, size_normalize=size_normalize, custom_property_dict=custom_property_dict)
         this_colnames = []
         for i in range(0, depth + 1):
             this_colnames.append(labels_strings[ii] + '-' + str(i))
@@ -1447,7 +1492,7 @@ def generate_atomonly_autocorrelation_derivatives(mol, atomIdx, depth=4, oct=Tru
 
 
 def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, NumB=False, polarizability=False,
-    flatten=False):
+    use_dist=False, size_normalize=False, custom_property_dict={}, flatten=False):
     """
     This function gets deltametrics for a molecule starting
     from specified indices.
@@ -1470,6 +1515,17 @@ def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, 
             Use number of bonds as descriptor property, by default False.
         polarizability : bool, optional
             Use polarizability (alpha) as RAC, by default False.
+        use_dist : bool, optional
+            Weigh autocorrelation by physical distance of scope atom from start atom,
+            by default False.
+        size_normalize : bool, optional
+            Whether or not to normalize by the number of atoms in molecule.
+        custom_property_dict : dict, optional
+            Keys are custom property names,
+            values are dictionaries mapping atom symbols to
+            the numerical property for that atom.
+            If provided, other property RACs (e.g., Z, S, T)
+            will not be made.
         flatten : bool, optional
             Flag to change format of returned dictionary, by default False.
             Makes values of dictionary not be nested lists.
@@ -1495,8 +1551,14 @@ def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, 
     if polarizability:
         allowed_strings += ["polarizability"]
         labels_strings += ["alpha"]
+    if len(custom_property_dict):
+        allowed_strings, labels_strings = [], []
+        for k in list(custom_property_dict):
+            allowed_strings += [k]
+            labels_strings += [k]
     for ii, properties in enumerate(allowed_strings):
-        atom_only_ac = atom_only_deltametric(mol, properties, depth, atomIdx, oct=oct)
+        atom_only_ac = atom_only_deltametric(mol, properties, depth, atomIdx, oct=oct,
+            use_dist=use_dist, size_normalize=size_normalize, custom_property_dict=custom_property_dict)
         this_colnames = []
         for i in range(0, depth + 1):
             this_colnames.append(labels_strings[ii] + '-' + str(i))
