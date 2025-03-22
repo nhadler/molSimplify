@@ -393,7 +393,7 @@ def construct_property_vector(mol, prop, oct=True, modifier=False, custom_proper
             for keys in at_keys:
                 values = globs.amass()[keys][1]
                 if keys in list(modifier.keys()):
-                    values -= float(modifier[keys])  # assumes oxidation state provided (i.e. Fe(IV))
+                    values -= float(modifier[keys])  # assumes oxidation state provided (i.e., Fe(IV))
                 prop_dict.update({keys: values})
         else:
             print('Error, must give modifier with ox_nuclear_charge')
@@ -1377,7 +1377,7 @@ def generate_metal_deltametric_derivatives(mol, depth=4, oct=True, flag_name=Fal
 
 
 def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, Gval=False, NumB=False, polarizability=False,
-    flatten=False):
+    use_dist=False, size_normalize=False, custom_property_dict={}, flatten=False):
     """
     This function gets autocorrelations for a molecule starting
     from specified indices.
@@ -1400,6 +1400,15 @@ def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, Gval=Fal
             Use number of bonds as descriptor property, by default False.
         polarizability : bool, optional
             Use polarizability (alpha) as RAC, by default False.
+        use_dist : bool, optional
+            Weigh autocorrelation by physical distance of scope atom from start atom,
+            by default False.
+        size_normalize : bool, optional
+            Whether or not to normalize by the number of atoms in molecule.
+        custom_property_dict : dict, optional
+            Keys are custom property names,
+            values are dictionaries mapping atom symbols to
+            the numerical property for that atom.
         flatten : bool, optional
             Flag to change format of returned dictionary, by default False.
             Makes values of dictionary not be nested lists.
@@ -1425,8 +1434,14 @@ def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, Gval=Fal
     if polarizability:
         allowed_strings += ['polarizability']
         labels_strings += ['alpha']
+    if len(custom_property_dict):
+        allowed_strings, labels_strings = [], []
+        for k in list(custom_property_dict):
+            allowed_strings += [k]
+            labels_strings += [k]
     for ii, properties in enumerate(allowed_strings):
-        atom_only_ac = atom_only_autocorrelation(mol, properties, depth, atomIdx, oct=oct)
+        atom_only_ac = atom_only_autocorrelation(mol, properties, depth, atomIdx, oct=oct,
+            use_dist=use_dist, size_normalize=size_normalize, custom_property_dict=custom_property_dict)
         this_colnames = []
         for i in range(0, depth + 1):
             this_colnames.append(labels_strings[ii] + '-' + str(i))
@@ -1469,7 +1484,7 @@ def generate_atomonly_autocorrelation_derivatives(mol, atomIdx, depth=4, oct=Tru
 
 
 def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, NumB=False, polarizability=False,
-    flatten=False):
+    use_dist=False, size_normalize=False, custom_property_dict={}, flatten=False):
     """
     This function gets deltametrics for a molecule starting
     from specified indices.
@@ -1492,6 +1507,15 @@ def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, 
             Use number of bonds as descriptor property, by default False.
         polarizability : bool, optional
             Use polarizability (alpha) as RAC, by default False.
+        use_dist : bool, optional
+            Weigh autocorrelation by physical distance of scope atom from start atom,
+            by default False.
+        size_normalize : bool, optional
+            Whether or not to normalize by the number of atoms in molecule.
+        custom_property_dict : dict, optional
+            Keys are custom property names,
+            values are dictionaries mapping atom symbols to
+            the numerical property for that atom.
         flatten : bool, optional
             Flag to change format of returned dictionary, by default False.
             Makes values of dictionary not be nested lists.
@@ -1517,8 +1541,14 @@ def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, 
     if polarizability:
         allowed_strings += ["polarizability"]
         labels_strings += ["alpha"]
+    if len(custom_property_dict):
+        allowed_strings, labels_strings = [], []
+        for k in list(custom_property_dict):
+            allowed_strings += [k]
+            labels_strings += [k]
     for ii, properties in enumerate(allowed_strings):
-        atom_only_ac = atom_only_deltametric(mol, properties, depth, atomIdx, oct=oct)
+        atom_only_ac = atom_only_deltametric(mol, properties, depth, atomIdx, oct=oct,
+            use_dist=use_dist, size_normalize=size_normalize, custom_property_dict=custom_property_dict)
         this_colnames = []
         for i in range(0, depth + 1):
             this_colnames.append(labels_strings[ii] + '-' + str(i))
