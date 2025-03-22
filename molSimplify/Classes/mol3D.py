@@ -3904,7 +3904,8 @@ class mol3D:
 
     def get_features(self, lac=True, force_generate=False, eq_sym=False,
                      use_dist=False, NumB=False, Gval=False, size_normalize=False,
-                     alleq=False, strict_cutoff=False, catom_list=None, MRdiag_dict={}, depth=3):
+                     alleq=False, strict_cutoff=False, catom_list=None, MRdiag_dict={},
+                     depth=3, loud=False, two_key=False):
         """
         Get geo-based RAC features for this transition metal complex (if octahedral).
 
@@ -3935,6 +3936,13 @@ class mol3D:
             depth : int, optional
                 The maximum depth of the RACs (how many bonds out the RACs go).
                 For example, if set to 3, depths considered will be 0, 1, 2, and 3.
+            loud : bool
+                Whether to generate print statements.
+                Default is False.
+            two_key : bool
+                Whether return dictionary should only have two keys,
+                'colnames' and 'results', with values that are
+                lists of feature names and values, respectively.
 
         Returns
         -------
@@ -3952,12 +3960,19 @@ class mol3D:
             self.createMolecularGraph(strict_cutoff=strict_cutoff, catom_list=catom_list)
         if not force_generate:
             geo_type = self.get_geometry_type()
-            print("geotype: ", geo_type)
+            if loud:
+                print("geotype: ", geo_type)
         if force_generate or geo_type['geometry'] == 'octahedral':
             names, racs = get_descriptor_vector(self, lacRACs=lac, eq_sym=eq_sym, use_dist=use_dist,
                                                 NumB=NumB, Gval=Gval, size_normalize=size_normalize,
                                                 alleq=alleq, MRdiag_dict=MRdiag_dict, depth=depth)
-            results = dict(zip(names, racs))
+            if two_key:
+                results = {
+                'colnames': names,
+                'results': racs,
+                }
+            else:
+                results = dict(zip(names, racs))
         else:
             print("Warning: Featurization not yet implemented for non-octahedral complexes. Return a empty dict.")
         return results
