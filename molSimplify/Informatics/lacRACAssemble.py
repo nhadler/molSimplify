@@ -660,7 +660,7 @@ def generate_all_ligand_autocorrelations_lac(mol, loud=False, depth=4, flag_name
     result_eq_full = list(result_eq_full)
     result_ax_con = list(result_ax_con)
     result_eq_con = list(result_eq_con)
-    
+
     if flag_name:
         results_dictionary = {'colnames': colnames, 'result_ax_full_ac': result_ax_full,
                               'result_eq_full_ac': result_eq_full,
