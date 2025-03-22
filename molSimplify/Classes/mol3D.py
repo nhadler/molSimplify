@@ -3935,6 +3935,8 @@ class mol3D:
                 Keys are custom property names,
                 values are dictionaries mapping atom symbols to
                 the numerical property for that atom.
+                If provided, other property RACs (e.g., Z, S, T)
+                will not be made.
             depth : int, optional
                 The maximum depth of the RACs (how many bonds out the RACs go).
                 For example, if set to 3, depths considered will be 0, 1, 2, and 3.

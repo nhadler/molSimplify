@@ -589,6 +589,8 @@ def generate_full_complex_autocorrelations(mol,
             Keys are custom property names,
             values are dictionaries mapping atom symbols to
             the numerical property for that atom.
+            If provided, other property RACs (e.g., Z, S, T)
+            will not be made.
         transition_metals_only : bool, optional
             Flag if only transition metals counted as metals, by default True.
         flatten : bool, optional
@@ -1114,6 +1116,8 @@ def generate_metal_autocorrelations(mol, depth=4, oct=True, flag_name=False,
             Keys are custom property names,
             values are dictionaries mapping atom symbols to
             the numerical property for that atom.
+            If provided, other property RACs (e.g., Z, S, T)
+            will not be made.
         transition_metals_only : bool, optional
             Flag if only transition metals counted as metals, by default True.
         flatten : bool, optional
@@ -1263,6 +1267,8 @@ def generate_metal_deltametrics(mol, depth=4, oct=True, flag_name=False,
             Keys are custom property names,
             values are dictionaries mapping atom symbols to
             the numerical property for that atom.
+            If provided, other property RACs (e.g., Z, S, T)
+            will not be made.
         transition_metals_only : bool, optional
             Flag if only transition metals counted as metals, by default True.
         flatten : bool, optional
@@ -1409,6 +1415,8 @@ def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, Gval=Fal
             Keys are custom property names,
             values are dictionaries mapping atom symbols to
             the numerical property for that atom.
+            If provided, other property RACs (e.g., Z, S, T)
+            will not be made.
         flatten : bool, optional
             Flag to change format of returned dictionary, by default False.
             Makes values of dictionary not be nested lists.
@@ -1516,6 +1524,8 @@ def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, 
             Keys are custom property names,
             values are dictionaries mapping atom symbols to
             the numerical property for that atom.
+            If provided, other property RACs (e.g., Z, S, T)
+            will not be made.
         flatten : bool, optional
             Flag to change format of returned dictionary, by default False.
             Makes values of dictionary not be nested lists.

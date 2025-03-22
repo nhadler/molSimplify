@@ -91,6 +91,8 @@ def get_descriptor_vector(this_complex,
             Keys are custom property names,
             values are dictionaries mapping atom symbols to
             the numerical property for that atom.
+            If provided, other property RACs (e.g., Z, S, T)
+            will not be made.
         depth : int, optional
             The maximum depth of the RACs (how many bonds out the RACs go).
             For example, if set to 3, depths considered will be 0, 1, 2, and 3.
@@ -505,6 +507,8 @@ def generate_all_ligand_autocorrelations_lac(mol, loud=False, depth=4, flag_name
             Keys are custom property names,
             values are dictionaries mapping atom symbols to
             the numerical property for that atom.
+            If provided, other property RACs (e.g., Z, S, T)
+            will not be made.
 
     Returns
     -------
@@ -773,6 +777,8 @@ def generate_all_ligand_deltametrics_lac(mol, loud=False, depth=4, flag_name=Fal
             Keys are custom property names,
             values are dictionaries mapping atom symbols to
             the numerical property for that atom.
+            If provided, other property RACs (e.g., Z, S, T)
+            will not be made.
 
     Returns
     -------
