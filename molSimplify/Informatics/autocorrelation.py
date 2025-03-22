@@ -457,7 +457,7 @@ def construct_property_vector(mol, prop, oct=True, modifier=False, custom_proper
             try:
                 w[i] = custom_property_dict[prop][atom.symbol()]
             except KeyError:
-                print(f'custom_property_dict dictionary for {prop} missing entry for {atom.symbol()}.')
+                raise KeyError(f'custom_property_dict dictionary for property {prop} is missing an entry for the element {atom.symbol()}.')
         done = True
     if not done:
         for i, atoms in enumerate(mol.getAtoms()):
