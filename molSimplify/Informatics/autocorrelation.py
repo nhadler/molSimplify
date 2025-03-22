@@ -357,7 +357,7 @@ def construct_property_vector(mol, prop, oct=True, modifier=False, custom_proper
     allowed_strings = [
     'electronegativity', 'nuclear_charge', 'ident', 'topology',
     'ox_nuclear_charge', 'size', 'vdwrad', 'group_number', 'polarizability',
-    'bondvalence', 'num_bonds', 'bondvalence_devi', 'bodavrg', 'bodstd', 
+    'bondvalence', 'num_bonds', 'bondvalence_devi', 'bodavrg', 'bodstd',
     'charge',
     ]
     if len(custom_property_dict):

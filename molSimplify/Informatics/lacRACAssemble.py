@@ -505,7 +505,7 @@ def generate_all_ligand_autocorrelations_lac(mol, loud=False, depth=4, flag_name
             Keys are custom property names,
             values are dictionaries mapping atom symbols to
             the numerical property for that atom.
-            
+
     Returns
     -------
         results_dictionary: dict
