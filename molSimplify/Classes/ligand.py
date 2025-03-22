@@ -1002,12 +1002,12 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
     max_mw_idx = np.argmax(np.array(mw_plane_list))  # Saved for planar 3X3 dentate cases
     eq_points_max_mw = combo_list[max_mw_idx]
     eq_points_max_con_mw = combo_list[np.argmax(np.array(mw_plane_lig_con_list))]
-    # If there is no difference in MW bewteen different planes, flag as symmetric compound
+    # If there is no difference in MW between different planes, flag as symmetric compound.
     if np.var(np.array(mw_plane_list)) == 0.0:
         symmetric = True
     else:
         symmetric = False
-    # Print out state of affairs if loud
+    # Print out state of affairs if loud.
     if loud:
         print(f'unique ligands {unique_ligands}')
         print(f'ligand counts {ligand_counts}')
@@ -1161,7 +1161,7 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
         elif n_unique_ligs == 3:  # Mix of 3 monodentates
             if loud:
                 print(f'monodentate {max(ligand_counts)}+{min(ligand_counts)}+{6-max(ligand_counts)-min(ligand_counts)}')
-            # ### Need to identify if in seesaw-style configuration or planar configuration
+            # Need to identify if in seesaw-style configuration or planar configuration.
             if use_z:
                 minz = 500
                 maxz = -500
@@ -1381,7 +1381,7 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
         mono_con_list = list()
         monodentate_eq_cons = list()
         monodentate_eq_idxs = list()
-        # 2-dentate in eq plane and opposite monodentates selected
+        # 2-dentate in eq plane and opposite monodentates selected.
         bidentate_axial = False
         for mono_dentate_idx in mono_dentate_idx_set:
             current_con = ligcons[mono_dentate_idx]
@@ -1459,7 +1459,7 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
                 eq_con_list = [tridentate_cons, monodentate_eq_con]  # ADDED
                 ax_lig_list = [val for val in mono_dentate_idx_set if val not in [monodentate_eq_idx]]
                 ax_con_list = [[val] for val in mono_con_list if val not in monodentate_eq_con]
-            else:  # WORKs
+            else:
                 # ## any equatorial plane will have 2 of the tridentate con atoms so take the eq plane with max mw
                 tri_eq_ligcons = list(set(tridentate_cons).intersection(
                                       set([flat_ligcons[x] for x in eq_points_max_mw])))
@@ -1503,12 +1503,12 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
             if test_angle < angle_cutoff:
                 seesaw = True
                 temp_cons = bidentate_cons1+bidentate_cons2
-                # Axial pair in bidentates identified
+                # Axial pair in bidentates identified.
                 axial_pair = [[temp_cons[val]] for val in list(pair_list[np.argmax(np.array(angle_list))])]
             else:
                 seesaw = False
 
-            if seesaw:  # 2 points in eq plane, seesaw case
+            if seesaw:  # 2 points in eq plane, seesaw case.
                 ax_con_list = axial_pair
                 flat_ax_con_list = [item for sublist in ax_con_list for item in sublist]
                 ax_lig_list = [j for j, val in enumerate(ligcons) if flat_ax_con_list[0] in val] + \

@@ -45,7 +45,7 @@ def get_descriptor_vector(this_complex,
                           lacRACs=True, loud=False,
                           smiles_charge=False, eq_sym=False,
                           use_dist=False, size_normalize=False,
-                          alleq=False, MRdiag_dict={},
+                          alleq=False, custom_property_dict={},
                           depth=3,
                           ):
     """
@@ -87,8 +87,10 @@ def get_descriptor_vector(this_complex,
             Whether or not to normalize by the number of atoms.
         alleq : bool, optional
             Whether or not all ligands are equatorial.
-        MRdiag_dict : dict, optional
-            Keys are ligand identifiers, values are MR diagnostics like E_corr.
+        custom_property_dict : dict, optional
+            Keys are custom property names,
+            values are dictionaries mapping atom symbols to
+            the numerical property for that atom.
         depth : int, optional
             The maximum depth of the RACs (how many bonds out the RACs go).
             For example, if set to 3, depths considered will be 0, 1, 2, and 3.
@@ -146,7 +148,7 @@ def get_descriptor_vector(this_complex,
                                                                 modifier=ox_modifier, NumB=NumB,
                                                                 Gval=Gval, use_dist=use_dist,
                                                                 size_normalize=size_normalize,
-                                                                MRdiag_dict=MRdiag_dict)
+                                                                custom_property_dict=custom_property_dict)
     descriptor_names, descriptors = append_descriptors(descriptor_names, descriptors,
                                                        results_dictionary['colnames'],
                                                        results_dictionary['results'],
@@ -157,7 +159,7 @@ def get_descriptor_vector(this_complex,
                                                               custom_ligand_dict=custom_ligand_dict,
                                                               NumB=NumB, Gval=Gval, use_dist=use_dist,
                                                               size_normalize=size_normalize,
-                                                              MRdiag_dict=MRdiag_dict)
+                                                              custom_property_dict=custom_property_dict)
     if not alleq:
         descriptor_names, descriptors = append_descriptors(descriptor_names, descriptors,
                                                            results_dictionary['colnames'],
@@ -181,7 +183,7 @@ def get_descriptor_vector(this_complex,
                                                           custom_ligand_dict=custom_ligand_dict,
                                                           NumB=NumB, Gval=Gval, use_dist=use_dist,
                                                           size_normalize=size_normalize,
-                                                          MRdiag_dict=MRdiag_dict)
+                                                          custom_property_dict=custom_property_dict)
     if not alleq:
         descriptor_names, descriptors = append_descriptors(descriptor_names, descriptors,
                                                            results_dictionary['colnames'],
@@ -198,7 +200,7 @@ def get_descriptor_vector(this_complex,
                                                          NumB=NumB, Gval=Gval,
                                                          use_dist=use_dist,
                                                          size_normalize=size_normalize,
-                                                         MRdiag_dict=MRdiag_dict)
+                                                         custom_property_dict=custom_property_dict)
     descriptor_names, descriptors = append_descriptors(descriptor_names, descriptors,
                                                        results_dictionary['colnames'],
                                                        results_dictionary['results'],
@@ -209,7 +211,7 @@ def get_descriptor_vector(this_complex,
                                                      NumB=NumB, Gval=Gval,
                                                      use_dist=use_dist,
                                                      size_normalize=size_normalize,
-                                                     MRdiag_dict=MRdiag_dict)
+                                                     custom_property_dict=custom_property_dict)
     descriptor_names, descriptors = append_descriptors(descriptor_names, descriptors,
                                                        results_dictionary['colnames'],
                                                        results_dictionary['results'],
@@ -474,7 +476,7 @@ def generate_all_ligand_misc(mol, loud=False, custom_ligand_dict=False, smiles_c
 
 def generate_all_ligand_autocorrelations_lac(mol, loud=False, depth=4, flag_name=False,
                                          custom_ligand_dict=False, NumB=False, Gval=False,
-                                         use_dist=False, size_normalize=False, MRdiag_dict={}):
+                                         use_dist=False, size_normalize=False, custom_property_dict={}):
     """
     Utility for generating all ligand-based product autocorrelations for a complex.
 
@@ -499,9 +501,11 @@ def generate_all_ligand_autocorrelations_lac(mol, loud=False, depth=4, flag_name
             by default False.
         size_normalize : bool, optional
             Whether or not to normalize by the number of atoms.
-        MRdiag_dict : dict, optional
-            Keys are ligand identifiers, values are MR diagnostics like E_corr.
-
+        custom_property_dict : dict, optional
+            Keys are custom property names,
+            values are dictionaries mapping atom symbols to
+            the numerical property for that atom.
+            
     Returns
     -------
         results_dictionary: dict
@@ -518,9 +522,9 @@ def generate_all_ligand_autocorrelations_lac(mol, loud=False, depth=4, flag_name
     if NumB:
         allowed_strings += ["num_bonds"]
         labels_strings += ["NumB"]
-    if len(MRdiag_dict):
+    if len(custom_property_dict):
         allowed_strings, labels_strings = [], []
-        for k in list(MRdiag_dict):
+        for k in list(custom_property_dict):
             allowed_strings += [k]
             labels_strings += [k]
     result_ax_full = list()
@@ -550,20 +554,22 @@ def generate_all_ligand_autocorrelations_lac(mol, loud=False, depth=4, flag_name
         for i in range(0, n_ax):
             if list(ax_ligand_ac_full):
                 ax_ligand_ac_full += full_autocorrelation(ax_ligand_list[i].mol, properties, depth, use_dist=use_dist,
-                                                          size_normalize=size_normalize, MRdiag_dict=MRdiag_dict)
+                                                          size_normalize=size_normalize, custom_property_dict=custom_property_dict)
             else:
                 ax_ligand_ac_full = full_autocorrelation(ax_ligand_list[i].mol, properties, depth, use_dist=use_dist,
-                                                         size_normalize=size_normalize, MRdiag_dict=MRdiag_dict)
+                                                         size_normalize=size_normalize, custom_property_dict=custom_property_dict)
 
+        # Average over the number of axial ligands.
         ax_ligand_ac_full = np.divide(ax_ligand_ac_full, n_ax)
         for i in range(0, n_eq):
             if list(eq_ligand_ac_full):
                 eq_ligand_ac_full += full_autocorrelation(eq_ligand_list[i].mol, properties, depth, use_dist=use_dist,
-                                                          size_normalize=size_normalize, MRdiag_dict=MRdiag_dict)
+                                                          size_normalize=size_normalize, custom_property_dict=custom_property_dict)
             else:
                 eq_ligand_ac_full = full_autocorrelation(eq_ligand_list[i].mol, properties, depth, use_dist=use_dist,
-                                                         size_normalize=size_normalize, MRdiag_dict=MRdiag_dict)
+                                                         size_normalize=size_normalize, custom_property_dict=custom_property_dict)
 
+        # Average over the number of equatorial ligands.
         eq_ligand_ac_full = np.divide(eq_ligand_ac_full, n_eq)
         ax_ligand_ac_con = []
         eq_ligand_ac_con = []
@@ -571,23 +577,25 @@ def generate_all_ligand_autocorrelations_lac(mol, loud=False, depth=4, flag_name
             if list(ax_ligand_ac_con):
                 ax_ligand_ac_con += atom_only_autocorrelation(ax_ligand_list[i].mol, properties, depth, ax_con_int_list[i],
                                                               use_dist=use_dist, size_normalize=size_normalize,
-                                                              MRdiag_dict=MRdiag_dict)
+                                                              custom_property_dict=custom_property_dict)
             else:
                 ax_ligand_ac_con = atom_only_autocorrelation(ax_ligand_list[i].mol, properties, depth, ax_con_int_list[i],
                                                              use_dist=use_dist, size_normalize=size_normalize,
-                                                             MRdiag_dict=MRdiag_dict)
+                                                             custom_property_dict=custom_property_dict)
 
+        # Average over the number of axial ligands.
         ax_ligand_ac_con = np.divide(ax_ligand_ac_con, n_ax)
         for i in range(0, n_eq):
             if list(eq_ligand_ac_con):
                 eq_ligand_ac_con += atom_only_autocorrelation(eq_ligand_list[i].mol, properties, depth, eq_con_int_list[i],
                                                               use_dist=use_dist, size_normalize=size_normalize,
-                                                              MRdiag_dict=MRdiag_dict)
+                                                              custom_property_dict=custom_property_dict)
             else:
                 eq_ligand_ac_con = atom_only_autocorrelation(eq_ligand_list[i].mol, properties, depth, eq_con_int_list[i],
                                                              use_dist=use_dist, size_normalize=size_normalize,
-                                                             MRdiag_dict=MRdiag_dict)
+                                                             custom_property_dict=custom_property_dict)
 
+        # Average over the number of equatorial ligands.
         eq_ligand_ac_con = np.divide(eq_ligand_ac_con, n_eq)
         ################
         this_colnames = []
@@ -737,7 +745,7 @@ def generate_all_ligand_autocorrelation_derivatives_lac(mol, loud=False, depth=4
 
 def generate_all_ligand_deltametrics_lac(mol, loud=False, depth=4, flag_name=False,
                                      custom_ligand_dict=False, NumB=False, Gval=False,
-                                     use_dist=False, size_normalize=False, MRdiag_dict={}):
+                                     use_dist=False, size_normalize=False, custom_property_dict={}):
     """
     Utility for generating all ligand-based deltametric autocorrelations for a complex.
 
@@ -761,8 +769,10 @@ def generate_all_ligand_deltametrics_lac(mol, loud=False, depth=4, flag_name=Fal
             Weigh autocorrelation by physical distance of atom from original, by default False.
         size_normalize : bool, optional
             Whether or not to normalize by the number of atoms.
-        MRdiag_dict : dict, optional
-            Keys are ligand identifiers, values are MR diagnostics like E_corr.
+        custom_property_dict : dict, optional
+            Keys are custom property names,
+            values are dictionaries mapping atom symbols to
+            the numerical property for that atom.
 
     Returns
     -------
@@ -782,9 +792,9 @@ def generate_all_ligand_deltametrics_lac(mol, loud=False, depth=4, flag_name=Fal
     if NumB:
         allowed_strings += ["num_bonds"]
         labels_strings += ["NumB"]
-    if len(MRdiag_dict):
+    if len(custom_property_dict):
         allowed_strings, labels_strings = [], []
-        for k in list(MRdiag_dict):
+        for k in list(custom_property_dict):
             allowed_strings += [k]
             labels_strings += [k]
     if custom_ligand_dict:
@@ -809,23 +819,25 @@ def generate_all_ligand_deltametrics_lac(mol, loud=False, depth=4, flag_name=Fal
             if list(ax_ligand_ac_con):
                 ax_ligand_ac_con += atom_only_deltametric(ax_ligand_list[i].mol, properties, depth, ax_con_int_list[i],
                                                           use_dist=use_dist, size_normalize=size_normalize,
-                                                          MRdiag_dict=MRdiag_dict)
+                                                          custom_property_dict=custom_property_dict)
             else:
                 ax_ligand_ac_con = atom_only_deltametric(ax_ligand_list[i].mol, properties, depth, ax_con_int_list[i],
                                                          use_dist=use_dist, size_normalize=size_normalize,
-                                                         MRdiag_dict=MRdiag_dict)
+                                                         custom_property_dict=custom_property_dict)
 
+        # Average over the number of axial ligands.
         ax_ligand_ac_con = np.divide(ax_ligand_ac_con, n_ax)
         for i in range(0, n_eq):
             if list(eq_ligand_ac_con):
                 eq_ligand_ac_con += atom_only_deltametric(eq_ligand_list[i].mol, properties, depth, eq_con_int_list[i],
                                                           use_dist=use_dist, size_normalize=size_normalize,
-                                                          MRdiag_dict=MRdiag_dict)
+                                                          custom_property_dict=custom_property_dict)
             else:
                 eq_ligand_ac_con = atom_only_deltametric(eq_ligand_list[i].mol, properties, depth, eq_con_int_list[i],
                                                          use_dist=use_dist, size_normalize=size_normalize,
-                                                         MRdiag_dict=MRdiag_dict)
+                                                         custom_property_dict=custom_property_dict)
 
+        # Average over the number of equatorial ligands.
         eq_ligand_ac_con = np.divide(eq_ligand_ac_con, n_eq)
         ####################
         this_colnames = []
