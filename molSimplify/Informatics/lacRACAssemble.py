@@ -917,7 +917,7 @@ def generate_all_ligand_deltametrics_lac(mol, loud=False, depth=4, flag_name=Fal
         results_dictionary = {'colnames': colnames, 'result_ax_con_del': result_ax_con,
                               'result_eq_con_del': result_eq_con}
     else:
-        results_dictionary = {'colnames': colnames, 'result_ax_con': result_ax_con, 'result_eq_con': result_eq_con}    
+        results_dictionary = {'colnames': colnames, 'result_ax_con': result_ax_con, 'result_eq_con': result_eq_con}
     return results_dictionary
 
 
