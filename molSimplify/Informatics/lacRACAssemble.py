@@ -18,11 +18,8 @@ from molSimplify.Classes.ligand import (
 from molSimplify.Informatics.autocorrelation import (
     append_descriptor_derivatives,
     append_descriptors,
-    atom_only_autocorrelation,
     atom_only_autocorrelation_derivative,
-    atom_only_deltametric,
     atom_only_deltametric_derivative,
-    full_autocorrelation,
     full_autocorrelation_derivative,
     generate_atomonly_autocorrelations,
     generate_atomonly_deltametrics,
