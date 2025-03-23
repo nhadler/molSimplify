@@ -520,11 +520,6 @@ def generate_all_ligand_autocorrelations_lac(mol, loud=False, depth=4, flag_name
             'result_ax_con': result_ax_con, 'result_eq_con': result_eq_con}.
 
     """
-    result_ax_full = list()
-    result_eq_full = list()
-    result_ax_con = list()
-    result_eq_con = list()
-
     if custom_ligand_dict:
         ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
         eq_ligand_list = custom_ligand_dict["eq_ligand_list"]
@@ -668,7 +663,6 @@ def generate_all_ligand_autocorrelations_lac(mol, loud=False, depth=4, flag_name
     else:
         results_dictionary = {'colnames': colnames, 'result_ax_full': result_ax_full, 'result_eq_full': result_eq_full,
                               'result_ax_con': result_ax_con, 'result_eq_con': result_eq_con}
-    print(f'results_dictionary is {results_dictionary}')
     return results_dictionary
 
 
@@ -841,20 +835,7 @@ def generate_all_ligand_deltametrics_lac(mol, loud=False, depth=4, flag_name=Fal
     """
     result_ax_con = list()
     result_eq_con = list()
-    colnames = []
-    allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
-    labels_strings = ['chi', 'Z', 'I', 'T', 'S']
-    if Gval:
-        allowed_strings += ['group_number']
-        labels_strings += ['Gval']
-    if NumB:
-        allowed_strings += ["num_bonds"]
-        labels_strings += ["NumB"]
-    if len(custom_property_dict):
-        allowed_strings, labels_strings = [], []
-        for k in list(custom_property_dict):
-            allowed_strings += [k]
-            labels_strings += [k]
+
     if custom_ligand_dict:
         ax_ligand_list = custom_ligand_dict["ax_ligand_list"]
         eq_ligand_list = custom_ligand_dict["eq_ligand_list"]
@@ -868,47 +849,78 @@ def generate_all_ligand_deltametrics_lac(mol, loud=False, depth=4, flag_name=Fal
     # count ligands
     n_ax = len(ax_ligand_list)
     n_eq = len(eq_ligand_list)
-    for ii, properties in enumerate(allowed_strings):
-        ####################
-        # get partial ligand AC
-        ax_ligand_ac_con = []
-        eq_ligand_ac_con = []
-        for i in range(0, n_ax):
-            if list(ax_ligand_ac_con):
-                ax_ligand_ac_con += atom_only_deltametric(ax_ligand_list[i].mol, properties, depth, ax_con_int_list[i],
-                                                          use_dist=use_dist, size_normalize=size_normalize,
-                                                          custom_property_dict=custom_property_dict)
-            else:
-                ax_ligand_ac_con = atom_only_deltametric(ax_ligand_list[i].mol, properties, depth, ax_con_int_list[i],
-                                                         use_dist=use_dist, size_normalize=size_normalize,
-                                                         custom_property_dict=custom_property_dict)
 
-        # Average over the number of axial ligands.
-        ax_ligand_ac_con = np.divide(ax_ligand_ac_con, n_ax)
-        for i in range(0, n_eq):
-            if list(eq_ligand_ac_con):
-                eq_ligand_ac_con += atom_only_deltametric(eq_ligand_list[i].mol, properties, depth, eq_con_int_list[i],
-                                                          use_dist=use_dist, size_normalize=size_normalize,
-                                                          custom_property_dict=custom_property_dict)
-            else:
-                eq_ligand_ac_con = atom_only_deltametric(eq_ligand_list[i].mol, properties, depth, eq_con_int_list[i],
-                                                         use_dist=use_dist, size_normalize=size_normalize,
-                                                         custom_property_dict=custom_property_dict)
+    ####################
+    # get partial ligand AC
+    for i in range(0, n_ax):
+        if list(result_ax_con):
+            result_ax_con += generate_atomonly_deltametrics(
+                ax_ligand_list[i].mol,
+                ax_con_int_list[i],
+                depth=depth,
+                custom_property_dict=custom_property_dict,
+                NumB=NumB,
+                Gval=Gval,
+                use_dist=use_dist,
+                size_normalize=size_normalize,
+                )['results']
+        else:
+            results_dict = generate_atomonly_deltametrics(
+                ax_ligand_list[i].mol,
+                ax_con_int_list[i],
+                depth=depth,
+                custom_property_dict=custom_property_dict,
+                NumB=NumB,
+                Gval=Gval,
+                use_dist=use_dist,
+                size_normalize=size_normalize,
+                )
+            result_ax_con = results_dict['results']
+            result_ax_con = np.array(result_ax_con)
+            colnames = results_dict['colnames']
 
-        # Average over the number of equatorial ligands.
-        eq_ligand_ac_con = np.divide(eq_ligand_ac_con, n_eq)
-        ####################
-        this_colnames = []
-        for i in range(0, depth + 1):
-            this_colnames.append(labels_strings[ii] + '-' + str(i))
-        colnames.append(this_colnames)
-        result_ax_con.append(ax_ligand_ac_con)
-        result_eq_con.append(eq_ligand_ac_con)
+    # Average over the number of axial ligands.
+    result_ax_con = np.divide(result_ax_con, n_ax)
+
+    for i in range(0, n_eq):
+        if list(result_eq_con):
+            result_eq_con += generate_atomonly_deltametrics(
+                eq_ligand_list[i].mol,
+                eq_con_int_list[i],
+                depth=depth,
+                custom_property_dict=custom_property_dict,
+                NumB=NumB,
+                Gval=Gval,
+                use_dist=use_dist,
+                size_normalize=size_normalize,
+                )['results']
+        else:
+            results_dict = generate_atomonly_deltametrics(
+                eq_ligand_list[i].mol,
+                eq_con_int_list[i],
+                depth=depth,
+                custom_property_dict=custom_property_dict,
+                NumB=NumB,
+                Gval=Gval,
+                use_dist=use_dist,
+                size_normalize=size_normalize,
+                )
+            result_eq_con = results_dict['results']
+            result_eq_con = np.array(result_eq_con)
+            colnames = results_dict['colnames']
+
+    # Average over the number of equatorial ligands.
+    result_eq_con = np.divide(result_eq_con, n_eq)
+
+    result_ax_con = list(result_ax_con)
+    result_eq_con = list(result_eq_con)
+    ####################
+
     if flag_name:
         results_dictionary = {'colnames': colnames, 'result_ax_con_del': result_ax_con,
                               'result_eq_con_del': result_eq_con}
     else:
-        results_dictionary = {'colnames': colnames, 'result_ax_con': result_ax_con, 'result_eq_con': result_eq_con}
+        results_dictionary = {'colnames': colnames, 'result_ax_con': result_ax_con, 'result_eq_con': result_eq_con}    
     return results_dictionary
 
 
