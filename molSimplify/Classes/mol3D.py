@@ -3905,7 +3905,7 @@ class mol3D:
     def get_features(self, lac=True, force_generate=False, eq_sym=False,
                      use_dist=False, NumB=False, Gval=False, size_normalize=False,
                      alleq=False, strict_cutoff=False, catom_list=None, custom_property_dict={},
-                     depth=3, loud=False, two_key=False):
+                     depth=3, loud=False, two_key=False, non_trivial=False):
         """
         Get geo-based RAC features for this transition metal complex (if octahedral).
 
@@ -3924,7 +3924,7 @@ class mol3D:
             Gval : bool, optional
                 Whether or not the group number RAC features are generated.
             size_normalize : bool, optional
-                Whether or not to normalize by the number of atoms.
+                Whether or not to normalize by the number of atoms in molecule.
             alleq : bool, optional
                 Whether or not all ligands are equatorial.
             strict_cutoff : bool, optional
@@ -3947,12 +3947,18 @@ class mol3D:
                 Whether return dictionary should only have two keys,
                 'colnames' and 'results', with values that are
                 lists of feature names and values, respectively.
+            non_trivial : bool, optional
+                Flag to exclude difference RACs of I, and depth zero difference
+                RACs. These RACs are always zero. By default False.
 
         Returns
         -------
             results : dict
                 Dictionary of {'RACname':RAC} for all geo-based RACs
         """
+
+        if depth < 0:
+            raise Exception('depth must be a non-negative integer.')
 
         metals = self.findMetal()
         if len(metals) != 1:
@@ -3969,7 +3975,8 @@ class mol3D:
         if force_generate or geo_type['geometry'] == 'octahedral':
             names, racs = get_descriptor_vector(self, lacRACs=lac, eq_sym=eq_sym, use_dist=use_dist,
                                                 NumB=NumB, Gval=Gval, size_normalize=size_normalize,
-                                                alleq=alleq, custom_property_dict=custom_property_dict, depth=depth)
+                                                alleq=alleq, custom_property_dict=custom_property_dict,
+                                                depth=depth, non_trivial=non_trivial)
             if two_key:
                 results = {
                 'colnames': names,
