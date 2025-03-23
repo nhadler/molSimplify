@@ -45,7 +45,7 @@ def get_descriptor_vector(this_complex,
                           smiles_charge=False, eq_sym=False,
                           use_dist=False, size_normalize=False,
                           alleq=False, custom_property_dict={},
-                          depth=3,
+                          depth=3, non_trivial=False,
                           ):
     """
     Calculate and return all geo-based RACs for a given octahedral TM complex (featurize).
@@ -95,6 +95,9 @@ def get_descriptor_vector(this_complex,
         depth : int, optional
             The maximum depth of the RACs (how many bonds out the RACs go).
             For example, if set to 3, depths considered will be 0, 1, 2, and 3.
+        non_trivial : bool, optional
+            Flag to exclude difference RACs of I, and depth zero difference
+            RACs. These RACs are always zero. By default False.
 
     Returns
     -------
@@ -104,6 +107,9 @@ def get_descriptor_vector(this_complex,
             Compiled list of descriptor values.
 
     """
+    if depth < 0:
+        raise Exception('depth must be a non-negative integer.')
+
     metals = this_complex.findMetal()
     if len(metals) != 1:
         raise Exception('Molecule does not have the expected number of transition metals (1).')
@@ -184,7 +190,8 @@ def get_descriptor_vector(this_complex,
                                                           custom_ligand_dict=custom_ligand_dict,
                                                           NumB=NumB, Gval=Gval, use_dist=use_dist,
                                                           size_normalize=size_normalize,
-                                                          custom_property_dict=custom_property_dict)
+                                                          custom_property_dict=custom_property_dict,
+                                                          non_trivial=non_trivial)
     if not alleq:
         descriptor_names, descriptors = append_descriptors(descriptor_names, descriptors,
                                                            results_dictionary['colnames'],
@@ -212,7 +219,8 @@ def get_descriptor_vector(this_complex,
                                                      NumB=NumB, Gval=Gval,
                                                      use_dist=use_dist,
                                                      size_normalize=size_normalize,
-                                                     custom_property_dict=custom_property_dict)
+                                                     custom_property_dict=custom_property_dict,
+                                                     non_trivial=non_trivial)
     descriptor_names, descriptors = append_descriptors(descriptor_names, descriptors,
                                                        results_dictionary['colnames'],
                                                        results_dictionary['results'],
@@ -231,7 +239,8 @@ def get_descriptor_vector(this_complex,
         results_dictionary = generate_metal_ox_deltametrics(ox_modifier, this_complex,
                                                             depth=depth,
                                                             use_dist=use_dist,
-                                                            size_normalize=size_normalize)
+                                                            size_normalize=size_normalize,
+                                                            non_trivial=non_trivial)
         descriptor_names, descriptors = append_descriptors(descriptor_names, descriptors,
                                                            results_dictionary['colnames'],
                                                            results_dictionary['results'],
@@ -792,7 +801,8 @@ def generate_all_ligand_autocorrelation_derivatives_lac(mol, loud=False, depth=4
 
 def generate_all_ligand_deltametrics_lac(mol, loud=False, depth=4, flag_name=False,
                                      custom_ligand_dict=False, NumB=False, Gval=False,
-                                     use_dist=False, size_normalize=False, custom_property_dict={}):
+                                     use_dist=False, size_normalize=False, custom_property_dict={},
+                                     non_trivial=False):
     """
     Utility for generating all ligand-based deltametric autocorrelations for a complex.
 
@@ -822,6 +832,9 @@ def generate_all_ligand_deltametrics_lac(mol, loud=False, depth=4, flag_name=Fal
             the numerical property for that atom.
             If provided, other property RACs (e.g., Z, S, T)
             will not be made.
+        non_trivial : bool, optional
+            Flag to exclude difference RACs of I, and depth zero difference
+            RACs. These RACs are always zero. By default False.
 
     Returns
     -------
@@ -860,6 +873,7 @@ def generate_all_ligand_deltametrics_lac(mol, loud=False, depth=4, flag_name=Fal
                 Gval=Gval,
                 use_dist=use_dist,
                 size_normalize=size_normalize,
+                non_trivial=non_trivial,
                 )['results']
         else:
             results_dict = generate_atomonly_deltametrics(
@@ -871,6 +885,7 @@ def generate_all_ligand_deltametrics_lac(mol, loud=False, depth=4, flag_name=Fal
                 Gval=Gval,
                 use_dist=use_dist,
                 size_normalize=size_normalize,
+                non_trivial=non_trivial,
                 )
             result_ax_con = results_dict['results']
             result_ax_con = np.array(result_ax_con)
@@ -890,6 +905,7 @@ def generate_all_ligand_deltametrics_lac(mol, loud=False, depth=4, flag_name=Fal
                 Gval=Gval,
                 use_dist=use_dist,
                 size_normalize=size_normalize,
+                non_trivial=non_trivial,
                 )['results']
         else:
             results_dict = generate_atomonly_deltametrics(
@@ -901,6 +917,7 @@ def generate_all_ligand_deltametrics_lac(mol, loud=False, depth=4, flag_name=Fal
                 Gval=Gval,
                 use_dist=use_dist,
                 size_normalize=size_normalize,
+                non_trivial=non_trivial,
                 )
             result_eq_con = results_dict['results']
             result_eq_con = np.array(result_eq_con)

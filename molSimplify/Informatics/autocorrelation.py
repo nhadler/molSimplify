@@ -126,6 +126,9 @@ def autocorrelation(mol, prop_vec, orig, d, oct=True, use_dist=False, size_norma
             Assembled products autocorrelations.
 
     """
+    if d < 0:
+        raise Exception('d must be a non-negative integer.')
+
     result_vector = np.zeros(d + 1)
     hopped = 0
     active_set = set([orig])
@@ -242,6 +245,9 @@ def deltametric(mol, prop_vec, orig, d, oct=True, use_dist=False, size_normalize
             Deltametric autocorrelations.
 
     """
+    if d < 0:
+        raise Exception('d must be a non-negative integer.')
+
     result_vector = np.zeros(d + 1)
     hopped = 0
     active_set = set([orig])
@@ -501,6 +507,8 @@ def full_autocorrelation(mol, prop, d, oct=True, modifier=False, use_dist=False,
             Full scope product autocorrelation values.
 
     """
+    if d < 0:
+        raise Exception('d must be a non-negative integer.')
     w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, custom_property_dict=custom_property_dict, transition_metals_only=transition_metals_only)
     index_set = list(range(0, mol.natoms))
     autocorrelation_vector = np.zeros(d + 1)
@@ -605,6 +613,8 @@ def generate_full_complex_autocorrelations(mol,
             For key results, value is list of np.array.
 
     """
+    if depth < 0:
+        raise Exception('depth must be a non-negative integer.')
     result = list()
     colnames = []
     allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
@@ -735,6 +745,8 @@ def atom_only_autocorrelation(mol, prop, d, atomIdx, oct=True, use_dist=False, s
             List of atom-only autocorrelations.
 
     """
+    if d < 0:
+        raise Exception('d must be a non-negative integer.')
     w = construct_property_vector(mol, prop, oct, custom_property_dict=custom_property_dict)
     autocorrelation_vector = np.zeros(d + 1)
     if hasattr(atomIdx, "__len__"): # Indicative of a list of indices.
@@ -833,6 +845,8 @@ def metal_only_autocorrelation(
             MC atom-only RACs vector.
 
     """
+    if d < 0:
+        raise Exception('d must be a non-negative integer.')
     autocorrelation_vector = np.zeros(d + 1)
     metal_idxs = mol.findMetal(transition_metals_only=transition_metals_only)
     if len(metal_idxs) == 0:
@@ -928,6 +942,8 @@ def atom_only_deltametric(mol, prop, d, atomIdx, oct=True, modifier=False,
             List of atom-only deltametric autocorrelations.
 
     """
+    if d < 0:
+        raise Exception('d must be a non-negative integer.')
     w = construct_property_vector(mol, prop, oct=oct, modifier=modifier, custom_property_dict=custom_property_dict)
     deltametric_vector = np.zeros(d + 1)
     if hasattr(atomIdx, "__len__"):
@@ -1023,6 +1039,8 @@ def metal_only_deltametric(
             Metal-centered deltametric RAC vector.
 
     """
+    if d < 0:
+        raise Exception('d must be a non-negative integer.')
     deltametric_vector = np.zeros(d + 1)
     metal_idxs = mol.findMetal(transition_metals_only=transition_metals_only)
     if len(metal_idxs) == 0:
@@ -1133,6 +1151,8 @@ def generate_metal_autocorrelations(mol, depth=4, oct=True, flag_name=False,
             For key results, value is list of np.array.
 
     """
+    if depth < 0:
+        raise Exception('depth must be a non-negative integer.')
     result = list()
     colnames = []
     allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
@@ -1234,7 +1254,8 @@ def generate_metal_autocorrelation_derivatives(mol, depth=4, oct=True, flag_name
 def generate_metal_deltametrics(mol, depth=4, oct=True, flag_name=False,
                                 modifier=False, Gval=False, NumB=False, polarizability=False,
                                 use_dist=False, size_normalize=False, custom_property_dict={},
-                                transition_metals_only=True, flatten=False):
+                                transition_metals_only=True, flatten=False,
+                                non_trivial=False):
     """
     Utility for generating all metal-centered deltametric autocorrelations for a complex.
 
@@ -1274,6 +1295,9 @@ def generate_metal_deltametrics(mol, depth=4, oct=True, flag_name=False,
         flatten : bool, optional
             Flag to change format of returned dictionary, by default False.
             Makes values of dictionary not be nested lists.
+        non_trivial : bool, optional
+            Flag to exclude difference RACs of I, and depth zero difference
+            RACs. These RACs are always zero. By default False.
 
     Returns
     -------
@@ -1284,6 +1308,8 @@ def generate_metal_deltametrics(mol, depth=4, oct=True, flag_name=False,
             For key results, value is list of np.array.
 
     """
+    if depth < 0:
+        raise Exception('depth must be a non-negative integer.')
     result = list()
     colnames = []
     allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
@@ -1297,6 +1323,10 @@ def generate_metal_deltametrics(mol, depth=4, oct=True, flag_name=False,
     if polarizability:
         allowed_strings += ['polarizability']
         labels_strings += ['alpha']
+    if non_trivial:
+        # Remove difference RACs of the identity.
+        allowed_strings.remove('ident')
+        labels_strings.remove('I')
     if len(custom_property_dict):
         allowed_strings, labels_strings = [], []
         for k in list(custom_property_dict):
@@ -1313,6 +1343,13 @@ def generate_metal_deltametrics(mol, depth=4, oct=True, flag_name=False,
             this_colnames.append(labels_strings[ii] + '-' + str(i))
         colnames.append(this_colnames)
         result.append(metal_ac)
+    if non_trivial:
+        if depth == 0:
+            raise Exception('There are no non-trivial RACs.')
+        # Remove depth zero difference RACs.
+        for i in range(len(colnames)):
+            colnames[i] = colnames[i][1:]
+            result[i] = result[i][1:]
     if flatten:
         colnames = [i for j in colnames for i in j]
         result = [i for j in result for i in j]
@@ -1429,6 +1466,8 @@ def generate_atomonly_autocorrelations(mol, atomIdx, depth=4, oct=True, Gval=Fal
             For key results, value is list of np.array.
 
     """
+    if depth < 0:
+        raise Exception('depth must be a non-negative integer.')
     result = list()
     colnames = []
     allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
@@ -1492,7 +1531,7 @@ def generate_atomonly_autocorrelation_derivatives(mol, atomIdx, depth=4, oct=Tru
 
 
 def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, NumB=False, polarizability=False,
-    use_dist=False, size_normalize=False, custom_property_dict={}, flatten=False):
+    use_dist=False, size_normalize=False, custom_property_dict={}, flatten=False, non_trivial=False):
     """
     This function gets deltametrics for a molecule starting
     from specified indices.
@@ -1529,6 +1568,9 @@ def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, 
         flatten : bool, optional
             Flag to change format of returned dictionary, by default False.
             Makes values of dictionary not be nested lists.
+        non_trivial : bool, optional
+            Flag to exclude difference RACs of I, and depth zero difference
+            RACs. These RACs are always zero. By default False.
 
     Returns
     -------
@@ -1538,6 +1580,8 @@ def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, 
             For key results, value is list of np.array.
 
     """
+    if depth < 0:
+        raise Exception('depth must be a non-negative integer.')    
     result = list()
     colnames = []
     allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
@@ -1551,6 +1595,10 @@ def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, 
     if polarizability:
         allowed_strings += ["polarizability"]
         labels_strings += ["alpha"]
+    if non_trivial:
+        # Remove difference RACs of the identity.
+        allowed_strings.remove('ident')
+        labels_strings.remove('I')
     if len(custom_property_dict):
         allowed_strings, labels_strings = [], []
         for k in list(custom_property_dict):
@@ -1564,6 +1612,13 @@ def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, 
             this_colnames.append(labels_strings[ii] + '-' + str(i))
         colnames.append(this_colnames)
         result.append(atom_only_ac)
+    if non_trivial:
+        if depth == 0:
+            raise Exception('There are no non-trivial RACs.')
+        # Remove depth zero difference RACs.
+        for i in range(len(colnames)):
+            colnames[i] = colnames[i][1:]
+            result[i] = result[i][1:]
     if flatten:
         colnames = [i for j in colnames for i in j]
         result = [i for j in result for i in j]
@@ -2534,7 +2589,8 @@ def generate_metal_ox_autocorrelation_derivatives(oxmodifier, mol, depth=4, oct=
 
 
 def generate_metal_ox_deltametrics(oxmodifier, mol, depth=4, oct=True,
-                                   flag_name=False, use_dist=False, size_normalize=False):
+                                   flag_name=False, use_dist=False, size_normalize=False,
+                                   non_trivial=False):
     # # oxmodifier - dict, used to modify prop vector (e.g., for adding
     # #             ONLY used with  ox_nuclear_charge    ox or charge)
     # #              {"Fe":2, "Co": 3} etc., normally only 1 metal...
@@ -2549,6 +2605,13 @@ def generate_metal_ox_deltametrics(oxmodifier, mol, depth=4, oct=True,
         this_colnames.append('O' + '-' + str(i))
     colnames.append(this_colnames)
     result.append(metal_ox_ac)
+    if non_trivial:
+        if depth == 0:
+            raise Exception('There are no non-trivial RACs.')
+        # Remove depth zero difference RACs.
+        for i in range(len(colnames)):
+            colnames[i] = colnames[i][1:]
+            result[i] = result[i][1:]    
     results_dictionary = {'colnames': colnames, 'results': result}
     return results_dictionary
 
