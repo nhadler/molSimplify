@@ -1581,7 +1581,7 @@ def generate_atomonly_deltametrics(mol, atomIdx, depth=4, oct=True, Gval=False, 
 
     """
     if depth < 0:
-        raise Exception('depth must be a non-negative integer.')    
+        raise Exception('depth must be a non-negative integer.')
     result = list()
     colnames = []
     allowed_strings = ['electronegativity', 'nuclear_charge', 'ident', 'topology', 'size']
@@ -2611,7 +2611,7 @@ def generate_metal_ox_deltametrics(oxmodifier, mol, depth=4, oct=True,
         # Remove depth zero difference RACs.
         for i in range(len(colnames)):
             colnames[i] = colnames[i][1:]
-            result[i] = result[i][1:]    
+            result[i] = result[i][1:]
     results_dictionary = {'colnames': colnames, 'results': result}
     return results_dictionary
 
