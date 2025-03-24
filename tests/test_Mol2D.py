@@ -110,11 +110,11 @@ def test_Mol2D_constructors(resource_path_root, name, smiles, mol_ref):
 @pytest.mark.parametrize(
     "filename, node_hash_ref, edge_hash_ref, graph_det_ref",
     [
-        ("water.mol2", "2c96eb4288d63b2a9437ddd4172e67f3", "e5206dd18f7e829cf77fae1a48e7b0b9", "-507.9380086"),
-        ("formaldehyde.mol2", "e4af80ed7395aef9001d1b170c5c0ec6", "df21357bb47fe3aa2e062c7e3a3b573e", "-42043.85450"),
-        ("furan.mol2", "f6090276d7369c0c0a535113ec1d97cf", "a9b6fbc7b5f53613546d5e91a7544ed6", "-19404698740"),
-        ("acac.mol2", "0dfc6836e022406f1be7b5627451d590", "d4879258a3a6c832b55b2e9d7387f96d", "-2.822252628e+16"),
-        ("ADUYUV.mol2", "e134585068e342d12364850112ec7609", "9bc68a69bfeceabffe878084da72f542", "2.7503745443e+80"),
+        ("water.mol2", "b25a2b34d8df66723302a66f53bc3773", "e5206dd18f7e829cf77fae1a48e7b0b9", "-507.9380086"),
+        ("formaldehyde.mol2", "b3ea4d0c5c30f5e22313dddede5d3dba", "df21357bb47fe3aa2e062c7e3a3b573e", "-42043.85450"),
+        ("furan.mol2", "8366132e88f24330fedbbf24367877f7", "a9b6fbc7b5f53613546d5e91a7544ed6", "-19404698740"),
+        ("acac.mol2", "5bd7b0f59fd27a0c40cd64ed4c74707d", "d4879258a3a6c832b55b2e9d7387f96d", "-2.822252628e+16"),
+        ("ADUYUV.mol2", "0aab1e9fce84758186a7c82c36c7f74f", "9bc68a69bfeceabffe878084da72f542", "2.7503745443e+80"),
     ]
 )
 def test_Mol2D_graph_hash(resource_path_root, filename, node_hash_ref, edge_hash_ref, graph_det_ref):
