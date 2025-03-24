@@ -222,7 +222,7 @@ metalslist = [
     'W', 'w', 'tungsten', 'Re', 're', 'RE', 'rhenium',
     'Os', 'os', 'OS', 'osmium', 'Ir', 'ir', 'IR', 'iridium',
     'Pt', 'pt', 'PT', 'platinum', 'Au', 'au', 'AU', 'gold',
-    'Hg', 'hg', 'HG', 'mercury', 'X',
+    'Hg', 'hg', 'HG', 'mercury',
 ]
 
 metals_conv = {
