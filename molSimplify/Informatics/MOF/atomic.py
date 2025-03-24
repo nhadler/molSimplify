@@ -114,9 +114,9 @@ MASS = {
     "Ds": 281,
     "Rg": 280,
     "Cn": 285,
-    "Nh": 284,
+    "Nh": 286,
     "Fl": 289,
-    "Mc": 288,
+    "Mc": 290,
     "Lv": 293,
     "Ts": 294,
     "Og": 294}
@@ -258,11 +258,11 @@ actinides = set(["Ac", "Th", "Pa", "U", "Np", "Pu", "Am", "Cm", "Bk",
 transition_metals = set(["Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni",
                          "Cu", "Zn", "Y", "Zr", "Nb", "Mo", "Tc", "Ru",
                          "Rh", "Pd", "Ag", "Cd", "Hf", "Ta", "W", "Re",
-                         "Os", "Ir", "Pt", "Ir", "Pt", "Au", "Hg", "Rf",
+                         "Os", "Ir", "Pt", "Au", "Hg", "Rf",
                          "Db", "Sg", "Bh", "Hs", "Mt", "Ds", "Rg", "Cn"])
 alkali = set(["Li", "Na", "K", "Rb", "Cs", "Fr"])
 alkaline_earth = set(["Be", "Mg", "Ca", "Sr", "Ba", "Ra"])
-main_group = set(["Al", "Ga", "Ge", "In", "Sn", "Sb", "Tl", "Pb", "Bi",
-                  "Po", "At", "Cn", "Nh", "Fl", "Mc", "Lv", "Ts"])
+main_group = set(["Al", "Ga", "Ge", "In", "Sn", "Tl", "Pb", "Bi",
+                  "Po", "At", "Nh", "Fl", "Mc", "Lv", "Ts"])
 
 metals = main_group | alkaline_earth | alkali | transition_metals | metalloids | lanthanides
