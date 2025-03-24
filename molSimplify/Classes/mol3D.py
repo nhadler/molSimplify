@@ -2326,14 +2326,19 @@ class mol3D:
                 atomlist.append(i)
         return atomlist
 
-    def findMetal(self, transition_metals_only: bool = True) -> List[int]:
+    def findMetal(self, transition_metals_only: bool = True,
+        include_X: bool = False) -> List[int]:
         """
         Find metal(s) in a mol3D class.
 
         Parameters
         ----------
             transition_metals_only : bool, optional
-                Only find transition metals. Default is true.
+                Only find transition metals.
+                Default is True.
+            include_X : bool, optional
+                Whether "X" atoms are considered metals.
+                Default is False.
 
         Returns
         -------
@@ -2344,7 +2349,7 @@ class mol3D:
         if self.metals is None:
             metal_list = []
             for i, atom in enumerate(self.atoms):
-                if atom.ismetal(transition_metals_only=transition_metals_only):
+                if atom.ismetal(transition_metals_only=transition_metals_only, include_X=include_X):
                     metal_list.append(i)
             self.metals = metal_list
         return self.metals
