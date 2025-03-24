@@ -262,7 +262,7 @@ transition_metals = set(["Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni",
                          "Db", "Sg", "Bh", "Hs", "Mt", "Ds", "Rg", "Cn"])
 alkali = set(["Li", "Na", "K", "Rb", "Cs", "Fr"])
 alkaline_earth = set(["Be", "Mg", "Ca", "Sr", "Ba", "Ra"])
-main_group = set(["Al", "Ga", "Ge", "In", "Sn", "Tl", "Pb", "Bi",
-                  "Po", "At", "Nh", "Fl", "Mc", "Lv", "Ts"])
+main_group = set(["Al", "Ga", "In", "Sn", "Tl", "Pb", "Bi",
+                  "Po", "Nh", "Fl", "Mc", "Lv", "Ts"])
 
 metals = main_group | alkaline_earth | alkali | transition_metals | metalloids | lanthanides
