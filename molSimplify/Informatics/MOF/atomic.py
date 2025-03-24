@@ -114,11 +114,12 @@ MASS = {
     "Ds": 281,
     "Rg": 280,
     "Cn": 285,
-    "Uut": 284,
-    "Uuq": 289,
-    "Uup": 288,
-    "Uuh": 293,
-    "Uuo": 294}
+    "Nh": 284,
+    "Fl": 289,
+    "Mc": 288,
+    "Lv": 293,
+    "Ts": 294,
+    "Og": 294}
 
 # If this is a nice list we can just .index or [slice] to get atomic numbers
 ATOMIC_NUMBER = [
@@ -131,7 +132,7 @@ ATOMIC_NUMBER = [
     "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "At",
     "Rn", "Fr", "Ra", "Ac", "Th", "Pa", "U", "Np", "Pu", "Am", "Cm", "Bk",
     "Cf", "Es", "Fm", "Md", "No", "Lr", "Rf", "Db", "Sg", "Bh", "Hs", "Mt",
-    "Ds", "Rg", "Cn", "Uut", "Uuq", "Uup", "Uuh", "Uuo"]
+    "Ds", "Rg", "Cn", "Nh", "Fl", "Mc", "Lv", "Ts", "Og"]
 
 
 COVALENT_RADII = {
@@ -262,6 +263,6 @@ transition_metals = set(["Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni",
 alkali = set(["Li", "Na", "K", "Rb", "Cs", "Fr"])
 alkaline_earth = set(["Be", "Mg", "Ca", "Sr", "Ba", "Ra"])
 main_group = set(["Al", "Ga", "Ge", "In", "Sn", "Sb", "Tl", "Pb", "Bi",
-                  "Po", "At", "Cn", "Uut", "Fl", "Uup", "Lv", "Uus"])
+                  "Po", "At", "Cn", "Nh", "Fl", "Mc", "Lv", "Ts"])
 
 metals = main_group | alkaline_earth | alkali | transition_metals | metalloids | lanthanides
