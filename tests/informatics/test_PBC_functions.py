@@ -21,6 +21,7 @@ import json
 import networkx as nx
 import numpy as np
 import pytest
+from scipy import sparse
 
 @pytest.mark.parametrize(
     "cpar, reference_cell",
@@ -258,8 +259,33 @@ def test_findPaths(resource_path_root, anchor_idx, path_bf, correct_answer):
     paths = findPaths(G, anchor_idx, path_bf)
     assert paths == correct_answer
 
-def test_get_closed_subgraph():
-    pass
+def quick_load(file_list):
+    result = []
+    for i in file_list:
+        with open(i, 'r') as f:
+            result.append(json.load(f))
+    return result
+
+def test_get_closed_subgraph(resource_path_root):
+    # Loading the reference files.
+    # rp: reference path
+    rp1 = resource_path_root / "refs" / "informatics" / "mof" / "json" /  "test_get_closed_subgraph_linkers.json"
+    rp2 = resource_path_root / "refs" / "informatics" / "mof" / "json" /  "test_get_closed_subgraph_remove_list.json"
+    rp3 = resource_path_root / "refs" / "informatics" / "mof" / "json" /  "test_get_closed_subgraph_adj_matrix.json"
+    rp4 = resource_path_root / "refs" / "informatics" / "mof" / "json" /  "test_get_closed_subgraph_linker_list.json"
+    rp5 = resource_path_root / "refs" / "informatics" / "mof" / "json" /  "test_get_closed_subgraph_linker_subgraphlist.json"
+    linkers, SBU_list, adj_matrix, ref_linker_list, ref_linker_subgraphlist = quick_load(
+        [rp1, rp2, rp3, rp4, rp5])
+
+    # json saves lists, so need to convert.
+    linkers, SBU_list = set(linkers), set(SBU_list)
+    adj_matrix = sparse.csr_matrix(np.array(adj_matrix))
+
+    linker_list, linker_subgraphlist = get_closed_subgraph(linkers, SBU_list, adj_matrix)
+    linker_subgraphlist = [i.todense().tolist() for i in linker_subgraphlist]
+
+    assert linker_list == ref_linker_list
+    assert linker_subgraphlist == ref_linker_subgraphlist
 
 def test_XYZ_connected():
     cell = np.array([[20,0,0], [0, 20, 0], [0, 0, 20]])
