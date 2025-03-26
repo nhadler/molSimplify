@@ -3,17 +3,22 @@ from molSimplify.Informatics.MOF.PBC_functions import (
     compute_adj_matrix,
     compute_distance_matrix,
     compute_image_flag,
+    findPaths,
     frac_coord,
     fractional2cart,
+    get_closed_subgraph,
     make_supercell,
     mkcell,
     overlap_removal,
     readcif,
     solvent_removal,
     writeXYZandGraph,
+    write_cif,
+    XYZ_connected,
     )
 import filecmp
 import json
+import networkx as nx
 import numpy as np
 import pytest
 
@@ -94,7 +99,7 @@ def test_compute_image_flag(cell, fcoord1, fcoord2, reference_shift):
     assert np.array_equal(shift, reference_shift)
 
 def test_writeXYZandGraph(resource_path_root, tmp_path):
-    filename = str(tmp_path / 'writeXYZandGraph_test.xyz')
+    filename = str(tmp_path / 'test_writeXYZandGraph.xyz')
     atoms = ['Cu', 'O', 'C', 'H', 'H', 'H']
     cell = np.array([[10,0,0],[0,10,0],[0,0,10]])
     fcoords = np.array([
@@ -115,8 +120,8 @@ def test_writeXYZandGraph(resource_path_root, tmp_path):
         ])
     writeXYZandGraph(filename, atoms, cell, fcoords, mol_graph)
 
-    reference_xyz_path = str(resource_path_root / "refs" / "informatics" / "mof" / "net" / "writeXYZandGraph_test.xyz")
-    reference_net_path = str(resource_path_root / "refs" / "informatics" / "mof" / "net" / "writeXYZandGraph_test.net")
+    reference_xyz_path = str(resource_path_root / "refs" / "informatics" / "mof" / "net" / "test_writeXYZandGraph.xyz")
+    reference_net_path = str(resource_path_root / "refs" / "informatics" / "mof" / "net" / "test_writeXYZandGraph.net")
 
     assert filecmp.cmp(filename, reference_xyz_path)
     assert filecmp.cmp(filename.replace('.xyz','.net'), reference_net_path)
@@ -229,3 +234,59 @@ def test_overlap_removal(resource_path_root, tmp_path, name, case):
     assert np.array_equal(cpar1, cpar2)
     assert all_atom_types1 == all_atom_types2
     assert np.array_equal(fcoords1, fcoords2)
+
+@pytest.mark.parametrize(
+    "anchor_idx, path_bf, correct_answer", # bf: between functionalizations
+    [
+        (9, 2, [[9, 1, 0], [9, 1, 5], [9, 1, 13]]),
+        (14, 3, [[14, 13, 1, 0], [14, 13, 1, 5], [14, 13, 1, 9], [14, 13, 15, 16], [14, 13, 15, 33], [14, 18, 17, 16], [14, 18, 17, 19]]),
+        (32, 4, [[32, 16, 15, 13, 1], [32, 16, 15, 13, 14], [32, 16, 17, 18, 14], [32, 16, 17, 18, 34], [32, 16, 17, 19, 20], [32, 16, 17, 19, 24], [32, 16, 17, 19, 28]]),
+        (0, 5, [[0, 1, 13, 14, 18, 17], [0, 1, 13, 14, 18, 34], [0, 1, 13, 15, 16, 17], [0, 1, 13, 15, 16, 32]]),
+    ]
+    )
+def test_findPaths(resource_path_root, anchor_idx, path_bf, correct_answer):
+    # Adjacency matrix for benzene with two tert-butyl groups.
+    adj_mat_path = str(resource_path_root / "refs" / "informatics" / "mof" / "json" / "test_findPaths.json")
+    with open(adj_mat_path, 'r') as f:
+        adj_mat = json.load(f)
+
+    # 1 indicates a bond. 0 indicates no bond.
+    rows, cols = np.where(np.array(adj_mat) == 1)
+    edges = zip(rows.tolist(), cols.tolist())
+    G = nx.Graph()
+    G.add_edges_from(edges)
+    paths = findPaths(G, anchor_idx, path_bf)
+    assert paths == correct_answer
+
+def test_get_closed_subgraph():
+    pass
+
+def test_XYZ_connected():
+    pass
+
+def test_write_cif(resource_path_root, tmp_path):
+    filename = str(tmp_path / 'test_write_cif.cif')
+    atoms = ['Cu', 'O', 'C', 'H', 'H', 'H']
+    cell = np.array([10, 10, 10, 90, 90, 90])
+    fcoords = np.array([
+        [1,0,0],
+        [0.85,0,0],
+        [0.7,0,0],
+        [0.65,-0.1,0],
+        [0.65,0,0.1],
+        [0.65,0.05,-0.1],
+        ])
+    write_cif(filename, cell, fcoords, atoms)
+
+    with open(filename, 'r') as f:
+        contents1 = f.readlines()
+
+    reference_cif_path = str(resource_path_root / "refs" / "informatics" / "mof" / "cif" / "test_write_cif.cif")    
+    with open(reference_cif_path, 'r') as f:
+        contents2 = f.readlines()
+
+    # Remove the _chemical_name_common line.
+    contents1.pop(1)
+    contents2.pop(1)
+
+    assert contents1 == contents2
