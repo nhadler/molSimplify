@@ -226,6 +226,7 @@ symvect
 translate
 typevect
 writegxyz
+writemol
 writemol2
 writemxyz
 writenumberedxyz
@@ -7088,6 +7089,71 @@ class mol3D:
         fname = filename.split('.gxyz')[0]
         with open(fname + '.gxyz', 'w') as f:
             f.write(ss)
+
+    def writemol(self, filename):
+        """
+        Write mol file from mol3D object.
+        Not advised if molecule has > 99 atoms.
+        If there is no bond order information available,
+        all bonds will be set as single bonds.
+
+        Parameters
+        ----------
+            filename : str
+                Path to mol file.
+        """
+
+        if not len(self.graph):
+            # Set self.graph.
+            self.createMolecularGraph()
+        num_atoms = self.natoms
+        num_bonds = int(np.count_nonzero(self.graph) / 2)
+
+        mol_contents = [
+        '',
+        'Generated with molSimplify',
+        '',
+        f' {num_atoms} {num_bonds}  0  0  0  0  0  0  0  0999 V2000'
+        ]
+
+        # Atom section
+        coords, syms = self.get_coordinate_array(), self.get_element_list()
+        for coord, sym in zip(coords, syms):
+            s = f' {coord[0]:9.4f} {coord[1]:9.4f} {coord[2]:9.4f} {sym.ljust(2)}  0  0  0  0  0  0  0  0  0  0  0  0'
+            mol_contents.append(s)
+
+        # Bond section
+        # .mol files use 1 indexing.
+        # Use bond order information if available
+        # (self.bo_dict or self.BO_mat).
+        if not isinstance(self.bo_dict, bool):
+            # If self.bo_dict is set, use that.
+            bo_dict_keys = list(self.bo_dict.keys())
+            bo_dict_keys.sort()
+            for k in bo_dict_keys:
+                v = self.bo_dict[k]
+                s = f' {k[0]+1:2.0f} {k[1]+1:2.0f}  {v}  0  0  0  0'
+                mol_contents.append(s)
+        elif not isinstance(self.BO_mat, bool):
+            # Only self.BO_mat is set, not self.bo_dict.
+            rows, cols = np.nonzero(np.triu(self.BO_mat))
+            for i, j in zip(rows, cols):
+                s = f' {i+1:2.0f} {j+1:2.0f}  {int(self.BO_mat[i][j])}  0  0  0  0'
+                mol_contents.append(s)                
+        else:
+            # Make all bond orders be one.
+            # Use triu since we only care about bonding pairs
+            # where i < j.
+            rows, cols = np.nonzero(np.triu(self.graph))
+            for i, j in zip(rows, cols):
+                s = f' {i+1:2.0f} {j+1:2.0f}  1  0  0  0  0'
+                mol_contents.append(s)
+
+        mol_contents.extend(['M  END', ''])
+        mol_contents = '\n'.join(mol_contents)
+
+        with open(filename, 'w') as f:
+            f.write(mol_contents)
 
     def writemol2(self, filename, writestring=False, ignoreX=False, force=False):
         """
