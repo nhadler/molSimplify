@@ -249,7 +249,8 @@ def ligand_detect(cell, cart_coords, adj_mat, anchor_list):
 
 def XYZ_connected(cell, cart_coords, adj_mat):
     """
-    Calculates fractional coordinates of atoms for the specified connected component, shifted by cell vectors to make the coordinates close to each other.
+    Calculates fractional coordinates of atoms for the specified connected component,
+    shifted by cell vectors to make the coordinates close to each other.
 
     Parameters
     ----------
@@ -272,7 +273,7 @@ def XYZ_connected(cell, cart_coords, adj_mat):
     checked = [] # Keeps tracked of the indices of atoms that have already been checked.
     counter = 0
     from scipy import sparse
-    n_components, labels_components = sparse.csgraph.connected_components(csgraph=adj_mat, directed=False, return_labels=True)
+    _, labels_components = sparse.csgraph.connected_components(csgraph=adj_mat, directed=False, return_labels=True)
     tested_index = 0 # The label for the connected components. 0 indicates the first connected component, etc.
     index_counter = 0
     while len(connected_components) < len(cart_coords):
@@ -492,7 +493,7 @@ def write_cif(fname, cellprm, fcoords, atom_labels):
        f_cif.write("_cell_angle_beta  %4.05f\n"%(cellprm[4]))
        f_cif.write("_cell_angle_gamma %4.05f\n"%(cellprm[5]))
        f_cif.write("_space_group_name_H-M_alt      \'P 1\'\n\n\n")
-       f_cif.write("loop_\n_space_group_symop_operation_xyz\n  'x, y, z' \n\n")
+       f_cif.write("loop_\n_space_group_symop_operation_xyz\n  'x, y, z'\n\n")
        f_cif.write("loop_\n")
        f_cif.write("_atom_site_label\n")
        f_cif.write("_atom_site_fract_x\n")
