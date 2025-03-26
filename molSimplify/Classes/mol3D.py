@@ -7139,7 +7139,7 @@ class mol3D:
             rows, cols = np.nonzero(np.triu(self.BO_mat))
             for i, j in zip(rows, cols):
                 s = f' {i+1:2.0f} {j+1:2.0f}  {int(self.BO_mat[i][j])}  0  0  0  0'
-                mol_contents.append(s)                
+                mol_contents.append(s)
         else:
             # Make all bond orders be one.
             # Use triu since we only care about bonding pairs
