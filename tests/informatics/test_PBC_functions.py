@@ -268,6 +268,7 @@ def quick_load(file_list):
 
 def test_get_closed_subgraph(resource_path_root):
     # Loading the reference files.
+    # These correspond to HKUST-1.
     # rp: reference path
     rp1 = resource_path_root / "refs" / "informatics" / "mof" / "json" /  "test_get_closed_subgraph_linkers.json"
     rp2 = resource_path_root / "refs" / "informatics" / "mof" / "json" /  "test_get_closed_subgraph_remove_list.json"
