@@ -281,7 +281,7 @@ def test_write_cif(resource_path_root, tmp_path):
     with open(filename, 'r') as f:
         contents1 = f.readlines()
 
-    reference_cif_path = str(resource_path_root / "refs" / "informatics" / "mof" / "cif" / "test_write_cif.cif")    
+    reference_cif_path = str(resource_path_root / "refs" / "informatics" / "mof" / "cif" / "test_write_cif.cif")
     with open(reference_cif_path, 'r') as f:
         contents2 = f.readlines()
 
