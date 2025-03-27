@@ -67,7 +67,13 @@ class atom3D:
         # Coordinates
         if xyz is None:
             xyz = [0.0, 0.0, 0.0]
-        self.__xyz = xyz
+        elif not isinstance(xyz, (list, np.ndarray)) or len(xyz) != 3:
+            raise ValueError('xyz should be a list of length 3.')
+        try:
+            np.array(xyz, dtype=np.float64)
+        except ValueError:
+            raise ValueError('List xyz should consist of numbers.')
+        self.__xyz = list(xyz)
 
         # Temperature factor (only useful for proteins)
         self.Tfactor = Tfactor
