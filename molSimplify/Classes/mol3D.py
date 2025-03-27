@@ -5217,7 +5217,7 @@ class mol3D:
                                  self.atoms[atom2].coords())
                     if d < min_distance:
                         failure_reason.append(
-                            'Crowded organic atoms '+str(atom1)+'-'+str(atom2)+' '+str(round(d, 2))+' Angstrom')
+                            f'Crowded organic atoms {atom1}-{atom2} {round(d, 2)} angstrom.')
                         pristine = False
 
         return pristine, failure_reason
