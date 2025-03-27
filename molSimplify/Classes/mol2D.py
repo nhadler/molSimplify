@@ -155,7 +155,7 @@ class Mol2D(nx.Graph):
         and calculate the node attributed graph hash:
 
         >>> mol.graph_hash()
-        'f6090276d7369c0c0a535113ec1d97cf'
+        '8366132e88f24330fedbbf24367877f7'
         """
         # This is necessary because networkx < 2.7 had a bug in the implementation
         # of weisfeiler_lehman_graph_hash
@@ -180,7 +180,7 @@ class Mol2D(nx.Graph):
         and calculate the edge attributed graph hash:
 
         >>> mol.graph_hash_edge_attr()
-        'a9b6fbc7b5f53613546d5e91a7544ed6'
+        'b9aa3fc505879a7a2a9a1789aee922f5'
         """
         # This is necessary because networkx < 2.7 had a bug in the implementation
         # of weisfeiler_lehman_graph_hash
