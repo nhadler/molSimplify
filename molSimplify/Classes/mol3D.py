@@ -888,7 +888,7 @@ class mol3D:
             temp_angle.ACM(idx1, idx2, idx3, ang_val)
             temp_list.append(temp_angle)
             if writegeo:
-                temp_angle.writexyz(str(dir_name)+"/rc_"+str(str("{:.4f}".format(ang_val)))+'.xyz')
+                temp_angle.writexyz(f'{dir_name}/rc_{ang_val:.4f}.xyz')
         return temp_list
 
     def RCDistance(self, idx1, idx2, disti, distf, distint=0.05, writegeo=False, dir_name='rc_distance_geometries'):
@@ -942,7 +942,7 @@ class mol3D:
             temp_dist.BCM(idx1, idx2, dist_val)
             temp_list.append(temp_dist)
             if writegeo:
-                temp_dist.writexyz(str(dir_name)+"/rc_"+str(str("{:.4f}".format(dist_val)))+'.xyz')
+                temp_dist.writexyz(f'{dir_name}/rc_{dist_val:.4f}.xyz')
         return temp_list
 
     def Structure_inspection(self, init_mol=None, catoms_arr=None, num_coord=5, dict_check=False,
@@ -2070,8 +2070,8 @@ class mol3D:
         if atomIdx < 0:
             atomIdx = self.natoms + atomIdx
         if atomIdx >= self.natoms:
-            raise IndexError('mol3D object cannot delete atom '+str(atomIdx) +
-                             ' because it only has '+str(self.natoms)+' atoms!')
+            raise IndexError(f'mol3D object cannot delete atom {atomIdx}' +
+                             f' because it only has {self.natoms} atoms!')
         if self.getAtom(atomIdx).sym == 'X':
             self.atoms[atomIdx].sym = 'Fe'  # Switch to Iron temporarily
             self.atoms[atomIdx].name = 'Fe'
@@ -2105,8 +2105,8 @@ class mol3D:
 
         for i in Alist:
             if i > self.natoms:
-                raise IndexError('mol3D object cannot delete atom '+str(i) +
-                                 ' because it only has '+str(self.natoms)+' atoms!')
+                raise IndexError(f'mol3D object cannot delete atom {i}' +
+                                 f' because it only has {self.natoms} atoms!')
         # Convert negative indexes to positive indexes.
         Alist = [self.natoms+i if i < 0 else i for i in Alist]
         for atomIdx in Alist:
@@ -6559,7 +6559,7 @@ class mol3D:
             s.remove('')
         except ValueError:
             pass
-        s = [str(val) + '\n' for val in s]
+        s = [f'{val}\n' for val in s]
         for line in s[0:]:
             line_split = line.split()
             if len(line_split) == 4 and line_split[0]:
@@ -6639,7 +6639,7 @@ class mol3D:
                 s.remove('')
             except ValueError:
                 pass
-            s = [str(val) + '\n' for val in s]
+            s = [f'{val}\n' for val in s]
             for line in s[0:]:
                 line_split = line.split()
                 if len(line_split) == 4 and line_split[0]:
@@ -6917,7 +6917,7 @@ class mol3D:
                         norm = distance(
                             atom1.coords(), atom0.coords())/(atom1.rad+atom0.rad)
                         errors_dict.update(
-                            {atom1.sym + str(ii)+'-'+atom0.sym+str(jj)+'_normdist': norm})
+                            {f'{atom1.sym}{ii}-{atom0.sym}{jj}_normdist': norm})
                         if distance(atom1.coords(), atom0.coords()) < mind:
                             mind = distance(atom1.coords(), atom0.coords())
                         if not (silence):
@@ -6983,9 +6983,9 @@ class mol3D:
                 for combo in combos:
                     if self.getAngle(combo[0], metal, combo[1]) < angle1:
                         sane = False
-                        label = self.atoms[combo[0]].sym+str(combo[0]) + '-' + \
-                            self.atoms[metal].sym+str(metal)+'-' + \
-                            self.atoms[combo[1]].sym+str(combo[1]) + '_angle'
+                        label = f'{self.atoms[combo[0]].sym}{combo[0]}-' + \
+                            f'{self.atoms[metal].sym}{metal}-' + \
+                            f'{self.atoms[combo[1]].sym}{combo[1]}_angle'
                         angle = self.getAngle(combo[0], metal, combo[1])
                         errors_dict.update({label: angle})
         for indx in heavy_atoms:  # Check heavy atom angles.
@@ -7000,9 +7000,9 @@ class mol3D:
                         cutoff = angle2
                     if self.getAngle(combo[0], indx, combo[1]) < cutoff:
                         sane = False
-                        label = self.atoms[combo[0]].sym+str(combo[0]) + '-' + \
-                            self.atoms[indx].sym+str(indx)+'-' + \
-                            self.atoms[combo[1]].sym+str(combo[1]) + '_angle'
+                        label = f'{self.atoms[combo[0]].sym}{combo[0]}-' + \
+                            f'{self.atoms[indx].sym}{indx}-' + \
+                            f'{self.atoms[combo[1]].sym}{combo[1]}_angle'
                         angle = self.getAngle(combo[0], indx, combo[1])
                         errors_dict.update({label: angle})
         if debug:
@@ -7185,7 +7185,7 @@ class mol3D:
         csg = csgraph.csgraph_from_dense(self.graph)
         disjoint_components = csgraph.connected_components(csg)
         if disjoint_components[0] > 1:
-            atom_group_names = ['RES'+str(x+1) for x in disjoint_components[1]]
+            atom_group_names = [f'RES{x+1}' for x in disjoint_components[1]]
             atom_groups = [str(x+1) for x in disjoint_components[1]]
         else:
             atom_group_names = ['RES1']*self.natoms
@@ -7228,10 +7228,10 @@ class mol3D:
                 atom_types_mol2 = ''
             type_ind = atom_types.index(atom.sym)
             atom_coords = atom.coords()
-            ss += str(i+1) + ' ' + atom.sym+str(int(atom_type_numbers[type_ind])) + '\t' + \
-                '{}  {}  {} '.format(atom_coords[0], atom_coords[1], atom_coords[2]) + \
-                atom.sym + atom_types_mol2 + '\t' + atom_groups[i] + \
-                ' '+atom_group_names[i]+' ' + str(charges[i]) + '\n'
+            ss += f'{i+1} {atom.sym}{int(atom_type_numbers[type_ind])}\t' + \
+                f'{atom_coords[0]}  {atom_coords[1]}  {atom_coords[2]} ' + \
+                f'{atom.sym}{atom_types_mol2}\t{atom_groups[i]}' + \
+                f' {atom_group_names[i]} {charges[i]}\n'
             atom_type_numbers[type_ind] += 1
         ss += '@<TRIPOS>BOND\n'
         bonds = csg.nonzero()
@@ -7243,15 +7243,14 @@ class mol3D:
         for i, b1 in enumerate(bonds[0]):
             b2 = bonds[1][i]
             if b2 > b1 and not bondorders:
-                ss += str(bond_count)+' '+str(b1+1) + ' ' + str(b2+1) + ' 1\n'
+                ss += f'{bond_count} {b1+1} {b2+1} 1\n'
                 bond_count += 1
             elif b2 > b1 and bondorders:
-                ss += str(bond_count)+' '+str(b1+1) + ' ' + str(b2+1) + \
-                    ' {}\n'.format(self.bo_dict[(int(b1), int(b2))])
+                ss += f'{bond_count} {b1+1} {b2+1} {self.bo_dict[(int(b1), int(b2))]}\n'
         ss += '@<TRIPOS>SUBSTRUCTURE\n'
         unique_group_names = np.unique(atom_group_names)
         for i, name in enumerate(unique_group_names):
-            ss += str(i+1)+' '+name+' '+str(atom_group_names.count(name))+'\n'
+            ss += f'{i+1} {name} {atom_group_names.count(name)}\n'
         ss += '\n'
         if writestring:
             return ss
@@ -7279,8 +7278,8 @@ class mol3D:
         """
 
         ss = ''  # initialize returning string
-        ss += str(self.natoms + mol.natoms) + "\n" + time.strftime(
-            '%m/%d/%Y %H:%M') + ", XYZ structure generated by mol3D Class, " + self.globs.PROGRAM + "\n"
+        ss += f'{self.natoms + mol.natoms}\n' + time.strftime(
+            '%m/%d/%Y %H:%M') + f', XYZ structure generated by mol3D Class, {self.globs.PROGRAM}\n'
         for atom in self.atoms:
             xyz = atom.coords()
             ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
@@ -7304,8 +7303,8 @@ class mol3D:
         """
 
         ss = ''  # Initialize returning string.
-        ss += str(self.natoms) + "\n" + time.strftime(
-            '%m/%d/%Y %H:%M') + ", XYZ structure generated by mol3D Class, " + self.globs.PROGRAM + "\n"
+        ss += f'{self.natoms}\n' + time.strftime(
+            '%m/%d/%Y %H:%M') + f', XYZ structure generated by mol3D Class, {self.globs.PROGRAM}\n'
         unique_types = dict()
 
         for atom in self.atoms:
@@ -7314,7 +7313,7 @@ class mol3D:
                 unique_types.update({this_sym: 1})
             else:
                 unique_types.update({this_sym: unique_types[this_sym] + 1})
-            atom_name = str(atom.symbol()) + str(unique_types[this_sym])
+            atom_name = f'{atom.symbol()}{unique_types[this_sym]}'
             xyz = atom.coords()
             ss += "%s \t%f\t%f\t%f\n" % (atom_name, xyz[0], xyz[1], xyz[2])
         fname = filename.split('.xyz')[0]
@@ -7334,12 +7333,12 @@ class mol3D:
         """
 
         ss = ''  # Initialize returning string.
-        ss += str(self.natoms) + "\n" + time.strftime(
-            '%m/%d/%Y %H:%M') + ", XYZ structure generated by mol3D Class, " + self.globs.PROGRAM + "\n"
+        ss += f'{self.natoms}\n' + time.strftime(
+            '%m/%d/%Y %H:%M') + f', XYZ structure generated by mol3D Class, {self.globs.PROGRAM}\n'
         for atom in self.atoms:
             xyz = atom.coords()
             ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
-        ss += "--\n" + str(mol.natoms) + "\n\n"
+        ss += f'--\n{mol.natoms}\n\n'
         for atom in mol.atoms:
             xyz = atom.coords()
             ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
@@ -7386,11 +7385,11 @@ class mol3D:
             natoms -= sum([1 for i in self.atoms if i.sym == "X"])
 
         if specialheader:
-            ss += str(natoms) + "\n"
-            ss += specialheader + "\n"
+            ss += f'{natoms}\n'
+            ss += f'{specialheader}\n'
         else:
-            ss += str(natoms) + "\n" + time.strftime(
-                '%m/%d/%Y %H:%M') + ", XYZ structure generated by mol3D Class, " + self.globs.PROGRAM + "\n"
+            ss += f'{natoms}\n' + time.strftime(
+                '%m/%d/%Y %H:%M') + f', XYZ structure generated by mol3D Class, {self.globs.PROGRAM}\n'
         for ii in ordering:
             atom = self.getAtom(ii)
             if not (ignoreX and atom.sym == 'X'):
@@ -7412,17 +7411,17 @@ class mol3D:
             tempstr = ''
             for row1, row2 in zip(x, y):
                 if row1 >= 100:
-                    tempstr += ' '+str(row1)
+                    tempstr += f' {row1}'
                 elif row1 >= 10:
-                    tempstr += '  '+str(row1)
+                    tempstr += f'  {row1}'
                 else:
-                    tempstr += '   '+str(row1)
+                    tempstr += f'   {row1}'
                 if row2 >= 100:
-                    tempstr += '  '+str(row2)+' S\n'
+                    tempstr += f'  {row2} S\n'
                 elif row2 >= 10:
-                    tempstr += '   '+str(row2)+' S\n'
+                    tempstr += f'   {row2} S\n'
                 else:
-                    tempstr += '    '+str(row2)+' S\n'
+                    tempstr += f'    {row2} S\n'
             ss += tempstr
 
         if no_tabs:
