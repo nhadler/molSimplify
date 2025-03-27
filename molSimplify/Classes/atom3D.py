@@ -20,6 +20,7 @@ class atom3D:
             Symbol for atom3D instantiation. Element symbol. Default is 'C'.
         xyz : list, optional
             List of coordinates for new atom. Default is [0.0, 0.0, 0.0].
+            Units of angstroms.
         name : str, optional
             Unique identifier for atom 3D instantiation. Default is False.
         partialcharge : int, optional
@@ -115,6 +116,7 @@ class atom3D:
         -------
             coords : list
                 List of coordinates in X, Y, Z format.
+                Units of angstroms.
         """
 
         coords = self.__xyz.copy()
@@ -152,7 +154,7 @@ class atom3D:
         Returns
         -------
             dist_list : list
-                List of distances in vector form: [dx, dy, dz] with units of Angstroms.
+                List of distances in vector form: [dx, dy, dz] with units of angstroms.
         """
 
         xyz = self.coords()
@@ -190,6 +192,7 @@ class atom3D:
         ----------
             xyz : list
                 List of coordinates, has length 3: [X, Y, Z]
+                Units of angstroms.
         """
 
         if not isinstance(xyz, (list, np.ndarray)) or len(xyz) != 3:
@@ -243,6 +246,7 @@ class atom3D:
         ----------
             dxyz : list
                 Displacement vector of length 3: [dx, dy, dz].
+                Units of angstroms.
         """
 
         self.__xyz = list(np.array(self.__xyz)+np.array(dxyz))
