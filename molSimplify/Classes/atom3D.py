@@ -232,7 +232,7 @@ class atom3D:
                 Displacement vector of length 3: [dx, dy, dz].
         """
 
-        self.__xyz = list(np.array(self.__xyz)+ np.array(dxyz))
+        self.__xyz = list(np.array(self.__xyz)+np.array(dxyz))
 
     def setEDIA(self, score):
         """
