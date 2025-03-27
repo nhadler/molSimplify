@@ -186,14 +186,14 @@ class atom3D:
                 List of coordinates, has length 3: [X, Y, Z]
         """
 
-        if not isinstance(xyz, list) or len(xyz) != 3:
+        if not isinstance(xyz, (list, np.ndarray)) or len(xyz) != 3:
             raise ValueError('xyz should be a list of length 3.')
         try:
             np.array(xyz, dtype=np.float64)
         except ValueError:
             raise ValueError('List xyz should consist of numbers.')
 
-        self.__xyz = xyz.copy()
+        self.__xyz = list(xyz)
 
     def symbol(self) -> str:
         """
