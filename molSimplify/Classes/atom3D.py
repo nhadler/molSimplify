@@ -111,8 +111,8 @@ class atom3D:
                 List of coordinates in X, Y, Z format.
         """
 
-        x, y, z = self.__xyz
-        return [x, y, z]
+        coords = self.__xyz.copy()
+        return coords
 
     def distance(self, atom2):
         """
@@ -185,6 +185,13 @@ class atom3D:
             xyz : list
                 List of coordinates, has length 3: [X, Y, Z]
         """
+
+        if not isinstance(xyz, list) or len(xyz) != 3:
+            raise ValueError('xyz should be a list of length 3.')
+        try:
+            np.array(xyz, dtype=np.float64)
+        except ValueError:
+            raise ValueError('List xyz should consist of numbers.')
 
         self.__xyz = xyz.copy()
 
