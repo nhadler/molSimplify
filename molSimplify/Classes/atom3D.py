@@ -132,6 +132,7 @@ class atom3D:
         xyz = self.coords()
         point = atom2.coords()
         dist = np.linalg.norm(np.array(xyz)-np.array(point))
+        dist = float(dist)
         return dist
 
     def distancev(self, atom2):
