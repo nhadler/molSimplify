@@ -223,7 +223,7 @@ class ligand:
         if natoms == 1:
             percent_buried = 0.0
         else:
-            met = thismol.findMetal()[0]
+            met = thismol.findMetal(include_X=True)[0]
             coords = thismol.coordsvect() - thismol.coordsvect()[met]  # Center coordinates to the metal
             syms = [x for i, x in enumerate(thismol.symvect()) if i != met]
             radvect = []

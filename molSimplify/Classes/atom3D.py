@@ -5,7 +5,7 @@
 #
 #  Department of Chemical Engineering, MIT
 
-from math import sqrt
+import numpy as np
 from typing import List, Optional
 from molSimplify.Classes.globalvars import globalvars
 
@@ -20,6 +20,7 @@ class atom3D:
             Symbol for atom3D instantiation. Element symbol. Default is 'C'.
         xyz : list, optional
             List of coordinates for new atom. Default is [0.0, 0.0, 0.0].
+            Units of angstroms.
         name : str, optional
             Unique identifier for atom 3D instantiation. Default is False.
         partialcharge : int, optional
@@ -67,7 +68,13 @@ class atom3D:
         # Coordinates
         if xyz is None:
             xyz = [0.0, 0.0, 0.0]
-        self.__xyz = xyz
+        elif not isinstance(xyz, (list, np.ndarray)) or len(xyz) != 3:
+            raise ValueError('xyz should be a list of length 3.')
+        try:
+            np.array(xyz, dtype=np.float64)
+        except ValueError:
+            raise ValueError('List xyz should consist of numbers.')
+        self.__xyz = list(xyz)
 
         # Temperature factor (only useful for proteins)
         self.Tfactor = Tfactor
@@ -109,12 +116,13 @@ class atom3D:
         -------
             coords : list
                 List of coordinates in X, Y, Z format.
+                Units of angstroms.
         """
 
-        x, y, z = self.__xyz
-        return [x, y, z]
+        coords = self.__xyz.copy()
+        return coords
 
-    def distance(self, atom2) -> float:
+    def distance(self, atom2):
         """
         Get distance from one atom3D class to another.
 
@@ -131,10 +139,8 @@ class atom3D:
 
         xyz = self.coords()
         point = atom2.coords()
-        dx = xyz[0]-point[0]
-        dy = xyz[1]-point[1]
-        dz = xyz[2]-point[2]
-        return sqrt(dx*dx+dy*dy+dz*dz)
+        dist = np.linalg.norm(np.array(xyz)-np.array(point))
+        return dist
 
     def distancev(self, atom2):
         """
@@ -148,24 +154,26 @@ class atom3D:
         Returns
         -------
             dist_list : list
-                List of distances in vector form: [dx, dy, dz] with units of Angstroms.
+                List of distances in vector form: [dx, dy, dz] with units of angstroms.
         """
 
         xyz = self.coords()
         point = atom2.coords()
-        dx = xyz[0]-point[0]
-        dy = xyz[1]-point[1]
-        dz = xyz[2]-point[2]
-        return [dx, dy, dz]
+        dist_list = list(np.array(xyz)-np.array(point))
+        return dist_list
 
-    def ismetal(self, transition_metals_only=True) -> bool:
+    def ismetal(self, transition_metals_only=True, include_X=False) -> bool:
         """
         Identify whether an atom is a metal.
 
         Parameters
         ----------
             transition_metals_only : bool, optional
-                Identify only transition metals. Default is true.
+                Identify only transition metals.
+                Default is True.
+            include_X : bool, optional
+                Whether "X" atoms are considered metals.
+                Default is False.
 
         Returns
         -------
@@ -173,7 +181,8 @@ class atom3D:
                 Bool for whether or not an atom is a metal.
         """
 
-        return self.sym in globalvars().metalslist(transition_metals_only=transition_metals_only)
+        return self.sym in globalvars().metalslist(transition_metals_only=transition_metals_only,
+            include_X=include_X)
 
     def setcoords(self, xyz):
         """
@@ -183,11 +192,17 @@ class atom3D:
         ----------
             xyz : list
                 List of coordinates, has length 3: [X, Y, Z]
+                Units of angstroms.
         """
 
-        self.__xyz[0] = xyz[0]
-        self.__xyz[1] = xyz[1]
-        self.__xyz[2] = xyz[2]
+        if not isinstance(xyz, (list, np.ndarray)) or len(xyz) != 3:
+            raise ValueError('xyz should be a list of length 3.')
+        try:
+            np.array(xyz, dtype=np.float64)
+        except ValueError:
+            raise ValueError('List xyz should consist of numbers.')
+
+        self.__xyz = list(xyz)
 
     def symbol(self) -> str:
         """
@@ -214,8 +229,8 @@ class atom3D:
         globs = globalvars()
         amass = globs.amass()
         if newType not in list(amass.keys()):
-            print(f'Error, unknown atom type transformation to {newType}')
-            print('no changes made')
+            print(f'Error, unknown atom type transformation to {newType}.')
+            print('No changes made.')
         else:
             self.mass = amass[newType][0]
             self.atno = amass[newType][1]
@@ -231,12 +246,10 @@ class atom3D:
         ----------
             dxyz : list
                 Displacement vector of length 3: [dx, dy, dz].
+                Units of angstroms.
         """
 
-        x, y, z = self.__xyz
-        self.__xyz[0] = x + dxyz[0]
-        self.__xyz[1] = y + dxyz[1]
-        self.__xyz[2] = z + dxyz[2]
+        self.__xyz = list(np.array(self.__xyz)+np.array(dxyz))
 
     def setEDIA(self, score):
         """

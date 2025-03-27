@@ -222,7 +222,7 @@ metalslist = [
     'W', 'w', 'tungsten', 'Re', 're', 'RE', 'rhenium',
     'Os', 'os', 'OS', 'osmium', 'Ir', 'ir', 'IR', 'iridium',
     'Pt', 'pt', 'PT', 'platinum', 'Au', 'au', 'AU', 'gold',
-    'Hg', 'hg', 'HG', 'mercury', 'X',
+    'Hg', 'hg', 'HG', 'mercury',
 ]
 
 metals_conv = {
@@ -255,7 +255,7 @@ elementsbynum = ['H', 'He',
                  'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu',
                  'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn',
                  'Fr', 'Ra', 'Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr',
-                 'Rf', 'Db', 'Sg', 'Bh', 'Hs', 'Mt', 'Ds', 'Rg', 'Cn', 'Uut', 'Fl', 'Uup', 'Lv', 'Uus', 'Uuo']
+                 'Rf', 'Db', 'Sg', 'Bh', 'Hs', 'Mt', 'Ds', 'Rg', 'Cn', 'Nh', 'Fl', 'Mc', 'Lv', 'Ts', 'Og']
 
 # Electronegativity (Pauling) by atom symbol
 endict = {"H": 2.20, "He": 4.16,
@@ -416,7 +416,7 @@ dict_eightcoord_check = {"mono": {'num_coord_metal': 8,
                                'devi_linear_avrg': 35, 'devi_linear_max': 40}
                          }
 
-dict_staus = {'good': 1, 'bad': 0}
+dict_status = {'good': 1, 'bad': 0}
 
 oct_angle_ref = [[90, 90, 90, 90, 180] for x in range(6)]
 tetra_angle_ref = [[109.47, 109.47, 109.47] for x in range(4)]
@@ -427,7 +427,7 @@ geo_check_dictionary = {"dict_oct_check_loose": dict_oct_check_loose,
                         "dict_oct_check_st": dict_oct_check_st,
                         "dict_oneempty_check_st": dict_oneempty_check_st,
                         "dict_oneempty_check_loose": dict_oneempty_check_loose,
-                        "dict_staus": dict_staus,
+                        "dict_status": dict_status,
                         "oct_angle_ref": oct_angle_ref,
                         "oneempty_angle_ref": oneempty_angle_ref,
                         "eightcoord_angle_ref": eightcoord_angle_ref}
@@ -709,18 +709,31 @@ class globalvars(metaclass=Singleton):
         """
         return vdwrad
 
-    def metalslist(self, transition_metals_only=True):
+    def metalslist(self, transition_metals_only=True, include_X=False):
         """Get the metals list.
+
+        Parameters
+        ----------
+            transition_metals_only : bool, optional
+                Identify only transition metals.
+                Default is true.
+            include_X : bool, optional
+                Whether "X" atoms are considered metals.
+                Default is False.
 
         Returns
         -------
-            metalslist : list
+            complete_metals_list : list
                 List of available metals.
         """
-        if transition_metals_only:
-            return metalslist
-        else:
-            return metalslist + alkali_and_alkaline_earth + heavy_metals_and_metalloids
+        complete_metals_list = metalslist.copy()
+        if include_X:
+            complete_metals_list.extend(['X', 'x'])
+        if not transition_metals_only:
+            complete_metals_list.extend(alkali_and_alkaline_earth)
+            complete_metals_list.extend(heavy_metals_and_metalloids)
+
+        return complete_metals_list
 
     def groups(self):
         """Returns dict of elements by groups.

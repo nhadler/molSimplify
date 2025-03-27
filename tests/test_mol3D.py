@@ -1317,3 +1317,22 @@ def test_writexyz(resource_path_root, tmp_path, writestring, withgraph, ignoreX,
         contents1.pop(1)
         contents2.pop(1)
         assert contents1 == contents2
+
+
+def test_writemol(resource_path_root, tmp_path):
+    filename = str(tmp_path / 'caffeine.mol')
+    reference_path = resource_path_root / "inputs" / "mol_files" / 'caffeine.mol'
+
+    mol = mol3D()
+    mol.readfrommol(reference_path)
+    mol.writemol(filename)
+
+    with open(filename, 'r') as f:
+        contents1 = f.readlines()
+    with open(reference_path, 'r') as f:
+        contents2 = f.readlines()
+
+    # Remove the lines about the progenitor software.
+    contents1.pop(1)
+    contents2.pop(1)
+    assert contents1 == contents2
