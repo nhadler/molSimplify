@@ -155,13 +155,13 @@ class Mol2D(nx.Graph):
         and calculate the node attributed graph hash:
 
         >>> mol.graph_hash()
-        'f6090276d7369c0c0a535113ec1d97cf'
+        '8366132e88f24330fedbbf24367877f7'
         """
         # This is necessary because networkx < 2.7 had a bug in the implementation
         # of weisfeiler_lehman_graph_hash
         # https://github.com/networkx/networkx/pull/4946#issuecomment-914623654
         assert version.parse(nx.__version__) >= version.parse("2.7")
-        return nx.weisfeiler_lehman_graph_hash(self, node_attr="symbol")
+        return nx.weisfeiler_lehman_graph_hash(self, node_attr="symbol", iterations=5)
 
     def graph_hash_edge_attr(self) -> str:
         """Calculates the edge attributed graph hash of the molecule.
@@ -180,7 +180,7 @@ class Mol2D(nx.Graph):
         and calculate the edge attributed graph hash:
 
         >>> mol.graph_hash_edge_attr()
-        'a9b6fbc7b5f53613546d5e91a7544ed6'
+        'b9aa3fc505879a7a2a9a1789aee922f5'
         """
         # This is necessary because networkx < 2.7 had a bug in the implementation
         # of weisfeiler_lehman_graph_hash
@@ -193,7 +193,7 @@ class Mol2D(nx.Graph):
             G.edges[i, j]["label"] = "".join(sorted([G.nodes[i]["symbol"],
                                                      G.nodes[j]["symbol"]]))
 
-        return nx.weisfeiler_lehman_graph_hash(G, edge_attr="label")
+        return nx.weisfeiler_lehman_graph_hash(G, edge_attr="label", iterations=5)
 
     def graph_determinant(self, return_string: bool = True) -> Union[str, float]:
         """Calculates the molecular graph determinant.
