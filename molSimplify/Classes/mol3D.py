@@ -1329,7 +1329,7 @@ class mol3D:
             for atom in self.atoms:
                 # calculate center of mass (relative weight according to atomic mass)
                 xyz = atom.coords()
-                center_of_mass += np.array(xyz) * atom.mass 
+                center_of_mass += np.array(xyz) * atom.mass
                 mmass += atom.mass
             # normalize
             center_of_mass = np.divide(center_of_mass, mmass)
@@ -1825,7 +1825,7 @@ class mol3D:
         """
 
         coord_string = ''  # initialize returning string
-        coord_string += f"{self.natoms} \n\n" 
+        coord_string += f"{self.natoms} \n\n"
         for atom in self.atoms:
             xyz = atom.coords()
             coord_string += f"{atom.sym} \t{xyz[0]}\t{xyz[1]}\t{xyz[2]}\n"
