@@ -425,12 +425,12 @@ def getwfnprops(molf, folder, flog):
             elff = cubedir+resd+'-ELF.cub'
             HELPpop, totel, svars = wfncalc(denf, elff)  # calculate HELP
             with open(outfile1, 'w') as f:
-                f.write('HELP: '+str(HELPpop)+' '+str(100*HELPpop/totel)+' %\n')
+                f.write(f'HELP: {HELPpop} {100*HELPpop/totel} %\n')
             with open(outfile2, 'w') as f:
-                f.write('Rav: '+str(svars[0])+' RSD: ' +
-                        str(svars[1])+' RSk: '+str(svars[2]))
-                f.write(' ELFav: '+str(svars[3])+' ELF_SD: ' +
-                        str(svars[4])+' ELF_Sk: '+str(svars[5])+'\n')
+                f.write(f'Rav: {svars[0]} RSD: ' +
+                        f'{svars[1]} RSk: {svars[2]}')
+                f.write(f' ELFav: {svars[3]} ELF_SD: ' +
+                        f'{svars[4]} ELF_Sk: {svars[5]}\n')
         #################################################
         with open(outfile1, 'r') as f:
             sf = f.read()
@@ -443,7 +443,7 @@ def getwfnprops(molf, folder, flog):
                  float(sf[7]), float(sf[9]), float(sf[11])]
         sr = []
         for i, ss in enumerate(svars):
-            sr.append("{:10.5f}".format(ss))
+            sr.append(f"{ss:10.5f}")
         txt.append(resdp.ljust(50)+"{:10.3f}".format(HELPpop).ljust(10)+' ('+"{:4.2f}".format(HELPper)+'%)' +
                    sr[0].ljust(10)+sr[1].ljust(10)+sr[2].ljust(10)+sr[3].ljust(10)+sr[4].ljust(11)+sr[5].ljust(10)+'\n')
     text = sorted(txt)
@@ -501,7 +501,7 @@ def getcharges(molf, folder, flog):
             hirscht = s.splitlines()[midx]
             hirschll = hirscht.split(None)
             if len(hirschll) > 2:
-                hirsch = "{:5.3f}".format(float(hirschll[-1]))
+                hirsch = f"{float(hirschll[-1]):5.3f}"
         #################################################
         outfile2 = folder+'/Charge_files/'+resd+'-chV.txt'
         if not glob.glob(outfile2):
@@ -519,7 +519,7 @@ def getcharges(molf, folder, flog):
             vddt = s.splitlines()[midx]
             vddll = vddt.split(None)
             if len(vddll) > 2:
-                vdd = "{:5.3f}".format(float(vddll[-1]))
+                vdd = f"{float(vddll[-1]):5.3f}"
         #################################################
         outfile3 = folder+'/Charge_files/'+resd+'-chM.txt'
         if not glob.glob(outfile3):
@@ -537,7 +537,7 @@ def getcharges(molf, folder, flog):
             mullt = s.splitlines()[midx+2]
             mulll = mullt.split(None)
             if len(mulll) > 2:
-                mull = "{:5.3f}".format(float(mulll[-1]))
+                mull = f"{float(mulll[-1]):5.3f}"
         txt.append(resdp.ljust(60)+hirsch.ljust(10) +
                    vdd.ljust(10)+mull.ljust(10)+'\n')
     text = sorted(txt)

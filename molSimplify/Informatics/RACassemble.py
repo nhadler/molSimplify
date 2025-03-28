@@ -348,7 +348,7 @@ def create_OHE(metal: str,
         OHE_values[OHE_names.index("d8")] += 1
     else:
         raise NotImplementedError('Error: unknown metal and oxidation state '
-                                  + str(metal) + '/' + str(oxidation_state))
+                                  f'{metal}/{oxidation_state}')
 
     return OHE_names, OHE_values
 

@@ -41,11 +41,6 @@ from molSimplify.Scripts.geometry import (
 
 np.seterr(divide='ignore')
 
-csvf = '/Users/tzuhsiungyang/Dropbox (MIT)/Work at the Kulik group/ts_build/Data/xyzf_optts/selected_xyzfs/label_1distance_descs_atRACs.csv'
-colnum_i_label = 1
-colnum_j_label = 2
-colnum_desc = 2
-
 
 def feature_prep(mol, idx):
     # setting up variables

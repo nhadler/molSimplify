@@ -14,7 +14,7 @@ def test_joption_pythonic(tmp_path, resource_path_root):
         '-runtyp': "minimize",
         '-keepHs': "yes",
         '-spin': str(1),
-        '-jname': "{}_{}_{}_{}_hs_{}".format("cr", "thd", 2, "cl", 0),
+        '-jname': "cr_thd_2_cl_hs_0",
         '-modules': "cuda,terachem",
         '-joption': "-fin terachem_input, -fin *.xyz, -fout scr/"
     }

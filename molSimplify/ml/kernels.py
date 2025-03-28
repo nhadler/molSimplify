@@ -30,7 +30,7 @@ class Masking(Kernel):
         return self.kernel.diag(X[:, self.mask])
 
     def __repr__(self):
-        return "Masking({0})".format(self.kernel)
+        return f"Masking({self.kernel})"
 
     def is_stationary(self):
         """Returns whether the kernel is stationary."""
@@ -99,8 +99,7 @@ class PermutationalKernel(Kernel):
         return np.diag(self(X))
 
     def __repr__(self):
-        return "PermutationalKernel(shape={0}, permutations={1}, kernel={2})".format(
-            self.shape, self.permutations, self.kernel)
+        return f"PermutationalKernel(shape={self.shape}, permutations={self.permutations}, kernel={self.kernel})"
 
     def is_stationary(self):
         """Returns whether the kernel is stationary."""

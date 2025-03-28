@@ -114,11 +114,11 @@ def view_structures(structures, w=400, h=400, columns=2,
         view_ats.setStyle({representation: {'colorscheme': 'Jmol'}})
         if label:
             view_ats.addLabel(
-                "{}".format(label),
-                {'position': {'x': '{}'.format(label_posits[0]),
-                 'y': '{}'.format(label_posits[1]), 'z': '{}'.format(label_posits[2])},
+                str(label),
+                {'position': {'x': str(label_posits[0]),
+                 'y': str(label_posits[1]), 'z': str(label_posits[2])},
                  'backgroundColor': "'black'", 'backgroundOpacity': '0.3',
-                 'fontOpacity': '1', 'fontSize': '{}'.format(labelsize),
+                 'fontOpacity': '1', 'fontSize': str(labelsize),
                  'fontColor': "white", 'inFront': 'true'})
         view_ats.zoomTo()
         view_ats.show()
@@ -155,11 +155,11 @@ def view_structures(structures, w=400, h=400, columns=2,
             view_ats.setStyle({representation: {'colorscheme': 'Jmol'}}, viewer=(x, y))
             if len(label) > 0:
                 view_ats.addLabel(
-                    "{}".format(label[i]),
-                    {'position': {'x': '{}'.format(label_posits[0]),
-                     'y': '{}'.format(label_posits[1]), 'z': '{}'.format(label_posits[2])},
+                    str(label[i]),
+                    {'position': {'x': str(label_posits[0]),
+                     'y': str(label_posits[1]), 'z': str(label_posits[2])},
                      'backgroundColor': "'black'", 'backgroundOpacity': '0.5',
-                     'fontOpacity': '1', 'fontSize': '{}'.format(labelsize),
+                     'fontOpacity': '1', 'fontSize': str(labelsize),
                      'fontColor': "white", 'inFront': 'true'}, viewer=(x, y))
             view_ats.zoomTo(viewer=(x, y))
             if y+1 < columns:  # Fill in columns

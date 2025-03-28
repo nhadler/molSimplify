@@ -287,6 +287,6 @@ def tsgen(mode, args, rootdir, core, substr, compreact, substreact, globs):
     del ts3D
     if sanity:
         print('WARNING: Generated complex is not good! Minimum distance between atoms:' +
-              "{0:.2f}".format(d0)+'A\n')
+              f'{d0:.2f}A\n')
     print(f'\nIn folder {pfold}, generated 1 structure!')
     return strfiles, emsg, this_diag
