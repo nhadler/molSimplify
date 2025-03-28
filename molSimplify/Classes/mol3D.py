@@ -1828,7 +1828,7 @@ class mol3D:
         coord_string += f"{self.natoms} \n\n"
         for atom in self.atoms:
             xyz = atom.coords()
-            coord_string += f"{atom.sym} \t{xyz[0]}\t{xyz[1]}\t{xyz[2]}\n"
+            coord_string += f"{atom.sym} \t{xyz[0]:.6f}\t{xyz[1]:.6f}\t{xyz[2]:.6f}\n"
         if no_tabs:
             coord_string = coord_string.replace('\t', ' ' * 8)
         return coord_string
@@ -5449,7 +5449,7 @@ class mol3D:
                 for ii, atom in enumerate(mymol_xyz.atoms):
                     if ii in lig:
                         xyz = atom.coords()
-                        line = f'{atom.sym} \t{xyz[0]}\t{xyz[1]}\t{xyz[2]}\n'
+                        line = f'{atom.sym} \t{xyz[0]:.6f}\t{xyz[1]:.6f}\t{xyz[2]:.6f}\n'
                         foo.append(line)
                 tmp_mol = mol3D()
                 tmp_mol = readfromtxt(tmp_mol, foo)
@@ -5457,7 +5457,7 @@ class mol3D:
                 for ii, atom in enumerate(initmol_xyz.atoms):
                     if ii in lig_init:
                         xyz = atom.coords()
-                        line = f'{atom.sym} \t{xyz[0]}\t{xyz[1]}\t{xyz[2]}\n'
+                        line = f'{atom.sym} \t{xyz[0]:.6f}\t{xyz[1]:.6f}\t{xyz[2]:.6f}\n'
                         foo.append(line)
                 tmp_org_mol = mol3D()
                 tmp_org_mol = readfromtxt(tmp_org_mol, foo)
@@ -6250,7 +6250,7 @@ class mol3D:
 
         for atom in self.atoms:
             xyz = atom.coords()
-            ss = f"{atom.sym} \t{xyz[0]}\t{xyz[1]}\t{xyz[2]}"
+            ss = f"{atom.sym} \t{xyz[0]:.6f}\t{xyz[1]:.6f}\t{xyz[2]:.6f}"
             print(ss)
 
     def read_bo_from_mol(self, molfile):
@@ -6745,7 +6745,7 @@ class mol3D:
         ss = ''
         for atom in self.atoms:
             xyz = atom.coords()
-            ss += f"{atom.sym} \t{xyz[0]}\t{xyz[1]}\t{xyz[2]}\n"
+            ss += f"{atom.sym} \t{xyz[0]:.6f}\t{xyz[1]:.6f}\t{xyz[2]:.6f}\n"
         if no_tabs:
             ss = ss.replace('\t', ' ' * 8)
         return ss
