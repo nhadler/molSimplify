@@ -233,8 +233,8 @@ def spinnlmo(s, metal):
 
 def nbopost(resfiles, folder, flog):
     t = time.strftime('%c')
-    headern = "Date: " + t + \
-        "\nHere are the current results for runs in folder '"+folder+"'\n"
+    headern = f"Date: {t}" \
+        f"\nHere are the current results for runs in folder '{folder}'\n"
     headern += "\nFolder                                           Metal  MCharge  AvhybNBO  AvDorbNBO   AvNLMO   Doccup    Dband-center\n"
     headern += "----------------------------------------------------------------------------------------------------------------------------------------\n"
     textnbo = []
@@ -243,7 +243,7 @@ def nbopost(resfiles, folder, flog):
         resd = resf.rsplit('/', 1)[0]
         resfold = os.path.relpath(resd, folder)
         print(('Processing ', resfp))
-        flog.write('Processing '+resfp+'\n')
+        flog.write(f'Processing {resfp}\n')
         with open(resf) as f:
             s = f.read()
         # split output into QC and nbo parts
@@ -279,7 +279,7 @@ def terapost(resfiles, folder, flog):
     t = time.strftime('%c')
     flog.write(
         '################## Calculating results summary ##################\n\n')
-    header = "Date: " + t + "\nHere are the current results for runs in folder '"+folder+"'\n"
+    header = f"Date: {t}\nHere are the current results for runs in folder '{folder}'\n"
     header += "\nFolder                                            Compound    Method  %HF  Restricted   Optim  Converged  NoSteps   Spin   S^2   Charge    Energy(au)   Time(s)\n"
     header += "------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
     # loop over folders
@@ -289,7 +289,7 @@ def terapost(resfiles, folder, flog):
         resd = resf.rsplit('/', 1)[0]
         resfold = os.path.relpath(resd, folder)
         print(('Processing ', resfp))
-        flog.write('Processing '+resfp+'\n')
+        flog.write(f'Processing {resfp}\n')
         with open(resf) as f:
             s = f.read()
         # split output into terachem and nbo parts
@@ -370,7 +370,7 @@ def terapost(resfiles, folder, flog):
 
 def gampost(resfiles, folder, flog):
     t = time.strftime('%c')
-    header = "Date: " + t + "\nHere are the current results for runs in folder '"+folder+"'\n"
+    header = f"Date: {t}\nHere are the current results for runs in folder '{folder}'\n"
     header += "\nFolder                                            Method   %MGGA   %LDA  Optim  Converged  NoSteps   S-SQ   Spin   Charge    Energy(au)      Time(MIN)\n"
     header += "--------------------------------------------------------------------------------------------------------------------------------------------------------\n"
     # loop over folders
@@ -383,7 +383,7 @@ def gampost(resfiles, folder, flog):
         resd = resf.rsplit('/', 1)[0]
         resfold = os.path.relpath(resd, folder)
         print(('Processing ', resfp))
-        flog.write('Processing '+resfp+'\n')
+        flog.write(f'Processing {resfp}\n')
         if len(resfold) > 1:
             resfold = resfold[-2]
         else:

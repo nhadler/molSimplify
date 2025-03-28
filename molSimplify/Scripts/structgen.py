@@ -2748,7 +2748,6 @@ def mcomplex(args: Namespace, ligs: List[str], ligoc: List[int], smart_generatio
         if args.debug:
             print('saving a final debug copy of the complex named complex_after_final_ff.xyz')
             core3D.writexyz('complex_after_final_ff.xyz')
-        # core3D,enc = ffopt(args.ff,core3D,connected,1,frozenats,freezeangles,MLoptbds,'Adaptive',args.debug)
 
     if smart_generation == True:
         core3D.bo_dict = core3D_copy.bo_dict

@@ -714,9 +714,9 @@ def evaluate_tmc_anns(this_complex: mol3D, metal: str, ox: int, spin: int,
                 'warning, ANN predicts a near degenerate ground state for this complex')
     print(f"ANN predicts a spin splitting (HS - LS) of {float(split[0]):.2f} kcal/mol at {100 * alpha:.0f}% HFX")
     print('ANN low spin bond length (ax1/ax2/eq) is predicted to be: ' + " /".join(
-        ["{0:.2f}".format(float(i)) for i in r_ls[0]]) + ' angstrom')
+        [f"{float(i):.2f}" for i in r_ls[0]]) + ' angstrom')
     print('ANN high spin bond length (ax1/ax2/eq) is predicted to be: ' + " /".join(
-        ["{0:.2f}".format(float(i)) for i in r_hs[0]]) + ' angstrom')
+        [f"{float(i):.2f}" for i in r_hs[0]]) + ' angstrom')
     print(f'distance to splitting energy training data is {split_dist:.2f}')
     print(ANN_trust_message)
     print(f"ANN predicts a HOMO value of {float(homo[0]):.2f} eV at {100 * alpha:.0f}% HFX")

@@ -1322,21 +1322,18 @@ class mol3D:
                 Coordinates of center of mass. List of length 3: (X, Y, Z).
         """
 
-        center_of_mass = [0, 0, 0]
+        center_of_mass = np.array([0, 0, 0], dtype='float64')
         mmass = 0
         # loop over atoms in molecule
         if self.natoms > 0:
             for atom in self.atoms:
                 # calculate center of mass (relative weight according to atomic mass)
                 xyz = atom.coords()
-                center_of_mass[0] += xyz[0] * atom.mass
-                center_of_mass[1] += xyz[1] * atom.mass
-                center_of_mass[2] += xyz[2] * atom.mass
+                center_of_mass += np.array(xyz) * atom.mass 
                 mmass += atom.mass
             # normalize
-            center_of_mass[0] /= mmass
-            center_of_mass[1] /= mmass
-            center_of_mass[2] /= mmass
+            center_of_mass = np.divide(center_of_mass, mmass)
+            center_of_mass = list(center_of_mass)
         else:
             center_of_mass = False
             print(
@@ -1355,18 +1352,15 @@ class mol3D:
         """
 
         # initialize center of mass and mol mass
-        center_of_symmetry = [0.0, 0.0, 0.0]
+        center_of_symmetry = np.array([0.0, 0.0, 0.0], dtype='float64')
         # loop over atoms in molecule
         for atom in self.atoms:
             # calculate center of symmetry
             xyz = atom.coords()
-            center_of_symmetry[0] += xyz[0]
-            center_of_symmetry[1] += xyz[1]
-            center_of_symmetry[2] += xyz[2]
+            center_of_symmetry += np.array(xyz)
         # normalize
-        center_of_symmetry[0] /= self.natoms
-        center_of_symmetry[1] /= self.natoms
-        center_of_symmetry[2] /= self.natoms
+        center_of_symmetry = np.divide(center_of_symmetry, self.natoms)
+        center_of_symmetry = list(center_of_symmetry)
         return center_of_symmetry
 
     def check_angle_linear(self, catoms_arr=None):
@@ -1831,10 +1825,10 @@ class mol3D:
         """
 
         coord_string = ''  # initialize returning string
-        coord_string += "%d \n\n" % self.natoms
+        coord_string += f"{self.natoms} \n\n" 
         for atom in self.atoms:
             xyz = atom.coords()
-            coord_string += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
+            coord_string += f"{atom.sym} \t{xyz[0]}\t{xyz[1]}\t{xyz[2]}\n"
         if no_tabs:
             coord_string = coord_string.replace('\t', ' ' * 8)
         return coord_string
@@ -3735,7 +3729,7 @@ class mol3D:
         """
 
         metals = self.findMetal()  # Get the metals in the complex.
-        bls = {}  # initialize empty dictionary of metal-ligand bond lengths.
+        bls = {}  # Initialize empty dictionary of metal-ligand bond lengths.
         if len(metals) == 0:
             return {}  # We don't have a metal, so there are no M-L bonds.
         for m_id in metals:
@@ -3744,10 +3738,10 @@ class mol3D:
             ml_bls = []   # Normal bond lengths
             rel_bls = []  # Relative bond lengths
             for l_id in ligands:
-                a = self.getAtom(l_id)  # Get the ligand from its ID
+                a = self.getAtom(l_id)  # Get the ligand from its ID.
                 bl = m.distance(a)      # Normal bond length
                 ml_bls.append(bl)
-                rel_bls.append(bl / (m.rad + a.rad))  # Append the relative bond length
+                rel_bls.append(bl / (m.rad + a.rad))  # Append the relative bond length.
             bls[m_id] = {"M-L bond lengths": ml_bls, "relative bond lengths": rel_bls}
         return bls
 
@@ -4744,7 +4738,7 @@ class mol3D:
 
     def get_smilesOBmol_charge(self):
         """
-        Get the charge of a mol3D object through adjusted OBmol hydrogen/smiles conversion
+        Get the charge of a mol3D object through adjusted OBmol hydrogen/smiles conversion.
         Note that currently this function should only be applied to ligands (organic molecules).
         """
 
@@ -4796,7 +4790,7 @@ class mol3D:
 
     def get_symmetry(self, verbose=True, max_allowed_dev=30, details=False):
         """
-        Classify octahedral transition metal complexes (TMCs) according to symmetry
+        Classify octahedral transition metal complexes (TMCs) according to symmetry.
 
         Parameters
         ----------
@@ -4830,7 +4824,7 @@ class mol3D:
 
         geometry_type = self.get_geometry_type_distance()['geometry']
         if geometry_type != 'octahedral':
-            raise ValueError('Function only supported for octahedral TMCs. Detected geometry is ' + geometry_type + '.')
+            raise ValueError(f'Function only supported for octahedral TMCs. Detected geometry is {geometry_type}.')
 
         # Get graph hash of each ligand to identify number of unique ligands.
         ligand_hashes = []
@@ -5261,7 +5255,6 @@ class mol3D:
                 if len(lig) >= 2 and not set(lig) in _el:
                     edge_ligands.append([set(lig)])
                     _el.append(set(lig))
-                    # break
             num_edge_lig = len(edge_ligands)
             info_edge_lig = [
                 {"natoms_connected": len(x[0])} for x in edge_ligands]
@@ -5456,8 +5449,7 @@ class mol3D:
                 for ii, atom in enumerate(mymol_xyz.atoms):
                     if ii in lig:
                         xyz = atom.coords()
-                        line = '%s \t%f\t%f\t%f\n' % (
-                            atom.sym, xyz[0], xyz[1], xyz[2])
+                        line = f'{atom.sym} \t{xyz[0]}\t{xyz[1]}\t{xyz[2]}\n'
                         foo.append(line)
                 tmp_mol = mol3D()
                 tmp_mol = readfromtxt(tmp_mol, foo)
@@ -5465,14 +5457,12 @@ class mol3D:
                 for ii, atom in enumerate(initmol_xyz.atoms):
                     if ii in lig_init:
                         xyz = atom.coords()
-                        line = '%s \t%f\t%f\t%f\n' % (
-                            atom.sym, xyz[0], xyz[1], xyz[2])
+                        line = f'{atom.sym} \t{xyz[0]}\t{xyz[1]}\t{xyz[2]}\n'
                         foo.append(line)
                 tmp_org_mol = mol3D()
                 tmp_org_mol = readfromtxt(tmp_org_mol, foo)
                 if debug:
-                    print('# atoms: %d, init: %d' %
-                           (tmp_mol.natoms, tmp_org_mol.natoms))
+                    print(f'# atoms: {tmp_mol.natoms}, init: {tmp_org_mol.natoms}')
                     print('!!!!atoms:', [x.symbol() for x in tmp_mol.getAtoms()],
                            [x.symbol() for x in tmp_org_mol.getAtoms()])
                 if flag_deleteH:
@@ -5667,13 +5657,12 @@ class mol3D:
                     liglist.pop(posi)
                     if not _flag:
                         if debug:
-                            print("here1")
                             print('Ligands cannot match!')
                         flag_match = False
                 except UnboundLocalError:
                     # If there is no match the variable posi is never assigned.
                     if debug:
-                        print("here2, try, excepted.")
+                        print("UnboundLocalError.")
                         print('Ligands cannot match!')
                     flag_match = False
         if debug:
@@ -6122,12 +6111,9 @@ class mol3D:
                 if (distance(atom1.coords(), atom0.coords()) < 0.85 * (atom1.rad + atom0.rad)):
                     overlap = True
                     if not silence:
-                        print()
-                        "#############################################################"
-                        print()
-                        "!!!Molecules might be overlapping. Increase distance!!!"
-                        print()
-                        "#############################################################"
+                        print("#############################################################")
+                        print("!!!Molecules might be overlapping. Increase distance!!!")
+                        print("#############################################################")
                     break
         return overlap
 
@@ -6264,7 +6250,7 @@ class mol3D:
 
         for atom in self.atoms:
             xyz = atom.coords()
-            ss = "%s \t%f\t%f\t%f" % (atom.sym, xyz[0], xyz[1], xyz[2])
+            ss = f"{atom.sym} \t{xyz[0]}\t{xyz[1]}\t{xyz[2]}"
             print(ss)
 
     def read_bo_from_mol(self, molfile):
@@ -6574,7 +6560,7 @@ class mol3D:
                     atom = atom3D(line_split[0], [float(line_split[1]), float(
                         line_split[2]), float(line_split[3])])
                 else:
-                    print('cannot find atom type')
+                    print('Cannot find atom type.')
                     sys.exit()
                 self.addAtom(atom)
 
@@ -6654,7 +6640,7 @@ class mol3D:
                         atom = atom3D(line_split[0], [float(line_split[1]), float(
                             line_split[2]), float(line_split[3])])
                     else:
-                        print('cannot find atom type')
+                        print('Cannot find atom type.')
                         sys.exit()
                     self.addAtom(atom)
         else:
@@ -6684,7 +6670,7 @@ class mol3D:
                         atom = atom3D(symb, [float(line_split[1]), float(line_split[2]), float(line_split[3])],
                                       name=line_split[0])
                     else:
-                        print('cannot find atom type')
+                        print('Cannot find atom type.')
                         sys.exit()
                     self.addAtom(atom)
 
@@ -6738,7 +6724,7 @@ class mol3D:
                     if BO_mat[i][j] > 0:
                         self.OBMol.AddBond(i + 1, j + 1, int(BO_mat[i][j]))
         else:
-            print("OBmol does not exist")
+            print("OBmol does not exist.")
 
     def returnxyz(self, no_tabs=False):
         """
@@ -6759,7 +6745,7 @@ class mol3D:
         ss = ''
         for atom in self.atoms:
             xyz = atom.coords()
-            ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
+            ss += f"{atom.sym} \t{xyz[0]}\t{xyz[1]}\t{xyz[2]}\n"
         if no_tabs:
             ss = ss.replace('\t', ' ' * 8)
         return ss
@@ -6921,12 +6907,9 @@ class mol3D:
                         if distance(atom1.coords(), atom0.coords()) < mind:
                             mind = distance(atom1.coords(), atom0.coords())
                         if not (silence):
-                            print(
-                                "#############################################################")
-                            print(
-                                "Molecules might be overlapping. Increase distance!")
-                            print(
-                                "#############################################################")
+                            print("#############################################################")
+                            print("Molecules might be overlapping. Increase distance!")
+                            print("#############################################################")
         if debug:
             return overlap, mind, errors_dict
         else:
@@ -7081,11 +7064,10 @@ class mol3D:
 
         ss = ''  # initialize returning string
         ss += "Date:" + time.strftime(
-            '%m/%d/%Y %H:%M') + ", XYZ structure generated by mol3D Class, " + self.globs.PROGRAM + "\nC1\n"
+            '%m/%d/%Y %H:%M') + f", XYZ structure generated by mol3D Class, {self.globs.PROGRAM}\nC1\n"
         for atom in self.atoms:
             xyz = atom.coords()
-            ss += "%s \t%.1f\t%f\t%f\t%f\n" % (atom.sym,
-                                               float(atom.atno), xyz[0], xyz[1], xyz[2])
+            ss += f"{atom.sym} \t{float(atom.atno):.1f}\t{xyz[0]}\t{xyz[1]}\t{xyz[2]}\n"
         fname = filename.split('.gxyz')[0]
         with open(fname + '.gxyz', 'w') as f:
             f.write(ss)
@@ -7212,9 +7194,8 @@ class mol3D:
             else:
                 charges = np.zeros(self.natoms)
                 charge_string = 'ZeroCharges'
-        ss = '@<TRIPOS>MOLECULE\n{}\n'.format(filename)
-        ss += '{}\t{}\t{}\n'.format(self.natoms,
-                                    int(csg.nnz/2), disjoint_components[0])
+        ss = f'@<TRIPOS>MOLECULE\n{filename}\n'
+        ss += f'{self.natoms}\t{int(csg.nnz/2)}\t{disjoint_components[0]}\n'
         ss += 'SMALL\n'
         ss += charge_string + '\n' + '****\n' + 'Generated from molSimplify\n\n'
         ss += '@<TRIPOS>ATOM\n'
@@ -7282,10 +7263,10 @@ class mol3D:
             '%m/%d/%Y %H:%M') + f', XYZ structure generated by mol3D Class, {self.globs.PROGRAM}\n'
         for atom in self.atoms:
             xyz = atom.coords()
-            ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
+            ss += f"{atom.sym} \t{xyz[0]}\t{xyz[1]}\t{xyz[2]}\n"
         for atom in mol.atoms:
             xyz = atom.coords()
-            ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
+            ss += f"{atom.sym} \t{xyz[0]}\t{xyz[1]}\t{xyz[2]}\n"
         if no_tabs:
             ss = ss.replace('\t', ' ' * 8)
         fname = filename.split('.xyz')[0]
@@ -7315,7 +7296,7 @@ class mol3D:
                 unique_types.update({this_sym: unique_types[this_sym] + 1})
             atom_name = f'{atom.symbol()}{unique_types[this_sym]}'
             xyz = atom.coords()
-            ss += "%s \t%f\t%f\t%f\n" % (atom_name, xyz[0], xyz[1], xyz[2])
+            ss += f"{atom_name} \t{xyz[0]}\t{xyz[1]}\t{xyz[2]}\n"
         fname = filename.split('.xyz')[0]
         with open(fname + '.xyz', 'w') as f:
             f.write(ss)
@@ -7337,11 +7318,11 @@ class mol3D:
             '%m/%d/%Y %H:%M') + f', XYZ structure generated by mol3D Class, {self.globs.PROGRAM}\n'
         for atom in self.atoms:
             xyz = atom.coords()
-            ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
+            ss += f"{atom.sym} \t{xyz[0]}\t{xyz[1]}\t{xyz[2]}\n"
         ss += f'--\n{mol.natoms}\n\n'
         for atom in mol.atoms:
             xyz = atom.coords()
-            ss += "%s \t%f\t%f\t%f\n" % (atom.sym, xyz[0], xyz[1], xyz[2])
+            ss += f"{atom.sym} \t{xyz[0]}\t{xyz[1]}\t{xyz[2]}\n"
         fname = filename.split('.xyz')[0]
         with open(fname + '.xyz', 'w') as f:
             f.write(ss)
@@ -7395,11 +7376,9 @@ class mol3D:
             if not (ignoreX and atom.sym == 'X'):
                 xyz = atom.coords()
                 if symbsonly:
-                    ss += "%s \t%f\t%f\t%f\n" % (atom.sym,
-                                                 xyz[0], xyz[1], xyz[2])
+                    ss += f"{atom.sym} \t{xyz[0]:.6f}\t{xyz[1]:.6f}\t{xyz[2]:.6f}\n"
                 else:
-                    ss += "%s \t%f\t%f\t%f\n" % (atom.name,
-                                                 xyz[0], xyz[1], xyz[2])
+                    ss += f"{atom.name} \t{xyz[0]:.6f}\t{xyz[1]:.6f}\t{xyz[2]:.6f}\n"
         if withgraph:
             from scipy.sparse import csgraph
 

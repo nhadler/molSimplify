@@ -1025,7 +1025,7 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
             ax_con_list = [ligcons[j] for j in ax_lig_list]
         elif n_unique_ligs == 2:  # Mix of 2 monodentates
             if loud:
-                print('monodentate {}+{} ligands'.format(max(ligand_counts), min(ligand_counts)))
+                print(f'monodentate {max(ligand_counts)}+{min(ligand_counts)} ligands')
                 print((ligand_counts, unique_ligands))
             eq_lig_list = list()
             if use_z:

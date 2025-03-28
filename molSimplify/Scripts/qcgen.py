@@ -212,13 +212,12 @@ def tcgen(args, strfiles, method):
             elif args.jobmanager:
                 output_filename = coordfs[i][:-4] + '.in'
             with open(f'{jobd}/{output_filename}', 'w') as output:
-                output.write('# file created with %s\n' % globs.PROGRAM)
+                output.write(f'# file created with {globs.PROGRAM}\n')
                 jobparams['coordinates'] = coordfs[i]
                 for keys in list(jobparams.keys()):
-                    output.write('%s %s\n' % (keys, jobparams[keys]))
+                    output.write(f'{keys} {jobparams[keys]}\n')
                 if jobparams['run'] == 'minimize':
                     output.write('new_minimizer yes\n')
-                    # output.write('min_coordinates cartesian\n')
                 if args.tc_fix_dihedral:
                     temp = mol3D()
                     temp.readfromxyz(strfiles[i])
@@ -237,13 +236,12 @@ def tcgen(args, strfiles, method):
             if args.jobmanager:
                 output_name = coordfs[i][:-4] + '.in'
             with open(f'{jobd}/{output_name}', 'w') as output:
-                output.write('# file created with %s\n' % globs.PROGRAM)
+                output.write(f'# file created with {globs.PROGRAM}\n')
                 jobparams['coordinates'] = coordfs[i]
                 for keys in list(jobparams.keys()):
-                    output.write('%s %s\n' % (keys, jobparams[keys]))
+                    output.write(f'{keys} {jobparams[keys]}\n')
                 if jobparams['run'] == 'minimize':
                     output.write('new_minimizer yes\n')
-                    # output.write('min_coordinates cartesian\n')
                 if args.tc_fix_dihedral:
                     temp = mol3D()
                     temp.readfromxyz(strfiles[i])
@@ -358,16 +356,16 @@ def gamgen(args, strfiles, method):
             nametrunc = coordname[0:6]+coordname[-4:]
         else:
             nametrunc = coordname
-        if not os.path.exists(rdir+'/'+nametrunc):
-            os.mkdir(rdir+'/'+nametrunc)
-        mdir = rdir+'/'+nametrunc
+        mdir = f'{rdir}/{nametrunc}'
+        if not os.path.exists(mdir):
+            os.mkdir(mdir)
         if method:
             if method[0] == 'U' or method[0] == 'u':
                 mmd = '/'+method[1:]
             else:
                 mmd = '/'+method
                 jobparams['SCFTYP'] = 'RHF'
-            mdir = rdir+'/'+nametrunc+mmd
+            mdir = f'{rdir}/{nametrunc}{mmd}'
             if not os.path.exists(mdir):
                 os.mkdir(mdir)
         jobdirs.append(mdir)
@@ -434,7 +432,7 @@ def gamgen(args, strfiles, method):
             else:
                 for elem in range(0, int(0.5*len(args.sysoption))):
                     key, val = args.sysoption[2*elem], args.sysoption[2*elem+1]
-                    output.append(' '+key+'='+val+' ')
+                    output.append(f' {key}={val} ')
         output.append(' $END\n')
         # write CONTRL block
         output.append(' $CONTRL SCFTYP='+jobparams['SCFTYP']+' DFTTYP=')
@@ -453,7 +451,7 @@ def gamgen(args, strfiles, method):
                 for elem in range(0, int(0.5*len(args.ctrloption))):
                     key, val = args.ctrloption[2 *
                                                elem], args.ctrloption[2*elem+1]
-                    output.append(' '+key+'='+val+' ')
+                    output.append(f' {key}={val} ')
         output.append(' $END\n')
         # write $SCF block
         output.append(' $SCF ')
@@ -471,7 +469,7 @@ def gamgen(args, strfiles, method):
             else:
                 for elem in range(0, int(0.5*len(args.scfoption))):
                     key, val = args.scfoption[2*elem], args.scfoption[2*elem+1]
-                    output.append(' '+key+'='+val+' ')
+                    output.append(f' {key}={val} ')
         output.append(' $END\n')
         # write $STATPT block
         output.append(' $STATPT ')
@@ -486,7 +484,7 @@ def gamgen(args, strfiles, method):
                 for elem in range(0, int(0.5*len(args.statoption))):
                     key, val = args.statoption[2 *
                                                elem], args.statoption[2*elem+1]
-                    output.append(' '+key+'='+val+' ')
+                    output.append(f' {key}={val} ')
         output.append(' $END\n')
         # write $DATA block
         output.append(' $DATA\n')
@@ -573,12 +571,12 @@ def qgen(args, strfiles, method):
             nametrunc = coordname[0:6]+coordname[-4:]
         else:
             nametrunc = coordname
-        if not os.path.exists(rdir+'/'+nametrunc) and not args.jobdir:
-            os.makedirs(rdir+'/'+nametrunc)
-        mdir = rdir+'/'+nametrunc
+        mdir = f'{rdir}/{nametrunc}'
+        if not os.path.exists(mdir) and not args.jobdir:
+            os.makedirs(mdir)
         if method:
             mmd = '/'+method
-            mdir = rdir+'/'+nametrunc+mmd
+            mdir = f'{rdir}/{nametrunc}{mmd}'
             if not os.path.exists(mdir):
                 os.makedirs(mdir)
 
@@ -710,7 +708,7 @@ def mlpgen(args, strfiles, rootdir):
     else:
         jobparams.append("SINGLET")
     if args.charge:
-        jobparams.append('CHARGE='+str(args.charge))
+        jobparams.append(f'CHARGE={args.charge}')
     # Now we're ready to start building the input file and the job script
     for xyzf in strfiles:
         output = []
@@ -830,15 +828,15 @@ def ogen(args, strfiles, method):
             nametrunc = coordname
         else:
             nametrunc = coordname
-        if not os.path.exists(rdir+'/'+nametrunc) and not args.jobdir:
-            os.mkdir(rdir+'/'+nametrunc)
-        mdir = rdir+'/'+nametrunc
+        mdir = f'{rdir}/{nametrunc}'
+        if not os.path.exists(mdir) and not args.jobdir:
+            os.mkdir(mdir)
         if method:
             if method[0] == 'U' or method[0] == 'u':
                 mmd = '/'+method[1:]
             else:
                 mmd = '/'+method
-            mdir = rdir+'/'+nametrunc+mmd
+            mdir = f'{rdir}/{nametrunc}{mmd}'
             if not os.path.exists(mdir):
                 try:
                     os.makedirs(mdir)
@@ -1005,16 +1003,16 @@ def ogenwrt(output, jobparams, xyzf):
     output.write('MaxIter '+jobparams['MaxIter']+'\n')
     if 'levelshift' in jobparams:
         if jobparams['levelshift'] == 'yes':
-            output.write('Shift Shift '+str(jobparams['levelshiftval'])
-                         + ' ErrOff ' + str(jobparams['ErrOff'])+'  end\n')
-    output.write('DIISMaxEq '+str(jobparams['DIISMaxEq'])+'\n')
+            output.write(f'Shift Shift {jobparams["levelshiftval"]}'
+                         + f' ErrOff {jobparams["ErrOff"]}  end\n')
+    output.write(f'DIISMaxEq {jobparams["DIISMaxEq"]}\n')
     output.write('end\n\n')
     # write the method block to control HFX
     if not (('CC' or 'HF') in jobparams['method']):
         if jobparams['HFX']:
             output.write('%method\n')
             output.write('ScalHFX = '+jobparams['HFX']+'\n')
-            output.write('ScalDFX = '+str(1-float(jobparams['HFX']))+'\n')
+            output.write(f'ScalDFX = {1-float(jobparams["HFX"])}\n')
             output.write('end\n\n')
     # write the mdci block for CCSD(T)
     if 'CCSD' in jobparams['method']:
@@ -1026,8 +1024,7 @@ def ogenwrt(output, jobparams, xyzf):
         output.write('end\n\n')
     # write the coordinate block
     output.write(
-        '*xyzfile '+str(jobparams['charge'])+' '+str(jobparams['spinmult'])+' '+xyzf+'\n')
-    # output.write(''.join(s0)+'*\n')
+        f'*xyzfile {jobparams["charge"]} {jobparams["spinmult"]} {xyzf}\n')
 
 
 def molcgen(args, strfiles, method):
@@ -1083,15 +1080,15 @@ def molcgen(args, strfiles, method):
             nametrunc = coordname
         else:
             nametrunc = coordname
-        if not os.path.exists(rdir+'/'+nametrunc) and not args.jobdir:
-            os.mkdir(rdir+'/'+nametrunc)
-        mdir = rdir+'/'+nametrunc
+        mdir = f'{rdir}/{nametrunc}'
+        if not os.path.exists(mdir) and not args.jobdir:
+            os.mkdir(mdir)
         if method:
             if method[0] == 'U' or method[0] == 'u':
                 mmd = '/'+method[1:]
             else:
                 mmd = '/'+method
-            mdir = rdir+'/'+nametrunc+mmd
+            mdir = f'{rdir}/{nametrunc}{mmd}'
             if not os.path.exists(mdir):
                 try:
                     os.makedirs(mdir)
@@ -1222,10 +1219,10 @@ def molcwrt(output, jobparams, xyzf, xyzind):
     output.write('&RASSCF\n')
     output.write('  charge='+jobparams['charge']+'\n')
     output.write('  spin='+jobparams['spin']+'\n')
-    output.write('  nactel='+str(jobparams['nactel'][xyzind])+' 0 0\n')
-    output.write('  frozen='+str(jobparams['frozen'][xyzind])+'\n')
+    output.write(f'  nactel={jobparams["nactel"][xyzind]} 0 0\n')
+    output.write(f'  frozen={jobparams["frozen"][xyzind]}\n')
     output.write('  ciroot='+jobparams['ciroot']+'\n')
-    output.write('  ras2='+str(jobparams['ras2'][xyzind])+'\n')
+    output.write(f'  ras2={jobparams["ras2"][xyzind]}\n')
     output.write('  ITER='+jobparams['ITER']+'\n')
     # write the CASPT2 block
     if 'pt2' in jobparams['method'].lower():
@@ -1336,22 +1333,22 @@ def molcbasis(strfiles, basistyp):
             elem = elems[1].pop()
             if basis != '':
                 basis += ','
-            basis += elem+'.'+basistyp+'...3s1p.'
+            basis += f'{elem}.{basistyp}...3s1p.'
         while len(elems[2]) > 0:
             elem = elems[2].pop()
             if basis != '':
                 basis += ','
-            basis += elem+'.'+basistyp+'...4s3p2d1f.'
+            basis += f'{elem}.{basistyp}...4s3p2d1f.'
         while len(elems[3]) > 0:
             elem = elems[3].pop()
             if basis != '':
                 basis += ','
-            basis += elem+'.'+basistyp+'... 5s4p3d2f.'
+            basis += f'{elem}.{basistyp}... 5s4p3d2f.'
         while len(elems[4]) > 0:
             elem = elems[4].pop()
             if basis != '':
                 basis += ','
-            basis += elem+'.'+basistyp+'...7s6p5d3f2g1h.'
+            basis += f'{elem}.{basistyp}...7s6p5d3f2g1h.'
     else:
         print('''Automatic Basis generation for basis type
         other than ANO-rcc is not supported yet''')
