@@ -473,7 +473,7 @@ def make_MOF_linker_RACs(
 
             this_colnames = []
             for j in range(0, depth+1):
-                this_colnames.append(f'f-lig-{labels_strings[ii]}-{j}')
+                this_colnames.append(f'f-link-{labels_strings[ii]}-{j}')
             colnames.append(this_colnames)
             lig_full.append(linker_ac_full)
 
@@ -1279,12 +1279,12 @@ def get_MOF_descriptors(
             SBU_list, SBU_subgraphlist, molcif, depth, name, cell_v, anc_atoms, sbu_path,
             linker_anchors_superlist, Gval, connections_list, connections_subgraphlist, transition_metals_only=transition_metals_only
             )
-        lig_descriptor_names, lig_descriptors = make_MOF_linker_RACs(
+        link_descriptor_names, link_descriptors = make_MOF_linker_RACs(
             linker_list, linker_subgraphlist, molcif, depth, name, cell_v, linker_path,
             linker_anchors_superlist, Gval
             )
-        full_names = descriptor_names+lig_descriptor_names+lc_descriptor_names
-        full_descriptors = list(descriptors)+list(lig_descriptors)+list(lc_descriptors)
+        full_names = descriptor_names+link_descriptor_names+lc_descriptor_names
+        full_descriptors = list(descriptors)+list(link_descriptors)+list(lc_descriptors)
         print(len(full_names), len(full_descriptors))
     elif len(linker_subgraphlist) == 1:  # Only one linker identified.
         print(f'Suspicious featurization for {name}: Only one linker identified.')
