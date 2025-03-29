@@ -8,7 +8,7 @@ from molSimplify.utils.timer import DebugTimer
 
 @pytest.fixture
 def ref_names():
-    def RACs_names(depth=3, Gval=True, alpha=True):
+    def RACs_names(depth=3, Gval=True):
 
         def generate_names(starts, properties, depth, scope="all"):
             names = []
@@ -29,13 +29,41 @@ def ref_names():
         # f-link does not include the "scope"
         names.extend(generate_names(["f-link"], properties, depth, scope=None))
 
-        # Same for the starts that include the additional property alpha
-        if alpha:
-            properties.append("alpha")
+        properties.append("alpha")
         names.extend(
             generate_names(["lc", "D_lc", "func", "D_func"], properties, depth))
         return names
     return RACs_names
+
+
+def helper_RAC_check(resource_path_root, tmp_path, name, ref_names, Gval=False):
+    with DebugTimer("get_MOF_descriptors()"):
+        full_names, full_descriptors = get_MOF_descriptors(
+            str(resource_path_root / "inputs" / "cif_files" / f"{name}.cif"),
+            depth=3,
+            path=str(tmp_path),
+            xyz_path=str(tmp_path / "test.xyz"),
+            Gval=Gval,
+        )
+
+    with open(resource_path_root / "refs" / "informatics" / "mof"  / "MOF_descriptors"
+              / name / f"{name}.json", "r") as fin:
+        ref = json.load(fin)
+
+    assert full_names == ref_names(Gval=Gval)
+    np.testing.assert_allclose(full_descriptors, ref["descriptors"], atol=1e-6)
+
+    link_descriptors = pd.read_csv(tmp_path / "linker_descriptors.csv")
+    link_ref = pd.read_csv(resource_path_root / "refs" / "informatics" / "mof" / "MOF_descriptors" / name / "linker_descriptors.csv")
+    assert all(link_descriptors == link_ref)
+
+    lc_descriptors = pd.read_csv(tmp_path / "lc_descriptors.csv")
+    lc_ref = pd.read_csv(resource_path_root / "refs" / "informatics" / "mof" / "MOF_descriptors" / name / "lc_descriptors.csv")
+    assert all(lc_descriptors == lc_ref)
+
+    sbu_descriptors = pd.read_csv(tmp_path / "sbu_descriptors.csv")
+    sbu_ref = pd.read_csv(resource_path_root / "refs" / "informatics" / "mof" / "MOF_descriptors" / name / "sbu_descriptors.csv")
+    assert all(sbu_descriptors == sbu_ref)
 
 
 @pytest.mark.parametrize(
@@ -51,29 +79,7 @@ def test_get_MOF_descriptors_ODAC(resource_path_root, tmp_path, name, ref_names)
     # NOTE All the .cif files were converted to primitive unit cell using the
     # MOF_descriptors.get_primitive() function
 
-    with DebugTimer("get_MOF_descriptors()"):
-        full_names, full_descriptors = get_MOF_descriptors(
-            str(resource_path_root / "inputs" / "cif_files" / f"{name}.cif"),
-            depth=3,
-            path=str(tmp_path),
-            xyz_path=str(tmp_path / "test.xyz"),
-            Gval=True,
-        )
-
-    with open(resource_path_root / "refs" / "informatics" / "mof"  / "MOF_descriptors"
-              / name / f"{name}.json", "r") as fin:
-        ref = json.load(fin)
-
-    assert full_names == ref_names()
-    np.testing.assert_allclose(full_descriptors, ref["descriptors"], atol=1e-6)
-
-    lc_descriptors = pd.read_csv(tmp_path / "lc_descriptors.csv")
-    lc_ref = pd.read_csv(resource_path_root / "refs" / "informatics" / "mof" / "MOF_descriptors" / name / "lc_descriptors.csv")
-    assert all(lc_descriptors == lc_ref)
-
-    sbu_descriptors = pd.read_csv(tmp_path / "sbu_descriptors.csv")
-    sbu_ref = pd.read_csv(resource_path_root / "refs" / "informatics" / "mof" / "MOF_descriptors" / name / "sbu_descriptors.csv")
-    assert all(sbu_descriptors == sbu_ref)
+    helper_RAC_check(resource_path_root, tmp_path, name, ref_names, Gval=True)
 
 
 @pytest.mark.parametrize(
@@ -84,7 +90,7 @@ def test_get_MOF_descriptors_ODAC(resource_path_root, tmp_path, name, ref_names)
         "UXUPEK_clean",
         "NEXXIZ_clean",
         # "ETECIR_clean",  TODO: Figure out why these two example do not work!
-        # "FAVGUH_clean",  Disagreement on all ligand center RACs
+        # "FAVGUH_clean",  Disagreement on all ligand center RACs.
         "YICDAR_clean",
         "VONBIK_clean",
     ])
@@ -97,32 +103,16 @@ def test_get_MOF_descriptors_JACS(resource_path_root, tmp_path, name, ref_names)
     # NOTE All the .cif files were converted to primitive unit cell using the
     # MOF_descriptors.get_primitive() function
 
-    with DebugTimer("get_MOF_descriptors()"):
-        full_names, full_descriptors = get_MOF_descriptors(
-            str(resource_path_root / "inputs" / "cif_files" / f"{name}.cif"),
-            depth=3,
-            path=str(tmp_path),
-            xyz_path=str(tmp_path / "test.xyz"),
-            Gval=False,
-        )
+    helper_RAC_check(resource_path_root, tmp_path, name, ref_names, Gval=False)
 
-    with open(resource_path_root / "refs" / "informatics" / "mof"  / "MOF_descriptors"
-              / name / f"{name}.json", "r") as fin:
-        ref = json.load(fin)
 
-    # For now we are using a workaround because polarization descriptors
-    # are now added by default.
-    # Here they should be compared to ref_names(Gval=False, alpha=False)
-    assert full_names == ref_names(Gval=False, alpha=True)
-    np.testing.assert_allclose(
-        # Get only the subset of descriptors without the property alpha
-        [d for d, n in zip(full_descriptors, full_names) if "alpha" not in n],
-        ref["descriptors"], atol=1e-6)
+@pytest.mark.parametrize(
+    "name",
+    [
+        "TIRLIQ",
+        "YAHPON",
+    ])
+def test_get_MOF_descriptors_ligand_containing(resource_path_root, tmp_path, name, ref_names):
+    # These MOFs contain pyridine and oxygen ligands attached to metals, respectively.
 
-    lc_descriptors = pd.read_csv(tmp_path / "lc_descriptors.csv")
-    lc_ref = pd.read_csv(resource_path_root / "refs" / "informatics" / "mof" / "MOF_descriptors" / name / "lc_descriptors.csv")
-    assert all(lc_descriptors == lc_ref)
-
-    sbu_descriptors = pd.read_csv(tmp_path / "sbu_descriptors.csv")
-    sbu_ref = pd.read_csv(resource_path_root / "refs" / "informatics" / "mof" / "MOF_descriptors" / name / "sbu_descriptors.csv")
-    assert all(sbu_descriptors == sbu_ref)
+    helper_RAC_check(resource_path_root, tmp_path, name, ref_names, Gval=False)
