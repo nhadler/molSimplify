@@ -217,7 +217,7 @@ def make_MOF_SBU_RACs(
     averaged_SBU_descriptors : numpy.ndarray
         The values of the RAC SBU features, averaged over all SBUs.
     lc_names : list of str
-        The names of the RAC lc (ligand coordinating I think) features.
+        The names of the RAC lc (linker coordinating atom centered) features.
     averaged_lc_descriptors : numpy.ndarray
         The values of the RAC lc features, averaged over all lc atoms.
 
@@ -409,7 +409,7 @@ def make_MOF_linker_RACs(
     -------
     colnames : list of str
         The names of the RAC linker features.
-    averaged_ligand_descriptors : numpy.ndarray
+    averaged_linker_descriptors : numpy.ndarray
         The values of the RAC linker features, averaged over all linkers.
 
     """
@@ -467,15 +467,15 @@ def make_MOF_linker_RACs(
         """""""""
         for ii, properties in enumerate(allowed_strings):
             if not list(descriptors):  # This is the case when just starting and the list is empty.
-                ligand_ac_full = full_autocorrelation(linker_mol, properties, depth, oct=False)  # RACs
+                linker_ac_full = full_autocorrelation(linker_mol, properties, depth, oct=False)  # RACs
             else:
-                ligand_ac_full += full_autocorrelation(linker_mol, properties, depth, oct=False)
+                linker_ac_full += full_autocorrelation(linker_mol, properties, depth, oct=False)
 
             this_colnames = []
             for j in range(0, depth+1):
-                this_colnames.append(f'f-lig-{labels_strings[ii]}-{j}')
+                this_colnames.append(f'f-link-{labels_strings[ii]}-{j}')
             colnames.append(this_colnames)
-            lig_full.append(ligand_ac_full)
+            lig_full.append(linker_ac_full)
 
         # Some formatting
         lig_full = [item for sublist in lig_full for item in sublist]  # flatten lists
@@ -488,8 +488,8 @@ def make_MOF_linker_RACs(
     # We dump the standard lc descriptors without averaging or summing so that the user
     # can make the modifications that they want. By default we take the average ones.
     linker_descriptors.to_csv(linker_descriptor_path+'/linker_descriptors.csv', index=False)
-    averaged_ligand_descriptors = np.mean(np.array(descriptor_list), axis=0)
-    return colnames, averaged_ligand_descriptors
+    averaged_linker_descriptors = np.mean(np.array(descriptor_list), axis=0)
+    return colnames, averaged_linker_descriptors
 
 def mkdir_if_absent(folder_paths):
     """
@@ -1277,14 +1277,15 @@ def get_MOF_descriptors(
     if len(linker_subgraphlist) >= 1:  # Featurize cases that did not fail.
         descriptor_names, descriptors, lc_descriptor_names, lc_descriptors = make_MOF_SBU_RACs(
             SBU_list, SBU_subgraphlist, molcif, depth, name, cell_v, anc_atoms, sbu_path,
+            # linker_anchors_superlist, Gval, linker_list, linker_subgraphlist, transition_metals_only=transition_metals_only
             linker_anchors_superlist, Gval, connections_list, connections_subgraphlist, transition_metals_only=transition_metals_only
             )
-        lig_descriptor_names, lig_descriptors = make_MOF_linker_RACs(
+        link_descriptor_names, link_descriptors = make_MOF_linker_RACs(
             linker_list, linker_subgraphlist, molcif, depth, name, cell_v, linker_path,
             linker_anchors_superlist, Gval
             )
-        full_names = descriptor_names+lig_descriptor_names+lc_descriptor_names
-        full_descriptors = list(descriptors)+list(lig_descriptors)+list(lc_descriptors)
+        full_names = descriptor_names+link_descriptor_names+lc_descriptor_names
+        full_descriptors = list(descriptors)+list(link_descriptors)+list(lc_descriptors)
         print(len(full_names), len(full_descriptors))
     elif len(linker_subgraphlist) == 1:  # Only one linker identified.
         print(f'Suspicious featurization for {name}: Only one linker identified.')
