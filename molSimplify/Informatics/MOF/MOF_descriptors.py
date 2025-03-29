@@ -473,7 +473,7 @@ def make_MOF_linker_RACs(
 
             this_colnames = []
             for j in range(0, depth+1):
-                this_colnames.append('f-lig-'+labels_strings[ii] + '-' + str(j))
+                this_colnames.append(f'f-lig-{labels_strings[ii]}-{j}')
             colnames.append(this_colnames)
             lig_full.append(ligand_ac_full)
 
@@ -1207,17 +1207,14 @@ def get_MOF_descriptors(
                     SBU_list.update(set(templist[ii]))     # We also want to remove these SBUs.
                     linker_list.pop(ii)
                     linker_subgraphlist.pop(ii)
-                    tmpstr = str(name)+','+' Anchors list: '+str(sbu_anchors_list) \
-                        + ',' + ' SBU connectlist: ' + str(sbu_connect_list) + ' set to be ligand\n'
+                    tmpstr = f'{name}, Anchors list: {sbu_anchors_list}, SBU connectlist: {sbu_connect_list} set to be ligand\n'
                     write2file(ligand_path, "/ambiguous.txt", tmpstr)
-                    tmpstr = str(name)+str(ii)+','+' Anchors list: '\
-                        + str(sbu_anchors_list) + ',' + ' SBU connectlist: ' + str(sbu_connect_list) + '\n'
+                    tmpstr = f'{name}{ii}, Anchors list: {sbu_anchors_list}, SBU connectlist: {sbu_connect_list}\n'
                     write2file(ligand_path, "/ligand.txt", tmpstr)
                 else:   # Linker. More than one periodic image for sbu or organic component.
                     max_min_linker_length = max(min_length, max_min_linker_length)
                     min_max_linker_length = min(max_length, min_max_linker_length)
-                    tmpstr = str(name)+','+' Anchors list: '+str(sbu_anchors_list) \
-                        + ',' + ' SBU connectlist: ' + str(sbu_connect_list) + ' set to be linker\n'
+                    tmpstr = f'{name}, Anchors list: {sbu_anchors_list}, SBU connectlist: {sbu_connect_list} set to be linker\n'
                     write2file(ligand_path, "/ambiguous.txt", tmpstr)
                     continue
 
@@ -1227,12 +1224,10 @@ def get_MOF_descriptors(
             SBU_list.update(set(templist[ii]))     # We also want to remove these ligands.
             linker_list.pop(ii)
             linker_subgraphlist.pop(ii)
-            tmpstr = str(name)+','+' Anchors list: '+str(sbu_anchors_list) \
-                + ','+' SBU connectlist: '+str(sbu_connect_list)+'\n'
+            tmpstr = f'{name}, Anchors list: {sbu_anchors_list}, SBU connectlist: {sbu_connect_list}\n'
             write2file(ligand_path, "/ligand.txt", tmpstr)
 
-    tmpstr = str(name) + ", (min_max_linker_length,max_min_linker_length): " \
-        + str(min_max_linker_length) + " , " + str(max_min_linker_length) + "\n"
+    tmpstr = f'{name}, (min_max_linker_length,max_min_linker_length): {min_max_linker_length} , {max_min_linker_length}\n'
     write2file(log_path, "/%s.log" % name, tmpstr)
     if min_max_linker_length < 3:
         write2file(linker_path, "/short_ligands.txt", tmpstr)
@@ -1249,7 +1244,7 @@ def get_MOF_descriptors(
     """""""""
     linker_length_list = [len(linker_val) for linker_val in linker_list]
     if len(set(linker_length_list)) != 1:
-        write2file(linker_path, "/uneven.txt", str(name)+'\n')  # Linkers are different lengths.
+        write2file(linker_path, "/uneven.txt", f'{name}\n')  # Linkers are different lengths.
     if min_max_linker_length < 2:
         tmpstr = "Structure %s has extremely short ligands, check the outputs\n" % name
         write2file(ligand_path, "/ambiguous.txt", tmpstr)
