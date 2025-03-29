@@ -26,8 +26,8 @@ def ref_names():
             properties.append("Gval")
 
         names = generate_names(["f", "mc", "D_mc"], properties, depth)
-        # f-lig does not include the "scope"
-        names.extend(generate_names(["f-lig"], properties, depth, scope=None))
+        # f-link does not include the "scope"
+        names.extend(generate_names(["f-link"], properties, depth, scope=None))
 
         # Same for the starts that include the additional property alpha
         if alpha:
