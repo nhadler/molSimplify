@@ -113,7 +113,8 @@ def load_sbu_lc_descriptors(sbu_path: str) -> Tuple[str, pd.DataFrame, pd.DataFr
 
 def gen_and_append_desc(
         temp_mol: mol3D, target_list, depth: int, descriptor_names: List[str],
-        descriptors: List[float], Gval: bool, feature_type: str) -> Tuple[Dict, List[str], List[float]]:
+        descriptors: List[float], Gval: bool, feature_type: str,
+        non_trivial=False) -> Tuple[Dict, List[str], List[float]]:
     """
     Generates and append descriptors, both standard and delta.
 
@@ -135,11 +136,16 @@ def gen_and_append_desc(
         Whether to use G value as RAC.
     feature_type : str
         Either 'lc' or 'func'.
+    non_trivial : bool, optional
+        Flag to exclude difference RACs of I, and depth zero difference
+        RACs. These RACs are always zero. By default False.
 
     Returns
     -------
     results_dictionary : dict
-        deltametrics RACs
+        Product RACs.
+    results_dictionary_2 : dict
+        Difference RACs.
     descriptor_names : list
         The updated RAC descriptor names.
     descriptors : list
@@ -154,17 +160,16 @@ def gen_and_append_desc(
         descriptor_names, descriptors, results_dictionary['colnames'],
         results_dictionary['results'], feature_type, 'all'
     )
-
-    results_dictionary = generate_atomonly_deltametrics(
+    results_dictionary_2 = generate_atomonly_deltametrics(
         temp_mol, target_list, depth=depth, oct=False,
-        polarizability=True, Gval=Gval
+        polarizability=True, Gval=Gval, non_trivial=non_trivial,
     )
     descriptor_names, descriptors = append_descriptors(
-        descriptor_names, descriptors, results_dictionary['colnames'],
-        results_dictionary['results'], f'D_{feature_type}', 'all'
+        descriptor_names, descriptors, results_dictionary_2['colnames'],
+        results_dictionary_2['results'], f'D_{feature_type}', 'all'
     )
 
-    return results_dictionary, descriptor_names, descriptors
+    return results_dictionary, results_dictionary_2, descriptor_names, descriptors
 
 #########################################################################################
 # The RAC functions here average over the different SBUs or linkers present. This is    #
@@ -175,7 +180,7 @@ def gen_and_append_desc(
 def make_MOF_SBU_RACs(
         SBU_list, SBU_subgraph, molcif, depth, name, cell_v, anchoring_atoms, sbu_path,
         linker_anchors_superlist, Gval, connections_list, connections_subgraphlist,
-        transition_metals_only=True):
+        transition_metals_only=True, non_trivial=False):
     """
     Generates RACs on the SBUs of the MOF, as well as on the lc atoms (SBU-connected atoms of linkers).
 
@@ -209,6 +214,9 @@ def make_MOF_SBU_RACs(
         The atom connections in the linker subgraph. Length is # of linkers.
     transition_metals_only : bool
         Flag if only transition metals counted as metals, by default True.
+    non_trivial : bool, optional
+        Flag to exclude difference RACs of I, and depth zero difference
+        RACs. These RACs are always zero. By default False.
 
     Returns
     -------
@@ -270,8 +278,9 @@ def make_MOF_SBU_RACs(
                 """""""""
                 Generate all of the lc autocorrelations (from the connecting atoms).
                 """""""""
-                results_dictionary, descriptor_names, descriptors = gen_and_append_desc(
-                    temp_mol, link_list, depth, descriptor_names, descriptors, Gval, 'lc')
+                results_dictionary, results_dictionary_2, descriptor_names, descriptors = gen_and_append_desc(
+                    temp_mol, link_list, depth, descriptor_names, descriptors, Gval, 'lc',
+                    non_trivial=non_trivial)
                 """""""""
                 If heteroatom functional groups exist (anything that is not C or H, so methyl is missed, also excludes anything lc, so carboxylic metal-coordinating oxygens skipped),
                 compile the list of atoms.
@@ -285,23 +294,26 @@ def make_MOF_SBU_RACs(
                 Generate all of the functional group autocorrelations.
                 """""""""
                 if len(functional_atoms) > 0:
-                    results_dictionary, descriptor_names, descriptors = gen_and_append_desc(
-                        temp_mol, functional_atoms, depth, descriptor_names, descriptors, Gval, 'func')
+                    results_dictionary, results_dictionary_2, descriptor_names, descriptors = gen_and_append_desc(
+                        temp_mol, functional_atoms, depth, descriptor_names, descriptors, Gval, 'func',
+                        non_trivial=non_trivial)
                 else:  # There are no functional atoms.
                     if Gval:
                         num_atomic_properties = 7
                     else:
                         num_atomic_properties = 6
 
-                    descriptor_names, descriptors = append_descriptors(
-                        descriptor_names, descriptors, results_dictionary['colnames'],
-                        list([np.zeros(int(num_atomic_properties*(depth + 1)))]), 'func', 'all'
-                    )
-                    descriptor_names, descriptors = append_descriptors(
-                        descriptor_names, descriptors, results_dictionary['colnames'],
-                        list([np.zeros(int(num_atomic_properties*(depth + 1)))]), 'D_func', 'all'
-                    )
+                    len_list = num_atomic_properties*(depth + 1)
+                    len_D_list = len_list - (depth+num_atomic_properties) if non_trivial else len_list
 
+                    descriptor_names, descriptors = append_descriptors(
+                        descriptor_names, descriptors, results_dictionary['colnames'],
+                        [np.zeros(len_list)], 'func', 'all'
+                    )
+                    descriptor_names, descriptors = append_descriptors(
+                        descriptor_names, descriptors, results_dictionary_2['colnames'],
+                        [np.zeros(len_D_list)], 'D_func', 'all'
+                    )
                 for val in descriptors:
                     if not (type(val) is float or isinstance(val, np.float64)):
                         print('Mixed typing. Please convert to python float, and avoid np float.')
@@ -360,7 +372,7 @@ def make_MOF_SBU_RACs(
         descriptor_names, descriptors = append_descriptors(
             descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'mc', 'all')
         results_dictionary = generate_metal_deltametrics(molcif, depth=depth, Gval=Gval,
-            transition_metals_only=transition_metals_only, oct=False)
+            transition_metals_only=transition_metals_only, oct=False, non_trivial=non_trivial)
         descriptor_names, descriptors = append_descriptors(
             descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'D_mc', 'all')
 
@@ -945,6 +957,7 @@ def get_MOF_descriptors(
         get_sbu_linker_bond_info=False,
         surrounded_sbu_file_generation=False,
         detect_1D_rod_sbu=False,
+        non_trivial=False,
         ):
     """
     Generates RAC descriptors on a MOF, assuming it has P1 symmetry.
@@ -987,6 +1000,9 @@ def get_MOF_descriptors(
         Whether or not an XYZ file for each SBU, surrounded by its connected linkers, will be generated.
     detect_1D_rod_sbu : bool
         Whether or not to check if SBU is a 1D rod.
+    non_trivial : bool, optional
+        Flag to exclude difference RACs of I, and depth zero difference
+        RACs. These RACs are always zero. By default False.
 
     Returns
     -------
@@ -1277,8 +1293,8 @@ def get_MOF_descriptors(
     if len(linker_subgraphlist) >= 1:  # Featurize cases that did not fail.
         descriptor_names, descriptors, lc_descriptor_names, lc_descriptors = make_MOF_SBU_RACs(
             SBU_list, SBU_subgraphlist, molcif, depth, name, cell_v, anc_atoms, sbu_path,
-            # linker_anchors_superlist, Gval, linker_list, linker_subgraphlist, transition_metals_only=transition_metals_only
-            linker_anchors_superlist, Gval, connections_list, connections_subgraphlist, transition_metals_only=transition_metals_only
+            linker_anchors_superlist, Gval, connections_list, connections_subgraphlist, transition_metals_only=transition_metals_only,
+            non_trivial=non_trivial,
             )
         link_descriptor_names, link_descriptors = make_MOF_linker_RACs(
             linker_list, linker_subgraphlist, molcif, depth, name, cell_v, linker_path,
