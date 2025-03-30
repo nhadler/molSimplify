@@ -114,7 +114,7 @@ def load_sbu_lc_descriptors(sbu_path: str) -> Tuple[str, pd.DataFrame, pd.DataFr
 def gen_and_append_desc(
         temp_mol: mol3D, target_list, depth: int, descriptor_names: List[str],
         descriptors: List[float], Gval: bool, feature_type: str,
-        non_trivial=False) -> Tuple[Dict, List[str], List[float]]:
+        non_trivial=False) -> Tuple[Dict, Dict, List[str], List[float]]:
     """
     Generates and append descriptors, both standard and delta.
 
