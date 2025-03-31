@@ -318,6 +318,9 @@ class Mol2D(nx.Graph):
             hapticity : list
                 Length of each separate coordination path in graph
         """
+        # ensure provided coordinating atoms are all within range of atoms in molecule
+        if max(catoms) >= self.number_of_nodes():
+            raise KeyError('coordinating atom indices must be within range of number of atoms')
         non_catoms = [atom for atom in range(len(self.nodes)) if atom not in catoms]
         # get all pairwise combinations of coordinating atoms
         catom_pairs = list(itertools.combinations(catoms, 2))
@@ -326,9 +329,14 @@ class Mol2D(nx.Graph):
         coordination_paths = []
         for pair in catom_pairs:
             coordination_paths.extend(self.find_simple_paths(source=pair[0], sink=pair[1], constraints=non_catoms))
-        # remove all paths which are subsets of other paths
-        coordination_paths = [path for path in coordination_paths if not any(
-            set(path).issubset(set(other_path)) and path != other_path for other_path in coordination_paths)]
+        # remove all paths which are subsets of other paths, but are not the maximum path (i.e., allow for rings)
+        max_length = max(len(path) for path in coordination_paths) if len(coordination_paths) > 0 else 0
+        coordination_paths = list({frozenset(path) for path in coordination_paths
+                                   if not any(set(path).issubset(set(other_path))
+                                              and path != other_path
+                                              and len(path) < max_length
+                                              for other_path in coordination_paths)})
+        coordination_paths = [list(path) for path in coordination_paths]
         # add back in isolated atoms which are not in any paths
         coordination_paths.extend(
             [[atom] for atom in set(catoms) - set(atom for path in coordination_paths for atom in path)])
