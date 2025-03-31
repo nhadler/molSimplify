@@ -148,6 +148,7 @@ def test_get_MOF_descriptors_non_trivial(resource_path_root, tmp_path, name, ref
     set_1 = set(full_names)
     set_2 = set(ref['names'])
     assert set_1.issubset(set_2)
+    assert len(set_1) < len(set_2)
     extra_names = set_2.difference(set_1)
     assert all(i.startswith('D') and ('-0' in i or '-I-' in i) for i in extra_names)
 
