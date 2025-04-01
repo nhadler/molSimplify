@@ -1336,3 +1336,68 @@ def test_writemol(resource_path_root, tmp_path):
     contents1.pop(1)
     contents2.pop(1)
     assert contents1 == contents2
+
+
+def test_translate(resource_path_root):
+    mol = mol3D()
+    symbols = ['O','H','H']
+    coords = [
+    [-3.73751, 1.29708, 0.00050],
+    [-2.74818, 1.33993, -0.00035],
+    [-4.02687, 2.24392, -0.01831],
+    ]
+    for sym, coord in zip(symbols, coords):
+        mol.addAtom(atom3D(Sym=sym, xyz=coord))
+
+    translation_vec = np.array([1,2,4])
+    mol.translate(translation_vec)
+    assert np.allclose(mol.get_coordinate_array(), np.array(coords)+translation_vec)
+
+
+def test_num_rings(resource_path_root):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / "caffeine.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    assert mol.num_rings(0) == 1
+    assert mol.num_rings(2) == 2
+    assert mol.num_rings(23) == 0
+
+
+def test_findsubMol(resource_path_root):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / "pdms_unit.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    subm = mol.findsubMol(11, 9)
+    subm.sort()
+    assert subm == [11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
+
+    subm = mol.findsubMol(25, 12)
+    subm.sort()
+    assert subm == [25, 26, 27, 28] 
+
+    subm = mol.findsubMol(15, 9)
+    subm.sort()
+    assert subm == [11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
+
+
+def test_BCM():
+    mol = mol3D()
+    symbols = ['O','H','H']
+    coords = [
+    [-3.73751, 1.29708, 0.00050],
+    [-2.74818, 1.33993, -0.00035],
+    [-4.02687, 2.24392, -0.01831],
+    ]
+    for sym, coord in zip(symbols, coords):
+        mol.addAtom(atom3D(Sym=sym, xyz=coord))
+
+    ref_coords = [
+    [-4.24677, 1.27502, 0.00094],
+    [-2.74818, 1.33993, -0.00035],
+    [-4.53613, 2.22186, -0.01787],
+    ]
+
+    mol.BCM(0, 1, 1.5)
+    assert np.allclose(mol.get_coordinate_array(), ref_coords, atol=1e-5)
