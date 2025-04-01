@@ -1375,7 +1375,7 @@ def test_findsubMol(resource_path_root):
 
     subm = mol.findsubMol(25, 12)
     subm.sort()
-    assert subm == [25, 26, 27, 28] 
+    assert subm == [25, 26, 27, 28]
 
     subm = mol.findsubMol(15, 9)
     subm.sort()
