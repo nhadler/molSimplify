@@ -12,7 +12,7 @@ HF_to_Kcal_mol = 627.503
 globs = globalvars()
 
 
-def append_descriptors(descriptor_names, descriptors, list_of_names, list_of_props, prefix, suffix):
+def append_descriptors(descriptor_names, descriptors, list_of_names, list_of_props, prefix, suffix, no_suffix=False):
     """
     Utility to build standardly formatted RACs.
 
@@ -30,6 +30,8 @@ def append_descriptors(descriptor_names, descriptors, list_of_names, list_of_pro
             Prefix to be added to names.
         suffix : str
             Suffix to be added to names.
+        no_suffix : bool
+            Flag indicating whether to include suffix.
 
     Returns
     -------
@@ -44,15 +46,21 @@ def append_descriptors(descriptor_names, descriptors, list_of_names, list_of_pro
     except NameError:
         basestring = str
 
+    str_bool = isinstance(list_of_names[0], basestring)
+
     for names in list_of_names:
-        if isinstance(names, basestring):
-            names = "-".join([prefix, str(names), suffix])
-            descriptor_names.append(names)
+        if str_bool:
+            names_2 = [names]
         else:
-            names = ["-".join([prefix, str(i), suffix]) for i in names]
-            descriptor_names += names
+            names_2 = names.copy()
+        if no_suffix:
+            names_2 = ["-".join([prefix, str(i)]) for i in names_2]
+        else:
+            names_2 = ["-".join([prefix, str(i), suffix]) for i in names_2]
+        descriptor_names += names_2
+
     for values in list_of_props:
-        if isinstance(names, basestring):
+        if str_bool:
             descriptors.append(values)
         else:
             descriptors.extend(values)

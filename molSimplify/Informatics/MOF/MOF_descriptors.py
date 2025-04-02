@@ -9,8 +9,8 @@ from typing import Tuple, List, Dict
 from molSimplify.Classes.atom3D import atom3D
 from molSimplify.Classes.mol3D import mol3D
 from molSimplify.Scripts.cellbuilder_tools import import_from_cif
-from molSimplify.Informatics.RACassemble import append_descriptors
 from molSimplify.Informatics.autocorrelation import (
+    append_descriptors,
     full_autocorrelation,
     generate_atomonly_autocorrelations,
     generate_atomonly_deltametrics,
@@ -158,7 +158,7 @@ def gen_and_append_desc(
     )
     descriptor_names, descriptors = append_descriptors(
         descriptor_names, descriptors, results_dictionary['colnames'],
-        results_dictionary['results'], feature_type, 'all'
+        results_dictionary['results'], feature_type, '', no_suffix=True,
     )
     results_dictionary_2 = generate_atomonly_deltametrics(
         temp_mol, target_list, depth=depth, oct=False,
@@ -166,7 +166,7 @@ def gen_and_append_desc(
     )
     descriptor_names, descriptors = append_descriptors(
         descriptor_names, descriptors, results_dictionary_2['colnames'],
-        results_dictionary_2['results'], f'D_{feature_type}', 'all'
+        results_dictionary_2['results'], f'D_{feature_type}', '', no_suffix=True,
     )
 
     return results_dictionary, results_dictionary_2, descriptor_names, descriptors
@@ -237,6 +237,7 @@ def make_MOF_SBU_RACs(
     descriptor_names = []
     descriptors = []
 
+    # If CSVs already exist, they will be added to.
     sbu_descriptor_path, sbu_descriptors, lc_descriptors = load_sbu_lc_descriptors(sbu_path)
 
     global_connection_indices = []
@@ -308,11 +309,11 @@ def make_MOF_SBU_RACs(
 
                     descriptor_names, descriptors = append_descriptors(
                         descriptor_names, descriptors, results_dictionary['colnames'],
-                        [np.zeros(len_list)], 'func', 'all'
+                        [np.zeros(len_list)], 'func', '', no_suffix=True,
                     )
                     descriptor_names, descriptors = append_descriptors(
                         descriptor_names, descriptors, results_dictionary_2['colnames'],
-                        [np.zeros(len_D_list)], 'D_func', 'all'
+                        [np.zeros(len_D_list)], 'D_func', '', no_suffix=True,
                     )
                 for val in descriptors:
                     if not (type(val) is float or isinstance(val, np.float64)):
@@ -359,7 +360,7 @@ def make_MOF_SBU_RACs(
         results_dictionary = generate_full_complex_autocorrelations(
             SBU_mol, depth=depth, flag_name=False, Gval=Gval, oct=False)
         descriptor_names, descriptors = append_descriptors(
-            descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'f', 'all')
+            descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'f-sbu', '', no_suffix=True)
         # Now starts at every metal on the graph and autocorrelates.
 
         # Note, by this point in the code, molcif has had self.metals assigned to all metals in the structure
@@ -370,11 +371,11 @@ def make_MOF_SBU_RACs(
         results_dictionary = generate_metal_autocorrelations(molcif, depth=depth, Gval=Gval,
             transition_metals_only=transition_metals_only, oct=False)
         descriptor_names, descriptors = append_descriptors(
-            descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'mc', 'all')
+            descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'mc', '', no_suffix=True)
         results_dictionary = generate_metal_deltametrics(molcif, depth=depth, Gval=Gval,
             transition_metals_only=transition_metals_only, oct=False, non_trivial=non_trivial)
         descriptor_names, descriptors = append_descriptors(
-            descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'D_mc', 'all')
+            descriptor_names, descriptors, results_dictionary['colnames'], results_dictionary['results'], 'D_mc', '', no_suffix=True)
 
         # Add to DataFrame
         sbu_descriptors_df = pd.DataFrame([descriptors], columns=descriptor_names)
@@ -430,6 +431,7 @@ def make_MOF_linker_RACs(
     descriptors = []
     if linker_path:
         linker_descriptor_path = os.path.dirname(linker_path)
+        # If CSV already exists, it will be added to.
         if os.path.getsize(linker_descriptor_path+'/linker_descriptors.csv') > 0:  # Checking if there is a file there.
             linker_descriptors = pd.read_csv(linker_descriptor_path+'/linker_descriptors.csv')
         else:

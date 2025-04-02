@@ -25,13 +25,13 @@ def ref_names():
         if Gval:
             properties.append("Gval")
 
-        names = generate_names(["f", "mc", "D_mc"], properties, depth)
+        names = generate_names(["f-sbu", "mc", "D_mc"], properties, depth, scope=None)
         # f-link does not include the "scope"
         names.extend(generate_names(["f-link"], properties, depth, scope=None))
 
         properties.append("alpha")
         names.extend(
-            generate_names(["lc", "D_lc", "func", "D_func"], properties, depth))
+            generate_names(["lc", "D_lc", "func", "D_func"], properties, depth, scope=None))
         return names
     return RACs_names
 
@@ -51,6 +51,7 @@ def helper_RAC_check(resource_path_root, tmp_path, name, ref_names, Gval=False):
         ref = json.load(fin)
 
     assert full_names == ref_names(Gval=Gval)
+    assert full_names == ref["names"]
     np.testing.assert_allclose(full_descriptors, ref["descriptors"], atol=1e-6)
 
     link_descriptors = pd.read_csv(tmp_path / "linker_descriptors.csv")
@@ -89,8 +90,8 @@ def test_get_MOF_descriptors_ODAC(resource_path_root, tmp_path, name, ref_names)
         "SETDUS_clean",
         "UXUPEK_clean",
         "NEXXIZ_clean",
-        # "ETECIR_clean",  TODO: Figure out why these two example do not work!
-        # "FAVGUH_clean",  Disagreement on all ligand center RACs.
+        "ETECIR_clean",
+        "FAVGUH_clean",
         "YICDAR_clean",
         "VONBIK_clean",
     ])
