@@ -280,7 +280,6 @@ class mol3D:
         # Same as bo_mat, but only ones and zeros.
         self.graph = np.array([])
         self.xyzfile = 'undef'
-        self.updated = False
         self.needsconformer = False
         # Holder for molecular group
         self.grps = False
