@@ -243,8 +243,7 @@ def test_add_bond():
     new_bo_dict = mol.get_bo_dict_from_inds([1, 2, 3])
     assert new_bo_dict == {(0, 1): 1, (0, 2): 1}
 
-    assert mol.get_mol_graph_det(oct=False) == '-154582.1094'
-    assert mol.get_mol_graph_det(oct=False, use_bo_mat=True) == '-154582.1094'
+    assert mol.get_graph_hash() == 'df21357bb47fe3aa2e062c7e3a3b573e'
 
 
 @pytest.mark.skip(reason='Mutating the state of an atom3D can not be detected '
