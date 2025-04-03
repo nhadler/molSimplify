@@ -25,10 +25,7 @@ def norm(u):
                 Norm of u.
 
     """
-    d = 0.0
-    for u0 in u:
-        d += (u0 * u0)
-    d = np.sqrt(d)
+    d = np.linalg.norm(u)
     return d
 
 
@@ -49,8 +46,8 @@ def normalize(u):
     d = norm(u)
     un = []
     if d > 1.0e-13:
-        [un.append(ui / d) for ui in u]
-    return un
+        norm_vect = list(np.array(u)/d)
+    return norm_vect
 
 
 def distance(r1, r2):
@@ -69,10 +66,8 @@ def distance(r1, r2):
                 Euclidean distance between points 1 and 2.
 
     """
-    dx = r1[0] - r2[0]
-    dy = r1[1] - r2[1]
-    dz = r1[2] - r2[2]
-    d = np.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
+    delta_v = np.array(r1) - np.array(r2)
+    d = norm(delta_v)
     return d
 
 
@@ -92,8 +87,8 @@ def vecdiff(r1, r2):
                 Vector difference between points 1 and 2.
 
     """
-    dr = [a - b for a, b in zip(r1, r2)]
-    return dr
+    diff = list(np.array(r1) - np.array(r2))
+    return diff
 
 
 def midpt(r1, r2):
@@ -112,7 +107,9 @@ def midpt(r1, r2):
                 Midpoint between vector 1 and 2.
 
     """
-    m = [0.5 * (a + b) for a, b in zip(r1, r2)]
+    m = np.array(r1) + np.array(r2)
+    m = np.divide(m, 2)
+    m = list(m)
     return m
 
 
