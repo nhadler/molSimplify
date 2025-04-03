@@ -2895,6 +2895,7 @@ class mol3D:
                 bond_order = 1.5
             mol.graph[i, j] = mol.graph[j, i] = 1
             mol.bo_mat[i, j] = mol.bo_mat[j, i] = bond_order
+            mol.bo_dict[tuple(sorted([i, j]))] = bond_order
         return mol
 
     def geo_dict_initialization(self):
