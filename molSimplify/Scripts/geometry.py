@@ -21,12 +21,12 @@ def norm(u):
 
         Returns
         -------
-            norm : float
+            this_norm : float
                 Norm of u.
 
     """
-    d = np.linalg.norm(u)
-    return d
+    this_norm = np.linalg.norm(u)
+    return this_norm
 
 
 def normalize(u):
@@ -44,7 +44,7 @@ def normalize(u):
 
     """
     d = norm(u)
-    un = []
+    norm_vect = []
     if d > 1.0e-13:
         norm_vect = list(np.array(u)/d)
     return norm_vect
@@ -67,8 +67,8 @@ def distance(r1, r2):
 
     """
     delta_v = np.array(r1) - np.array(r2)
-    d = norm(delta_v)
-    return d
+    dist = norm(delta_v)
+    return dist
 
 
 def vecdiff(r1, r2):
@@ -107,10 +107,10 @@ def midpt(r1, r2):
                 Midpoint between vector 1 and 2.
 
     """
-    m = np.array(r1) + np.array(r2)
-    m = np.divide(m, 2)
-    m = list(m)
-    return m
+    mid = np.array(r1) + np.array(r2)
+    mid = np.divide(mid, 2)
+    mid = list(mid)
+    return mid
 
 
 def checkcolinear(r1, r2, r3):
@@ -134,11 +134,8 @@ def checkcolinear(r1, r2, r3):
     dr1 = vecdiff(r2, r1)
     dr2 = vecdiff(r1, r3)
     dd = np.cross(np.array(dr1), np.array(dr2))
-    if norm(dd) < 1.e-01:
-        return True
-    else:
-        return False
-
+    collinear_flag = norm(dd) < 1.e-01
+    return collinear_flag
 
 def checkplanar(r1, r2, r3, r4):
     """Checks if four points are coplanar.
@@ -165,11 +162,8 @@ def checkplanar(r1, r2, r3, r4):
     r43 = vecdiff(r4, r3)
     cr0 = np.cross(np.array(r21), np.array(r43))
     dd = np.dot(r31, cr0)
-    if abs(dd) < 1.e-1:
-        return True
-    else:
-        return False
-
+    coplanar_flag = abs(dd) < 1.e-1
+    return coplanar_flag
 
 def vecangle(r1, r2):
     """Computes angle between two vectors.
@@ -285,6 +279,12 @@ def dihedral(mol, idx1, idx2, idx3, idx4):
                 Index of atom 3.
             idx4 : int
                 Index of atom 4.
+
+        Returns
+        -------
+            dihedral_angle : int
+                The computed dihedral angle.
+
     """
 
     r1 = mol.getAtom(idx1).coords()
@@ -434,7 +434,7 @@ def PointRotateAxis(u, rp, r, theta):
 
     Returns
     -------
-        rotated : list
+        rn : list
             Rotated point.
 
     """
@@ -482,7 +482,7 @@ def PointRotateMat(r, R):
 
     Returns
     -------
-        rotated : list
+        rn : list
             Rotated point.
 
     """
@@ -1179,7 +1179,7 @@ def connectivity_match(inds1, inds2, mol1, mol2):
             Flag for if connectivity matches. True if so.
 
     """
-    match = False
+    match_flag = False
     inds1c, inds2c = inds1[:], inds2[:] # Making copies
     if len(inds1c) == len(inds2c):
         inds1c.sort()
@@ -1188,8 +1188,8 @@ def connectivity_match(inds1, inds2, mol1, mol2):
         _mol2 = mol2.create_mol_with_inds(inds2c)
         _mol1.createMolecularGraph()
         _mol2.createMolecularGraph()
-        match = np.array_equal(_mol1.graph, _mol2.graph)
-    return match
+        match_flag = np.array_equal(_mol1.graph, _mol2.graph)
+    return match_flag
 
 
 def best_fit_plane(coordinates):
@@ -1197,7 +1197,7 @@ def best_fit_plane(coordinates):
 
     Parameters
     ----------
-        corerefcoords : np.array
+        coordinates : np.array
             Coordinates of atoms for which the best fitting plane is to be found. Shape is 3 x N.
 
     Returns
@@ -1228,7 +1228,7 @@ def move_point(initial_point, vector, distance):
     distance (float): The distance to move along the vector.
 
     Returns:
-    numpy.ndarray: The new point after moving.
+    new_point (numpy.ndarray): The new point after moving.
     """
     # Convert inputs to numpy arrays
     initial_point = np.array(initial_point)
