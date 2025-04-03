@@ -144,7 +144,7 @@ getBondedAtomsnotH
 getClosestAtom
 getClosestAtomlist
 getClosestAtomnoHs
-getDistToMetal
+get_pair_distance
 getFarAtom
 getHs
 getHsbyAtom
@@ -3437,7 +3437,7 @@ class mol3D:
                                 if len(possible_idxs) > CN:
                                     metal_prox = sorted(
                                         possible_idxs,
-                                        key=lambda x: self.getDistToMetal(x, ind))
+                                        key=lambda x: self.get_pair_distance(x, ind))
                                     allowed_idxs = metal_prox[0:CN]
                                     if debug:
                                         print(f'ind: {ind}')
@@ -3457,7 +3457,7 @@ class mol3D:
                                 # In this case, ratom might be intruder C or S
                                 possible_idxs = self.getBondedAtomsnotH(i)  # bonded to metal
                                 metal_prox = sorted(
-                                    possible_idxs, key=lambda x: self.getDistToMetal(x, i))
+                                    possible_idxs, key=lambda x: self.get_pair_distance(x, i))
                                 if len(possible_idxs) > CN:
                                     allowed_idxs = metal_prox[0:CN]
                                     if debug:
@@ -3621,17 +3621,16 @@ class mol3D:
                 cdist = ds
         return idx
 
-    def getDistToMetal(self, idx, metalx):
+    def get_pair_distance(self, idx1, idx2):
         """
-        Get distance between two atoms in a molecule, with the second one being a metal.
-        Though the function also works if metalx is the index of a non-metal atom.
+        Get distance between two atoms in a molecule.
 
         Parameters
         ----------
             idx : int
                 Index of reference atom.
-            metalx : int
-                Index of reference metal atom.
+            idx2 : int
+                Index of the second atom.
 
         Returns
         -------
@@ -3639,7 +3638,7 @@ class mol3D:
                 Distance between atoms in angstroms.
         """
 
-        d = self.getAtom(idx).distance(self.getAtom(metalx))
+        d = self.getAtom(idx1).distance(self.getAtom(idx2))
         return d
 
     def getFarAtom(self, reference, atomtype=False):
@@ -5077,7 +5076,7 @@ class mol3D:
             metal_ind = self.findMetal()[0]
             n_eq_syms = len(
                 list(set([self.getAtom(x).sym for x in flat_eq_ligcons])))
-            flat_eq_dists = [np.round(self.getDistToMetal(
+            flat_eq_dists = [np.round(self.get_pair_distance(
                 x, metal_ind), 6) for x in flat_eq_ligcons]
             minmax_eq_plane = max(flat_eq_dists) - min(flat_eq_dists)
             # Match eq plane symbols and eq plane dists

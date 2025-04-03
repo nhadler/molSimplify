@@ -1878,7 +1878,7 @@ def ligand_assign_consistent(mol, liglist, ligdents, ligcons, loud=False,
                     ax_lig_list.append(lig_ref)
         # ###### Code in case further atom-wise bond-length constraints wanted ######
         # else: # All eq same symbol. Ensure axial are flagged as two different bond lengths.
-        #     con_bond_lengths = [np.round(mol.getDistToMetal(x,metal_index),6) for x in flat_ligcons]
+        #     con_bond_lengths = [np.round(mol.get_pair_distance(x,metal_index),6) for x in flat_ligcons]
         #     bl_set = list(set(con_bond_lengths)) # Check if there are 2 different bond lengths
         #     if len(bl_set) == 2 and (con_bond_lengths.count(bl_set[0])==2
         #                              or con_bond_lengths.count(bl_set[1])==2):
