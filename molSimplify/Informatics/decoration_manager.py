@@ -232,7 +232,7 @@ def decorate_molecule(mol: mol3D, dec_list, dec_idxs,
 
     merged_mol.convert2OBMol()
     merged_mol, _ = ffopt('MMFF94', merged_mol, [], 0, [], False, [], 100)
-    BO_mat = merged_mol.populateBOMatrix(bonddict=save_bond_info, set_BO_mat=save_bond_info)
+    BO_mat = merged_mol.populateBOMatrix(bonddict=save_bond_info, set_bo_mat=save_bond_info)
     if debug:
         merged_mol.writexyz('merged_relaxed.xyz')
         print(BO_mat)
