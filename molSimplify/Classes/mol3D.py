@@ -2330,7 +2330,7 @@ class mol3D:
 
         Returns
         -------
-            atom_list : list
+            atom_list : list of int
                 List of indices of atoms in mol3D with a given symbol.
         """
 
