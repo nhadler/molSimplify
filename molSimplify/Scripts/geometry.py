@@ -212,10 +212,7 @@ def getPointu(Rr, dist, u):
     # get unit vector through line r = r0 + t*u
     t = bl / norm(u)  # get t as t=bl/norm(r1-r0)
     # get point
-    P = [0, 0, 0]
-    P[0] = t * u[0] + Rr[0]
-    P[1] = t * u[1] + Rr[1]
-    P[2] = t * u[2] + Rr[2]
+    P = list(t * np.array(u) + np.array(Rr))
     return P
 
 
@@ -390,9 +387,7 @@ def ReflectPlane(u, r, Rp):
     """
     un = norm(u)
     if (un > 1e-16):
-        u[0] = u[0] / un
-        u[1] = u[1] / un
-        u[2] = u[2] / un
+        u = list(np.array(u) / un)
     # construct augmented vector rr = [r;1]
     d = -u[0] * Rp[0] - u[1] * Rp[1] - u[2] * Rp[2]
     # reflection matrix
@@ -512,10 +507,7 @@ def PointTranslateSph(Rp, p0, D) -> List[float]:
 
     """
     # translate to origin
-    ps = [0., 0., 0.]
-    ps[0] = p0[0] - Rp[0]
-    ps[1] = p0[1] - Rp[1]
-    ps[2] = p0[2] - Rp[2]
+    ps = list(np.array(p0) - np.array(Rp))
     # get initial spherical coords
     r0 = norm(ps)
     if (r0 < 1e-16):
@@ -551,10 +543,7 @@ def PointTranslateSphgivenphi(Rp, p0, D):
 
     """
     # translate to origin
-    ps = [0, 0, 0]
-    ps[0] = p0[0] - Rp[0]
-    ps[1] = p0[1] - Rp[1]
-    ps[2] = p0[2] - Rp[2]
+    ps = list(np.array(p0) - np.array(Rp))
     # get initial spherical coords
     r0 = norm(ps)
     if (r0 < 1e-16):
@@ -594,10 +583,7 @@ def PointTranslateSphgivenr(Rp, p0, D, pref, r):
 
     """
     # translate to origin
-    ps = [0, 0, 0]
-    ps[0] = p0[0] - Rp[0]
-    ps[1] = p0[1] - Rp[1]
-    ps[2] = p0[2] - Rp[2]
+    ps = list(np.array(p0) - np.array(Rp))
     # get initial spherical coords
     r0 = norm(ps)
     if (r0 < 1e-16):
@@ -638,10 +624,7 @@ def PointTranslatetoPSph(Rp, p0, D):
 
     """
     # translate to origin
-    ps = [0, 0, 0]
-    ps[0] = p0[0] - Rp[0]
-    ps[1] = p0[1] - Rp[1]
-    ps[2] = p0[2] - Rp[2]
+    ps = list(np.array(p0) - np.array(Rp))
     # get current spherical coords
     r0 = norm(ps)
     if (r0 < 1e-16):
@@ -677,10 +660,7 @@ def PointRotateSph(Rp, p0, D):
 
     """
     # translate to origin (reference)
-    ps = [0, 0, 0]
-    ps[0] = p0[0] - Rp[0]
-    ps[1] = p0[1] - Rp[1]
-    ps[2] = p0[2] - Rp[2]
+    ps = list(np.array(p0) - np.array(Rp))
     # build 3D rotation matrices about x,y,z axes
     Mx = [[1, 0, 0], [0, np.cos(D[0]), -np.sin(D[0])], [0, np.sin(D[0]), np.cos(D[0])]]
     My = [[np.cos(D[1]), 0, np.sin(D[1])], [0, 1, 0], [-np.sin(D[1]), 0, np.cos(D[1])]]
@@ -716,9 +696,7 @@ def reflect_through_plane(mol, u, Rp):
     """
     un = norm(u)
     if (un > 1e-16):
-        u[0] = u[0] / un
-        u[1] = u[1] / un
-        u[2] = u[2] / un
+        u = list(np.array(u) / un)
     for atom in mol.atoms:
         # Get new point after rotation
         Rt = ReflectPlane(u, atom.coords(), Rp)
@@ -750,9 +728,7 @@ def rotate_around_axis(mol, Rp, u, theta):
     un = norm(u)
     theta = (theta / 180.0) * np.pi
     if (un > 1e-16):
-        u[0] = u[0] / un
-        u[1] = u[1] / un
-        u[2] = u[2] / un
+        u = list(np.array(u) / un)
     for atom in mol.atoms:
         # Get new point after rotation
         Rt = PointRotateAxis(u, Rp, atom.coords(), theta)
@@ -816,9 +792,7 @@ def setPdistance(mol, Rr, Rp, bond):
         u = [a - b for a, b in zip(Rr, Rp)]
         t = bl / norm(u)  # get t as t=bl/norm(r1-r0)
         # get shift for centermass
-        dxyz[0] = Rp[0] + t * u[0] - Rr[0]
-        dxyz[1] = Rp[1] + t * u[1] - Rr[1]
-        dxyz[2] = Rp[2] + t * u[2] - Rr[2]
+        dxyz = list(np.array(Rp) + t * np.array(u) - np.array(Rr))
     except ZeroDivisionError:
         pass
         # translate molecule
@@ -854,10 +828,7 @@ def setPdistanceu(mol, Rr, Rp, bond, u):
     # get unit vector through line r = r0 + t*u
     t = bl / norm(u)  # get t as t=bl/norm(r1-r0)
     # get shift for centermass
-    dxyz = [0, 0, 0]
-    dxyz[0] = Rp[0] + t * u[0] - Rr[0]
-    dxyz[1] = Rp[1] + t * u[1] - Rr[1]
-    dxyz[2] = Rp[2] + t * u[2] - Rr[2]
+    dxyz = list(np.array(Rp) + t * np.array(u) - np.array(Rr))
     # translate molecule
     mol.translate(dxyz)
     return mol
@@ -890,10 +861,7 @@ def setcmdistance(mol, Rp, bond):
     u = [a - b for a, b in zip(cm, Rp)]
     t = bl / norm(u)  # get t as t=bl/norm(r1-r0)
     # get shift for centermass
-    dxyz = [0, 0, 0]
-    dxyz[0] = Rp[0] + t * u[0] - cm[0]
-    dxyz[1] = Rp[1] + t * u[1] - cm[1]
-    dxyz[2] = Rp[2] + t * u[2] - cm[2]
+    dxyz = list(np.array(Rp) + t * np.array(u) - np.array(cm))
     # translate molecule
     mol.translate(dxyz)
     return mol
@@ -1052,10 +1020,7 @@ def aligntoaxis(mol, Rr, Rp, u):
     # normalize u
     t = d0 / norm(u)  # get t as t=bl/norm(r1-r0)
     # get shift for point
-    dxyz = [0, 0, 0]
-    dxyz[0] = Rp[0] + t * u[0] - Rr[0]
-    dxyz[1] = Rp[1] + t * u[1] - Rr[1]
-    dxyz[2] = Rp[2] + t * u[2] - Rr[2]
+    dxyz = list(np.array(Rp) + t * np.array(u) - np.array(Rr))
     # translate molecule
     mol.translate(dxyz)
     return mol
@@ -1086,10 +1051,7 @@ def aligntoaxis2(mol, Rr, Rp, u, d):
     # normalize u
     t = d / norm(u)  # get t as t=bl/norm(r1-r0)
     # get shift for point
-    dxyz = [0, 0, 0]
-    dxyz[0] = Rp[0] + t * u[0] - Rr[0]
-    dxyz[1] = Rp[1] + t * u[1] - Rr[1]
-    dxyz[2] = Rp[2] + t * u[2] - Rr[2]
+    dxyz = list(np.array(Rp) + t * np.array(u) - np.array(Rr))
     # translate molecule
     mol.translate(dxyz)
     return mol
@@ -1118,10 +1080,7 @@ def alignPtoaxis(Rr, Rp, u, d):
     # normalize u
     t = d / norm(u)  # get t as t=bl/norm(r1-r0)
     # get shift for point
-    dxyz = [0, 0, 0]
-    dxyz[0] = Rp[0] + t * u[0]
-    dxyz[1] = Rp[1] + t * u[1]
-    dxyz[2] = Rp[2] + t * u[2]
+    dxyz = list(np.array(Rp) + t * np.array(u))
     return dxyz
 
 
