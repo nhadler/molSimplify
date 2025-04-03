@@ -216,16 +216,22 @@ def test_add_bond():
     mol.addAtom(atom3D(Sym='H'))
     mol.addAtom(atom3D(Sym='H'))
 
-    # Initialize empty bo_dict and graph
+    # Initialize empty bo_dict, graph, and bo_mat
     mol.bo_dict = {}
     mol.graph = np.zeros((4, 4))
+    mol.bo_mat = np.zeros((4, 4))
 
     mol.add_bond(0, 1, 2)
     mol.add_bond(1, 2, 1)
     mol.add_bond(1, 3, 1)
 
     assert mol.bo_dict == {(0, 1): 2, (1, 2): 1, (1, 3): 1}
-    np.testing.assert_allclose(mol.graph, [[0, 2, 0, 0],
+    np.testing.assert_allclose(mol.graph, [[0, 1, 0, 0],
+                                           [1, 0, 1, 1],
+                                           [0, 1, 0, 0],
+                                           [0, 1, 0, 0]])
+
+    np.testing.assert_allclose(mol.bo_mat, [[0, 2, 0, 0],
                                            [2, 0, 1, 1],
                                            [0, 1, 0, 0],
                                            [0, 1, 0, 0]])
@@ -238,7 +244,7 @@ def test_add_bond():
     assert new_bo_dict == {(0, 1): 1, (0, 2): 1}
 
     assert mol.get_mol_graph_det(oct=False) == '-154582.1094'
-    assert mol.get_mol_graph_det(oct=False, useBOMat=True) == '-154582.1094'
+    assert mol.get_mol_graph_det(oct=False, use_bo_mat=True) == '-154582.1094'
 
 
 @pytest.mark.skip(reason='Mutating the state of an atom3D can not be detected '
@@ -1048,12 +1054,9 @@ def test_deleteatom(resource_path_root, name, idx, bo_dict_flag, graph_flag):
         mod_bo_dict = {}
     assert mod_bo_dict == reference_dict['bo_dict']
 
-    if len(mol.graph):
-        # For saving np arrays to json, need to cast to list.
-        # Convert back for comparison.
-        assert np.array_equal(mol.graph, np.array(reference_dict['graph']))
-    else:
-        assert mol.graph == reference_dict['graph']
+    # For saving np arrays to json, need to cast to list.
+    # Convert back for comparison.
+    assert np.array_equal(mol.graph, np.array(reference_dict['graph']))
 
 
 @pytest.mark.parametrize(
@@ -1101,12 +1104,9 @@ def test_deleteatoms(resource_path_root, name, idxs, bo_dict_flag, graph_flag):
         mod_bo_dict = {}
     assert mod_bo_dict == reference_dict['bo_dict']
 
-    if len(mol.graph):
-        # For saving np arrays to json, need to cast to list.
-        # Convert back for comparison.
-        assert np.array_equal(mol.graph, np.array(reference_dict['graph']))
-    else:
-        assert mol.graph == reference_dict['graph']
+    # For saving np arrays to json, need to cast to list.
+    # Convert back for comparison.
+    assert np.array_equal(mol.graph, np.array(reference_dict['graph']))
 
 
 @pytest.mark.parametrize(

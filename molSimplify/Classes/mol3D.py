@@ -1118,7 +1118,7 @@ class mol3D:
                 self.bo_mat[index, catom_idx] = 1
         else:
             self.graph = np.array([])
-            self.bo_mat = False
+            self.bo_mat = np.array([])
 
         self.natoms += 1
         self.mass += atom.mass
@@ -3821,7 +3821,7 @@ class mol3D:
         Returns
         -------
             new_bo_dict : dict
-                The ported over dictionary with new indices/bonds deleted.
+                The ported over dictionary with new indices (bonds deleted).
         """
 
         if not self.bo_dict:
@@ -3868,6 +3868,7 @@ class mol3D:
     def get_element_list(self):
         """
         Get the element list of the molecule.
+        Nearly the same as symvect.
 
         Parameters
         ----------
@@ -4486,7 +4487,7 @@ class mol3D:
             ang = 0
         return flag, ang
 
-    def get_mol_graph_det(self, oct=True, useBOMat=False):
+    def get_mol_graph_det(self, oct=True, use_bo_mat=False):
         """
         Get molecular graph determinant.
 
@@ -4494,7 +4495,7 @@ class mol3D:
         ----------
             oct : bool, optional
                 Flag for whether the geometry is octahedral. Default is True.
-            useBOMat : bool, optional
+            use_bo_mat : bool, optional
                 Use bond order matrix in determinant computation.
 
         Returns
@@ -4507,7 +4508,7 @@ class mol3D:
         amassdict = globs.amass()
         if not len(self.graph):
             self.createMolecularGraph(oct=oct)
-        if useBOMat:
+        if use_bo_mat:
             if self.bo_mat.size == 0 and len(self.bo_dict) == 0:
                 raise AssertionError('This mol does not have BO information.')
             elif isinstance(self.bo_dict, dict):
