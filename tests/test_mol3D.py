@@ -1416,4 +1416,3 @@ def test_get_mol_graph_det(resource_path_root, name, ref_det):
 
     det = mol.get_mol_graph_det(oct=name=='in_complex')
     assert det == ref_det
-
