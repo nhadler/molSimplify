@@ -265,9 +265,9 @@ class mol3D:
         # Holder for openbabel molecule
         self.OBMol = False
         # Holder for bond order matrix
-        self.bo_mat = False
+        self.bo_mat = np.array([])
         # Holder for bond order dictionary
-        self.bo_dict = False
+        self.bo_dict = {}
         # List of connection atoms
         self.cat = []
         # Denticity
@@ -1157,8 +1157,12 @@ class mol3D:
             raise IndexError('Indices should be different!')  # can't have an atom bond to itself
 
         # Adjusting the graph as well.
+        if self.graph.size == 0:
+            self.graph = np.zeros((self.natoms, self.natoms))
         self.graph[idx1][idx2] = 1
         self.graph[idx2][idx1] = 1
+        if self.bo_mat.size == 0:
+            self.bo_mat = np.zeros((self.natoms, self.natoms))
         self.bo_mat[idx1][idx2] = bond_type
         self.bo_mat[idx2][idx1] = bond_type
 
@@ -1695,7 +1699,7 @@ class mol3D:
         if self.OBMol and not force_clean:
             bo_mat = self.populateBOMatrix()
             repop = True
-        elif self.bo_mat and not force_clean:
+        elif self.bo_mat.size != 0 and not force_clean:
             bo_mat = self.bo_mat
             repop = True
 
@@ -4504,7 +4508,7 @@ class mol3D:
         if not len(self.graph):
             self.createMolecularGraph(oct=oct)
         if useBOMat:
-            if (isinstance(self.bo_mat, bool)) and (isinstance(self.bo_dict, bool)):
+            if self.bo_mat.size == 0 and len(self.bo_dict) == 0:
                 raise AssertionError('This mol does not have BO information.')
             elif isinstance(self.bo_dict, dict):
                 # bo_dict will be prioritized over bo_mat
@@ -6523,10 +6527,10 @@ class mol3D:
                 self.bo_mat_trunc = bo_graph
             self.bo_dict = bo_dict
         else:
-            self.graph = []
-            self.bo_mat = []
-            self.bo_mat_trunc = []
-            self.bo_dict = []
+            self.graph = np.array([])
+            self.bo_mat = np.array([])
+            self.bo_mat_trunc = np.array([])
+            self.bo_dict = {}
 
     @deprecated('Duplicate function will be removed in a future release.'
                 'Use readfromxyz(readstring=True) instead.')
@@ -7111,7 +7115,7 @@ class mol3D:
         # .mol files use 1 indexing.
         # Use bond order information if available
         # (self.bo_dict or self.bo_mat).
-        if not isinstance(self.bo_dict, bool):
+        if len(self.bo_dict) != 0:
             # If self.bo_dict is set, use that.
             bo_dict_keys = list(self.bo_dict.keys())
             bo_dict_keys.sort()
@@ -7119,7 +7123,7 @@ class mol3D:
                 v = self.bo_dict[k]
                 s = f' {k[0]+1:2.0f} {k[1]+1:2.0f}  {v}  0  0  0  0'
                 mol_contents.append(s)
-        elif not isinstance(self.bo_mat, bool):
+        elif self.bo_mat.size != 0:
             # Only self.bo_mat is set, not self.bo_dict.
             rows, cols = np.nonzero(np.triu(self.bo_mat))
             for i, j in zip(rows, cols):
