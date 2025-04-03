@@ -1100,7 +1100,6 @@ class mol3D:
             self.bo_dict = new_bo_dict
 
             # Adjust indices in graph to reflect insertion
-            self.graph = np.array(self.graph)  # cast graph as numpy array
             graph_size = self.graph.shape[0]
             self.graph = np.insert(
                 self.graph, index, np.zeros(graph_size), axis=0)
@@ -5177,7 +5176,7 @@ class mol3D:
         self.natoms = 0
         self.mass = 0
         self.size = 0
-        self.graph = []
+        self.graph = np.array([])
 
     def isPristine(self, unbonded_min_dist=1.3, oct=False):
         """
@@ -6547,7 +6546,7 @@ class mol3D:
 
         globs = globalvars()
         amassdict = globs.amass()
-        self.graph = []
+        self.graph = np.array([])
         s = xyzstring.split('\n')
         try:
             s.remove('')
@@ -6584,7 +6583,7 @@ class mol3D:
 
         globs = globalvars()
         en_dict = globs.endict()
-        self.graph = []
+        self.graph = np.array([])
         for line in txt:
             line_split = line.split()
             if len(line_split) == 4 and line_split[0]:
@@ -6624,7 +6623,7 @@ class mol3D:
 
         globs = globalvars()
         amassdict = globs.amass()
-        self.graph = []
+        self.graph = np.array([])
         self.xyzfile = filename
 
         if readstring:

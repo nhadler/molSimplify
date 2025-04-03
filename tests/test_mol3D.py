@@ -143,7 +143,7 @@ def test_initialize():
     assert mol.natoms == 0
     assert mol.mass == 0
     assert mol.size == 0
-    assert mol.graph == []
+    assert np.array_equal(mol.graph, np.array([]))
 
 
 def test_adding_and_deleting_atoms():
