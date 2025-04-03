@@ -527,7 +527,7 @@ def test_mol3D_from_smiles_macrocycles():
     assert mol.natoms == 29
 
     ref_graph = np.zeros([mol.natoms, mol.natoms])
-    ref_bo_graph = np.zeros([mol.natoms, mol.natoms])
+    ref_BO_mat = np.zeros([mol.natoms, mol.natoms])
     bonds = [
         (21, 7, 1.0),
         (29, 14, 1.0),
@@ -562,10 +562,10 @@ def test_mol3D_from_smiles_macrocycles():
     for bond in bonds:
         i, j = bond[0] - 1, bond[1] - 1
         ref_graph[i, j] = ref_graph[j, i] = 1
-        ref_bo_graph[i, j] = ref_bo_graph[j, i] = bond[2]
+        ref_BO_mat[i, j] = ref_BO_mat[j, i] = bond[2]
 
     np.testing.assert_allclose(mol.graph, ref_graph)
-    np.testing.assert_allclose(mol.bo_graph, ref_bo_graph)
+    np.testing.assert_allclose(mol.BO_mat, ref_BO_mat)
 
 
 def test_mol3D_from_smiles_benzene():
@@ -574,7 +574,7 @@ def test_mol3D_from_smiles_benzene():
     assert mol.natoms == 12
 
     ref_graph = np.zeros([mol.natoms, mol.natoms])
-    ref_bo_graph = np.zeros([mol.natoms, mol.natoms])
+    ref_BO_mat = np.zeros([mol.natoms, mol.natoms])
     bonds = [
         (1, 2, 1.5),
         (2, 3, 1.5),
@@ -592,10 +592,10 @@ def test_mol3D_from_smiles_benzene():
     for bond in bonds:
         i, j = bond[0] - 1, bond[1] - 1
         ref_graph[i, j] = ref_graph[j, i] = 1
-        ref_bo_graph[i, j] = ref_bo_graph[j, i] = bond[2]
+        ref_BO_mat[i, j] = ref_BO_mat[j, i] = bond[2]
 
     np.testing.assert_allclose(mol.graph, ref_graph)
-    np.testing.assert_allclose(mol.bo_graph, ref_bo_graph)
+    np.testing.assert_allclose(mol.BO_mat, ref_BO_mat)
 
 
 @pytest.mark.parametrize(
@@ -1137,25 +1137,25 @@ def test_readfrommol2(resource_path_root, name, readstring):
 
     # Loading the reference files.
     reference_path1 = resource_path_root / "refs" / "json" / "test_mol3D" / "readfrommol2" /  f"{name}_graph.json"
-    reference_path2 = resource_path_root / "refs" / "json" / "test_mol3D" / "readfrommol2" /  f"{name}_bo_graph.json"
-    reference_path3 = resource_path_root / "refs" / "json" / "test_mol3D" / "readfrommol2" /  f"{name}_bo_graph_trunc.json"
+    reference_path2 = resource_path_root / "refs" / "json" / "test_mol3D" / "readfrommol2" /  f"{name}_BO_mat.json"
+    reference_path3 = resource_path_root / "refs" / "json" / "test_mol3D" / "readfrommol2" /  f"{name}_BO_mat_trunc.json"
     reference_path4 = resource_path_root / "refs" / "json" / "test_mol3D" / "readfrommol2" /  f"{name}_bo_dict.json"
-    reference_graph, reference_bo_graph, reference_bo_graph_trunc, reference_bo_dict = quick_load(
+    reference_graph, reference_BO_mat, reference_BO_mat_trunc, reference_bo_dict = quick_load(
         [reference_path1, reference_path2, reference_path3, reference_path4])
 
     # For saving np arrays to json, need to cast to list.
     # Convert back for comparison.
     # Also converted nan values to -1 prior to saving the json.
-    mod_bo_graph = np.nan_to_num(mol.bo_graph, nan=-1)
-    mod_bo_graph_trunc = np.nan_to_num(mol.bo_graph_trunc, nan=-1)
+    mod_BO_mat = np.nan_to_num(mol.BO_mat, nan=-1)
+    mod_BO_mat_trunc = np.nan_to_num(mol.BO_mat_trunc, nan=-1)
 
     # Needed to adjust the reference dictionary in order
     # to save to json.
     mod_bo_dict = {str(k): v for k, v in mol.bo_dict.items()}
 
     assert np.array_equal(mol.graph, np.array(reference_graph))
-    assert np.array_equal(mod_bo_graph, np.array(reference_bo_graph))
-    assert np.array_equal(mod_bo_graph_trunc, np.array(reference_bo_graph_trunc))
+    assert np.array_equal(mod_BO_mat, np.array(reference_BO_mat))
+    assert np.array_equal(mod_BO_mat_trunc, np.array(reference_BO_mat_trunc))
     assert mod_bo_dict == reference_bo_dict
 
     mol_reference = mol3D()
