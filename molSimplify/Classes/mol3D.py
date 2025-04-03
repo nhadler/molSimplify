@@ -144,7 +144,6 @@ getBondedAtomsnotH
 getClosestAtom
 getClosestAtomlist
 getClosestAtomnoHs
-get_pair_distance
 getFarAtom
 getHs
 getHsbyAtom
@@ -168,6 +167,7 @@ get_mol_graph_det
 get_molecular_mass
 get_num_coord_metal
 get_octetrule_charge
+get_pair_distance
 get_smiles
 get_smilesOBmol_charge
 get_submol_noHs
@@ -3621,26 +3621,6 @@ class mol3D:
                 cdist = ds
         return idx
 
-    def get_pair_distance(self, idx1, idx2):
-        """
-        Get distance between two atoms in a molecule.
-
-        Parameters
-        ----------
-            idx : int
-                Index of reference atom.
-            idx2 : int
-                Index of the second atom.
-
-        Returns
-        -------
-            d : float
-                Distance between atoms in angstroms.
-        """
-
-        d = self.getAtom(idx1).distance(self.getAtom(idx2))
-        return d
-
     def getFarAtom(self, reference, atomtype=False):
         """
         Get atom furthest from a reference atom.
@@ -4723,6 +4703,26 @@ class mol3D:
             except ValueError:
                 return np.nan, np.nan
         return charge, arom_charge
+
+    def get_pair_distance(self, idx1, idx2):
+        """
+        Get distance between two atoms in a molecule.
+
+        Parameters
+        ----------
+            idx : int
+                Index of reference atom.
+            idx2 : int
+                Index of the second atom.
+
+        Returns
+        -------
+            d : float
+                Distance between atoms in angstroms.
+        """
+
+        d = self.getAtom(idx1).distance(self.getAtom(idx2))
+        return d
 
     def get_smiles(self, canonicalize=False, use_mol2=False) -> str:
         """
