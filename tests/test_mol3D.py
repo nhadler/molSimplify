@@ -44,7 +44,7 @@ def test_getAtoms():
         assert atom.coords() == coord
 
 
-def test_getDistToMetal():
+def test_get_pair_distance():
     mol = mol3D()
     symbols = ['Fe','O','H']
     coords = [
@@ -55,10 +55,9 @@ def test_getDistToMetal():
     for sym, coord in zip(symbols, coords):
         mol.addAtom(atom3D(Sym=sym, xyz=coord))
 
-    # Note, this method works even with non-metals.
-    assert np.isclose(mol.getDistToMetal(0, 1), 1.90859, atol=1e-5)
-    assert np.isclose(mol.getDistToMetal(0, 2), 2.36016, atol=1e-5)
-    assert np.isclose(mol.getDistToMetal(1, 2), 0.99026, atol=1e-5)
+    assert np.isclose(mol.get_pair_distance(0, 1), 1.90859, atol=1e-5)
+    assert np.isclose(mol.get_pair_distance(0, 2), 2.36016, atol=1e-5)
+    assert np.isclose(mol.get_pair_distance(1, 2), 0.99026, atol=1e-5)
 
 
 @pytest.mark.parametrize(
