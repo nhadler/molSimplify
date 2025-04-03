@@ -1153,7 +1153,7 @@ class mol3D:
         elif idx2 < idx1:
             self.bo_dict[(idx2, idx1)] = bond_type
         else:
-            raise IndexError('Indices should be different!')  # can't have an atom bond to itself
+            raise IndexError('Indices should be different!')  # Cannot have an atom bond to itself.
 
         # Adjusting the graph as well.
         if self.graph.size == 0:
@@ -1599,7 +1599,9 @@ class mol3D:
                     if jointBOMat[i][j] > 0:
                         cmol.OBMol.AddBond(i + 1, j + 1, int(jointBOMat[i][j]))
         # reset graph
-        cmol.graph = []
+        cmol.graph = np.array([])
+        cmol.bo_mat = np.array([])
+        cmol.bo_dict = {}
         self.metals = None
         return cmol
 
@@ -1885,6 +1887,7 @@ class mol3D:
         self.OBMol = mol0.OBMol
         self.name = mol0.name
         self.graph = mol0.graph
+        self.bo_mat = mol0.bo_mat
         self.bo_dict = mol0.bo_dict
         self.use_atom_specific_cutoffs = mol0.use_atom_specific_cutoffs
 
@@ -2046,6 +2049,10 @@ class mol3D:
             delete_inds = [x for x in range(self.natoms) if x not in inds]
             molnew.graph = np.delete(
                 np.delete(self.graph, delete_inds, 0), delete_inds, 1)
+        if len(self.bo_mat):
+            delete_inds = [x for x in range(self.natoms) if x not in inds]
+            molnew.bo_mat = np.delete(
+                np.delete(self.bo_mat, delete_inds, 0), delete_inds, 1)
         return molnew
 
     def deleteHs(self):
@@ -2091,6 +2098,9 @@ class mol3D:
         if len(self.graph):
             self.graph = np.delete(
                 np.delete(self.graph, atomIdx, 0), atomIdx, 1)
+        if len(self.bo_mat):
+            self.bo_mat = np.delete(
+                np.delete(self.bo_mat, atomIdx, 0), atomIdx, 1)
         self.metals = None
         del (self.atoms[atomIdx])
 
@@ -2129,6 +2139,8 @@ class mol3D:
             del (self.atoms[h])
         if len(self.graph):
             self.graph = np.delete(np.delete(self.graph, Alist, 0), Alist, 1)
+        if len(self.bo_mat):
+            self.bo_mat = np.delete(np.delete(self.bo_mat, Alist, 0), Alist, 1)
         self.metals = None
 
     def dev_from_ideal_geometry(self, ideal_polyhedron: np.ndarray) -> Tuple[float, float]:
@@ -5178,6 +5190,8 @@ class mol3D:
         self.mass = 0
         self.size = 0
         self.graph = np.array([])
+        self.bo_mat = np.array([])
+        self.bo_dict = {}
 
     def isPristine(self, unbonded_min_dist=1.3, oct=False):
         """
@@ -6873,6 +6887,13 @@ class mol3D:
             cmol.addAtom(atom, auto_populate_bo_dict = False)
 
         cmol.bo_dict = new_bo_dict
+        bo_mat = np.zeros((cmol.natoms, cmol.natoms))
+        for k, v in new_bo_dict.items():
+            bo_mat[k[0], k[1]] = v
+            bo_mat[k[1], k[0]] = v
+        cmol.bo_mat = bo_mat
+        cmol.graph = (cmol.bo_mat > 0).astype(int)
+
         return cmol
 
     def sanitycheck(self, silence=False, debug=False):
