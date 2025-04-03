@@ -1981,7 +1981,7 @@ class mol3D:
                 Defines whether a structure is octahedral. Default is True.
             strict_cutoff: bool, optional
                 Strict bonding cutoff for fullerene and SACs.
-            catom_list: list, optional
+            catom_list: list of int, optional
                 List of indices of bonded atoms.
         """
 
@@ -2110,7 +2110,7 @@ class mol3D:
 
         Parameters
         ----------
-            Alist : list
+            Alist : list of int
                 List of indices for atom3D instances to remove.
         """
 
@@ -2416,7 +2416,7 @@ class mol3D:
 
         Returns
         -------
-            subm : list
+            subm : list of int
                 List of indices of atoms in submolecule.
         """
 
@@ -2863,12 +2863,12 @@ class mol3D:
 
     def freezeatoms(self, Alist):
         """
-        Set the freeze attribute to be true for a given set of atom3D classes,
+        Set the freeze attribute to be true for a given set of atom3D objects,
         given their indices. Preserves ordering, starts from largest index.
 
         Parameters
         ----------
-            Alist : list
+            Alist : list of int
                 List of indices for atom3D instances to remove.
         """
 
@@ -3100,7 +3100,7 @@ class mol3D:
         Returns
         -------
             atom_list : list
-                List of atom3D classes for all elements in a mol3D.
+                List of atom3D objects for all elements in a mol3D.
         """
 
         return self.atoms
@@ -3114,12 +3114,12 @@ class mol3D:
             idx : list
                 List of desired atom symbols.
             return_index : bool
-                True or false for returning the atom indices instead of atom3D classes. Returns indices if True.
+                True or false for returning the atom indices instead of atom3D objects. Returns indices if True.
 
         Returns
         -------
             atom_list : list
-                List of atom3D classes for elements with given symbols.
+                List of atom3D objects for elements with given symbols.
         """
 
         temp_list = []
@@ -3137,13 +3137,13 @@ class mol3D:
 
         Parameters
         ----------
-            idx : list
+            idx : list of int
                 List of indices of desired atoms.
 
         Returns
         -------
             atom_list : list
-                List of atom3D classes for elements at given indices.
+                List of atom3D objects for elements at given indices.
         """
 
         return [self.atoms[idx] for idx in inds]
@@ -3192,7 +3192,7 @@ class mol3D:
 
         Returns
         -------
-            nats : list
+            nats : list of int
                 List of indices of bonded atoms.
         """
 
@@ -3220,7 +3220,7 @@ class mol3D:
 
         Returns
         -------
-            nats : list
+            nats : list of int
                 List of indices of bonded atoms.
         """
 
@@ -3244,7 +3244,7 @@ class mol3D:
 
         Returns
         -------
-            nats : list
+            nats : list of int
                 List of indices of bonded atoms.
         """
 
@@ -3270,7 +3270,7 @@ class mol3D:
 
         Returns
         -------
-            nats : list
+            nats : list of int
                 List of indices of bonded atoms.
         """
 
@@ -3304,7 +3304,7 @@ class mol3D:
 
         Returns
         -------
-            nats : list
+            nats : list of int
                 List of indices of bonded atoms.
         """
 
@@ -3343,7 +3343,7 @@ class mol3D:
 
         Returns
         -------
-            nats : list
+            nats : list of int
                 List of indices of bonded hydrogens.
         """
 
@@ -3384,7 +3384,7 @@ class mol3D:
 
         Returns
         -------
-            nats : list
+            nats : list of int
                 List of indices of bonded atoms.
         """
 
@@ -3504,12 +3504,12 @@ class mol3D:
                 Flag for turning on octahedral bonding routines.
             strict_cutoff: bool, optional
                 Strict bonding cutoff for fullerene and SACs.
-            catom_list: list, optional
+            catom_list: list of int, optional
                 List of indices of bonded atoms.
 
         Returns
         -------
-            nats : list
+            nats : list of int
                 List of indices of bonded atoms.
         """
 
@@ -3532,7 +3532,7 @@ class mol3D:
 
         Returns
         -------
-            nats : list
+            nats : list of int
                 List of indices of bonded atoms.
         """
 
@@ -3662,7 +3662,7 @@ class mol3D:
 
         Returns
         -------
-            hlist : list
+            hlist : list of int
                 List of indices of hydrogen atoms.
         """
 
@@ -3683,7 +3683,7 @@ class mol3D:
 
         Returns
         -------
-            nHs : list
+            nHs : list of int
                 List of indices of hydrogen atoms bound to reference atom3D.
         """
 
@@ -3705,7 +3705,7 @@ class mol3D:
 
         Returns
         -------
-            nHs : list
+            nHs : list of int
                 List of indices of hydrogen atoms bound to reference atom.
         """
 
@@ -3883,7 +3883,7 @@ class mol3D:
         ----------
             strict_cutoff : bool, optional
                 Strict bonding cutoff for fullerene and SACs.
-            catom_list : list, optional
+            catom_list : list of int, optional
                 List of indices of coordinating atoms.
             max6 : bool, optional
                 If True, will return catoms from oct_comp.
@@ -3929,7 +3929,7 @@ class mol3D:
                 Whether or not all ligands are equatorial.
             strict_cutoff : bool, optional
                 Strict bonding cutoff for fullerene and SACs.
-            catom_list : list, optional
+            catom_list : list of int, optional
                 List of indices of coordinating atoms.
             custom_property_dict : dict, optional
                 Keys are custom property names,
@@ -4582,7 +4582,7 @@ class mol3D:
                 Flag for whether extra output should be printed. Default is False.
             strict_cutoff : bool, optional
                 Strict bonding cutoff for fullerene and SACs.
-            catom_list : list, optional
+            catom_list : list of int, optional
                 List of indices of coordinating atoms.
         """
 
