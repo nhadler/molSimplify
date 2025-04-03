@@ -1401,3 +1401,20 @@ def test_BCM():
 
     mol.BCM(0, 1, 1.5)
     assert np.allclose(mol.get_coordinate_array(), ref_coords, atol=1e-5)
+
+
+@pytest.mark.parametrize(
+    "name, ref_det",
+    [
+    ("benzene", "-62505945241"),
+    ("in_complex", "180473156410"),
+    ("taurine", "-2.798950752e+16"),
+    ])
+def test_get_mol_graph_det(resource_path_root, name, ref_det):
+    xyz_file = resource_path_root / "inputs" / "xyz_files" / f"{name}.xyz"
+    mol = mol3D()
+    mol.readfromxyz(xyz_file)
+
+    det = mol.get_mol_graph_det(oct=name=='in_complex')
+    assert det == ref_det
+    
