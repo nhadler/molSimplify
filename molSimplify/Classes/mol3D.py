@@ -3205,7 +3205,7 @@ class mol3D:
             for i, atom in enumerate(self.atoms):
                 d = distance(ratom.coords(), atom.coords())
                 distance_max = self.getBondCutoff(atom, ratom)
-                if (d < distance_max and i != idx):
+                if d < distance_max and i != idx:
                     nats.append(i)
         return nats
 
@@ -3328,7 +3328,7 @@ class mol3D:
                 distance_max = 1.05 * (atom.rad + ratom.rad)
             if atom.symbol() == "I" or ratom.symbol() == "I":
                 distance_max = 0
-            if (d < distance_max and i != idx):
+            if d < distance_max and i != idx:
                 nats.append(i)
         return nats
 
@@ -3351,12 +3351,14 @@ class mol3D:
         # Calculates adjacent number of atoms.
         nats = []
         for i, atom in enumerate(self.atoms):
+            if not atom.sym == 'H':
+                continue
             d = distance(ratom.coords(), atom.coords())
             if atom.ismetal() or ratom.ismetal():
                 distance_max = 1.35 * (atom.rad + ratom.rad)
             else:
                 distance_max = 1.15 * (atom.rad + ratom.rad)
-            if (d < distance_max and i != idx and atom.sym == 'H'):
+            if d < distance_max and i != idx:
                 nats.append(i)
         return nats
 
@@ -3540,12 +3542,14 @@ class mol3D:
         # Calculates adjacent number of atoms.
         nats = []
         for i, atom in enumerate(self.atoms):
+            if atom.sym == 'H':
+                continue
             d = distance(ratom.coords(), atom.coords())
             if atom.ismetal() or ratom.ismetal():
                 distance_max = metal_multiplier * (atom.rad + ratom.rad)
             else:
                 distance_max = nonmetal_multiplier * (atom.rad + ratom.rad)
-            if (d < distance_max and i != idx and atom.sym != 'H'):
+            if d < distance_max and i != idx:
                 nats.append(i)
         return nats
 
