@@ -2366,7 +2366,7 @@ class mol3D:
                 if atom.ismetal(transition_metals_only=transition_metals_only, include_X=include_X):
                     metal_list.append(i)
             self.metals = metal_list
-        return self.metals
+        return self.metals.copy()
 
     def findcloseMetal(self, atom0):
         """
@@ -4054,7 +4054,7 @@ class mol3D:
 
     def get_geometry_type(self, dict_check=False, angle_ref=False,
                           flag_catoms=False, catoms_arr=None, debug=False,
-                          skip=False, transition_metals_only=False):
+                          skip=False):
         """
         Get the type of the geometry (linear(2), trigonal planar(3), tetrahedral(4), square planar(4),
         trigonal bipyramidal(5), square pyramidal(5, one-empty-site),
@@ -4077,8 +4077,6 @@ class mol3D:
                 Flag for extra printout. Default is False.
             skip : list, optional
                 Geometry checks to skip. Default is False.
-            transition_metals_only : bool, optional
-                Flag if only transition metals counted as metals. Default is False.
 
         Returns
         -------
@@ -4095,8 +4093,8 @@ class mol3D:
         if len(first_shell.graph):  # Find num_coord based on metal_cn if graph is assigned.
             if len(first_shell.findMetal()) > 1:
                 raise ValueError('Multimetal complexes are not yet handled.')
-            elif len(first_shell.findMetal(transition_metals_only=transition_metals_only)) == 1:
-                num_coord = len(first_shell.getBondedAtomsSmart(first_shell.findMetal(transition_metals_only=transition_metals_only)[0]))
+            elif len(first_shell.findMetal()) == 1:
+                num_coord = len(first_shell.getBondedAtomsSmart(first_shell.findMetal()[0]))
             else:
                 raise ValueError('No metal centers exist in this complex.')
 
