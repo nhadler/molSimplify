@@ -4078,7 +4078,7 @@ class mol3D:
             skip : list, optional
                 Geometry checks to skip. Default is False.
             transition_metals_only : bool, optional
-                Flag for considering more than just transition metals as metals. Default is False.
+                Flag if only transition metals counted as metals. Default is False.
 
         Returns
         -------
@@ -4173,7 +4173,7 @@ class mol3D:
             skip : list, optional
                 Geometry checks to skip. Default is False.
             transition_metals_only : bool, optional
-                Flag for considering more than just transition metals as metals. Default is False.
+                Flag if only transition metals counted as metals. Default is False.
             cshm: bool, optional
                 Whether or not to return continuous shape measures for each geometry.
 
@@ -4275,7 +4275,7 @@ class mol3D:
             skip : list, optional
                 Geometry checks to skip. Default is False.
             transition_metals_only : bool, optional
-                Flag for considering more than just transition metals as metals. Default is False.
+                Flag if only transition metals counted as metals. Default is False.
             num_recursions : list, optional
                 Counter to track number of ligands classified as 'sandwich' and 'edge' in original structure.
 
@@ -5244,12 +5244,12 @@ class mol3D:
 
     def is_edge_compound(self, transition_metals_only: bool = True) -> Tuple[int, List, List]:
         """
-        Check if a structure is edge compound.
+        Check if a TMC/mononuclear metal complex structure is an edge compound.
 
         Parameters
         ----------
             transition_metals_only : bool, optional
-                Flag for considering more than just transition metals as metals. Default is True.
+                Flag if only transition metals counted as metals. Default is True.
 
         Returns
         -------
@@ -5270,7 +5270,7 @@ class mol3D:
              transition_metals_only=transition_metals_only
         )
         if not num_sandwich_lig or (num_sandwich_lig and not allconnect):
-            mol_fcs = obtain_truncation_metal(self, hops=1)
+            mol_fcs = obtain_truncation_metal(self, hops=1, transition_metals_only=transition_metals_only)
             metal_ind = mol_fcs.findMetal(transition_metals_only=transition_metals_only)[0]
             catoms = list(range(mol_fcs.natoms))
             catoms.remove(metal_ind)
@@ -5342,12 +5342,12 @@ class mol3D:
     def is_sandwich_compound(self, transition_metals_only: bool = True
                              ) -> Tuple[int, List, bool, bool, List]:
         """
-        Evaluates whether a compound is a sandwich compound.
+        Evaluates whether a TMC/mononuclear metal complex compound is a sandwich compound.
 
         Parameters
         ----------
             transition_metals_only : bool, optional
-                Flag for considering more than just transition metals as metals. Default is True.
+                Flag if only transition metals counted as metals. Default is True.
 
         Returns
         -------
@@ -5371,7 +5371,7 @@ class mol3D:
         # 4) Optional: all the atoms in the base ring are connected to the same metal.
 
         from molSimplify.Informatics.graph_analyze import obtain_truncation_metal
-        mol_fcs = obtain_truncation_metal(self, hops=1)
+        mol_fcs = obtain_truncation_metal(self, hops=1, transition_metals_only=transition_metals_only)
         metal_ind = mol_fcs.findMetal(transition_metals_only=transition_metals_only)[0]
         catoms = list(range(mol_fcs.natoms))
         catoms.remove(metal_ind)

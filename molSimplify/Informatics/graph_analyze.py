@@ -54,15 +54,19 @@ def obtain_truncation(mol, con_atoms, hops):
     return trunc_mol
 
 
-def obtain_truncation_metal(mol, hops):
+def obtain_truncation_metal(mol, hops, transition_metals_only=True):
     # # this function truncates a ligand to a certain number of
     # # hops from the core
     # Inputs:
     #       mol - mol3D class to truncate
     #       con_atoms - index of atoms that connect to metal
     #       hops - int, number of hops to truncate
+    #       transition_metals_only - bool, whether only transition metals should be considered metals
     trunc_mol = mol3D(use_atom_specific_cutoffs=mol.use_atom_specific_cutoffs)
-    metal_ind = mol.findMetal()[0]
+    metal_ind = mol.findMetal(transition_metals_only=transition_metals_only)
+    if len(metal_ind) != 1:
+        raise Exception('Molecule does not have the expected number of metals (1).')
+    metal_ind = metal_ind[0]
     trunc_mol.addAtom(mol.getAtom(metal_ind))
     added_list = list()
     added_list.append(metal_ind)
