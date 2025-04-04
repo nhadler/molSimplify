@@ -2344,6 +2344,7 @@ class mol3D:
         include_X: bool = False) -> List[int]:
         """
         Find metal(s) in a mol3D class.
+        Also sets the metals instance attribute if it is empty.
 
         Parameters
         ----------
