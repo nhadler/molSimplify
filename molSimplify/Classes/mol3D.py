@@ -2344,6 +2344,7 @@ class mol3D:
         include_X: bool = False) -> List[int]:
         """
         Find metal(s) in a mol3D class.
+        Also sets the metals instance attribute if it is empty.
 
         Parameters
         ----------
@@ -2365,8 +2366,10 @@ class mol3D:
             for i, atom in enumerate(self.atoms):
                 if atom.ismetal(transition_metals_only=transition_metals_only, include_X=include_X):
                     metal_list.append(i)
-            self.metals = metal_list
-        return self.metals.copy()
+            self.metals = metal_list.copy()
+        else:
+            metal_list = self.metals.copy()
+        return metal_list
 
     def findcloseMetal(self, atom0):
         """
