@@ -34,7 +34,6 @@ def read_synthesized_macrocycles(input_file):
     with open(input_file, 'r') as f:
         data = json.load(f)
         print('----', len(data))
-        counter = 0
         temp_list_first = []
         for i, row in enumerate(data):
             # ### Skip over all contracted rings.
