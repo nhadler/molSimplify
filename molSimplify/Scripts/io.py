@@ -42,9 +42,9 @@ def printgeoms():
     for line in s:
         if (line[0] != '#'):
             vals = [_f for _f in re.split(',| |:', line) if _f]
-            coords.append(vals[0])
-            geomnames.append(vals[1])
-            geomshorts.append(vals[2])
+            coords.append(vals[0])              # get coordination
+            geomnames.append(vals[1])           # get name of geometry
+            geomshorts.append(vals[2])          # get short names
     geomgroups = list([] for a in set(coords))
     for i, g in enumerate(coords):
         geomgroups[int(g)-1].append(geomshorts[i])
@@ -54,6 +54,30 @@ def printgeoms():
 
 # Get available geometries.
 def getgeoms():
+    """
+    Get all available geometries.
+
+    Parameters
+    ----------
+        None
+
+    Returns
+    -------
+        coords : list of str
+            List of coordination numbers, e.g., '1', '2', ..., '8'.
+            Currently, has a length of 12.
+        geomnames : list of str
+            List of geometry names corresponding to each coordination number.
+            Currently, has a length of 12.
+        geomshorts : list of str
+            List of short geometry names corresponding to each geometry name.
+            E.g., 'tpl' for 'trigonal_planar'.
+            Currently, has a length of 12.
+        geomgroups : list of list of str
+            Groups of geometries, grouped by coordination number.
+            E.g., [['no'], ['li'], ...
+    """
+
     globs = globalvars()
     if globs.custom_path:
         f = globs.custom_path + "/Data/coordinations.dict"
@@ -68,9 +92,9 @@ def getgeoms():
     for line in s:
         if (line[0] != '#'):
             vals = [_f for _f in re.split(',| |:', line) if _f]
-            coords.append(vals[0])  # get coordination
-            geomnames.append(vals[1])  # get name of geometry
-            geomshorts.append(vals[2])  # get short names
+            coords.append(vals[0])              # get coordination
+            geomnames.append(vals[1])           # get name of geometry
+            geomshorts.append(vals[2])          # get short names
     geomgroups = list([] for a in set(coords))  # get unique coordinations
     count = 0
     geomgroups[count].append(geomshorts[0])
