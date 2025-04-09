@@ -163,7 +163,7 @@ def checkinput(args, calctype="base"):
 
                 consistency_check = int(args.coord) == int(expected_coord)
                 if not consistency_check:
-                    raise ValueError(f'args.coord {args.coord} and args.geometry {args.geometry} are incompatible. Expect a coordination of {expected_coord} for the provided geometry.')            
+                    raise ValueError(f'args.coord {args.coord} and args.geometry {args.geometry} are incompatible. Expect a coordination of {expected_coord} for the provided geometry.')
             if int(args.coord) != toccs:
                 raise ValueError(f'args.coord {args.coord} mismatch with number of ligand connections ({toccs}), based on ligocc and their denticity.')
             # check number of ligands
@@ -227,7 +227,7 @@ def checkinput(args, calctype="base"):
                 args.lig = ['']
 
             # check coordination number and geometry
-           
+
             # Calculate occurrences, denticities etc for all ligands
             # Begin toccs calculation.
             licores = getlicores()
