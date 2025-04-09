@@ -231,7 +231,7 @@ def checkinput(args, calctype="base"):
                 args.lig = ['']
 
             # check coordination number and geometry
-           
+
             # Calculate occurrences, denticities etc for all ligands
             # Begin toccs calculation.
             licores = getlicores()
