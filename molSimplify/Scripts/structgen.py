@@ -275,7 +275,7 @@ def init_template(args: Namespace, cpoints_required: int) -> Tuple[mol3D, mol3D,
             geom = geomshorts[geomnames.index(args.geometry)]
         else:
             emsg = "Requested geometry not available." + \
-                "Defaulting to " + geomgroups[coord-1][0]
+                " Defaulting to " + geomgroups[coord-1][0]
             print(emsg)
         # load predefined backbone coordinates
         corexyz = loadcoord(geom)

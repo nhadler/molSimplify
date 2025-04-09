@@ -73,6 +73,11 @@ def checkinput(args, calctype="base"):
                         'WARNING: No spin multiplicity specified. Defaulting to singlet (1)')
                 args.spin = defaultspinstate
 
+            # default ligand if none given
+            if not args.lig and not args.rgen:
+                print('WARNING: No ligands specified. Defaulting to water with six occurrences.')
+                args.lig = ['water']
+                args.ligocc = ['6']
 
             # calculate occurrences, denticities etc for all ligands
             # Begin toccs calculation.
@@ -105,7 +110,8 @@ def checkinput(args, calctype="base"):
                             dent_i = 1
                         else:
                             dent_i = int(len(licores[ligname][2]))
-                # get occurrence for each ligand if specified (default 1)
+                # get occurrence for each ligand if specified
+                # default of 1 if args.ligocc is not set
                 if ligoc:
                     oc_i = int(ligoc[i]) if i < len(ligoc) else 1
                 else:
@@ -128,10 +134,6 @@ def checkinput(args, calctype="base"):
                     'WARNING: No coord/geo is specified. Defaulting to 6-coord/octahedral')
                 args.coord = 6
                 args.geometry = 'oct'
-            # default ligand if none given
-            if not args.lig and not args.rgen:
-                print('WARNING: No ligands specified. Defaulting to water.')
-                args.lig = ['water']
 
             if args.coord and (not args.geometry or (args.geometry not in geomnames and args.geometry not in geomshorts)):
                 print('WARNING: No or unknown coordination geometry specified. Defining coordination geometry based on found coordination number: ' +
@@ -164,10 +166,8 @@ def checkinput(args, calctype="base"):
                 consistency_check = int(args.coord) == int(expected_coord)
                 if not consistency_check:
                     raise ValueError(f'args.coord {args.coord} and args.geometry {args.geometry} are incompatible. Expect a coordination of {expected_coord} for the provided geometry.')            
-            if int(args.coord) != toccs:
-                raise ValueError(f'args.coord {args.coord} mismatch with number of ligand connections ({toccs}), based on ligocc and their denticity.')
             # check number of ligands
-            if args.coord and not args.ligocc:
+            if not args.ligocc:
                 # If denticity of the first ligand is one
                 if dentl[0] == 1:
                     print(f'WARNING: No ligand numbers specified. Defaulting to {args.coord} of the first ligand and 0 of all others.')
@@ -176,6 +176,10 @@ def checkinput(args, calctype="base"):
                         args.ligocc.append(0)
                 else:
                     raise ValueError('ligocc not set and denticity of the first ligand is not one. Exiting.')
+            elif int(args.coord) != toccs:
+                # If ligocc was provided by the user, toccs value should be good.
+                raise ValueError(f'args.coord {args.coord} mismatch with number of ligand connections ({toccs}), based on ligocc and their denticity.')
+
     elif calctype == "tsgen":
         # load substrate for reference
         print(args.substrate[0], 0, args.subcatoms)
@@ -311,10 +315,8 @@ def checkinput(args, calctype="base"):
                 consistency_check = int(args.coord) == int(expected_coord)
                 if not consistency_check:
                     raise ValueError(f'args.coord {args.coord} and args.geometry {args.geometry} are incompatible. Expect a coordination of {expected_coord} for the provided geometry.')
-            if int(args.coord) != toccs:
-                raise ValueError(f'args.coord {args.coord} mismatch with number of ligand connections ({toccs}), based on ligocc and their denticity.')
             # check number of ligands
-            if args.coord and not args.ligocc:
+            if not args.ligocc:
                 # If denticity of the first ligand is one
                 if dentl[0] == 1:
                     print(f'WARNING: No ligand numbers specified. Defaulting to {args.coord} of the first ligand and 0 of all others.')
@@ -323,6 +325,9 @@ def checkinput(args, calctype="base"):
                         args.ligocc.append(0)
                 else:
                     raise ValueError('ligocc not set and denticity of the first ligand is not one. Exiting.')
+            elif int(args.coord) != toccs:
+                # If ligocc was provided by the user, toccs value should be good.
+                raise ValueError(f'args.coord {args.coord} mismatch with number of ligand connections ({toccs}), based on ligocc and their denticity.')
             # check substrate
             if not args.substrate:
                 print('WARNING: Transition state generation is request without the specification of a substrate. Defaulting to methane.')
