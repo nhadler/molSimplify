@@ -165,7 +165,7 @@ def checkinput(args, calctype="base"):
 
                 consistency_check = int(args.coord) == int(expected_coord)
                 if not consistency_check:
-                    raise ValueError(f'args.coord {args.coord} and args.geometry {args.geometry} are incompatible. Expect a coordination of {expected_coord} for the provided geometry.')            
+                    raise ValueError(f'args.coord {args.coord} and args.geometry {args.geometry} are incompatible. Expect a coordination of {expected_coord} for the provided geometry.')
             # check number of ligands
             if not args.ligocc:
                 # If denticity of the first ligand is one
