@@ -73,62 +73,67 @@ def checkinput(args, calctype="base"):
                         'WARNING: No spin multiplicity specified. Defaulting to singlet (1)')
                 args.spin = defaultspinstate
 
-            # check coordination number and geometry from ligands if given
-            if (not args.coord) and (not args.geometry) and args.lig:
-                # calculate occurrences, denticities etc for all ligands
-                licores = getlicores()
-                smilesligs = 0
-                toccs = 0
-                occs0 = []
-                dentl = []
-                cats0 = []
-                ligoc = args.ligocc
-                for i, ligname in enumerate(args.lig):
-                    # if not in cores -> smiles/file
-                    if ligname not in list(licores.keys()):
-                        if args.smicat and len(args.smicat) >= (smilesligs+1):
-                            if 'pi' in args.smicat[smilesligs]:
-                                cats0.append(['c'])
-                            else:
-                                cats0.append(args.smicat[smilesligs])
+            # default ligand if none given
+            if not args.lig and not args.rgen:
+                print('WARNING: No ligands specified. Defaulting to water with six occurrences.')
+                args.lig = ['water']
+                args.ligocc = ['6']
+
+            # calculate occurrences, denticities etc for all ligands
+            # Begin toccs calculation.
+            licores = getlicores()
+            smilesligs = 0
+            toccs = 0
+            occs0 = []
+            dentl = []
+            cats0 = []
+            ligoc = args.ligocc
+            for i, ligname in enumerate(args.lig):
+                # if not in cores -> smiles/file
+                if ligname not in list(licores.keys()):
+                    if args.smicat and len(args.smicat) >= (smilesligs+1):
+                        if 'pi' in args.smicat[smilesligs]:
+                            cats0.append(['c'])
                         else:
-                            cats0.append([0])
-                        dent_i = len(cats0[-1])
-                        smilesligs += 1
+                            cats0.append(args.smicat[smilesligs])
                     else:
-                        cats0.append(False)
-                    # otherwise get denticity from ligands dictionary
-                        if 'pi' in licores[ligname][2]:
+                        cats0.append([0])
+                    dent_i = len(cats0[-1])
+                    smilesligs += 1
+                else:
+                    cats0.append(False)
+                # otherwise get denticity from ligands dictionary
+                    if 'pi' in licores[ligname][2]:
+                        dent_i = 1
+                    else:
+                        if isinstance(licores[ligname][2], str):
                             dent_i = 1
                         else:
-                            if isinstance(licores[ligname][2], str):
-                                dent_i = 1
-                            else:
-                                dent_i = int(len(licores[ligname][2]))
-                    # get occurrence for each ligand if specified (default 1)
-                    if ligoc:
-                        oc_i = int(ligoc[i]) if i < len(ligoc) else 1
-                    else:
-                        oc_i = 1
-                    occs0.append(0)         # initialize occurrences list
-                    dentl.append(dent_i)    # append denticity to list
-                    # loop over occurrence of ligand i to check for max coordination
-                    for j in range(0, oc_i):
-                        occs0[i] += 1
-                        toccs += dent_i
+                            dent_i = int(len(licores[ligname][2]))
+                # get occurrence for each ligand if specified
+                # default of 1 if args.ligocc is not set
+                if ligoc:
+                    oc_i = int(ligoc[i]) if i < len(ligoc) else 1
+                else:
+                    oc_i = 1
+                occs0.append(0)         # initialize occurrences list
+                dentl.append(dent_i)    # append denticity to list
+                # loop over occurrence of ligand i to check for max coordination
+                for j in range(0, oc_i):
+                    occs0[i] += 1
+                    toccs += dent_i
+            # End of toccs calculation.
+
+            if (not args.coord) and (not args.geometry) and args.lig:
                 print(
                     f'WARNING: No coordination number specified. Calculating from lig, ligocc, and subcatoms and found {toccs}.')
                 args.coord = toccs
             # set default coord if nothing given
-            if (not args.coord) and (not args.geometry) and (not args.lig):
+            elif (not args.coord) and (not args.geometry) and (not args.lig):
                 print(
                     'WARNING: No coord/geo is specified. Defaulting to 6-coord/octahedral')
                 args.coord = 6
                 args.geometry = 'oct'
-            # default ligand if none given
-            if not args.lig and not args.rgen:
-                print('WARNING: No ligands specified. Defaulting to water.')
-                args.lig = ['water']
 
             if args.coord and (not args.geometry or (args.geometry not in geomnames and args.geometry not in geomshorts)):
                 print('WARNING: No or unknown coordination geometry specified. Defining coordination geometry based on found coordination number: ' +
@@ -162,11 +167,19 @@ def checkinput(args, calctype="base"):
                 if not consistency_check:
                     raise ValueError(f'args.coord {args.coord} and args.geometry {args.geometry} are incompatible. Expect a coordination of {expected_coord} for the provided geometry.')
             # check number of ligands
-            if args.coord and not args.ligocc:
-                print(f'WARNING: No ligand numbers specified. Defaulting to {args.coord} of the first ligand and 0 of all others.')
-                args.ligocc = [args.coord]
-                for lig in args.lig[1:]:
-                    args.ligocc.append(0)
+            if not args.ligocc:
+                # If denticity of the first ligand is one
+                if dentl[0] == 1:
+                    print(f'WARNING: No ligand numbers specified. Defaulting to {args.coord} of the first ligand and 0 of all others.')
+                    args.ligocc = [args.coord]
+                    for lig in args.lig[1:]:
+                        args.ligocc.append(0)
+                else:
+                    raise ValueError('ligocc not set and denticity of the first ligand is not one. Exiting.')
+            elif int(args.coord) != toccs:
+                # If ligocc was provided by the user, toccs value should be good.
+                raise ValueError(f'args.coord {args.coord} mismatch with number of ligand connections ({toccs}), based on ligocc and their denticity.')
+
     elif calctype == "tsgen":
         # load substrate for reference
         print(args.substrate[0], 0, args.subcatoms)
@@ -218,51 +231,55 @@ def checkinput(args, calctype="base"):
                 args.lig = ['']
 
             # check coordination number and geometry
-            if not args.coord and not args.geometry:
-                # calculate occurrences, denticities etc for all ligands
-                licores = getlicores()
-                smilesligs = 0
-                toccs = 0
-                occs0 = []
-                dentl = []
-                cats0 = []
-                ligoc = args.ligocc
-                for i, ligname in enumerate(args.lig):
-                    # if not in cores -> smiles/file
-                    if ligname not in list(licores.keys()):
-                        if args.smicat and len(args.smicat) >= (smilesligs+1):
-                            if 'pi' in args.smicat[smilesligs]:
-                                cats0.append(['c'])
-                            else:
-                                cats0.append(args.smicat[smilesligs])
+
+            # Calculate occurrences, denticities etc for all ligands
+            # Begin toccs calculation.
+            licores = getlicores()
+            smilesligs = 0
+            toccs = 0
+            occs0 = []
+            dentl = []
+            cats0 = []
+            ligoc = args.ligocc
+            for i, ligname in enumerate(args.lig):
+                # if not in cores -> smiles/file
+                if ligname not in list(licores.keys()):
+                    if args.smicat and len(args.smicat) >= (smilesligs+1):
+                        if 'pi' in args.smicat[smilesligs]:
+                            cats0.append(['c'])
                         else:
-                            cats0.append([0])
-                        dent_i = len(cats0[-1])
-                        smilesligs += 1
+                            cats0.append(args.smicat[smilesligs])
                     else:
-                        cats0.append(False)
-                    # otherwise get denticity from ligands dictionary
-                        if 'pi' in licores[ligname][2]:
+                        cats0.append([0])
+                    dent_i = len(cats0[-1])
+                    smilesligs += 1
+                else:
+                    cats0.append(False)
+                # otherwise get denticity from ligands dictionary
+                    if 'pi' in licores[ligname][2]:
+                        dent_i = 1
+                    else:
+                        if isinstance(licores[ligname][2], str):
                             dent_i = 1
                         else:
-                            if isinstance(licores[ligname][2], str):
-                                dent_i = 1
-                            else:
-                                dent_i = int(len(licores[ligname][2]))
-                    # get occurrence for each ligand if specified (default 1)
-                    oc_i = int(ligoc[i]) if i < len(ligoc) else 1
-                    occs0.append(0)         # initialize occurrences list
-                    dentl.append(dent_i)    # append denticity to list
-                    # loop over occurrence of ligand i to check for max coordination
-                    for j in range(0, oc_i):
-                        occs0[i] += 1
-                        toccs += dent_i
-                for i, substrate in enumerate(args.substrate):
-                    if args.core[0].lower() in args.mlig:
-                        suboc_i = len(
-                            [core for core in args.core if core.lower() in args.mlig])
-                        for j in range(suboc_i):
-                            toccs += 1
+                            dent_i = int(len(licores[ligname][2]))
+                # get occurrence for each ligand if specified (default 1)
+                oc_i = int(ligoc[i]) if i < len(ligoc) else 1
+                occs0.append(0)         # initialize occurrences list
+                dentl.append(dent_i)    # append denticity to list
+                # loop over occurrence of ligand i to check for max coordination
+                for j in range(0, oc_i):
+                    occs0[i] += 1
+                    toccs += dent_i
+            for i, substrate in enumerate(args.substrate):
+                if args.core[0].lower() in args.mlig:
+                    suboc_i = len(
+                        [core for core in args.core if core.lower() in args.mlig])
+                    for j in range(suboc_i):
+                        toccs += 1
+            # End of toccs calculation.
+
+            if not args.coord and not args.geometry:
                 print(
                     f'WARNING: No coordination number specified. Calculating from lig, ligocc, and subcatoms and found {toccs}.')
                 args.coord = toccs
@@ -299,11 +316,18 @@ def checkinput(args, calctype="base"):
                 if not consistency_check:
                     raise ValueError(f'args.coord {args.coord} and args.geometry {args.geometry} are incompatible. Expect a coordination of {expected_coord} for the provided geometry.')
             # check number of ligands
-            if args.coord and not args.ligocc:
-                print(f'WARNING: No ligand numbers specified. Defaulting to {args.coord} of the first ligand and 0 of all others.')
-                args.ligocc = [args.coord]
-                for lig in args.lig[1:]:
-                    args.ligocc.append(0)
+            if not args.ligocc:
+                # If denticity of the first ligand is one
+                if dentl[0] == 1:
+                    print(f'WARNING: No ligand numbers specified. Defaulting to {args.coord} of the first ligand and 0 of all others.')
+                    args.ligocc = [args.coord]
+                    for lig in args.lig[1:]:
+                        args.ligocc.append(0)
+                else:
+                    raise ValueError('ligocc not set and denticity of the first ligand is not one. Exiting.')
+            elif int(args.coord) != toccs:
+                # If ligocc was provided by the user, toccs value should be good.
+                raise ValueError(f'args.coord {args.coord} mismatch with number of ligand connections ({toccs}), based on ligocc and their denticity.')
             # check substrate
             if not args.substrate:
                 print('WARNING: Transition state generation is request without the specification of a substrate. Defaulting to methane.')
