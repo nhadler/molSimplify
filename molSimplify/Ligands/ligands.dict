@@ -34,7 +34,7 @@ bihydrodiazole:bihydrodiazole.mol,bihydrodiazole,4 13,build bidentate,A,0
 bihydrooxazine:bihydrooxazine.mol,hydrooxazine,0 1,build bidentate,A,0
 bihydrooxazole:bihydrooxazole.mol,bihydrooxazole,4 13,build bidentate,A,0
 bihydrothiazine:bihydrothiazine.mol,hydrothiazine,0 1,build bidentate,A,0
-bihydrothiazole:bihydrothiazole.mol,bihydrothiazole,4 13,,build bidentate,A,0
+bihydrothiazole:bihydrothiazole.mol,bihydrothiazole,4 13,build bidentate,A,0
 biimidazole:biimidazole.mol,biimd,2 10,build bidentate,BA,0
 bioxazole:bioxazole.mol,bioxazole,4 9,build bidentate,A,0
 bipy:bipy.mol,bip,0 1,build bidentate,N,0
