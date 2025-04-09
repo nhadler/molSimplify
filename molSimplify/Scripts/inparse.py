@@ -134,7 +134,7 @@ def checkinput(args, calctype="base"):
                 print('WARNING: No or unknown coordination geometry specified. Defining coordination geometry based on found coordination number: ' +
                       globs.defaultgeometry[int(args.coord)][1])
                 args.geometry = globs.defaultgeometry[int(args.coord)][0]
-            if args.geometry and not args.coord:
+            elif args.geometry and not args.coord:
                 if args.geometry not in geomnames and args.geometry not in geomshorts:
                     print(
                         'You have specified an invalid geometry. Available geometries are:')
@@ -143,12 +143,24 @@ def checkinput(args, calctype="base"):
                     args.geometry = 'oct'
                     args.coord = 6
                 else:
-                    try:
+                    if args.geometry in geomnames:
                         args.coord = coords[geomnames.index(args.geometry)]
-                    except ValueError:
+                    else:
+                        # args.geometry is a short name.
                         args.coord = coords[geomshorts.index(args.geometry)]
                     print(
                         f'WARNING: No coordination number specified. Defaulting to {args.coord}')
+            elif args.coord and args.geometry:
+                # Check whether the coordination number and geometry are compatible.
+                if args.geometry in geomnames:
+                    expected_coord = coords[geomnames.index(args.geometry)]
+                else:
+                    # args.geometry is a short name.
+                    expected_coord = coords[geomshorts.index(args.geometry)]
+
+                consistency_check = int(args.coord) == int(expected_coord)
+                if not consistency_check:
+                    raise ValueError(f'args.coord {args.coord} and args.geometry {args.geometry} are incompatible. Expect a coordination of {expected_coord} for the provided geometry.')
             # check number of ligands
             if args.coord and not args.ligocc:
                 print(f'WARNING: No ligand numbers specified. Defaulting to {args.coord} of the first ligand and 0 of all others.')
@@ -258,7 +270,7 @@ def checkinput(args, calctype="base"):
                 print('WARNING: No or unknown coordination geometry specified. Defining coordination geometry based on found coordination number: ' +
                       globs.defaultgeometry[int(args.coord)][1])
                 args.geometry = globs.defaultgeometry[int(args.coord)][0]
-            if args.geometry and not args.coord:
+            elif args.geometry and not args.coord:
                 coords, geomnames, geomshorts, geomgroups = getgeoms()
                 if args.geometry not in geomnames and args.geometry not in geomshorts:
                     print(
@@ -268,12 +280,24 @@ def checkinput(args, calctype="base"):
                     args.geometry = 'oct'
                     args.coord = 6
                 else:
-                    try:
+                    if args.geometry in geomnames:
                         args.coord = coords[geomnames.index(args.geometry)]
-                    except ValueError:
+                    else:
+                        # args.geometry is a short name.
                         args.coord = coords[geomshorts.index(args.geometry)]
                     print(
                         f'WARNING: No coordination number specified. Defaulting to {args.coord}')
+            elif args.coord and args.geometry:
+                # Check whether the coordination number and geometry are compatible.
+                if args.geometry in geomnames:
+                    expected_coord = coords[geomnames.index(args.geometry)]
+                else:
+                    # args.geometry is a short name.
+                    expected_coord = coords[geomshorts.index(args.geometry)]
+
+                consistency_check = int(args.coord) == int(expected_coord)
+                if not consistency_check:
+                    raise ValueError(f'args.coord {args.coord} and args.geometry {args.geometry} are incompatible. Expect a coordination of {expected_coord} for the provided geometry.')
             # check number of ligands
             if args.coord and not args.ligocc:
                 print(f'WARNING: No ligand numbers specified. Defaulting to {args.coord} of the first ligand and 0 of all others.')
