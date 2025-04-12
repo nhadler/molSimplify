@@ -327,8 +327,8 @@ class mol3D:
 
     def ACM(self, idx1, idx2, idx3, angle):
         """
-        Performs angular movement on mol3D class. A submolecule is
-        rotated about idx2. Operates directly on class.
+        Performs angular movement on a mol3D object. A submolecule is
+        rotated about idx2. Operates directly on object.
 
         Note: Function is sometimes unreliable in non-simple cases.
 
@@ -371,8 +371,8 @@ class mol3D:
 
     def ACM_axis(self, idx1, idx2, axis, angle):
         """
-        Performs angular movement about an axis on mol3D class. A submolecule
-        is rotated about idx2.Operates directly on class.
+        Performs angular movement about an axis on a mol3D object. A submolecule
+        is rotated about idx2. Operates directly on object.
 
         Parameters
         ----------
@@ -839,7 +839,7 @@ class mol3D:
         """
         Generates geometries along a given angle reaction coordinate.
         In the given molecule, idx1 is rotated about idx2 with respect
-        to idx3. Operates directly on class.
+        to idx3. Operates directly on object.
 
         Parameters
         ----------
@@ -895,7 +895,7 @@ class mol3D:
         """
         Generates geometries along a given distance reaction coordinate.
         In the given molecule, idx1 is moved with respect to idx2.
-        Operates directly on class.
+        Operates directly on object.
 
         Parameters
         ----------
@@ -7359,7 +7359,7 @@ class mol3D:
         with open(fname + '.xyz', 'w') as f:
             f.write(ss)
 
-    def writexyz(self, filename, symbsonly=False, ignoreX=False,
+    def writexyz(self, filename, symbsonly=True, ignoreX=False,
                  ordering=False, writestring=False, withgraph=False,
                  specialheader=False, no_tabs=False):
         """
@@ -7370,7 +7370,7 @@ class mol3D:
             filename : str
                 Path to XYZ file.
             symbsonly : bool, optional
-                Only write symbols to file. Default is False.
+                Only write symbols to file. Default is True.
             ignoreX : bool, optional
                 Ignore X element when writing. Default is False.
             ordering : bool, optional
@@ -7378,7 +7378,8 @@ class mol3D:
             writestring : bool, optional
                 Flag to write to a string if True or file if False. Default is False.
             withgraph : bool, optional
-                Flag to write with graph (after XYZ) if True. Default is False. If True, sparse graph written.
+                Flag to write with graph (after XYZ) if True. Default is False.
+                If True, sparse graph written. All bonds indicated as single.
             specialheader : str, optional
                 String to write information into header. Default is False. If True, a special string is written.
             no_tabs : bool, optional
@@ -7421,18 +7422,9 @@ class mol3D:
             x, y = csg.nonzero()
             tempstr = ''
             for row1, row2 in zip(x, y):
-                if row1 >= 100:
-                    tempstr += f' {row1}'
-                elif row1 >= 10:
-                    tempstr += f'  {row1}'
-                else:
-                    tempstr += f'   {row1}'
-                if row2 >= 100:
-                    tempstr += f'  {row2} S\n'
-                elif row2 >= 10:
-                    tempstr += f'   {row2} S\n'
-                else:
-                    tempstr += f'    {row2} S\n'
+                tempstr += str(row1).rjust(4)
+                tempstr += str(row2).rjust(5)
+                tempstr += ' S\n' # Indicate all bonds as single.
             ss += tempstr
 
         if no_tabs:
