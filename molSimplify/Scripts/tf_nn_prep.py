@@ -326,7 +326,7 @@ def tf_ANN_preproc(metal: str, oxstate, spin, ligs: List[str], occs: List[int], 
     if debug:
         print('tf_nn has finished prepping ligands')
 
-    if not geometry == "oct":
+    if not geometry in ["oct", "octahedral"]:
         emsg.append(
             "[ANN] Geometry is not supported at this time, MUST give -geometry = oct if you want an ANN prediction.")
         valid = False
@@ -675,18 +675,18 @@ def evaluate_tmc_anns(this_complex: mol3D, metal: str, ox: int, spin: int,
     ANN_attributes.update({'gap_trust': HOMO_ANN_trust})
 
     ANN_trust = 'not set'
-    ANN_trust_message = ""
+    splitting_ANN_trust_message = ""
     if float(split_dist / 3) < 0.25:
-        ANN_trust_message = 'ANN results should be trustworthy for this complex'
+        splitting_ANN_trust_message = 'ANN results should be trustworthy for this complex'
         ANN_trust = 'high'
     elif float(split_dist / 3) < 0.75:
-        ANN_trust_message = 'ANN results are probably useful for this complex'
+        splitting_ANN_trust_message = 'ANN results are probably useful for this complex'
         ANN_trust = 'medium'
     elif float(split_dist / 3) < 1.0:
-        ANN_trust_message = 'ANN results are fairly far from training data, be cautious'
+        splitting_ANN_trust_message = 'ANN results are fairly far from training data, be cautious'
         ANN_trust = 'low'
     elif float(split_dist / 3) > 1.0:
-        ANN_trust_message = 'ANN results are too far from training data, be cautious'
+        splitting_ANN_trust_message = 'ANN results are too far from training data, be cautious'
         ANN_trust = 'very low'
     ANN_attributes.update({'split_trust': ANN_trust})
 
@@ -718,7 +718,8 @@ def evaluate_tmc_anns(this_complex: mol3D, metal: str, ox: int, spin: int,
     print('ANN high spin bond length (ax1/ax2/eq) is predicted to be: ' + " /".join(
         [f"{float(i):.2f}" for i in r_hs[0]]) + ' angstrom')
     print(f'distance to splitting energy training data is {split_dist:.2f}')
-    print(ANN_trust_message)
+    print(splitting_ANN_trust_message)
+    print()
     print(f"ANN predicts a HOMO value of {float(homo[0]):.2f} eV at {100 * alpha:.0f}% HFX")
     print(f"ANN predicts a LUMO-HOMO energetic gap value of {float(gap[0]):.2f} eV at {100 * alpha:.0f}% HFX")
     print(HOMO_ANN_trust_message)
