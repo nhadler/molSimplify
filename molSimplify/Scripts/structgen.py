@@ -1533,14 +1533,18 @@ def get_MLdist(metal: atom3D, oxstate: str, spin: str, lig3D: mol3D,
     ----------
         args : Namespace
             Namespace of arguments.
+        metal : atom3D
+            atom3D class instance of the first atom (usually a metal).
+        oxstate : str
+            The oxidation state.
+        spin : str
+            The spin state.
         lig3D : mol3D
             mol3D class instance of the ligand.
         atom0 : int
             Ligand connecting atom index.
         ligand : str
             Name of ligand for dictionary lookup.
-        metal : atom3D
-            atom3D class instance of the first atom (usually a metal).
         MLb : float
             Custom M-L bond length (if any).
         i : int
@@ -1553,6 +1557,8 @@ def get_MLdist(metal: atom3D, oxstate: str, spin: str, lig3D: mol3D,
             run_diag instance for ANN diagnostic object.
         MLbonds : dict
             M-L bond dictionary.
+        debug : bool
+            Whether additional print statements should be printed.
 
     Returns
     -------
